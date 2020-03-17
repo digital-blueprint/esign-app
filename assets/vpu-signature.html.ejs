@@ -1,0 +1,134 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Favicons -->
+    <link rel="shortcut icon" type="image/x-icon" href="<%= geturl('local/vpu-signature/favicon.ico') %>">
+    <link rel="icon" type="image/svg+xml" href="<%= geturl('local/vpu-signature/favicon.svg') %>" sizes="any">
+
+    <!-- XXX: Disable adoptedStyleSheets so that lit-element doesn't use it and we can edit CSS in the Chrome dev tools -->
+<% if (environment === "local") { -%>
+    <script>
+        delete Document.prototype.adoptedStyleSheets;
+    </script>
+<% } -%>
+
+    <!-- PWA manfiest file -->
+    <link rel="manifest" href="<%= geturl('vpu-signature.manifest.json') %>">
+
+    <!-- Loading spinner -->
+    <script type="module" src="<%= geturl('local/vpu-signature/spinner.js') %>"></script>
+
+    <!-- App bundles-->
+    <script type="module" id="vpu-app-src" src="<%= geturl('vpu-signature.js') %>"></script>
+
+    <!-- Prevent Chrome/Edge from suggesting to translate the page -->
+    <meta name="google" content="notranslate">
+
+    <!-- Preload fonts -->
+    <link rel="preload" href="<%= geturl('local/vpu-signature/fonts/SourceSansPro-Light.otf.woff2') %>" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="<%= geturl('local/vpu-signature/fonts/SourceSansPro-Regular.otf.woff2') %>" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="<%= geturl('local/vpu-signature/fonts/SourceSansPro-Semibold.otf.woff2') %>" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="<%= geturl('local/vpu-signature/fonts/SourceSansPro-Bold.otf.woff2') %>" as="font" type="font/woff2" crossorigin>
+
+    <!-- Matomo -->
+    <script type="text/javascript">
+        var _paq = window._paq || [];
+        _paq.push(['setCustomVariable', 1, "GitCommit", "<%= buildinfo.info %>", "visit"]);
+        _paq.push(['enableHeartBeatTimer']);
+        _paq.push(['disableCookies']);
+        _paq.push(['trackPageView']);
+        _paq.push(['enableLinkTracking']);
+
+        (function() {
+            var u="https://analytics.tugraz.at/";
+            _paq.push(['setTrackerUrl', u+'matomo.php']);
+            _paq.push(['setSiteId', '<%= matomoSiteId %>']);
+            var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+            g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+        })();
+
+        // track changed locations
+        window.addEventListener('locationchanged', function(e) {
+            _paq.push(['setReferrerUrl', e.detail.referrerUrl]);
+            _paq.push(['setCustomUrl', location.href]);
+            // _paq.push(['setDocumentTitle', '']);
+            _paq.push(['trackPageView']);
+
+            // make Matomo aware of newly added content
+            var content = document.getElementById('content');
+            _paq.push(['MediaAnalytics::scanForMedia', content]);
+            _paq.push(['FormAnalytics::scanForForms', content]);
+            _paq.push(['trackContentImpressionsWithinNode', content]);
+            _paq.push(['enableLinkTracking']);
+        });
+
+        // track errors
+        window.addEventListener('error', function(e) {
+            _paq.push(['trackEvent', 'Error', e.error.message + '\n' + e.error.stack]);
+        });
+    </script>
+    <!-- End Matomo Code -->
+
+    <!-- Font related CSS -->
+    <style>
+        body {
+            font-family: 'Source Sans Pro', 'Calibri', 'Arial', 'sans-serif';
+            font-weight: 300;
+            margin: 0;
+        }
+
+        @font-face {
+            font-family: 'Source Sans Pro';
+            font-weight: 300;
+            src: url('<%= geturl('local/vpu-signature/fonts/SourceSansPro-Light.otf.woff2') %>') format('woff2');
+            font-display: block;
+        }
+
+        @font-face {
+            font-family: 'Source Sans Pro';
+            font-weight: 400;
+            src: url('<%= geturl('local/vpu-signature/fonts/SourceSansPro-Regular.otf.woff2') %>') format('woff2');
+            font-display: block;
+        }
+
+        @font-face {
+            font-family: 'Source Sans Pro';
+            font-weight: 600;
+            src: url('<%= geturl('local/vpu-signature/fonts/SourceSansPro-Semibold.otf.woff2') %>') format('woff2');
+            font-display: block;
+        }
+
+        @font-face {
+            font-family: 'Source Sans Pro';
+            font-weight: 700;
+            src: url('<%= geturl('local/vpu-signature/fonts/SourceSansPro-Bold.otf.woff2') %>') format('woff2');
+            font-display: block;
+        }
+
+        /* TU-Graz style override */
+        html {
+            --vpu-override-primary-bg-color: #245b78;
+            --vpu-override-info-bg-color: #245b78;
+            --vpu-override-danger-bg-color: #e4154b;
+            --vpu-override-warning-bg-color: #ffe183;
+            --vpu-override-warning-text-color: black;
+            --vpu-override-success-bg-color: #259207;
+        }
+    </style>
+
+    <!-- Preloading/Preconnecting -->
+    <link rel="preconnect" href="<%= entryPointURL %>">
+    <link rel="preconnect" href="<%= keyCloakBaseURL %>">
+</head>
+
+<body>
+<vpu-app lang="de" src="<%= geturl('vpu-signature.topic.metadata.json') %>" entry-point-url="<%= entryPointURL %>" base-path="<%= geturl('') %>"><vpu-spinner></vpu-spinner></vpu-app>
+
+<!-- Error handling for too old browsers -->
+<script src="<%= geturl('local/vpu-signature/browser-check.js') %>" defer></script>
+<noscript>Diese Applikation benötigt Javascript / This application requires Javascript</noscript>
+</body>
+</html>

@@ -1,0 +1,21 @@
+{
+  "short_name": "Signature",
+  "name": "TUGraz Signature",
+  "start_url": "./vpu-signature.html",
+  "icons": [
+    {
+      "src": "local/vpu-signature/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "local/vpu-signature/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "background_color": "#245B78",
+  "display": "standalone",
+  "theme_color": "#E4154B"
+}
+

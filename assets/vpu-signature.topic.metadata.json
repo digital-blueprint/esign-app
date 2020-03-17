@@ -1,0 +1,21 @@
+{
+  "name": {
+    "de": "Amtssignature",
+    "en": "Offical Signature"
+  },
+  "short_name": {
+    "de": "Amtssignature",
+    "en": "Offical Signature"
+  },
+  "description": {
+    "de": "",
+    "en": ""
+  },
+  "routing_name": "signature",
+  "activities": [
+    {"path": "vpu-signature-pdf-upload.metadata.json"},
+    {"path": "vpu-signature-profile.metadata.json",
+     "visible": false}
+  ],
+  "attributes": []
+}

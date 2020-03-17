@@ -1,0 +1,18 @@
+{
+  "element": "vpu-signature-pdf-upload",
+  "module_src": "vpu-signature-pdf-upload.js",
+  "routing_name": "pdf-upload",
+  "name": {
+    "de": "PDF hochladen",
+    "en": "Upload PDF"
+  },
+  "short_name": {
+    "de": "PDF hochladen",
+    "en": "Upload PDF"
+  },
+  "description": {
+    "de": "Erlaubt das Hochladen von PDF Dateien um sie mit einer Amtssignatur zu versehen",
+    "en": "Allows upload of PDF files to officially sign them"
+  }
+}
+
