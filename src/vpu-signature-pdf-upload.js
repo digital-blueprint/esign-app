@@ -1,14 +1,12 @@
 import $ from 'jquery';
 import {createI18nInstance} from './i18n.js';
 import {css, html} from 'lit-element';
-import {send as notify} from 'vpu-notification';
 import VPUSignatureLitElement from "./vpu-signature-lit-element";
-import Suggestions from 'suggestions';
 import * as commonUtils from 'vpu-common/utils';
 import * as commonStyles from 'vpu-common/styles';
 import suggestionsCSSPath from 'suggestions/dist/suggestions.css';
-import * as errorUtils from "vpu-common/error";
 import {classMap} from 'lit-html/directives/class-map.js';
+import 'vpu-file-upload';
 
 const i18n = createI18nInstance();
 
@@ -83,11 +81,8 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
                 <div class="field">
                     <label class="label">${i18n.t('pdf-upload.label')}</label>
                     <div class="control">
-                    <!--
-                        <vpu-knowledge-base-organization-select lang="${this.lang}"
-                                                                value="${this.organizationId}"
-                                                                @change="${this.onOrgUnitCodeChanged}"></vpu-knowledge-base-organization-select>
--->
+                        <vpu-fileupload lang="${this.lang}" url="${this.entryPointUrl}/pdf_official_signing_actions" accept="application/pdf"
+                            text="Einreichung als PDF" button-label="PDF auswählen"></vpu-fileupload>
                     </div>
                 </div>
 

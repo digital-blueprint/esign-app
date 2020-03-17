@@ -13,3 +13,6 @@
 [submodule "vendor/person-profile"]
 	path = vendor/person-profile
 	url = git@gitlab.tugraz.at:VPU/WebComponents/PersonProfile.git
+[submodule "vendor/file-upload"]
+	path = vendor/file-upload
+	url = git@gitlab.tugraz.at:VPU/WebComponents/FileUpload.git

@@ -53,7 +53,8 @@
     "vpu-common": "file:./vendor/common",
     "vpu-language-select": "file:./vendor/language-select",
     "vpu-notification": "file:./vendor/notification",
-    "vpu-person-profile": "file:./vendor/person-profile"
+    "vpu-person-profile": "file:./vendor/person-profile",
+    "vpu-file-upload": "file:./vendor/file-upload"
   },
   "scripts": {
     "clean": "rm dist/* -R",
