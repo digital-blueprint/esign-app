@@ -143,12 +143,6 @@ export default {
     input: (build != 'test') ? [
       'src/vpu-signature.js',
       'src/vpu-signature-pdf-upload.js',
-      'src/vpu-signature-create-loan.js',
-      'src/vpu-signature-return-book.js',
-      'src/vpu-signature-renew-loan.js',
-      'src/vpu-signature-book-list.js',
-      'src/vpu-signature-loan-list.js',
-      'src/vpu-signature-order-list.js',
       'src/vpu-signature-profile.js',
     ] : glob.sync('test/**/*.js'),
     output: {

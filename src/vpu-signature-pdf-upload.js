@@ -4,12 +4,10 @@ import {css, html} from 'lit-element';
 import {send as notify} from 'vpu-notification';
 import VPUSignatureLitElement from "./vpu-signature-lit-element";
 import Suggestions from 'suggestions';
-import 'vpu-signature-book-offer-select';
 import * as commonUtils from 'vpu-common/utils';
 import * as commonStyles from 'vpu-common/styles';
 import suggestionsCSSPath from 'suggestions/dist/suggestions.css';
 import * as errorUtils from "vpu-common/error";
-import './vpu-organization-select.js';
 import {classMap} from 'lit-html/directives/class-map.js';
 
 const i18n = createI18nInstance();
