@@ -31,7 +31,6 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
 
     connectedCallback() {
         super.connectedCallback();
-        const that = this;
 
         this.updateComplete.then(()=>{
         });
