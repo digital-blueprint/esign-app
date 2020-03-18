@@ -1,0 +1,72 @@
+image: registry.gitlab.tugraz.at/vpu/apps/signature/main:v1
+
+before_script:
+  - "sed -i 's|git@gitlab.tugraz.at:VPU|../..|g' .gitmodules"
+  - git submodule sync
+  - git submodule update --init
+stages:
+  - test
+  - deploy
+
+test:
+  stage: test
+  script:
+    - npm install
+    - npm run build-dev
+    - npm run build
+    - npm test
+
+linting:
+  stage: test
+  allow_failure: true
+  script:
+    - npm install
+    - npm run lint
+
+.deploy_defaults: &deploy_defaults
+  stage: deploy
+  script:
+    # Add ssh key
+    - mkdir -p ~/.ssh
+    - echo "${DEPLOY_KEY}" | tr -d '\r' > ~/.ssh/id_rsa
+    - chmod 700 ~/.ssh && chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan -t rsa "${DEPLOY_HOST}" >> ~/.ssh/known_hosts
+    # Deploy
+    - dep deploy "${CI_ENVIRONMENT_NAME}"
+    - echo "Deployed to ${CI_ENVIRONMENT_URL}"
+
+deploy_demo:
+  only:
+    refs:
+      - demo
+  environment:
+    name: demo
+    url: https://frontend-demo.tugraz.at
+  variables:
+    DEPLOY_HOST: mw01-dev.tugraz.at
+    DEPLOY_KEY: "$DEPLOY_SSH_KEY"
+  <<: *deploy_defaults
+
+deploy_development:
+  only:
+    refs:
+      - master
+  environment:
+    name: development
+    url: https://mw-frontend-dev.tugraz.at
+  variables:
+    DEPLOY_HOST: mw01-dev.tugraz.at
+    DEPLOY_KEY: "$DEPLOY_SSH_KEY"
+  <<: *deploy_defaults
+
+deploy_production:
+  only:
+    refs:
+      - production
+  environment:
+    name: production
+    url: https://signature.tugraz.at
+  variables:
+    DEPLOY_HOST: mw01-prod.tugraz.at
+    DEPLOY_KEY: "$DEPLOY_SSH_KEY"
+  <<: *deploy_defaults
