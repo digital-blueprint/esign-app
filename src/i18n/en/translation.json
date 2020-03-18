@@ -16,6 +16,10 @@
   "pdf-upload": {
     "button-refresh-title": "Load pdf-upload from {{name}} again"
   },
+  "welcome": {
+    "headline": "Welcome to the official signature service of the TU Graz",
+    "description": "With this application you can, provided you are authorized to do so, sign PDF files in the name of the TU Graz"
+  },
   "create-loan": {
     "info-no-existing-loans-summary": "No existing loans",
     "info-no-existing-loans-body": "No existing loans were found, a new one can be created.",

@@ -13,6 +13,7 @@
   },
   "routing_name": "signature",
   "activities": [
+    {"path": "vpu-signature-welcome.metadata.json"},
     {"path": "vpu-signature-pdf-upload.metadata.json"},
     {"path": "vpu-signature-profile.metadata.json",
      "visible": false}
