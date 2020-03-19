@@ -17,7 +17,7 @@
     "button-refresh-title": "Aufstellung von {{name}} erneut laden"
   },
   "welcome": {
-    "headline": "Willkommen beim Amtssignatureservice der TU Graz",
+    "headline": "Willkommen beim Amtssignaturservice der TU Graz",
     "description": "Mit dieser Applikation können Sie, sofern Sie dazu berechtigt sind, PDF Dateien im Namen der TU Graz signieren"
   },
   "create-loan": {
