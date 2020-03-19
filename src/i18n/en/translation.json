@@ -4,125 +4,15 @@
     "word2": "Passion",
     "word3": "Technology"
   },
-  "person-select": {
-    "headline": "Person"
-  },
-  "signature-book-offer-select": {
-    "headline": "Book"
-  },
-  "organization-select": {
-    "label": "Institute"
-  },
   "pdf-upload": {
-    "button-refresh-title": "Load pdf-upload from {{name}} again"
+    "field-label": "Upload PDF files to sign",
+    "upload-area-text": "In this area you can upload PDF files via Drag & Drop or by selecting them directly",
+    "upload-button-label": "Select PDF files"
   },
   "welcome": {
     "headline": "Welcome to the official signature service of the TU Graz",
     "description": "With this application you can, provided you are authorized to do so, sign PDF files in the name of the TU Graz"
   },
-  "create-loan": {
-    "info-no-existing-loans-summary": "No existing loans",
-    "info-no-existing-loans-body": "No existing loans were found, a new one can be created.",
-    "error-existing-loans-summary": "Existing loan was found!",
-    "error-existing-loans-body": "Existing loan was found, a new one cannot be created!",
-    "submit": "Loan book",
-    "mini-spinner-text": "Loading loans...",
-    "success-summary": "Book loan creation successful",
-    "success-body": "The book loan creation successful.",
-    "button-refresh-title": "Check loans of {{name}} again"
-  },
-  "return-book": {
-    "error-no-existing-loans-summary": "No existing loans",
-    "error-no-existing-loans-body": "No existing loans were found!",
-    "info-existing-loans-summary": "Existing loan was found!",
-    "info-existing-loans-body": "Existing loan was found, it can be returned!",
-    "submit": "Return book",
-    "mini-spinner-text": "Loading loans...",
-    "success-summary": "Book returned successfully",
-    "success-body": "The book from {{personName}} was successfully returned.",
-    "borrower": "Borrower",
-    "user-name-unknown": "Unknown",
-    "button-refresh-title": "Load loans of {{name}} again"
-  },
-  "renew-loan": {
-    "no-loans": "No existing loans were found!",
-    "book": "Book",
-    "error-load-loans-summary": "Error on loading loans",
-    "end-date": "Return date",
-    "loans": "Loans",
-    "renew-loan": "Renew loan",
-    "mini-spinner-text": "Loading loans...",
-    "error-renew-loan-summary": "Renewal failed",
-    "info-renew-loan-success-summary": "Renewal successfull",
-    "info-renew-loan-success-body": "The renewal of the loan was successful.",
-    "error-renew-loan-date-in-past": "End time may not be in the past!",
-    "button-refresh-title": "Load loans from {{personName}} again",
-    "contact-value": "EMail",
-    "contact-title": "Contact {{personName}} via email",
-    "contact-subject": "Loaning of: {{bookName}}"
-  },
-  "book-list": {
-    "no-books": "There are no books.",
-    "mini-spinner-text": "Loading books...",
-    "books": "Books",
-    "export-name": "Books {{organizationCode}}",
-    "book-title": "Title",
-    "book-author": "Author",
-    "book-isbn": "ISBN",
-    "book-barcode": "Barcode",
-    "book-location": "Place",
-    "book-location-identifier": "Location",
-    "book-description": "Description",
-    "book-publication-year": "Publication year",
-    "book-publisher": "Publisher",
-    "book-availability-date": "Availability date",
-    "location-identifier-select-placeholder": "Please select a location to restrict the book list",
-    "book-inventory-year": "Availability year",
-    "inventory-year-select-placeholder": "Please select a availability year to restrict the book list",
-    "error-load-books": "List of books could not be loaded",
-    "current-state": "State"
-  },
-  "loan-list": {
-    "no-loans": "There are no books.",
-    "mini-spinner-text": "Loading loans...",
-    "loans": "Loans",
-    "export-name": "Loans {{organizationCode}}",
-    "overdue-only": "Show overdue loans only",
-    "open-only": "Show open loans only",
-    "borrower-name": "Borrower",
-    "book-author": "Author/Publisher",
-    "start-date": "Start date",
-    "due-date": "Due date",
-    "return-date": "Return date",
-    "error-load-loans": "List of loans could not be loaded",
-    "error-load-loan": "Loan could not be loaded",
-    "current-state": "State"
-  },
-  "order-list": {
-    "export-name": "Orders {{organizationCode}}",
-    "error-load-orders": "List of orders could not be loaded",
-    "mini-spinner-text": "Loading order...",
-    "order-date": "Order date",
-    "delivery-date": "Delivery date",
-    "order-status": "Status",
-    "order-number": "Order  number",
-    "book-price": "Price",
-    "receiving -note": "Receiving -note",
-    "current-state": "State",
-    "sum-of-column": "Sum of column"
-  },
-  "location-identifier": {
-    "headline": "Identifier for book placement",
-    "placeholder": "Please enter the identifier to place the book",
-    "submit": "Send"
-  },
-  "select-organization": {
-    "placeholder": "Please select an organization",
-    "loading": "Loading...",
-    "load-error": "Error loading the organization"
-  },
-  "success-summary": "Book lineup successful",
-  "success-body": "The book lineup for \"{{name}}\" was successful.",
   "error-summary": "An error occurred",
   "error-permission-message": "You need have permissions to use the official signature to use this function!",
   "error-login-message": "You need to be logged in to use this function!",

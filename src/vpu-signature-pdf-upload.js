@@ -33,7 +33,19 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
         super.connectedCallback();
 
         this.updateComplete.then(()=>{
+            this.shadowRoot.querySelectorAll('vpu-fileupload')
+                .forEach(element => {
+                    element.addEventListener('vpu-fileupload-finished', this.addLogEntry.bind(this));
+                });
         });
+    }
+
+    addLogEntry(ev) {
+        const ul = this.shadowRoot.querySelector('#log');
+        const li = document.createElement('li');
+        li.innerHTML = `<b>${ev.detail.status}</b> <tt>${ev.detail.filename}</tt>`;
+
+        ul.appendChild(li);
     }
 
     update(changedProperties) {
@@ -78,14 +90,15 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
 
             <form class="${classMap({hidden: !this.isLoggedIn() || !this.hasSignaturePermissions()})}">
                 <div class="field">
-                    <label class="label">${i18n.t('pdf-upload.label')}</label>
+                    <label class="label">${i18n.t('pdf-upload.field-label')}</label>
                     <div class="control">
                         <vpu-fileupload lang="${this.lang}" url="${this.entryPointUrl}/pdf_official_signing_actions" accept="application/pdf"
-                            text="Einreichung als PDF" button-label="PDF auswählen"></vpu-fileupload>
+                            text="${i18n.t('pdf-upload.upload-area-text')}" button-label="${i18n.t('pdf-upload.upload-button-label')}"></vpu-fileupload>
                     </div>
                 </div>
 
             </form>
+            <div id="log"></div>
             <div class="notification is-warning ${classMap({hidden: this.isLoggedIn()})}">
                 ${i18n.t('error-login-message')}
             </div>
