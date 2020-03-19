@@ -41,8 +41,10 @@
     "selfsigned": "^1.10.7"
   },
   "dependencies": {
+    "file-saver": "^2.0.2",
     "i18next": "^19.1.0",
     "jquery": "^3.4.1",
+    "jszip": "^3.2.2",
     "lit-element": "^2.2.1",
     "lit-html": "^1.1.2",
     "select2": "^4.0.13",
@@ -51,10 +53,10 @@
     "universal-router": "^8.3.0",
     "vpu-auth": "file:./vendor/auth",
     "vpu-common": "file:./vendor/common",
+    "vpu-file-upload": "file:./vendor/file-upload",
     "vpu-language-select": "file:./vendor/language-select",
     "vpu-notification": "file:./vendor/notification",
-    "vpu-person-profile": "file:./vendor/person-profile",
-    "vpu-file-upload": "file:./vendor/file-upload"
+    "vpu-person-profile": "file:./vendor/person-profile"
   },
   "scripts": {
     "clean": "rm dist/* -R",

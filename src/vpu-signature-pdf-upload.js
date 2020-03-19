@@ -1,8 +1,9 @@
-import $ from 'jquery';
 import {createI18nInstance} from './i18n.js';
 import {css, html} from 'lit-element';
 import VPUSignatureLitElement from "./vpu-signature-lit-element";
 import * as commonUtils from 'vpu-common/utils';
+import JSZip from 'jszip/dist/jszip.js';
+import 'file-saver';
 import * as commonStyles from 'vpu-common/styles';
 import suggestionsCSSPath from 'suggestions/dist/suggestions.css';
 import {classMap} from 'lit-html/directives/class-map.js';
@@ -15,7 +16,7 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
         super();
         this.lang = i18n.language;
         this.entryPointUrl = commonUtils.getAPiUrl();
-        this.organizationId = '';
+        this.files = [];
     }
 
     static get properties() {
@@ -23,10 +24,6 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
             lang: { type: String },
             entryPointUrl: { type: String, attribute: 'entry-point-url' },
         };
-    }
-
-    $(selector) {
-        return $(this._(selector));
     }
 
     connectedCallback() {
@@ -40,10 +37,20 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
         });
     }
 
+    /**
+     * TODO: Implement real box
+     *
+     * @param ev
+     */
     addLogEntry(ev) {
         const ul = this.shadowRoot.querySelector('#log');
         const li = document.createElement('li');
         li.innerHTML = `<b>${ev.detail.status}</b> <tt>${ev.detail.filename}</tt>`;
+        console.log(ev.detail);
+
+        if (ev.detail.json) {
+            this.files.push(ev.detail.json);
+        }
 
         ul.appendChild(li);
     }
@@ -82,6 +89,30 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
         `;
     }
 
+    /**
+     * Download signed pdf files
+     */
+    zipDownloadClickHandler() {
+        let zip = new JSZip();
+        const that = this;
+
+        // add all signed pdf files
+        this.files.forEach((file) => {
+            console.log(file);
+            zip.file(file.fileName, file.file.replace("data:application/pdf;base64,", ""), {base64: true});
+        });
+
+        zip.generateAsync({type:"blob"})
+            .then(function(content) {
+                console.log(zip);
+
+                // save with FileSaver.js
+                saveAs(content, "signed-documents.zip");
+
+                that._("#zip-download-button").stop();
+            });
+    }
+
     render() {
         const suggestionsCSS = commonUtils.getAssetURL(suggestionsCSSPath);
 
@@ -96,9 +127,13 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
                             text="${i18n.t('pdf-upload.upload-area-text')}" button-label="${i18n.t('pdf-upload.upload-button-label')}"></vpu-fileupload>
                     </div>
                 </div>
-
             </form>
             <div id="log"></div>
+            <div class="field">
+                <div class="control">
+                    <vpu-button id="zip-download-button" value="Download ZIP" @click="${this.zipDownloadClickHandler}" type="is-primary"></vpu-button>
+                </div>
+            </div>
             <div class="notification is-warning ${classMap({hidden: this.isLoggedIn()})}">
                 ${i18n.t('error-login-message')}
             </div>
