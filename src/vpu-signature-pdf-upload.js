@@ -117,8 +117,6 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
                 saveAs(content, "signed-documents.zip");
 
                 that._("#zip-download-button").stop();
-                that.files = [];
-                that.filesCount = 0;
             });
     }
 
