@@ -5,9 +5,12 @@
     "word3": "Technology"
   },
   "pdf-upload": {
-    "field-label": "Upload PDF files to sign",
+    "upload-field-label": "Upload PDF files to sign",
     "upload-area-text": "In this area you can upload PDF files via Drag & Drop or by selecting them directly",
-    "upload-button-label": "Select PDF files"
+    "signed-files-label": "Signed files",
+    "download-zip-button": "Download ZIP",
+    "upload-button-label": "Select PDF files",
+    "download-file-button-title": "Download signed PDF"
   },
   "welcome": {
     "headline": "Welcome to the official signature service of the TU Graz",

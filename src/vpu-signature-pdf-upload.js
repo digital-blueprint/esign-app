@@ -1,7 +1,9 @@
 import {createI18nInstance} from './i18n.js';
+import {humanFileSize} from 'vpu-common/i18next.js';
 import {css, html} from 'lit-element';
 import VPUSignatureLitElement from "./vpu-signature-lit-element";
 import * as commonUtils from 'vpu-common/utils';
+import * as utils from './utils';
 import JSZip from 'jszip/dist/jszip.js';
 import 'file-saver';
 import * as commonStyles from 'vpu-common/styles';
@@ -17,12 +19,15 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
         this.lang = i18n.language;
         this.entryPointUrl = commonUtils.getAPiUrl();
         this.files = [];
+        this.filesCount = 0;
     }
 
     static get properties() {
         return {
             lang: { type: String },
             entryPointUrl: { type: String, attribute: 'entry-point-url' },
+            files: { type: Array, attribute: false },
+            filesCount: { type: Number, attribute: false },
         };
     }
 
@@ -32,27 +37,24 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
         this.updateComplete.then(()=>{
             this.shadowRoot.querySelectorAll('vpu-fileupload')
                 .forEach(element => {
-                    element.addEventListener('vpu-fileupload-finished', this.addLogEntry.bind(this));
+                    element.addEventListener('vpu-fileupload-finished', this.onUploadFinished.bind(this));
                 });
         });
     }
 
     /**
-     * TODO: Implement real box
-     *
      * @param ev
      */
-    addLogEntry(ev) {
-        const ul = this.shadowRoot.querySelector('#log');
-        const li = document.createElement('li');
-        li.innerHTML = `<b>${ev.detail.status}</b> <tt>${ev.detail.filename}</tt>`;
-        console.log(ev.detail);
+    onUploadFinished(ev) {
+        // TODO: check ev.detail.status to show if an error occurred
+        // TODO: on ev.detail.status == 503 we need to upload the file again
 
         if (ev.detail.json) {
+            // this doesn't seem to cause an update() execution
             this.files.push(ev.detail.json);
+            // this causes the correct update() execution
+            this.filesCount++;
         }
-
-        ul.appendChild(li);
     }
 
     update(changedProperties) {
@@ -60,6 +62,8 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
             if (propName === "lang") {
                 i18n.changeLanguage(this.lang);
             }
+
+            console.log(propName, oldValue);
         });
 
         super.update(changedProperties);
@@ -74,43 +78,72 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
         return css`
             ${commonStyles.getThemeCSS()}
             ${commonStyles.getGeneralCSS()}
+            ${commonStyles.getButtonCSS()}
             ${commonStyles.getNotificationCSS()}
 
             .hidden {
                 display: none;
             }
 
-            #location-identifier-block { display: none; }
+            #files-download .file {
+                margin: 10px;
+            }
 
-            #location-identifier-block input {
-                width: 100%;
-                border-radius: var(--vpu-border-radius);
+            #files-download .file button {
+                margin-right: 5px;
             }
         `;
     }
 
     /**
-     * Download signed pdf files
+     * Download signed pdf files as zip
      */
     zipDownloadClickHandler() {
+        // see: https://stuk.github.io/jszip/
         let zip = new JSZip();
         const that = this;
 
         // add all signed pdf files
         this.files.forEach((file) => {
             console.log(file);
-            zip.file(file.fileName, file.file.replace("data:application/pdf;base64,", ""), {base64: true});
+            // TODO: check for duplicate file names
+            zip.file(file.fileName, utils.getPDFFileBase64Content(file), {base64: true});
         });
 
         zip.generateAsync({type:"blob"})
             .then(function(content) {
-                console.log(zip);
-
                 // save with FileSaver.js
+                // see: https://github.com/eligrey/FileSaver.js
                 saveAs(content, "signed-documents.zip");
 
                 that._("#zip-download-button").stop();
+                that.files = [];
+                that.filesCount = 0;
             });
+    }
+
+    /**
+     * Download one signed pdf file
+     *
+     * @param file
+     */
+    fileDownloadClickHandler(file) {
+        const arr = utils.convertDataURIToBinary(file.file);
+        const blob = new Blob([arr], { type: utils.getDataURIContentType(file.file) });
+
+        // see: https://github.com/eligrey/FileSaver.js
+        saveAs(blob, file.fileName);
+    }
+
+    getSignedFilesHtml() {
+        return this.files.map(file => html`
+            <div class="file">
+                <button class="button is-small"
+                        title="${i18n.t('pdf-upload.download-file-button-title')}"
+                        @click="${() => {this.fileDownloadClickHandler(file);}}"><vpu-icon name="download"></vpu-icon></button>
+                <strong>${file.fileName}</strong> (${humanFileSize(file.fileSize)})
+            </div>
+        `);
     }
 
     render() {
@@ -119,19 +152,24 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
         return html`
             <link rel="stylesheet" href="${suggestionsCSS}">
 
-            <form class="${classMap({hidden: !this.isLoggedIn() || !this.hasSignaturePermissions()})}">
+            <div class="${classMap({hidden: !this.isLoggedIn() || !this.hasSignaturePermissions()})}">
                 <div class="field">
-                    <label class="label">${i18n.t('pdf-upload.field-label')}</label>
+                    <label class="label">${i18n.t('pdf-upload.upload-field-label')}</label>
                     <div class="control">
                         <vpu-fileupload lang="${this.lang}" url="${this.entryPointUrl}/pdf_official_signing_actions" accept="application/pdf"
                             text="${i18n.t('pdf-upload.upload-area-text')}" button-label="${i18n.t('pdf-upload.upload-button-label')}"></vpu-fileupload>
                     </div>
                 </div>
-            </form>
-            <div id="log"></div>
-            <div class="field">
-                <div class="control">
-                    <vpu-button id="zip-download-button" value="Download ZIP" @click="${this.zipDownloadClickHandler}" type="is-primary"></vpu-button>
+                <div id="files-download" class="field ${classMap({hidden: this.filesCount === 0})}">
+                    <label class="label">${i18n.t('pdf-upload.signed-files-label')}</label>
+                    <div class="control">
+                        ${this.getSignedFilesHtml()}
+                    </div>
+                </div>
+                <div class="field ${classMap({hidden: this.filesCount === 0})}">
+                    <div class="control">
+                        <vpu-button id="zip-download-button" value="${i18n.t('pdf-upload.download-zip-button')}" @click="${this.zipDownloadClickHandler}" type="is-primary"></vpu-button>
+                    </div>
                 </div>
             </div>
             <div class="notification is-warning ${classMap({hidden: this.isLoggedIn()})}">

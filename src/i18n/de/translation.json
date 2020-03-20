@@ -5,9 +5,12 @@
     "word3": "Leidenschaft"
   },
   "pdf-upload": {
-    "field-label": "PDF Dateien zum Signieren hochladen",
+    "upload-field-label": "PDF Dateien zum Signieren hochladen",
     "upload-area-text": "Sie können in diesem Bereich PDF Dateien per Drag & Drop oder per Direktauswahl hochladen",
-    "upload-button-label": "PDF Dateien auswählen"
+    "signed-files-label": "Signierte Dateien",
+    "download-zip-button": "Als ZIP Datei herunterladen",
+    "upload-button-label": "PDF Dateien auswählen",
+    "download-file-button-title": "Signiertes PDF herunterladen"
   },
   "welcome": {
     "headline": "Willkommen beim Amtssignaturservice der TU Graz",
