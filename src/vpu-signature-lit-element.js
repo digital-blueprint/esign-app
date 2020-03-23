@@ -8,9 +8,7 @@ export default class VPUSignatureLitElement extends LitElement {
     }
 
     hasSignaturePermissions() {
-        // TODO: Roles need to be discussed, e.g. implement role scopes
-        // return (window.VPUPerson && Array.isArray(window.VPUPerson.roles) && window.VPUPerson.roles.indexOf('ROLE_F_BIB_F') !== -1);
-        return window.VPUPerson && Array.isArray(window.VPUPerson.roles);
+        return (window.VPUPerson && Array.isArray(window.VPUPerson.roles) && window.VPUPerson.roles.indexOf('ROLE_SCOPE_OFFICIAL-SIGNATURE') !== -1);
     }
 
     _updateAuth() {
