@@ -7,7 +7,6 @@ import * as utils from './utils';
 import JSZip from 'jszip/dist/jszip.js';
 import 'file-saver';
 import * as commonStyles from 'vpu-common/styles';
-import suggestionsCSSPath from 'suggestions/dist/suggestions.css';
 import {classMap} from 'lit-html/directives/class-map.js';
 import 'vpu-file-upload';
 
@@ -164,11 +163,7 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
     }
 
     render() {
-        const suggestionsCSS = commonUtils.getAssetURL(suggestionsCSSPath);
-
         return html`
-            <link rel="stylesheet" href="${suggestionsCSS}">
-
             <div class="${classMap({hidden: !this.isLoggedIn() || !this.hasSignaturePermissions()})}">
                 <div class="field">
                     <label class="label">${i18n.t('pdf-upload.upload-field-label')}</label>
