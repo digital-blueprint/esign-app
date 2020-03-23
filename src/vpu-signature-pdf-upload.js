@@ -17,16 +17,20 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
         super();
         this.lang = i18n.language;
         this.entryPointUrl = commonUtils.getAPiUrl();
-        this.files = [];
-        this.filesCount = 0;
+        this.signedFiles = [];
+        this.signedFilesCount = 0;
+        this.errorFiles = [];
+        this.errorFilesCount = 0;
     }
 
     static get properties() {
         return {
             lang: { type: String },
             entryPointUrl: { type: String, attribute: 'entry-point-url' },
-            files: { type: Array, attribute: false },
-            filesCount: { type: Number, attribute: false },
+            signedFiles: { type: Array, attribute: false },
+            signedFilesCount: { type: Number, attribute: false },
+            errorFiles: { type: Array, attribute: false },
+            errorFilesCount: { type: Number, attribute: false },
         };
     }
 
@@ -47,12 +51,18 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
     onUploadFinished(ev) {
         // TODO: check ev.detail.status to show if an error occurred
         // TODO: on ev.detail.status == 503 we need to upload the file again
-
-        if (ev.detail.json) {
-            // this doesn't seem to cause an update() execution
-            this.files.push(ev.detail.json);
-            // this causes the correct update() execution
-            this.filesCount++;
+        if (ev.detail.status === 503) {
+            console.log(ev.detail);
+            // this doesn't seem to trigger an update() execution
+            this.errorFiles.push(ev.detail.file);
+            // this triggers the correct update() execution
+            this.errorFilesCount++;
+        } else if (ev.detail.json["@context"] !== undefined &&
+            ev.detail.json["@context"].includes("PdfOfficialSigningAction")) {
+            // this doesn't seem to trigger an update() execution
+            this.signedFiles.push(ev.detail.json);
+            // this triggers the correct update() execution
+            this.signedFilesCount++;
         }
     }
 
@@ -82,7 +92,7 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
         let fileNames = [];
 
         // add all signed pdf files
-        this.files.forEach((file) => {
+        this.signedFiles.forEach((file) => {
             let fileName = file.fileName;
 
             //
@@ -129,15 +139,15 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
                 display: none;
             }
 
-            #files-download .file {
+            .files-block .file {
                 margin: 10px 0;
             }
 
-            #files-download .file button {
+            .files-block .file button {
                 margin-right: 5px;
             }
 
-            #files-download .file .info {
+            .files-block .file .info {
                 display: inline-block;
                 vertical-align: middle;
             }
@@ -146,17 +156,35 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
                 background-color: lightgray;
                 border-color: gray;
             }
+
+            button.is-re-upload {
+                background-color: lightpink;
+                border-color: lightcoral;
+            }
         `;
     }
 
     getSignedFilesHtml() {
-        return this.files.map(file => html`
+        return this.signedFiles.map(file => html`
             <div class="file">
                 <button class="button is-small is-download"
                         title="${i18n.t('pdf-upload.download-file-button-title')}"
                         @click="${() => {this.fileDownloadClickHandler(file);}}"><vpu-icon name="download"></vpu-icon></button>
                 <div class="info">
                     <strong>${file.fileName}</strong> (${humanFileSize(file.fileSize)})
+                </div>
+            </div>
+        `);
+    }
+
+    getErrorFilesHtml() {
+        return this.errorFiles.map(file => html`
+            <div class="file">
+                <button class="button is-small is-re-upload"
+                        title="${i18n.t('pdf-upload.re-upload-file-button-title')}"
+                        @click="${() => {this.fileUploadClickHandler(file);}}"><vpu-icon name="upload"></vpu-icon></button>
+                <div class="info">
+                    <strong>${file.name}</strong> (${humanFileSize(file.size)})
                 </div>
             </div>
         `);
@@ -172,15 +200,21 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
                             text="${i18n.t('pdf-upload.upload-area-text')}" button-label="${i18n.t('pdf-upload.upload-button-label')}"></vpu-fileupload>
                     </div>
                 </div>
-                <div id="files-download" class="field ${classMap({hidden: this.filesCount === 0})}">
+                <div class="files-block field ${classMap({hidden: this.signedFilesCount === 0})}">
                     <label class="label">${i18n.t('pdf-upload.signed-files-label')}</label>
                     <div class="control">
                         ${this.getSignedFilesHtml()}
                     </div>
                 </div>
-                <div class="field ${classMap({hidden: this.filesCount === 0})}">
+                <div class="field ${classMap({hidden: this.signedFilesCount === 0})}">
                     <div class="control">
                         <vpu-button id="zip-download-button" value="${i18n.t('pdf-upload.download-zip-button')}" title="${i18n.t('pdf-upload.download-zip-button-tooltip')}" @click="${this.zipDownloadClickHandler}" type="is-primary"></vpu-button>
+                    </div>
+                </div>
+                <div class="files-block field ${classMap({hidden: this.errorFilesCount === 0})}">
+                    <label class="label">${i18n.t('pdf-upload.error-files-label')}</label>
+                    <div class="control">
+                        ${this.getErrorFilesHtml()}
                     </div>
                 </div>
             </div>

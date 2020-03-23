@@ -11,7 +11,9 @@
     "download-zip-button": "Download ZIP",
     "download-zip-button-tooltip": "Download all signed files as ZIP file",
     "upload-button-label": "Select PDF files",
-    "download-file-button-title": "Download signed PDF"
+    "download-file-button-title": "Download signed PDF",
+    "error-files-label": "Failed uploads",
+    "re-upload-file-button-title": "Upload again"
   },
   "welcome": {
     "headline": "Welcome to the official signature service of the TU Graz",
