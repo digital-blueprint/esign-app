@@ -102,12 +102,19 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
         // see: https://stuk.github.io/jszip/
         let zip = new JSZip();
         const that = this;
+        let fileNames = [];
 
         // add all signed pdf files
         this.files.forEach((file) => {
-            console.log(file);
-            // TODO: check for duplicate file names
-            zip.file(file.fileName, utils.getPDFFileBase64Content(file), {base64: true});
+            let fileName = file.fileName;
+
+            //
+            if (fileNames.indexOf(fileName) !== -1) {
+                fileName = utils.baseName(fileName) + "-" + Math.random().toString(36).substring(7) + ".pdf";
+            }
+
+            fileNames.push(fileName);
+            zip.file(fileName, utils.getPDFFileBase64Content(file), {base64: true});
         });
 
         zip.generateAsync({type:"blob"})
