@@ -73,28 +73,6 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
         this.lang = e.detail.lang;
     }
 
-    static get styles() {
-        // language=css
-        return css`
-            ${commonStyles.getThemeCSS()}
-            ${commonStyles.getGeneralCSS()}
-            ${commonStyles.getButtonCSS()}
-            ${commonStyles.getNotificationCSS()}
-
-            .hidden {
-                display: none;
-            }
-
-            #files-download .file {
-                margin: 10px;
-            }
-
-            #files-download .file button {
-                margin-right: 5px;
-            }
-        `;
-    }
-
     /**
      * Download signed pdf files as zip
      */
@@ -140,13 +118,47 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
         saveAs(blob, file.fileName);
     }
 
+    static get styles() {
+        // language=css
+        return css`
+            ${commonStyles.getThemeCSS()}
+            ${commonStyles.getGeneralCSS()}
+            ${commonStyles.getButtonCSS()}
+            ${commonStyles.getNotificationCSS()}
+
+            .hidden {
+                display: none;
+            }
+
+            #files-download .file {
+                margin: 10px 0;
+            }
+
+            #files-download .file button {
+                margin-right: 5px;
+            }
+
+            #files-download .file .info {
+                display: inline-block;
+                vertical-align: middle;
+            }
+
+            button.is-download {
+                background-color: lightgray;
+                border-color: gray;
+            }
+        `;
+    }
+
     getSignedFilesHtml() {
         return this.files.map(file => html`
             <div class="file">
-                <button class="button is-small"
+                <button class="button is-small is-download"
                         title="${i18n.t('pdf-upload.download-file-button-title')}"
                         @click="${() => {this.fileDownloadClickHandler(file);}}"><vpu-icon name="download"></vpu-icon></button>
-                <strong>${file.fileName}</strong> (${humanFileSize(file.fileSize)})
+                <div class="info">
+                    <strong>${file.fileName}</strong> (${humanFileSize(file.fileSize)})
+                </div>
             </div>
         `);
     }
@@ -173,7 +185,7 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
                 </div>
                 <div class="field ${classMap({hidden: this.filesCount === 0})}">
                     <div class="control">
-                        <vpu-button id="zip-download-button" value="${i18n.t('pdf-upload.download-zip-button')}" @click="${this.zipDownloadClickHandler}" type="is-primary"></vpu-button>
+                        <vpu-button id="zip-download-button" value="${i18n.t('pdf-upload.download-zip-button')}" title="${i18n.t('pdf-upload.download-zip-button-tooltip')}" @click="${this.zipDownloadClickHandler}" type="is-primary"></vpu-button>
                     </div>
                 </div>
             </div>

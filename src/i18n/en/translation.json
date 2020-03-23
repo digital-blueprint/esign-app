@@ -9,6 +9,7 @@
     "upload-area-text": "In this area you can upload PDF files via Drag & Drop or by selecting them directly",
     "signed-files-label": "Signed files",
     "download-zip-button": "Download ZIP",
+    "download-zip-button-tooltip": "Download all signed files as ZIP file",
     "upload-button-label": "Select PDF files",
     "download-file-button-title": "Download signed PDF"
   },

@@ -9,6 +9,7 @@
     "upload-area-text": "Sie können in diesem Bereich PDF Dateien per Drag & Drop oder per Direktauswahl hochladen",
     "signed-files-label": "Signierte Dateien",
     "download-zip-button": "Als ZIP Datei herunterladen",
+    "download-zip-button-tooltip": "Alle signierten Dateien als ZIP Datei herunterladen",
     "upload-button-label": "PDF Dateien auswählen",
     "download-file-button-title": "Signiertes PDF herunterladen"
   },
