@@ -58,7 +58,7 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
             // this triggers the correct update() execution
             this.errorFilesCount++;
         } else if (ev.detail.json["@context"] !== undefined &&
-            ev.detail.json["@context"].includes("PdfOfficialSigningAction")) {
+            ev.detail.json["@context"].includes("OfficiallySignedDocument")) {
             // this doesn't seem to trigger an update() execution
             this.signedFiles.push(ev.detail.json);
             // this triggers the correct update() execution
@@ -171,7 +171,7 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
                         title="${i18n.t('pdf-upload.download-file-button-title')}"
                         @click="${() => {this.fileDownloadClickHandler(file);}}"><vpu-icon name="download"></vpu-icon></button>
                 <div class="info">
-                    <strong>${file.fileName}</strong> (${humanFileSize(file.fileSize)})
+                    <strong>${file.fileName}</strong> (${humanFileSize(file.contentSize)})
                 </div>
             </div>
         `);
@@ -196,7 +196,7 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
                 <div class="field">
                     <label class="label">${i18n.t('pdf-upload.upload-field-label')}</label>
                     <div class="control">
-                        <vpu-fileupload lang="${this.lang}" url="${this.entryPointUrl}/pdf_official_signing_actions" accept="application/pdf"
+                        <vpu-fileupload lang="${this.lang}" url="${this.entryPointUrl}/officially_signed_document/sign" accept="application/pdf"
                             text="${i18n.t('pdf-upload.upload-area-text')}" button-label="${i18n.t('pdf-upload.upload-button-label')}"></vpu-fileupload>
                     </div>
                 </div>
