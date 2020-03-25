@@ -17,6 +17,7 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
         super();
         this.lang = i18n.language;
         this.entryPointUrl = commonUtils.getAPiUrl();
+        this.signingUrl = this.entryPointUrl + "/officially_signed_document/sign";
         this.signedFiles = [];
         this.signedFilesCount = 0;
         this.errorFiles = [];
@@ -51,10 +52,10 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
     onUploadFinished(ev) {
         // TODO: check ev.detail.status to show if an error occurred
         // TODO: on ev.detail.status == 503 we need to upload the file again
-        if (ev.detail.status === 503) {
+        if (ev.detail.status !== 201) {
             console.log(ev.detail);
             // this doesn't seem to trigger an update() execution
-            this.errorFiles.push(ev.detail.file);
+            this.errorFiles[Math.floor(Math.random() * 1000000)] = ev.detail;
             // this triggers the correct update() execution
             this.errorFilesCount++;
         } else if (ev.detail.json["@context"] !== undefined &&
@@ -127,6 +128,18 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
         saveAs(blob, file.fileName);
     }
 
+    /**
+     * Uploads a failed pdf file again
+     *
+     * @param file
+     * @param id
+     */
+    fileUploadClickHandler(file, id) {
+        this._("#file-upload").uploadFile(file);
+        this.errorFiles.splice(id, 1);
+        this.errorFilesCount--;
+    }
+
     static get styles() {
         // language=css
         return css`
@@ -178,13 +191,14 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
     }
 
     getErrorFilesHtml() {
-        return this.errorFiles.map(file => html`
+        return this.errorFiles.map((data, id) => html`
             <div class="file">
                 <button class="button is-small is-re-upload"
                         title="${i18n.t('pdf-upload.re-upload-file-button-title')}"
-                        @click="${() => {this.fileUploadClickHandler(file);}}"><vpu-icon name="upload"></vpu-icon></button>
+                        @click="${() => {this.fileUploadClickHandler(data.file, id);}}"><vpu-icon name="upload"></vpu-icon></button>
                 <div class="info">
-                    <strong>${file.name}</strong> (${humanFileSize(file.size)})
+                    <strong>${data.file.name}</strong> (${humanFileSize(data.file.size)})
+                    ${data.json["hydra:description"]}
                 </div>
             </div>
         `);
@@ -196,7 +210,7 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
                 <div class="field">
                     <label class="label">${i18n.t('pdf-upload.upload-field-label')}</label>
                     <div class="control">
-                        <vpu-fileupload lang="${this.lang}" url="${this.entryPointUrl}/officially_signed_document/sign" accept="application/pdf"
+                        <vpu-fileupload id="file-upload" lang="${this.lang}" url="${this.signingUrl}" accept="application/pdf"
                             text="${i18n.t('pdf-upload.upload-area-text')}" button-label="${i18n.t('pdf-upload.upload-button-label')}"></vpu-fileupload>
                     </div>
                 </div>
