@@ -12,7 +12,7 @@
     "download-zip-button-tooltip": "Alle signierten Dateien als ZIP Datei herunterladen",
     "upload-button-label": "PDF Dateien auswählen",
     "download-file-button-title": "Signiertes PDF herunterladen",
-    "error-files-label": "Fehlgeschlagene Hochladevorgänge",
+    "error-files-label": "Fehlgeschlagene Signiervorgänge",
     "re-upload-file-button-title": "Erneut hochladen"
   },
   "welcome": {
