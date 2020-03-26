@@ -50,8 +50,6 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
      * @param ev
      */
     onUploadFinished(ev) {
-        // TODO: check ev.detail.status to show if an error occurred
-        // TODO: on ev.detail.status == 503 we need to upload the file again
         if (ev.detail.status !== 201) {
             console.log(ev.detail);
             // this doesn't seem to trigger an update() execution
