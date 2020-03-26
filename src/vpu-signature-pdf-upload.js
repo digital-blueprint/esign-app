@@ -56,8 +56,8 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
             this.errorFiles[Math.floor(Math.random() * 1000000)] = ev.detail;
             // this triggers the correct update() execution
             this.errorFilesCount++;
-        } else if (ev.detail.json["@context"] !== undefined &&
-            ev.detail.json["@context"].includes("OfficiallySignedDocument")) {
+        } else if (ev.detail.json !== undefined &&
+            ev.detail.json["@type"] === "http://schema.org/MediaObject" ) {
             // this doesn't seem to trigger an update() execution
             this.signedFiles.push(ev.detail.json);
             // this triggers the correct update() execution
