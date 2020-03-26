@@ -92,7 +92,7 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
 
         // add all signed pdf files
         this.signedFiles.forEach((file) => {
-            let fileName = file.fileName;
+            let fileName = file.name;
 
             //
             if (fileNames.indexOf(fileName) !== -1) {
@@ -119,11 +119,11 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
      * @param file
      */
     fileDownloadClickHandler(file) {
-        const arr = utils.convertDataURIToBinary(file.file);
-        const blob = new Blob([arr], { type: utils.getDataURIContentType(file.file) });
+        const arr = utils.convertDataURIToBinary(file.contentUrl);
+        const blob = new Blob([arr], { type: utils.getDataURIContentType(file.contentUrl) });
 
         // see: https://github.com/eligrey/FileSaver.js
-        saveAs(blob, file.fileName);
+        saveAs(blob, file.name);
     }
 
     /**
@@ -182,7 +182,7 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
                         title="${i18n.t('pdf-upload.download-file-button-title')}"
                         @click="${() => {this.fileDownloadClickHandler(file);}}"><vpu-icon name="download"></vpu-icon></button>
                 <div class="info">
-                    <strong>${file.fileName}</strong> (${humanFileSize(file.contentSize)})
+                    <strong>${file.name}</strong> (${humanFileSize(file.contentSize)})
                 </div>
             </div>
         `);
