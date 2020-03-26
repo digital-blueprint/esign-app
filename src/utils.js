@@ -20,7 +20,7 @@ export const findObjectInApiResults = (identifier, results, identifierAttribute 
 };
 
 export const getPDFFileBase64Content = (file) => {
-    return file.file.replace("data:application/pdf;base64,", "");
+    return file.contentUrl.replace("data:application/pdf;base64,", "");
 };
 
 export const convertDataURIToBinary = (dataURI) => {
