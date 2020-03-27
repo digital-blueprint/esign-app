@@ -150,11 +150,14 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
             }
 
             .files-block .file {
+                display: grid;
+                grid-template-columns: 40px auto;
                 margin: 10px 0;
             }
 
-            .files-block .file button {
-                margin-right: 5px;
+            .files-block .file .button-box {
+                display: flex;
+                align-items: center;
             }
 
             .files-block .file .info {
@@ -177,9 +180,11 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
     getSignedFilesHtml() {
         return this.signedFiles.map(file => html`
             <div class="file">
-                <button class="button is-small is-download"
-                        title="${i18n.t('pdf-upload.download-file-button-title')}"
-                        @click="${() => {this.fileDownloadClickHandler(file);}}"><vpu-icon name="download"></vpu-icon></button>
+                <div class="button-box">
+                    <button class="button is-small is-download"
+                            title="${i18n.t('pdf-upload.download-file-button-title')}"
+                            @click="${() => {this.fileDownloadClickHandler(file);}}"><vpu-icon name="download"></vpu-icon></button>
+                </div>
                 <div class="info">
                     <strong>${file.name}</strong> (${humanFileSize(file.contentSize)})
                 </div>
@@ -190,9 +195,11 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
     getErrorFilesHtml() {
         return this.errorFiles.map((data, id) => html`
             <div class="file">
-                <button class="button is-small is-re-upload"
-                        title="${i18n.t('pdf-upload.re-upload-file-button-title')}"
-                        @click="${() => {this.fileUploadClickHandler(data.file, id);}}"><vpu-icon name="upload"></vpu-icon></button>
+                <div class="button-box">
+                    <button class="button is-small is-re-upload"
+                            title="${i18n.t('pdf-upload.re-upload-file-button-title')}"
+                            @click="${() => {this.fileUploadClickHandler(data.file, id);}}"><vpu-icon name="upload"></vpu-icon></button>
+                </div>
                 <div class="info">
                     <strong>${data.file.name}</strong> (${humanFileSize(data.file.size)})
                     ${data.json["hydra:description"]}
