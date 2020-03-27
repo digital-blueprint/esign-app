@@ -39,10 +39,9 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
         super.connectedCallback();
 
         this.updateComplete.then(()=>{
-            this.shadowRoot.querySelectorAll('vpu-fileupload')
-                .forEach(element => {
-                    element.addEventListener('vpu-fileupload-finished', this.onUploadFinished.bind(this));
-                });
+            const fileUpload = this._("#file-upload");
+            fileUpload.addEventListener('vpu-fileupload-file-finished', this.onUploadFinished.bind(this));
+            // fileUpload.addEventListener('vpu-fileupload-all-finished', this.onUploadFinished.bind(this));
         });
     }
 
