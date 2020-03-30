@@ -78,7 +78,6 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
      */
     onFileUploadFinished(ev) {
         if (ev.detail.status !== 201) {
-            console.log(ev.detail);
             // this doesn't seem to trigger an update() execution
             this.errorFiles[Math.floor(Math.random() * 1000000)] = ev.detail;
             // this triggers the correct update() execution
@@ -166,10 +165,12 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
      * @param file
      * @param id
      */
-    fileUploadClickHandler(file, id) {
-        this._("#file-upload").uploadFile(file);
+    async fileUploadClickHandler(file, id) {
+        this.uploadInProgress = true;
         this.errorFiles.splice(id, 1);
         this.errorFilesCount--;
+        await this._("#file-upload").uploadFile(file);
+        this.uploadInProgress = false;
     }
 
     static get styles() {
