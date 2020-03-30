@@ -13,7 +13,8 @@
     "upload-button-label": "Select PDF files",
     "download-file-button-title": "Download signed PDF",
     "error-files-label": "Failed signing processes",
-    "re-upload-file-button-title": "Upload again"
+    "re-upload-file-button-title": "Upload again",
+    "upload-status-file-text": "({{fileSize}}) is currently uploading..."
   },
   "welcome": {
     "headline": "Welcome to the official signature service of the TU Graz",

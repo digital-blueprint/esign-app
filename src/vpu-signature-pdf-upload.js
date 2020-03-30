@@ -23,6 +23,8 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
         this.errorFiles = [];
         this.errorFilesCount = 0;
         this.uploadInProgress = false;
+        this.uploadStatusFileName = "";
+        this.uploadStatusText = "";
     }
 
     static get properties() {
@@ -34,6 +36,8 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
             errorFiles: { type: Array, attribute: false },
             errorFilesCount: { type: Number, attribute: false },
             uploadInProgress: { type: Boolean, attribute: false },
+            uploadStatusFileName: { type: String, attribute: false },
+            uploadStatusText: { type: String, attribute: false },
         };
     }
 
@@ -43,6 +47,7 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
         this.updateComplete.then(()=>{
             const fileUpload = this._("#file-upload");
             fileUpload.addEventListener('vpu-fileupload-all-start', this.onAllUploadStarted.bind(this));
+            fileUpload.addEventListener('vpu-fileupload-file-start', this.onFileUploadStarted.bind(this));
             fileUpload.addEventListener('vpu-fileupload-file-finished', this.onFileUploadFinished.bind(this));
             fileUpload.addEventListener('vpu-fileupload-all-finished', this.onAllUploadFinished.bind(this));
         });
@@ -54,6 +59,18 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
     onAllUploadStarted(ev) {
         console.log("Start upload process!");
         this.uploadInProgress = true;
+    }
+
+    /**
+     * @param ev
+     */
+    onFileUploadStarted(ev) {
+        console.log(ev);
+        this.uploadStatusFileName = ev.detail.fileName;
+        this.uploadStatusText = i18n.t('pdf-upload.upload-status-file-text', {
+            fileName: ev.detail.fileName,
+            fileSize: humanFileSize(ev.detail.fileSize, false),
+        });
     }
 
     /**
@@ -192,6 +209,12 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
                 background-color: lightpink;
                 border-color: lightcoral;
             }
+
+            .notification vpu-mini-spinner {
+                position: relative;
+                top: 2px;
+                margin-right: 5px;
+            }
         `;
     }
 
@@ -238,7 +261,8 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
                 </div>
                 <div class="field notification is-info ${classMap({hidden: !this.uploadInProgress})}">
                     <vpu-mini-spinner></vpu-mini-spinner>
-                    Upload in progress...
+                    <strong>${this.uploadStatusFileName}</strong>
+                    ${this.uploadStatusText}
                 </div>
                 <div class="files-block field ${classMap({hidden: this.signedFilesCount === 0})}">
                     <label class="label">${i18n.t('pdf-upload.signed-files-label')}</label>
