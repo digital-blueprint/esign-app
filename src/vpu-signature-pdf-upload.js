@@ -127,7 +127,7 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
         this.signedFiles.forEach((file) => {
             let fileName = file.name;
 
-            //
+            // add pseudo-random string on duplicate file name
             if (fileNames.indexOf(fileName) !== -1) {
                 fileName = utils.baseName(fileName) + "-" + Math.random().toString(36).substring(7) + ".pdf";
             }
