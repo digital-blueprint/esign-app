@@ -14,7 +14,9 @@
     "download-file-button-title": "Download signed PDF",
     "error-files-label": "Failed signing processes",
     "re-upload-file-button-title": "Upload again",
-    "upload-status-file-text": "({{fileSize}}) is currently uploading and being processed..."
+    "upload-status-file-text": "({{fileSize}}) is currently uploading and being processed...",
+    "re-upload-all-button": "Upload all",
+    "re-upload-all-button-title": "Upload all failed uploads again"
   },
   "welcome": {
     "headline": "Welcome to the official signature service of the TU Graz",

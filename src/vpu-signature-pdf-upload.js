@@ -147,6 +147,24 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
     }
 
     /**
+     * Re-Upload all failed files
+     */
+    reUploadAllClickHandler() {
+        const that = this;
+
+        // we need to make a copy and reset the queue or else our queue will run crazy
+        const errorFilesCopy = {...this.errorFiles};
+        this.errorFiles = [];
+        this.errorFilesCount = 0;
+
+        commonUtils.asyncObjectForEach(errorFilesCopy, async (file, id) => {
+            await this.fileUploadClickHandler(file.file, id);
+        });
+
+        that._("#re-upload-all-button").stop();
+    }
+
+    /**
      * Download one signed pdf file
      *
      * @param file
@@ -168,7 +186,7 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
     async fileUploadClickHandler(file, id) {
         this.uploadInProgress = true;
         this.errorFiles.splice(id, 1);
-        this.errorFilesCount--;
+        this.errorFilesCount = this.errorFiles.length;
         await this._("#file-upload").uploadFile(file);
         this.uploadInProgress = false;
     }
@@ -280,6 +298,11 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
                     <label class="label">${i18n.t('pdf-upload.error-files-label')}</label>
                     <div class="control">
                         ${this.getErrorFilesHtml()}
+                    </div>
+                </div>
+                <div class="field ${classMap({hidden: this.errorFilesCount === 0})}">
+                    <div class="control">
+                        <vpu-button id="re-upload-all-button" ?disabled="${this.uploadInProgress}" value="${i18n.t('pdf-upload.re-upload-all-button')}" title="${i18n.t('pdf-upload.re-upload-all-button-title')}" @click="${this.reUploadAllClickHandler}" type="is-primary"></vpu-button>
                     </div>
                 </div>
             </div>

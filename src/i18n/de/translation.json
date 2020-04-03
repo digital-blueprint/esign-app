@@ -14,7 +14,9 @@
     "download-file-button-title": "Signiertes PDF herunterladen",
     "error-files-label": "Fehlgeschlagene Signiervorgänge",
     "re-upload-file-button-title": "Erneut hochladen",
-    "upload-status-file-text": "({{fileSize}}) wird hochgeladen und verarbeitet..."
+    "upload-status-file-text": "({{fileSize}}) wird hochgeladen und verarbeitet...",
+    "re-upload-all-button": "Alle erneut hochladen",
+    "re-upload-all-button-title": "Alle fehlgeschlagen Uploads erneut hochladen"
   },
   "welcome": {
     "headline": "Willkommen beim Amtssignaturservice der TU Graz",
