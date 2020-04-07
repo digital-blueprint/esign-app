@@ -204,9 +204,12 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
             }
 
             .files-block .file {
+                margin: 10px 0;
+            }
+
+            .error-files .file {
                 display: grid;
                 grid-template-columns: 40px auto;
-                margin: 10px 0;
             }
 
             .files-block .file .button-box {
@@ -238,14 +241,10 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
     getSignedFilesHtml() {
         return this.signedFiles.map(file => html`
             <div class="file">
-                <div class="button-box">
-                    <button class="button is-small is-download"
-                            title="${i18n.t('pdf-upload.download-file-button-title')}"
-                            @click="${() => {this.fileDownloadClickHandler(file);}}"><vpu-icon name="download"></vpu-icon></button>
-                </div>
-                <div class="info">
-                    ${file.name} (${humanFileSize(file.contentSize)})
-                </div>
+                <a class="is-download"
+                    title="${i18n.t('pdf-upload.download-file-button-title')}"
+                    @click="${() => {this.fileDownloadClickHandler(file);}}">
+                    ${file.name} (${humanFileSize(file.contentSize)}) <vpu-icon name="download"></vpu-icon></a>
             </div>
         `);
     }
@@ -292,7 +291,7 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
                         <vpu-button id="zip-download-button" value="${i18n.t('pdf-upload.download-zip-button')}" title="${i18n.t('pdf-upload.download-zip-button-tooltip')}" @click="${this.zipDownloadClickHandler}" type="is-primary"></vpu-button>
                     </div>
                 </div>
-                <div class="files-block field ${classMap({hidden: this.errorFilesCount === 0})}">
+                <div class="files-block error-files field ${classMap({hidden: this.errorFilesCount === 0})}">
                     <h2 class="error">${i18n.t('pdf-upload.error-files-label')}</h2>
                     <div class="control">
                         ${this.getErrorFilesHtml()}
