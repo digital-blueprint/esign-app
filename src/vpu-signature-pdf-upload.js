@@ -219,20 +219,18 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
                 vertical-align: middle;
             }
 
-            button.is-download {
-                background-color: lightgray;
-                border-color: gray;
-            }
-
-            button.is-re-upload {
-                background-color: lightpink;
-                border-color: lightcoral;
+            .file .info strong {
+                font-weight: 600;
             }
 
             .notification vpu-mini-spinner {
                 position: relative;
                 top: 2px;
                 margin-right: 5px;
+            }
+
+            .error {
+                color: #e4154b;
             }
         `;
     }
@@ -246,7 +244,7 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
                             @click="${() => {this.fileDownloadClickHandler(file);}}"><vpu-icon name="download"></vpu-icon></button>
                 </div>
                 <div class="info">
-                    <strong>${file.name}</strong> (${humanFileSize(file.contentSize)})
+                    ${file.name} (${humanFileSize(file.contentSize)})
                 </div>
             </div>
         `);
@@ -256,13 +254,13 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
         return this.errorFiles.map((data, id) => html`
             <div class="file">
                 <div class="button-box">
-                    <button class="button is-small is-re-upload"
+                    <button class="button is-small"
                             title="${i18n.t('pdf-upload.re-upload-file-button-title')}"
-                            @click="${() => {this.fileUploadClickHandler(data.file, id);}}"><vpu-icon name="upload"></vpu-icon></button>
+                            @click="${() => {this.fileUploadClickHandler(data.file, id);}}"><vpu-icon name="reload"></vpu-icon></button>
                 </div>
                 <div class="info">
-                    <strong>${data.file.name}</strong> (${humanFileSize(data.file.size)})
-                    ${data.json["hydra:description"]}
+                    ${data.file.name} (${humanFileSize(data.file.size)})
+                    <strong class="error">${data.json["hydra:description"]}</strong>
                 </div>
             </div>
         `);
@@ -272,7 +270,7 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
         return html`
             <div class="${classMap({hidden: !this.isLoggedIn() || !this.hasSignaturePermissions()})}">
                 <div class="field">
-                    <label class="label">${i18n.t('pdf-upload.upload-field-label')}</label>
+                    <h2>${i18n.t('pdf-upload.upload-field-label')}</h2>
                     <div class="control">
                         <vpu-fileupload id="file-upload" lang="${this.lang}" url="${this.signingUrl}" accept="application/pdf"
                             text="${i18n.t('pdf-upload.upload-area-text')}" button-label="${i18n.t('pdf-upload.upload-button-label')}"></vpu-fileupload>
@@ -284,7 +282,7 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
                     ${this.uploadStatusText}
                 </div>
                 <div class="files-block field ${classMap({hidden: this.signedFilesCount === 0})}">
-                    <label class="label">${i18n.t('pdf-upload.signed-files-label')}</label>
+                    <h2>${i18n.t('pdf-upload.signed-files-label')}</h2>
                     <div class="control">
                         ${this.getSignedFilesHtml()}
                     </div>
@@ -295,7 +293,7 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
                     </div>
                 </div>
                 <div class="files-block field ${classMap({hidden: this.errorFilesCount === 0})}">
-                    <label class="label">${i18n.t('pdf-upload.error-files-label')}</label>
+                    <h2 class="error">${i18n.t('pdf-upload.error-files-label')}</h2>
                     <div class="control">
                         ${this.getErrorFilesHtml()}
                     </div>
