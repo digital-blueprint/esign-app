@@ -385,8 +385,8 @@ class VPUApp extends LitElement {
             }
 
             aside { grid-area: sidebar; margin: 30px 15px; }
-            #headline { grid-area: headline; margin: 15px; text-align: center; }
-            main { grid-area: main; margin: 30px 15px; }
+            #headline { grid-area: headline; margin: 30px; text-align: center; }
+            main { grid-area: main; margin: 30px }
             footer { grid-area: footer; margin: 30px; text-align: right; }
 
             header .hd1-left {

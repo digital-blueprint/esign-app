@@ -199,6 +199,10 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
             ${commonStyles.getButtonCSS()}
             ${commonStyles.getNotificationCSS()}
 
+            h2 {
+                margin-bottom: inherit;
+            }
+
             .hidden {
                 display: none;
             }
