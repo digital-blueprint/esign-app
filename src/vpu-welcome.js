@@ -11,13 +11,20 @@ class SignatureWelcome extends LitElement {
     constructor() {
         super();
         this.lang = i18n.language;
-
+        this.metadata = {};
     }
 
     static get properties() {
         return {
             lang: { type: String },
+            metadata: { type: Object, attribute: false },
         };
+    }
+
+    setMetaData(metaData, headline, subHeadline) {
+        this.headline = headline || "Welcome";
+        this.subHeadline = subHeadline || "";
+        this.metadata = metaData;
     }
 
     update(changedProperties) {
@@ -35,16 +42,33 @@ class SignatureWelcome extends LitElement {
         return css`
             ${commonStyles.getThemeCSS()}
             ${commonStyles.getGeneralCSS()}
+
+            h2 { margin: inherit; }
+            p { margin: 0 0 10px 0; }
+            div.item { margin: 30px 0; }
         `;
     }
 
     render() {
+        let itemTemplates = [];
+
+        for (let [key, data] of Object.entries(this.metadata)) {
+
+            if (data['visible'] && (key !== "welcome")) {
+                itemTemplates.push(html`
+                    <div class="item">
+                        <h2>${data.name[this.lang]}</h2>
+                        ${data.description[this.lang]}
+                    </div>`);
+            }
+        }
+
         return html`
-            <p>${i18n.t('welcome.headline')}</p>
-            <br>
-            <p>${i18n.t('welcome.description')}</p>
+            <p>${this.headline}</p>
+            <p>${this.subHeadline}</p>
+            ${itemTemplates}
         `;
     }
 }
 
-commonUtils.defineCustomElement('vpu-signature-welcome', SignatureWelcome);
+commonUtils.defineCustomElement('vpu-welcome', SignatureWelcome);

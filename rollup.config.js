@@ -144,7 +144,7 @@ export default {
       'src/vpu-signature.js',
       'src/vpu-signature-pdf-upload.js',
       'src/vpu-signature-profile.js',
-      'src/vpu-signature-welcome.js',
+      'src/vpu-welcome.js',
     ] : glob.sync('test/**/*.js'),
     output: {
       dir: 'dist',

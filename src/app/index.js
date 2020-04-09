@@ -1,5 +1,6 @@
 import {createI18nInstance} from '../i18n.js';
-import {html, css, LitElement} from 'lit-element';
+import {html, css} from 'lit-element';
+import VPULitElement from 'vpu-common/vpu-lit-element'
 import 'vpu-language-select';
 import 'vpu-common/vpu-button.js';
 import 'vpu-auth';
@@ -44,7 +45,7 @@ const importNotify = async (promise) => {
 };
 
 
-class VPUApp extends LitElement {
+class VPUApp extends VPULitElement {
     constructor() {
         super();
         this.lang = i18n.language;
@@ -629,8 +630,15 @@ class VPUApp extends LitElement {
         if (!appHidden) {
             this.updateComplete.then(() => {
                 const slot = this.shadowRoot.querySelector("slot");
-                if (slot)
+                if (slot) {
                     slot.remove();
+                }
+
+                const welcomeActivity = this._("vpu-welcome");
+
+                if (welcomeActivity) {
+                    welcomeActivity.setMetaData(this.metadata, i18n.t('welcome.headline'), i18n.t('welcome.description'));
+                }
             });
         }
 

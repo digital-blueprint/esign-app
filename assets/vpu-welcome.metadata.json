@@ -1,6 +1,6 @@
 {
-  "element": "vpu-signature-welcome",
-  "module_src": "vpu-signature-welcome.js",
+  "element": "vpu-welcome",
+  "module_src": "vpu-welcome.js",
   "routing_name": "welcome",
   "name": {
     "de": "Willkommen",
