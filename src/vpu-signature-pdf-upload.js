@@ -17,7 +17,7 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
         super();
         this.lang = i18n.language;
         this.entryPointUrl = commonUtils.getAPiUrl();
-        this.signingUrl = this.entryPointUrl + "/officially_signed_document/sign";
+        this.signingUrl = this.entryPointUrl + "/officially_signed_documents/sign";
         this.signedFiles = [];
         this.signedFilesCount = 0;
         this.errorFiles = [];
