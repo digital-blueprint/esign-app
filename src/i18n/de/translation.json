@@ -13,10 +13,6 @@
     "re-upload-all-button": "Alle erneut hochladen",
     "re-upload-all-button-title": "Alle fehlgeschlagen Uploads erneut hochladen"
   },
-  "welcome": {
-    "headline": "Willkommen beim Signaturservice der TU Graz",
-    "description": "Mit dieser Applikation können Sie, sofern Sie dazu berechtigt sind, PDF Dateien im Namen der TU Graz signieren"
-  },
   "error-summary": "Ein Fehler ist aufgetreten",
   "error-permission-message": "Sie müssen das Recht auf Amtssignaturen besitzen um diese Funktion nutzen zu können!",
   "error-login-message": "Sie müssen eingeloggt sein um diese Funktion nutzen zu können!"

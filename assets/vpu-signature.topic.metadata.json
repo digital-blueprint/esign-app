@@ -8,12 +8,11 @@
     "en": "Signatureservice"
   },
   "description": {
-    "de": "",
-    "en": ""
+    "de": "Mit dieser Applikation können Sie, sofern Sie dazu berechtigt sind, PDF Dateien im Namen der TU Graz signieren",
+    "en": "With this application you can, provided you are authorized to do so, sign PDF files in the name of the TU Graz"
   },
   "routing_name": "signature",
   "activities": [
-    {"path": "vpu-welcome.metadata.json"},
     {"path": "vpu-signature-pdf-upload.metadata.json"}
   ],
   "attributes": []

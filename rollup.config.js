@@ -143,7 +143,6 @@ export default {
     input: (build != 'test') ? [
       'src/vpu-signature.js',
       'src/vpu-signature-pdf-upload.js',
-      'src/vpu-welcome.js',
     ] : glob.sync('test/**/*.js'),
     output: {
       dir: 'dist',

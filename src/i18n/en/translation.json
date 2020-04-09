@@ -13,10 +13,6 @@
     "re-upload-all-button": "Upload all",
     "re-upload-all-button-title": "Upload all failed uploads again"
   },
-  "welcome": {
-    "headline": "Welcome to the signature service of the TU Graz",
-    "description": "With this application you can, provided you are authorized to do so, sign PDF files in the name of the TU Graz"
-  },
   "error-summary": "An error occurred",
   "error-permission-message": "You need have permissions to use the official signature to use this function!",
   "error-login-message": "You need to be logged in to use this function!"
