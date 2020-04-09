@@ -1,9 +1,4 @@
 {
-  "logo": {
-    "word1": "Wissen",
-    "word2": "Technik",
-    "word3": "Leidenschaft"
-  },
   "pdf-upload": {
     "upload-field-label": "PDF Dateien zum Signieren hochladen",
     "upload-area-text": "Sie können in diesem Bereich PDF Dateien per Drag & Drop oder per Direktauswahl hochladen",
@@ -24,7 +19,5 @@
   },
   "error-summary": "Ein Fehler ist aufgetreten",
   "error-permission-message": "Sie müssen das Recht auf Amtssignaturen besitzen um diese Funktion nutzen zu können!",
-  "error-login-message": "Sie müssen eingeloggt sein um diese Funktion nutzen zu können!",
-  "privacy-policy": "Datenschutz",
-  "page-updated-needs-reload": "Die Applikation wurde aktualisiert. Bitte laden Sie die Seite neu."
+  "error-login-message": "Sie müssen eingeloggt sein um diese Funktion nutzen zu können!"
 }

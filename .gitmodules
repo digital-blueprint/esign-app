@@ -16,3 +16,6 @@
 [submodule "vendor/file-upload"]
 	path = vendor/file-upload
 	url = git@gitlab.tugraz.at:VPU/WebComponents/FileUpload.git
+[submodule "vendor/app-shell"]
+	path = vendor/app-shell
+	url = git@gitlab.tugraz.at:VPU/Apps/AppShell.git

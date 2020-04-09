@@ -1,9 +1,4 @@
 {
-  "logo": {
-    "word1": "Science",
-    "word2": "Passion",
-    "word3": "Technology"
-  },
   "pdf-upload": {
     "upload-field-label": "Upload PDF files to sign",
     "upload-area-text": "In this area you can upload PDF files via Drag & Drop or by selecting them directly",
@@ -24,7 +19,5 @@
   },
   "error-summary": "An error occurred",
   "error-permission-message": "You need have permissions to use the official signature to use this function!",
-  "error-login-message": "You need to be logged in to use this function!",
-  "privacy-policy": "Privacy Policy",
-  "page-updated-needs-reload": "The application has been updated. Please reload the page."
+  "error-login-message": "You need to be logged in to use this function!"
 }

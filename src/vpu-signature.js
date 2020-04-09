@@ -1,1 +1,1 @@
-import './app';
+import 'vpu-app-shell';

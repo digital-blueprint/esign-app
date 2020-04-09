@@ -2,7 +2,6 @@ import {assert} from 'chai';
 
 import '../src/vpu-signature-pdf-upload';
 import '../src/vpu-signature.js';
-import {Router} from '../src/app/router.js';
 
 suite('vpu-signature-pdf-upload basics', () => {
   let node;
@@ -40,28 +39,3 @@ suite('vpu-signature-app basics', () => {
   });
 });
 
-suite('router', () => {
-
-  test('basics', () => {
-    const routes = [
-      {
-          name: 'foo',
-          path: '',
-          action: (context) => {
-              return {};
-          }
-      },
-    ];
-
-    const router = new Router(routes, {
-      routeName: 'foo',
-      getState: () => { return {}; },
-      setState: (state) => { },
-    });
-
-    router.setStateFromCurrentLocation();
-    router.update();
-    router.updateFromPathname("/");
-    assert.equal(router.getPathname(), '/');
-  });
-});

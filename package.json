@@ -50,13 +50,13 @@
     "select2": "^4.0.13",
     "source-sans-pro": "^2.45.0",
     "suggestions": "^1.7.0",
-    "universal-router": "^8.3.0",
     "vpu-auth": "file:./vendor/auth",
     "vpu-common": "file:./vendor/common",
     "vpu-file-upload": "file:./vendor/file-upload",
     "vpu-language-select": "file:./vendor/language-select",
     "vpu-notification": "file:./vendor/notification",
-    "vpu-person-profile": "file:./vendor/person-profile"
+    "vpu-person-profile": "file:./vendor/person-profile",
+    "vpu-app-shell": "file:./vendor/app-shell"
   },
   "scripts": {
     "clean": "rm dist/* -R",
