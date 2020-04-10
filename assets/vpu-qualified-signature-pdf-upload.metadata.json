@@ -1,0 +1,17 @@
+{
+  "element": "vpu-qualified-signature-pdf-upload",
+  "module_src": "vpu-qualified-signature-pdf-upload.js",
+  "routing_name": "qualified-pdf-upload",
+  "name": {
+    "de": "Persönliche aufbringen",
+    "en": "Qualifiedly sign"
+  },
+  "short_name": {
+    "de": "Persönliche Signatur aufbringen",
+    "en": "Qualifiedly sign"
+  },
+  "description": {
+    "de": "Erlaubt das Hochladen von PDF Dateien um sie mit einer persönlichen Signatur zu versehen",
+    "en": "Allows upload of PDF files to qualifiedly sign them"
+  }
+}
