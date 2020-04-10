@@ -1,4 +1,4 @@
-# VPU Offical Digital Signing Application
+# VPU Official Digital Signing Application
 
 [GitLab Repository](https://gitlab.tugraz.at/VPU/Apps/Signature)
 
