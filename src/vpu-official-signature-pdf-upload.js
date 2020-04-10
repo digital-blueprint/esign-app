@@ -12,7 +12,7 @@ import 'vpu-file-upload';
 
 const i18n = createI18nInstance();
 
-class SignaturePdfUpload extends VPUSignatureLitElement {
+class OfficialSignaturePdfUpload extends VPUSignatureLitElement {
     constructor() {
         super();
         this.lang = i18n.language;
@@ -67,7 +67,7 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
     onFileUploadStarted(ev) {
         console.log(ev);
         this.uploadStatusFileName = ev.detail.fileName;
-        this.uploadStatusText = i18n.t('pdf-upload.upload-status-file-text', {
+        this.uploadStatusText = i18n.t('official-pdf-upload.upload-status-file-text', {
             fileName: ev.detail.fileName,
             fileSize: humanFileSize(ev.detail.fileSize, false),
         });
@@ -246,7 +246,7 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
         return this.signedFiles.map(file => html`
             <div class="file">
                 <a class="is-download"
-                    title="${i18n.t('pdf-upload.download-file-button-title')}"
+                    title="${i18n.t('official-pdf-upload.download-file-button-title')}"
                     @click="${() => {this.fileDownloadClickHandler(file);}}">
                     ${file.name} (${humanFileSize(file.contentSize)}) <vpu-icon name="download"></vpu-icon></a>
             </div>
@@ -258,7 +258,7 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
             <div class="file">
                 <div class="button-box">
                     <button class="button is-small"
-                            title="${i18n.t('pdf-upload.re-upload-file-button-title')}"
+                            title="${i18n.t('official-pdf-upload.re-upload-file-button-title')}"
                             @click="${() => {this.fileUploadClickHandler(data.file, id);}}"><vpu-icon name="reload"></vpu-icon></button>
                 </div>
                 <div class="info">
@@ -273,10 +273,10 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
         return html`
             <div class="${classMap({hidden: !this.isLoggedIn() || !this.hasSignaturePermissions()})}">
                 <div class="field">
-                    <h2>${i18n.t('pdf-upload.upload-field-label')}</h2>
+                    <h2>${i18n.t('official-pdf-upload.upload-field-label')}</h2>
                     <div class="control">
                         <vpu-fileupload id="file-upload" lang="${this.lang}" url="${this.signingUrl}" accept="application/pdf"
-                            text="${i18n.t('pdf-upload.upload-area-text')}" button-label="${i18n.t('pdf-upload.upload-button-label')}"></vpu-fileupload>
+                            text="${i18n.t('official-pdf-upload.upload-area-text')}" button-label="${i18n.t('official-pdf-upload.upload-button-label')}"></vpu-fileupload>
                     </div>
                 </div>
                 <div class="field notification is-info ${classMap({hidden: !this.uploadInProgress})}">
@@ -285,25 +285,25 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
                     ${this.uploadStatusText}
                 </div>
                 <div class="files-block field ${classMap({hidden: this.signedFilesCount === 0})}">
-                    <h2>${i18n.t('pdf-upload.signed-files-label')}</h2>
+                    <h2>${i18n.t('official-pdf-upload.signed-files-label')}</h2>
                     <div class="control">
                         ${this.getSignedFilesHtml()}
                     </div>
                 </div>
                 <div class="field ${classMap({hidden: this.signedFilesCount === 0})}">
                     <div class="control">
-                        <vpu-button id="zip-download-button" value="${i18n.t('pdf-upload.download-zip-button')}" title="${i18n.t('pdf-upload.download-zip-button-tooltip')}" @click="${this.zipDownloadClickHandler}" type="is-primary"></vpu-button>
+                        <vpu-button id="zip-download-button" value="${i18n.t('official-pdf-upload.download-zip-button')}" title="${i18n.t('official-pdf-upload.download-zip-button-tooltip')}" @click="${this.zipDownloadClickHandler}" type="is-primary"></vpu-button>
                     </div>
                 </div>
                 <div class="files-block error-files field ${classMap({hidden: this.errorFilesCount === 0})}">
-                    <h2 class="error">${i18n.t('pdf-upload.error-files-label')}</h2>
+                    <h2 class="error">${i18n.t('official-pdf-upload.error-files-label')}</h2>
                     <div class="control">
                         ${this.getErrorFilesHtml()}
                     </div>
                 </div>
                 <div class="field ${classMap({hidden: this.errorFilesCount === 0})}">
                     <div class="control">
-                        <vpu-button id="re-upload-all-button" ?disabled="${this.uploadInProgress}" value="${i18n.t('pdf-upload.re-upload-all-button')}" title="${i18n.t('pdf-upload.re-upload-all-button-title')}" @click="${this.reUploadAllClickHandler}" type="is-primary"></vpu-button>
+                        <vpu-button id="re-upload-all-button" ?disabled="${this.uploadInProgress}" value="${i18n.t('official-pdf-upload.re-upload-all-button')}" title="${i18n.t('official-pdf-upload.re-upload-all-button-title')}" @click="${this.reUploadAllClickHandler}" type="is-primary"></vpu-button>
                     </div>
                 </div>
             </div>
@@ -317,4 +317,4 @@ class SignaturePdfUpload extends VPUSignatureLitElement {
     }
 }
 
-commonUtils.defineCustomElement('vpu-signature-pdf-upload', SignaturePdfUpload);
+commonUtils.defineCustomElement('vpu-official-signature-pdf-upload', OfficialSignaturePdfUpload);

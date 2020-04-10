@@ -1,7 +1,7 @@
 {
-  "element": "vpu-signature-pdf-upload",
-  "module_src": "vpu-signature-pdf-upload.js",
-  "routing_name": "pdf-upload",
+  "element": "vpu-official-signature-pdf-upload",
+  "module_src": "vpu-official-signature-pdf-upload.js",
+  "routing_name": "official-pdf-upload",
   "name": {
     "de": "Amtssignatur aufbringen",
     "en": "Officially sign"

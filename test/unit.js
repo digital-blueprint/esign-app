@@ -1,13 +1,13 @@
 import {assert} from 'chai';
 
-import '../src/vpu-signature-pdf-upload';
+import '../src/vpu-official-signature-pdf-upload';
 import '../src/vpu-signature.js';
 
-suite('vpu-signature-pdf-upload basics', () => {
+suite('vpu-official-signature-pdf-upload basics', () => {
   let node;
 
   suiteSetup(async () => {
-    node = document.createElement('vpu-signature-pdf-upload');
+    node = document.createElement('vpu-official-signature-pdf-upload');
     document.body.appendChild(node);
     await node.updateComplete;
   });

@@ -1,5 +1,5 @@
 {
-  "pdf-upload": {
+  "official-pdf-upload": {
     "upload-field-label": "PDF Dateien zum Signieren hochladen",
     "upload-area-text": "Sie können in diesem Bereich PDF Dateien per Drag & Drop oder per Direktauswahl hochladen",
     "signed-files-label": "Signierte Dateien",

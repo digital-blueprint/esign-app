@@ -1,5 +1,5 @@
 {
-  "pdf-upload": {
+  "official-pdf-upload": {
     "upload-field-label": "Upload PDF files to sign",
     "upload-area-text": "In this area you can upload PDF files via Drag & Drop or by selecting them directly",
     "signed-files-label": "Signed files",
