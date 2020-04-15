@@ -50,6 +50,7 @@
     "select2": "^4.0.13",
     "source-sans-pro": "^2.45.0",
     "suggestions": "^1.7.0",
+    "universal-router": "^9.0.1",
     "vpu-auth": "file:./vendor/auth",
     "vpu-common": "file:./vendor/common",
     "vpu-file-upload": "file:./vendor/file-upload",
