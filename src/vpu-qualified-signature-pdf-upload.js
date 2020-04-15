@@ -17,7 +17,9 @@ class QualifiedSignaturePdfUpload extends VPUSignatureLitElement {
         super();
         this.lang = i18n.language;
         this.entryPointUrl = commonUtils.getAPiUrl();
+        this.signingRequestUrl = this.entryPointUrl + "/qualified_signing_requests/create";
         this.signingUrl = this.entryPointUrl + "/qualifiedly_signed_documents/sign";
+        this.externalAuthInProgress = false;
         this.signedFiles = [];
         this.signedFilesCount = 0;
         this.errorFiles = [];
@@ -38,6 +40,7 @@ class QualifiedSignaturePdfUpload extends VPUSignatureLitElement {
             uploadInProgress: { type: Boolean, attribute: false },
             uploadStatusFileName: { type: String, attribute: false },
             uploadStatusText: { type: String, attribute: false },
+            externalAuthInProgress: { type: Boolean, attribute: false },
         };
     }
 
@@ -82,12 +85,58 @@ class QualifiedSignaturePdfUpload extends VPUSignatureLitElement {
             this.errorFiles[Math.floor(Math.random() * 1000000)] = ev.detail;
             // this triggers the correct update() execution
             this.errorFilesCount++;
-        } else if (ev.detail.json["@type"] === "http://schema.org/MediaObject" ) {
-            // this doesn't seem to trigger an update() execution
-            this.signedFiles.push(ev.detail.json);
-            // this triggers the correct update() execution
-            this.signedFilesCount++;
+        } else if (ev.detail.json["@type"] === "http://schema.org/WebPage" ) {
+            // we use this to put in the html form from our requests
+            let iframeBlock = this._("#iframe-block");
+            iframeBlock.innerHTML = ev.detail.json.text;
+
+            // we will submit the form to our iframe, this was the most reliable way
+            // to be able to work with the submitted form in the same iframe repeatedly
+            let form = this._("#iframe-block form");
+            form.setAttribute("target", "external_iframe");
+            form.submit();
+
+            // show the iframe
+            this.externalAuthInProgress = true;
+
+            // doesn't seem to work reliably
+            // let iframe = document.createElement('iframe');
+            // iframe.sandbox = '';
+            // iframeBlock.appendChild(iframe);
+            // this.setIframeHTML(iframe, ev.detail.json.text);
+
+            // only works once when used with a static iframe, it doesn't work
+            // with a dynamically created iframe
+            // this.replaceIframeContent(iframe, ev.detail.json.text);
         }
+    }
+
+    setIframeHTML(iframe, html) {
+        if (typeof iframe.srcdoc !== 'undefined') {
+            iframe.srcdoc = html;
+        } else {
+            iframe.sandbox = 'allow-same-origin';
+            iframe.contentWindow.document.open();
+            iframe.contentWindow.document.write(html);
+            iframe.contentWindow.document.close();
+        }
+    }
+
+    /**
+     * Example taken from https://stackoverflow.com/a/51167233/1581487
+     *
+     * @param iframeElement
+     * @param newHTML
+     */
+    replaceIframeContent(iframeElement, newHTML) {
+        // iframeElement.sandbox = 'allow-same-origin';
+        // iframeElement.src = "data:text/html;charset=utf-8," + encodeURI(newHTML);
+
+        // iframeElement.src = "about:blank";
+        // only works once
+        iframeElement.contentWindow.document.open();
+        iframeElement.contentWindow.document.write(newHTML);
+        iframeElement.contentWindow.document.close();
     }
 
     /**
@@ -207,6 +256,15 @@ class QualifiedSignaturePdfUpload extends VPUSignatureLitElement {
                 display: none;
             }
 
+            #iframe {
+                width: 100%;
+                height: 500px;
+            }
+
+            #iframe-block {
+                display: none;
+            }
+
             .files-block .file {
                 margin: 10px 0;
             }
@@ -275,10 +333,12 @@ class QualifiedSignaturePdfUpload extends VPUSignatureLitElement {
                 <div class="field">
                     <h2>${i18n.t('qualified-pdf-upload.upload-field-label')}</h2>
                     <div class="control">
-                        <vpu-fileupload id="file-upload" lang="${this.lang}" url="${this.signingUrl}" accept="application/pdf"
+                        <vpu-fileupload id="file-upload" lang="${this.lang}" url="${this.signingRequestUrl}" accept="application/pdf"
                             text="${i18n.t('qualified-pdf-upload.upload-area-text')}" button-label="${i18n.t('qualified-pdf-upload.upload-button-label')}"></vpu-fileupload>
                     </div>
                 </div>
+                <iframe name="external_iframe" id="iframe" class="${classMap({hidden: !this.externalAuthInProgress})}"></iframe>
+                <div id="iframe-block"></div>
                 <div class="field notification is-info ${classMap({hidden: !this.uploadInProgress})}">
                     <vpu-mini-spinner></vpu-mini-spinner>
                     <strong>${this.uploadStatusFileName}</strong>
