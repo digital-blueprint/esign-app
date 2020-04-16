@@ -2,8 +2,8 @@ import path from 'path';
 import fs from 'fs';
 import url from 'url';
 import glob from 'glob';
-import resolve from 'rollup-plugin-node-resolve';
-import commonjs from 'rollup-plugin-commonjs';
+import resolve from '@rollup/plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs';
 import copy from 'rollup-plugin-copy';
 import {terser} from "rollup-plugin-terser";
 import json from '@rollup/plugin-json';
@@ -37,6 +37,8 @@ let pdfAsQualifiedlySigningServer = 'sig-dev.tugraz.at';
 let matomoSiteId = 131;
 let useTerser = true;
 let useBabel = true;
+// https://github.com/rollup/rollup/issues/3499
+let useManualChunks = false;
 
 switch (build) {
   case 'local':
@@ -155,7 +157,7 @@ export default {
       format: 'esm',
       sourcemap: true
     },
-    manualChunks: getManualChunks(pkg),
+    manualChunks: useManualChunks ? getManualChunks(pkg) : false,
     onwarn: function (warning, warn) {
         // ignore "suggestions" warning re "use strict"
         if (warning.code === 'MODULE_LEVEL_DIRECTIVE') {
