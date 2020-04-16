@@ -33,6 +33,7 @@ let basePath = '';
 let entryPointURL = '';
 let keyCloakServer = '';
 let keyCloakBaseURL = '';
+let pdfAsQualifiedlySigningServer = 'sig-dev.tugraz.at';
 let matomoSiteId = 131;
 let useTerser = true;
 let useBabel = true;
@@ -62,6 +63,7 @@ switch (build) {
     entryPointURL = 'https://signature.tugraz.at';
     keyCloakServer = 'auth.tugraz.at';
     keyCloakBaseURL = 'https://' + keyCloakServer + '/auth';
+    pdfAsQualifiedlySigningServer = 'sig.tugraz.at';
     matomoSiteId = 130;
     break;
   case 'test':
@@ -191,6 +193,7 @@ export default {
             entryPointURL: entryPointURL,
             keyCloakServer: keyCloakServer,
             keyCloakBaseURL: keyCloakBaseURL,
+            pdfAsQualifiedlySigningServer: pdfAsQualifiedlySigningServer,
             environment: build,
             matomoSiteId: matomoSiteId,
             buildinfo: getBuildInfo()
@@ -264,7 +267,7 @@ export default {
           historyApiFallback: basePath + pkg.name + '.html',
           https: USE_HTTPS ? generateTLSConfig() : false,
           headers: {
-              'Content-Security-Policy': `default-src 'self' 'unsafe-eval' 'unsafe-inline' analytics.tugraz.at ${keyCloakServer} ${entryPointURL} httpbin.org; img-src *`
+              'Content-Security-Policy': `default-src 'self' 'unsafe-eval' 'unsafe-inline' analytics.tugraz.at ${keyCloakServer} ${entryPointURL} httpbin.org www.handy-signatur.at ${pdfAsQualifiedlySigningServer} ; img-src *`
           },
         }) : false
     ]

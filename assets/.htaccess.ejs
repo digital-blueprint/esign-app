@@ -4,7 +4,7 @@ DirectoryIndex <%= geturl('vpu-signature.html') %>
 </FilesMatch>
 
 Header set Cache-Control "must-revalidate, max-age=60"
-Header set Content-Security-Policy "default-src 'self' 'unsafe-eval' 'unsafe-inline' analytics.tugraz.at <%= keyCloakServer %> <%= entryPointURL %> httpbin.org; img-src *"
+Header set Content-Security-Policy "default-src 'self' 'unsafe-eval' 'unsafe-inline' analytics.tugraz.at <%= keyCloakServer %> <%= entryPointURL %> httpbin.org www.handy-signatur.at <%= pdfAsQualifiedlySigningServer %>; img-src *"
 
 # Apache adds a "-gzip" suffix to the etag when it uses gzip but doesn't
 # take that into account when receiving requests.
