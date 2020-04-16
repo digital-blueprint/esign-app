@@ -82,7 +82,8 @@ switch (build) {
 
 const CHUNK_BLACKLIST = [
   'jszip',  // jszip is a node module by default and rollup chunking is confused by that and emits warnings
-  'source-sans-pro'
+  'source-sans-pro',
+  'vpu-app-shell',  // XXX: this breaks rollup bundling, no idea why for now
 ];
 
 /**
