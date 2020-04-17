@@ -53,7 +53,15 @@ class QualifiedSignaturePdfUpload extends VPUSignatureLitElement {
             fileUpload.addEventListener('vpu-fileupload-file-start', this.onFileUploadStarted.bind(this));
             fileUpload.addEventListener('vpu-fileupload-file-finished', this.onFileUploadFinished.bind(this));
             fileUpload.addEventListener('vpu-fileupload-all-finished', this.onAllUploadFinished.bind(this));
+
+            let iframe = this._("#iframe-block");
+            iframe.addEventListener('message', this.onReceiveIframeMessage.bind(this));
         });
+    }
+
+    onReceiveIframeMessage(ev) {
+        // TODO: Fetch pdf from api gateway with sessionId
+        console.log("Got message from iFrame" + ev.data);
     }
 
     /**
