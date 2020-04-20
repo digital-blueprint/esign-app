@@ -1,18 +1,20 @@
 import {createI18nInstance} from './i18n.js';
 import {humanFileSize} from 'vpu-common/i18next.js';
 import {css, html} from 'lit-element';
+import {ScopedElementsMixin} from '@open-wc/scoped-elements';
 import VPUSignatureLitElement from "./vpu-signature-lit-element";
 import * as commonUtils from 'vpu-common/utils';
 import * as utils from './utils';
+import {Icon} from 'vpu-common';
 import JSZip from 'jszip/dist/jszip.js';
 import 'file-saver';
 import * as commonStyles from 'vpu-common/styles';
 import {classMap} from 'lit-html/directives/class-map.js';
-import 'vpu-file-upload';
+import {FileUpload} from 'vpu-file-upload';
 
 const i18n = createI18nInstance();
 
-class QualifiedSignaturePdfUpload extends VPUSignatureLitElement {
+class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitElement) {
     constructor() {
         super();
         this.lang = i18n.language;
@@ -27,6 +29,16 @@ class QualifiedSignaturePdfUpload extends VPUSignatureLitElement {
         this.uploadInProgress = false;
         this.uploadStatusFileName = "";
         this.uploadStatusText = "";
+    }
+
+    static get scopedElements() {
+        return {
+          'vpu-icon': Icon,
+          'vpu-fileupload': FileUpload,
+          // FIXME: move them to explicit exports
+          'vpu-mini-spinner': customElements.get('vpu-mini-spinner'),
+          'vpu-button': customElements.get('vpu-button'),
+        };
     }
 
     static get properties() {
