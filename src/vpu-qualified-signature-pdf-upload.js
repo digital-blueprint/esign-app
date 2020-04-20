@@ -54,14 +54,18 @@ class QualifiedSignaturePdfUpload extends VPUSignatureLitElement {
             fileUpload.addEventListener('vpu-fileupload-file-finished', this.onFileUploadFinished.bind(this));
             fileUpload.addEventListener('vpu-fileupload-all-finished', this.onAllUploadFinished.bind(this));
 
-            let iframe = this._("#iframe-block");
-            iframe.addEventListener('message', this.onReceiveIframeMessage.bind(this));
+            // see: https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage
+            window.addEventListener('message', this.onReceiveIframeMessage.bind(this));
         });
     }
 
-    onReceiveIframeMessage(ev) {
+    onReceiveIframeMessage(event) {
+        // TODO: Check if this is really a postMessage from our iframe
+
         // TODO: Fetch pdf from api gateway with sessionId
-        console.log("Got message from iFrame" + ev.data);
+        const sessionID = event.data;
+        console.log("Got message for sessionID " + sessionID + ", origin: " + event.origin);
+        console.log(event);
     }
 
     /**
