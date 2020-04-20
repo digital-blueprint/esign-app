@@ -60,10 +60,15 @@ class QualifiedSignaturePdfUpload extends VPUSignatureLitElement {
     }
 
     onReceiveIframeMessage(event) {
-        // TODO: Check if this is really a postMessage from our iframe
+        const data = event.data;
+
+        // check if this is really a postMessage from our iframe without using event.origin
+        if (data.type !== 'pdf-as-callback') {
+            return;
+        }
 
         // TODO: Fetch pdf from api gateway with sessionId
-        const sessionID = event.data;
+        const sessionID = data.sessionId;
         console.log("Got message for sessionID " + sessionID + ", origin: " + event.origin);
         console.log(event);
     }
