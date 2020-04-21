@@ -24,6 +24,8 @@ linting:
     - npm run lint
 
 .deploy_defaults: &deploy_defaults
+  except:
+    - schedules
   stage: deploy
   script:
     # Add ssh key
