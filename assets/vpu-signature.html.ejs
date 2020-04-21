@@ -19,7 +19,10 @@
     <link rel="manifest" href="<%= geturl('vpu-signature.manifest.json') %>">
 
     <!-- Loading spinner -->
-    <script type="module" src="<%= geturl('local/vpu-signature/spinner.js') %>"></script>
+    <script type="module">
+        import {Spinner} from '<%= geturl('local/vpu-signature/spinner.js') %>';
+        customElements.define('vpu-loading-spinner', Spinner);
+    </script>
 
     <!-- App bundles-->
     <script type="module" id="vpu-app-src" src="<%= geturl('vpu-signature.js') %>"></script>
@@ -126,7 +129,7 @@
 </head>
 
 <body>
-<vpu-app-signature lang="de" src="<%= geturl('vpu-signature.topic.metadata.json') %>" entry-point-url="<%= entryPointURL %>" base-path="<%= geturl('') %>"><vpu-spinner></vpu-spinner></vpu-app-signature>
+<vpu-app-signature lang="de" src="<%= geturl('vpu-signature.topic.metadata.json') %>" entry-point-url="<%= entryPointURL %>" base-path="<%= geturl('') %>"><vpu-loading-spinner></vpu-loading-spinner></vpu-app-signature>
 
 <!-- Error handling for too old browsers -->
 <script src="<%= geturl('local/vpu-signature/browser-check.js') %>" defer></script>

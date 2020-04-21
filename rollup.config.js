@@ -237,7 +237,7 @@ export default {
                 {src: 'assets/*.ico', dest: 'dist/local/' + pkg.name},
                 {src: 'assets/*.svg', dest: 'dist/local/' + pkg.name},
                 {src: 'node_modules/source-sans-pro/WOFF2/OTF/*', dest: 'dist/local/' + pkg.name + '/fonts'},
-                {src: 'node_modules/vpu-common/vpu-spinner.js', dest: 'dist/local/' + pkg.name, rename: 'spinner.js'},
+                {src: 'node_modules/vpu-common/src/spinner.js', dest: 'dist/local/' + pkg.name, rename: 'spinner.js'},
                 {src: 'assets/browser-check.js', dest: 'dist/local/' + pkg.name},
                 {src: 'assets/icon-*.png', dest: 'dist/local/' + pkg.name},
                 {src: 'assets/manifest.json', dest: 'dist', rename: pkg.name + '.manifest.json'},

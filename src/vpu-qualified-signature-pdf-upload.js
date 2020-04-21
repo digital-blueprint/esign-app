@@ -5,7 +5,7 @@ import {ScopedElementsMixin} from '@open-wc/scoped-elements';
 import VPUSignatureLitElement from "./vpu-signature-lit-element";
 import * as commonUtils from 'vpu-common/utils';
 import * as utils from './utils';
-import {Icon} from 'vpu-common';
+import {Icon, MiniSpinner, Button} from 'vpu-common';
 import JSZip from 'jszip/dist/jszip.js';
 import 'file-saver';
 import * as commonStyles from 'vpu-common/styles';
@@ -35,9 +35,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         return {
           'vpu-icon': Icon,
           'vpu-fileupload': FileUpload,
-          // FIXME: move them to explicit exports
-          'vpu-mini-spinner': customElements.get('vpu-mini-spinner'),
-          'vpu-button': customElements.get('vpu-button'),
+          'vpu-mini-spinner': MiniSpinner,
+          'vpu-button': Button,
         };
     }
 
