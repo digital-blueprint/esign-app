@@ -56,13 +56,13 @@ switch (build) {
     break;
   case 'demo':
     basePath = '/apps/signature/';
-    entryPointURL = 'https://signature-demo.tugraz.at';
+    entryPointURL = 'https://api-demo.tugraz.at';
     keyCloakServer = 'auth-test.tugraz.at';
     keyCloakBaseURL = 'https://' + keyCloakServer + '/auth';
     break;
   case 'production':
     basePath = '/';
-    entryPointURL = 'https://signature.tugraz.at';
+    entryPointURL = 'https://api.tugraz.at';
     keyCloakServer = 'auth.tugraz.at';
     keyCloakBaseURL = 'https://' + keyCloakServer + '/auth';
     pdfAsQualifiedlySigningServer = 'sig.tugraz.at';
