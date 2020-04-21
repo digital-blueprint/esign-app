@@ -11,6 +11,7 @@ import 'file-saver';
 import * as commonStyles from 'vpu-common/styles';
 import {classMap} from 'lit-html/directives/class-map.js';
 import {FileUpload} from 'vpu-file-upload';
+import JSONLD from "vpu-common/jsonld";
 
 const i18n = createI18nInstance();
 
@@ -29,6 +30,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         this.uploadInProgress = false;
         this.uploadStatusFileName = "";
         this.uploadStatusText = "";
+        this.currentFileName = "";
     }
 
     static get scopedElements() {
@@ -52,6 +54,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
             uploadStatusFileName: { type: String, attribute: false },
             uploadStatusText: { type: String, attribute: false },
             externalAuthInProgress: { type: Boolean, attribute: false },
+            currentFileName: { type: String, attribute: false },
         };
     }
 
@@ -78,10 +81,42 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
             return;
         }
 
-        // TODO: Fetch pdf from api gateway with sessionId
-        const sessionID = data.sessionId;
-        console.log("Got message for sessionID " + sessionID + ", origin: " + event.origin);
-        console.log(event);
+        const sessionId = data.sessionId;
+
+        // check if sessionId is valid
+        if ((typeof sessionId !== 'string') || (sessionId.length < 15)) {
+            return;
+        }
+
+        console.log("Got iframe message for sessionId " + sessionId + ", origin: " + event.origin);
+        const that = this;
+
+        // TODO: get correct file name
+        const fileName = this.currentFileName == "" ? "mydoc.pdf" : this.currentFileName;
+
+        // fetch pdf from api gateway with sessionId
+        JSONLD.initialize(this.entryPointUrl, (jsonld) => {
+            const apiUrl = jsonld.getApiUrlForEntityName("QualifiedlySignedDocument") + '/' + sessionId + '?fileName=' +
+                encodeURI(fileName);
+
+            // TODO: Improve error handling
+            fetch(apiUrl, {
+                headers: {
+                    'Content-Type': 'application/ld+json',
+                    'Authorization': 'Bearer ' + window.VPUAuthToken,
+                },
+            })
+                .then(response => response.json())
+                .then((document) => {
+                    // hide iframe
+                    that.externalAuthInProgress = false;
+                    // this doesn't seem to trigger an update() execution
+                    that.signedFiles.push(document);
+                    // this triggers the correct update() execution
+                    that.signedFilesCount++;
+                });
+        }, {}, that.lang);
+
     }
 
     /**
