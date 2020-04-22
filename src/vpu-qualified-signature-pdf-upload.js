@@ -148,29 +148,19 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
             this.errorFiles[Math.floor(Math.random() * 1000000)] = ev.detail;
             // this triggers the correct update() execution
             this.errorFilesCount++;
-        } else if (ev.detail.json["@type"] === "http://schema.org/WebPage" ) {
-            // we use this to put in the html form from our requests
-            let iframeBlock = this._("#iframe-block");
-            iframeBlock.innerHTML = ev.detail.json.text;
+        } else {
+            const entryPoint = ev.detail.json;
 
-            // we will submit the form to our iframe, this was the most reliable way
-            // to be able to work with the submitted form in the same iframe repeatedly
-            let form = this._("#iframe-block form");
-            form.setAttribute("target", "external_iframe");
-            form.submit();
+            if (entryPoint["@type"] === "http://schema.org/EntryPoint" ) {
+                this.currentFileName = entryPoint.name;
 
-            // show the iframe
-            this.externalAuthInProgress = true;
+                // we want to load the redirect url in the iframe
+                let iframe = this._("#iframe");
+                iframe.src = entryPoint.url;
 
-            // doesn't seem to work reliably
-            // let iframe = document.createElement('iframe');
-            // iframe.sandbox = '';
-            // iframeBlock.appendChild(iframe);
-            // this.setIframeHTML(iframe, ev.detail.json.text);
-
-            // only works once when used with a static iframe, it doesn't work
-            // with a dynamically created iframe
-            // this.replaceIframeContent(iframe, ev.detail.json.text);
+                // show the iframe
+                this.externalAuthInProgress = true;
+            }
         }
     }
 
@@ -321,11 +311,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
 
             #iframe {
                 width: 100%;
-                height: 500px;
-            }
-
-            #iframe-block {
-                display: none;
+                height: 240px;
+                border: none;
             }
 
             .files-block .file {
@@ -401,7 +388,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                     </div>
                 </div>
                 <iframe name="external_iframe" id="iframe" class="${classMap({hidden: !this.externalAuthInProgress})}"></iframe>
-                <div id="iframe-block"></div>
                 <div class="field notification is-info ${classMap({hidden: !this.uploadInProgress})}">
                     <vpu-mini-spinner></vpu-mini-spinner>
                     <strong>${this.uploadStatusFileName}</strong>
