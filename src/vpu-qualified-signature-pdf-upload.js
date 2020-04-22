@@ -30,6 +30,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         this.uploadInProgress = false;
         this.uploadStatusFileName = "";
         this.uploadStatusText = "";
+        this.currentFile = {};
         this.currentFileName = "";
     }
 
@@ -54,6 +55,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
             uploadStatusFileName: { type: String, attribute: false },
             uploadStatusText: { type: String, attribute: false },
             externalAuthInProgress: { type: Boolean, attribute: false },
+            currentFile: { type: Object, attribute: false },
             currentFileName: { type: String, attribute: false },
         };
     }
@@ -91,8 +93,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         console.log("Got iframe message for sessionId " + sessionId + ", origin: " + event.origin);
         const that = this;
 
-        // TODO: get correct file name
-        const fileName = this.currentFileName == "" ? "mydoc.pdf" : this.currentFileName;
+        // get correct file name
+        const fileName = this.currentFileName === "" ? "mydoc.pdf" : this.currentFileName;
 
         // fetch pdf from api gateway with sessionId
         JSONLD.initialize(this.entryPointUrl, (jsonld) => {
@@ -106,14 +108,25 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                     'Authorization': 'Bearer ' + window.VPUAuthToken,
                 },
             })
-                .then(response => response.json())
-                .then((document) => {
+                .then(result => {
                     // hide iframe
                     that.externalAuthInProgress = false;
+
+                    if (!result.ok) throw result;
+
+                    return result.json();
+                })
+                .then((document) => {
                     // this doesn't seem to trigger an update() execution
                     that.signedFiles.push(document);
                     // this triggers the correct update() execution
                     that.signedFilesCount++;
+                }).catch(error => {
+                    let file = this.currentFile;
+                    // let's override the json to inject an error message
+                    file.json = {"hydra:description" : "Download failed!"};
+
+                    this.addToErrorFiles(file);
                 });
         }, {}, that.lang);
 
@@ -139,20 +152,27 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         });
     }
 
+    addToErrorFiles(file) {
+        // this doesn't seem to trigger an update() execution
+        this.errorFiles[Math.floor(Math.random() * 1000000)] = file;
+        // this triggers the correct update() execution
+        this.errorFilesCount++;
+    }
+
     /**
      * @param ev
      */
     onFileUploadFinished(ev) {
         if (ev.detail.status !== 201) {
-            // this doesn't seem to trigger an update() execution
-            this.errorFiles[Math.floor(Math.random() * 1000000)] = ev.detail;
-            // this triggers the correct update() execution
-            this.errorFilesCount++;
+            this.addToErrorFiles(ev.detail);
         } else {
             const entryPoint = ev.detail.json;
 
             if (entryPoint["@type"] === "http://schema.org/EntryPoint" ) {
                 this.currentFileName = entryPoint.name;
+
+                // we need to full file to upload it again in case the download of the signed file fails
+                this.currentFile = ev.detail;
 
                 // we want to load the redirect url in the iframe
                 let iframe = this._("#iframe");
@@ -288,7 +308,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
     async fileUploadClickHandler(file, id) {
         this.uploadInProgress = true;
         this.errorFiles.splice(id, 1);
-        this.errorFilesCount = this.errorFiles.length;
+        this.errorFilesCount = Object.keys(this.errorFiles).length;
         await this._("#file-upload").uploadFile(file);
         this.uploadInProgress = false;
     }
@@ -383,7 +403,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                 <div class="field">
                     <h2>${i18n.t('qualified-pdf-upload.upload-field-label')}</h2>
                     <div class="control">
-                        <vpu-fileupload id="file-upload" lang="${this.lang}" url="${this.signingRequestUrl}" accept="application/pdf"
+                        <vpu-fileupload id="file-upload" always-send-file lang="${this.lang}" url="${this.signingRequestUrl}" accept="application/pdf"
                             text="${i18n.t('qualified-pdf-upload.upload-area-text')}" button-label="${i18n.t('qualified-pdf-upload.upload-button-label')}"></vpu-fileupload>
                     </div>
                 </div>
