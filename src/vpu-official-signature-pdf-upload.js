@@ -197,7 +197,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitElem
     async fileUploadClickHandler(file, id) {
         this.uploadInProgress = true;
         this.errorFiles.splice(id, 1);
-        this.errorFilesCount = this.errorFiles.length;
+        this.errorFilesCount = Object.keys(this.errorFiles).length;
         await this._("#file-upload").uploadFile(file);
         this.uploadInProgress = false;
     }
