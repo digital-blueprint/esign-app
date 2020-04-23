@@ -11,6 +11,7 @@ import 'file-saver';
 import * as commonStyles from 'vpu-common/styles';
 import {classMap} from 'lit-html/directives/class-map.js';
 import {FileUpload} from 'vpu-file-upload';
+import JSONLD from "vpu-common/jsonld";
 
 const i18n = createI18nInstance();
 
@@ -19,7 +20,6 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitElem
         super();
         this.lang = i18n.language;
         this.entryPointUrl = commonUtils.getAPiUrl();
-        this.signingUrl = this.entryPointUrl + "/officially_signed_documents/sign";
         this.signedFiles = [];
         this.signedFilesCount = 0;
         this.errorFiles = [];
@@ -27,6 +27,9 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitElem
         this.uploadInProgress = false;
         this.uploadStatusFileName = "";
         this.uploadStatusText = "";
+
+        // will be set in function update
+        this.signingUrl = "";
     }
 
     static get scopedElements() {
@@ -111,8 +114,16 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitElem
 
     update(changedProperties) {
         changedProperties.forEach((oldValue, propName) => {
-            if (propName === "lang") {
-                i18n.changeLanguage(this.lang);
+            switch (propName) {
+                case "lang":
+                    i18n.changeLanguage(this.lang);
+                    break;
+                case "entryPointUrl":
+                    JSONLD.initialize(this.entryPointUrl, (jsonld) => {
+                        const apiUrlBase = jsonld.getApiUrlForEntityName("OfficiallySignedDocument");
+                        this.signingUrl = apiUrlBase + "/sign";
+                    });
+                    break;
             }
 
             console.log(propName, oldValue);

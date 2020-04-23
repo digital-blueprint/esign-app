@@ -20,8 +20,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         super();
         this.lang = i18n.language;
         this.entryPointUrl = commonUtils.getAPiUrl();
-        this.signingRequestUrl = this.entryPointUrl + "/qualified_signing_requests/create";
-        this.signingUrl = this.entryPointUrl + "/qualifiedly_signed_documents/sign";
         this.externalAuthInProgress = false;
         this.signedFiles = [];
         this.signedFilesCount = 0;
@@ -32,6 +30,10 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         this.uploadStatusText = "";
         this.currentFile = {};
         this.currentFileName = "";
+
+        // will be set in function update
+        this.signingRequestUrl = "";
+        this.signingUrl = "";
     }
 
     static get scopedElements() {
@@ -222,8 +224,17 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
 
     update(changedProperties) {
         changedProperties.forEach((oldValue, propName) => {
-            if (propName === "lang") {
-                i18n.changeLanguage(this.lang);
+            switch (propName) {
+                case "lang":
+                    i18n.changeLanguage(this.lang);
+                    break;
+                case "entryPointUrl":
+                    JSONLD.initialize(this.entryPointUrl, (jsonld) => {
+                        const apiUrlBase = jsonld.getApiUrlForEntityName("QualifiedSigningRequest");
+                        this.signingRequestUrl = apiUrlBase + "/create";
+                        this.signingUrl = apiUrlBase + "/sign";
+                    });
+                    break;
             }
 
             console.log(propName, oldValue);
