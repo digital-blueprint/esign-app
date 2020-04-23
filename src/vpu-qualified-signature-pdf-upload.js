@@ -173,7 +173,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
             if (entryPoint["@type"] === "http://schema.org/EntryPoint" ) {
                 this.currentFileName = entryPoint.name;
 
-                // we need to full file to upload it again in case the download of the signed file fails
+                // we need the full file to upload it again in case the download of the signed file fails
                 this.currentFile = ev.detail;
 
                 // we want to load the redirect url in the iframe
