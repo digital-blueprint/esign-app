@@ -37,8 +37,7 @@ let pdfAsQualifiedlySigningServer = 'sig-dev.tugraz.at';
 let matomoSiteId = 131;
 let useTerser = true;
 let useBabel = true;
-// https://github.com/rollup/rollup/issues/3499
-let useManualChunks = false;
+let useManualChunks = true;
 
 switch (build) {
   case 'local':
@@ -85,7 +84,6 @@ switch (build) {
 const CHUNK_BLACKLIST = [
   'jszip',  // jszip is a node module by default and rollup chunking is confused by that and emits warnings
   'source-sans-pro',
-  'vpu-app-shell',  // XXX: this breaks rollup bundling, no idea why for now
 ];
 
 /**
