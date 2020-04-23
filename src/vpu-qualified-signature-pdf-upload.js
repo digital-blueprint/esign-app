@@ -408,6 +408,10 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         `);
     }
 
+    hasSignaturePermissions() {
+        return this._hasSignaturePermissions('ROLE_SCOPE_QUALIFIED-SIGNATURE');
+    }
+
     render() {
         return html`
             <div class="${classMap({hidden: !this.isLoggedIn() || !this.hasSignaturePermissions()})}">

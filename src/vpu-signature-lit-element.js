@@ -7,8 +7,8 @@ export default class VPUSignatureLitElement extends LitElement {
         return this.shadowRoot === null ? this.querySelector(selector) : this.shadowRoot.querySelector(selector);
     }
 
-    hasSignaturePermissions() {
-        return (window.VPUPerson && Array.isArray(window.VPUPerson.roles) && window.VPUPerson.roles.indexOf('ROLE_SCOPE_OFFICIAL-SIGNATURE') !== -1);
+    _hasSignaturePermissions(roleName) {
+        return (window.VPUPerson && Array.isArray(window.VPUPerson.roles) && window.VPUPerson.roles.indexOf(roleName) !== -1);
     }
 
     _updateAuth() {

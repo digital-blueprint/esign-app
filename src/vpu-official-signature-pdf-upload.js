@@ -291,6 +291,10 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitElem
         `);
     }
 
+    hasSignaturePermissions() {
+        return this._hasSignaturePermissions('ROLE_SCOPE_OFFICIAL-SIGNATURE');
+    }
+
     render() {
         return html`
             <div class="${classMap({hidden: !this.isLoggedIn() || !this.hasSignaturePermissions()})}">
