@@ -99,9 +99,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         // show the iframe and lock processing
         this.externalAuthInProgress = true;
 
-        // splice the data of the key off the queue
-        const data = this.queuedFiles.splice(key, 1)[0];
-        this.queuedFilesCount = Object.keys(this.queuedFiles).length;
+        // take the file off the queue
+        const data = this.takeFileFromQueue(key);
 
         const entryPoint = data.json;
         this.currentFileName = entryPoint.name;
@@ -351,6 +350,19 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         this.uploadInProgress = false;
     }
 
+    /**
+     * Takes a file off of the queue
+     *
+     * @param key
+     */
+    takeFileFromQueue(key) {
+        // splice the data of the key off the queue
+        const data = this.queuedFiles.splice(key, 1)[0];
+        this.queuedFilesCount = Object.keys(this.queuedFiles).length;
+
+        return data;
+    }
+
     static get styles() {
         // language=css
         return css`
@@ -411,9 +423,12 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
     }
 
     getQueuedFilesHtml() {
-        return this.queuedFiles.map(data => html`
+        return this.queuedFiles.map((data, id) => html`
             <div class="file">
-                ${data.file.name} (${humanFileSize(data.file.size)})
+                <a class="is-remove"
+                    title="${i18n.t('qualified-pdf-upload.remove-queued-file-button-title')}"
+                    @click="${() => {this.takeFileFromQueue(id);}}">
+                    ${data.file.name} (${humanFileSize(data.file.size)}) <vpu-icon name="close" style="font-size: 0.7em"></vpu-icon></a>
             </div>
         `);
     }
