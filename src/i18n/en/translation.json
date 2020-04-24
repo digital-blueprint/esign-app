@@ -16,6 +16,8 @@
   "qualified-pdf-upload": {
     "upload-field-label": "Upload PDF files to sign",
     "upload-area-text": "In this area you can upload PDF files via Drag & Drop or by selecting them directly",
+    "current-signing-process-label": "Current signing process",
+    "queued-files-label": "Further queued files",
     "signed-files-label": "Signed files",
     "download-zip-button": "Download ZIP",
     "download-zip-button-tooltip": "Download all signed files as ZIP file",

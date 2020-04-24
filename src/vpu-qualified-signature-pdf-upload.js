@@ -30,6 +30,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         this.uploadStatusText = "";
         this.currentFile = {};
         this.currentFileName = "";
+        this.queuedFiles = [];
+        this.queuedFilesCount = 0;
 
         // will be set in function update
         this.signingRequestUrl = "";
@@ -51,6 +53,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
             entryPointUrl: { type: String, attribute: 'entry-point-url' },
             signedFiles: { type: Array, attribute: false },
             signedFilesCount: { type: Number, attribute: false },
+            queuedFilesCount: { type: Number, attribute: false },
             errorFiles: { type: Array, attribute: false },
             errorFilesCount: { type: Number, attribute: false },
             uploadInProgress: { type: Boolean, attribute: false },
@@ -64,6 +67,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
 
     connectedCallback() {
         super.connectedCallback();
+        // needs to be called in a function to get the variable scope of "this"
+        setInterval(() => { this.handleQueuedFiles(); }, 2000);
 
         this.updateComplete.then(()=>{
             const fileUpload = this._("#file-upload");
@@ -75,6 +80,38 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
             // see: https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage
             window.addEventListener('message', this.onReceiveIframeMessage.bind(this));
         });
+    }
+
+    /**
+     * Processes queued files
+     */
+    handleQueuedFiles() {
+        if (this.externalAuthInProgress || this.queuedFilesCount === 0) {
+            return;
+        }
+
+        // seems like keys are sorted, not in the order they were added
+        const keys = Object.keys(this.queuedFiles);
+
+        // get a key to process
+        const key = keys.slice(0, 1);
+
+        // show the iframe and lock processing
+        this.externalAuthInProgress = true;
+
+        // splice the data of the key off the queue
+        const data = this.queuedFiles.splice(key, 1)[0];
+        this.queuedFilesCount = Object.keys(this.queuedFiles).length;
+
+        const entryPoint = data.json;
+        this.currentFileName = entryPoint.name;
+
+        // we need the full file to upload it again in case the download of the signed file fails
+        this.currentFile = data;
+
+        // we want to load the redirect url in the iframe
+        let iframe = this._("#iframe");
+        iframe.src = entryPoint.url;
     }
 
     onReceiveIframeMessage(event) {
@@ -146,7 +183,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
      * @param ev
      */
     onFileUploadStarted(ev) {
-        console.log(ev);
         this.uploadStatusFileName = ev.detail.fileName;
         this.uploadStatusText = i18n.t('qualified-pdf-upload.upload-status-file-text', {
             fileName: ev.detail.fileName,
@@ -161,28 +197,19 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         this.errorFilesCount++;
     }
 
+    addToQueuedFiles(data) {
+        this.queuedFiles[Math.floor(Math.random() * 1000000)] = data;
+        this.queuedFilesCount++;
+    }
+
     /**
      * @param ev
      */
     onFileUploadFinished(ev) {
         if (ev.detail.status !== 201) {
             this.addToErrorFiles(ev.detail);
-        } else {
-            const entryPoint = ev.detail.json;
-
-            if (entryPoint["@type"] === "http://schema.org/EntryPoint" ) {
-                this.currentFileName = entryPoint.name;
-
-                // we need the full file to upload it again in case the download of the signed file fails
-                this.currentFile = ev.detail;
-
-                // we want to load the redirect url in the iframe
-                let iframe = this._("#iframe");
-                iframe.src = entryPoint.url;
-
-                // show the iframe
-                this.externalAuthInProgress = true;
-            }
+        } else if (ev.detail.json["@type"] === "http://schema.org/EntryPoint" ) {
+            this.addToQueuedFiles(ev.detail);
         }
     }
 
@@ -237,7 +264,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                     break;
             }
 
-            console.log(propName, oldValue);
+            // console.log(propName, oldValue);
         });
 
         super.update(changedProperties);
@@ -344,6 +371,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                 width: 100%;
                 height: 240px;
                 border: none;
+                /* keeps the A-Trust webpage aligned left */
+                max-width: 570px;
             }
 
             .files-block .file {
@@ -379,6 +408,14 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                 color: #e4154b;
             }
         `;
+    }
+
+    getQueuedFilesHtml() {
+        return this.queuedFiles.map(data => html`
+            <div class="file">
+                ${data.file.name} (${humanFileSize(data.file.size)})
+            </div>
+        `);
     }
 
     getSignedFilesHtml() {
@@ -422,11 +459,23 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                             text="${i18n.t('qualified-pdf-upload.upload-area-text')}" button-label="${i18n.t('qualified-pdf-upload.upload-button-label')}"></vpu-fileupload>
                     </div>
                 </div>
-                <iframe name="external_iframe" id="iframe" class="${classMap({hidden: !this.externalAuthInProgress})}"></iframe>
                 <div class="field notification is-info ${classMap({hidden: !this.uploadInProgress})}">
                     <vpu-mini-spinner></vpu-mini-spinner>
                     <strong>${this.uploadStatusFileName}</strong>
                     ${this.uploadStatusText}
+                </div>
+                <div class="files-block field ${classMap({hidden: !this.externalAuthInProgress})}">
+                    <h2>${i18n.t('qualified-pdf-upload.current-signing-process-label')}</h2>
+                    <div class="file">
+                        ${this.currentFileName} (${humanFileSize(this.currentFile.file !== undefined ? this.currentFile.file.size : 0)})
+                    </div>
+                    <iframe name="external_iframe" id="iframe"></iframe>
+                </div>
+                <div class="files-block field ${classMap({hidden: this.queuedFilesCount === 0})}">
+                    <h2>${i18n.t('qualified-pdf-upload.queued-files-label')}</h2>
+                    <div class="control">
+                        ${this.getQueuedFilesHtml()}
+                    </div>
                 </div>
                 <div class="files-block field ${classMap({hidden: this.signedFilesCount === 0})}">
                     <h2>${i18n.t('qualified-pdf-upload.signed-files-label')}</h2>

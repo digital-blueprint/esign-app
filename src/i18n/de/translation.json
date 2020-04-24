@@ -16,6 +16,8 @@
   "qualified-pdf-upload": {
     "upload-field-label": "PDF Dateien zum Signieren hochladen",
     "upload-area-text": "Sie können in diesem Bereich PDF Dateien per Drag & Drop oder per Direktauswahl hochladen",
+    "current-signing-process-label": "Aktueller Signierprozess",
+    "queued-files-label": "Weitere Dateien in der Warteschlange",
     "signed-files-label": "Signierte Dateien",
     "download-zip-button": "Als ZIP Datei herunterladen",
     "download-zip-button-tooltip": "Alle signierten Dateien als ZIP Datei herunterladen",
