@@ -68,7 +68,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
     connectedCallback() {
         super.connectedCallback();
         // needs to be called in a function to get the variable scope of "this"
-        setInterval(() => { this.handleQueuedFiles(); }, 2000);
+        setInterval(() => { this.handleQueuedFiles(); }, 1000);
 
         this.updateComplete.then(()=>{
             const fileUpload = this._("#file-upload");
