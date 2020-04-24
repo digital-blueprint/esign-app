@@ -17,7 +17,7 @@
     "upload-field-label": "Upload PDF files to sign",
     "upload-area-text": "In this area you can upload PDF files via Drag & Drop or by selecting them directly",
     "current-signing-process-label": "Current signing process",
-    "queued-files-label": "Further queued files",
+    "queued-files-label": "Queued files",
     "remove-queued-file-button-title": "Remove file from queue",
     "signed-files-label": "Signed files",
     "download-zip-button": "Download ZIP",
