@@ -117,6 +117,13 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         const data = event.data;
 
         // check if this is really a postMessage from our iframe without using event.origin
+        if (data.type === 'pdf-as-error') {
+            this.externalAuthInProgress = false;
+
+            // TODO: handle "data.cause" and "data.error"? So far the information that is provided is pretty useless, which information should we show the user?
+            return;
+        }
+
         if (data.type !== 'pdf-as-callback') {
             return;
         }
