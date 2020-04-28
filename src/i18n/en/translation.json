@@ -19,6 +19,8 @@
     "current-signing-process-label": "Current signing process",
     "queued-files-label": "Queued files",
     "remove-queued-file-button-title": "Remove file from queue",
+    "start-signing-process-button": "Start signing process",
+    "start-signing-process-button-running-title": "Signing process running",
     "remove-current-file-button-title": "Cancel current signing process",
     "signed-files-label": "Signed files",
     "download-zip-button": "Download ZIP",

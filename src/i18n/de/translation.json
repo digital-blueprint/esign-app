@@ -19,6 +19,8 @@
     "current-signing-process-label": "Aktueller Signierprozess",
     "queued-files-label": "Dateien in der Warteschlange",
     "remove-queued-file-button-title": "Datei aus der Warteschlange entfernen",
+    "start-signing-process-button": "Signiervorgang starten",
+    "start-signing-process-button-running-title": "Signiervorgang läuft gerade",
     "remove-current-file-button-title": "Aktuellen Signierprozess abbrechen",
     "signed-files-label": "Signierte Dateien",
     "download-zip-button": "Als ZIP Datei herunterladen",

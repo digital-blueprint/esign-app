@@ -32,6 +32,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         this.currentFileName = "";
         this.queuedFiles = [];
         this.queuedFilesCount = 0;
+        this.signingProcessEnabled = false;
 
         // will be set in function update
         this.signingRequestUrl = "";
@@ -60,6 +61,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
             uploadStatusFileName: { type: String, attribute: false },
             uploadStatusText: { type: String, attribute: false },
             externalAuthInProgress: { type: Boolean, attribute: false },
+            signingProcessEnabled: { type: Boolean, attribute: false },
             currentFile: { type: Object, attribute: false },
             currentFileName: { type: String, attribute: false },
         };
@@ -86,7 +88,14 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
      * Processes queued files
      */
     handleQueuedFiles() {
-        if (this.externalAuthInProgress || this.queuedFilesCount === 0) {
+        if (this.queuedFilesCount === 0) {
+            // reset signingProcessEnabled button
+            this.signingProcessEnabled = false;
+
+            return;
+        }
+
+        if (!this.signingProcessEnabled || this.externalAuthInProgress) {
             return;
         }
 
@@ -501,6 +510,14 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                     <h2>${i18n.t('qualified-pdf-upload.queued-files-label')}</h2>
                     <div class="control">
                         ${this.getQueuedFilesHtml()}
+                    </div>
+                    <div class="control">
+                        <button @click="${() => { this.signingProcessEnabled = true; }}"
+                                ?disabled="${this.signingProcessEnabled}"
+                                title="${this.signingProcessEnabled ? i18n.t('qualified-pdf-upload.start-signing-process-button-running-title') : ""}"
+                                class="button is-primary">
+                            ${i18n.t('qualified-pdf-upload.start-signing-process-button')}
+                        </button>
                     </div>
                 </div>
                 <div class="files-block field ${classMap({hidden: this.signedFilesCount === 0})}">
