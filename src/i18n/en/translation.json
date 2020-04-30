@@ -18,6 +18,7 @@
     "upload-area-text": "In this area you can upload PDF files via Drag & Drop or by selecting them directly",
     "current-signing-process-label": "Current signing process",
     "queued-files-label": "Queued files",
+    "remove-failed-file-button-title": "Remove failed file",
     "remove-queued-file-button-title": "Remove file from queue",
     "start-signing-process-button": "Start signing process",
     "start-signing-process-button-running-title": "Signing process running",

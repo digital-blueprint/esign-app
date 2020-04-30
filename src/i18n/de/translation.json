@@ -18,6 +18,7 @@
     "upload-area-text": "Sie können in diesem Bereich PDF Dateien per Drag & Drop oder per Direktauswahl hochladen",
     "current-signing-process-label": "Aktueller Signierprozess",
     "queued-files-label": "Dateien in der Warteschlange",
+    "remove-failed-file-button-title": "Fehlgeschlagene Datei entfernen",
     "remove-queued-file-button-title": "Datei aus der Warteschlange entfernen",
     "start-signing-process-button": "Signiervorgang starten",
     "start-signing-process-button-running-title": "Signiervorgang läuft gerade",

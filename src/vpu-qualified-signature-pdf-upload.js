@@ -366,8 +366,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
      * @param id
      */
     async fileQueueingClickHandler(file, id) {
-        this.errorFiles.splice(id, 1);
-        this.errorFilesCount = Object.keys(this.errorFiles).length;
+        this.takeFailedFileFromQueue(id);
 
         return this._("#file-upload").queueFile(file);
     }
@@ -381,6 +380,18 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         return this._("#file-upload").takeFileFromQueue(key);
     }
 
+    /**
+     * Takes a failed file off of the queue
+     *
+     * @param key
+     */
+    takeFailedFileFromQueue(key) {
+        const file = this.errorFiles.splice(key, 1);
+        this.errorFilesCount = Object.keys(this.errorFiles).length;
+
+        return file;
+    }
+
     static get styles() {
         // language=css
         return css`
@@ -388,6 +399,15 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
             ${commonStyles.getGeneralCSS()}
             ${commonStyles.getButtonCSS()}
             ${commonStyles.getNotificationCSS()}
+
+            .flex-container {
+                display: flex;
+                flex-flow: row wrap;
+            }
+
+            .flex-container > div {
+                margin-right: 20px;
+            }
 
             h2 {
                 margin-bottom: inherit;
@@ -402,7 +422,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                 height: 240px;
                 border: none;
                 /* keeps the A-Trust webpage aligned left */
-                max-width: 570px;
+                max-width: 335px;
             }
 
             .files-block .file {
@@ -473,6 +493,10 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                 <div class="info">
                     ${data.file.name} (${humanFileSize(data.file.size)})
                     <strong class="error">${data.json["hydra:description"]}</strong>
+                    <a class="is-remove"
+                        title="${i18n.t('qualified-pdf-upload.remove-failed-file-button-title')}"
+                        @click="${() => {this.takeFailedFileFromQueue(id);}}">
+                        <vpu-icon name="close" style="font-size: 0.7em"></vpu-icon></a>
                 </div>
             </div>
         `);
@@ -492,34 +516,36 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                             text="${i18n.t('qualified-pdf-upload.upload-area-text')}" button-label="${i18n.t('qualified-pdf-upload.upload-button-label')}"></vpu-fileupload>
                     </div>
                 </div>
-                <div class="field notification is-info ${classMap({hidden: !this.uploadInProgress})}">
-                    <vpu-mini-spinner></vpu-mini-spinner>
-                    <strong>${this.uploadStatusFileName}</strong>
-                    ${this.uploadStatusText}
-                </div>
-                <div class="files-block field ${classMap({hidden: !this.externalAuthInProgress})}">
-                    <h2>${i18n.t('qualified-pdf-upload.current-signing-process-label')}</h2>
-                    <div class="file">
-                        <a class="is-remove" title="${i18n.t('qualified-pdf-upload.remove-current-file-button-title')}"
-                            @click="${() => { this.externalAuthInProgress = false; }}">
-                            ${this.currentFileName} (${humanFileSize(this.currentFile.file !== undefined ? this.currentFile.file.size : 0)})
-                            <vpu-icon name="close" style="font-size: 0.7em"></vpu-icon>
-                        </a>
+                <div class="flex-container">
+                    <div class="files-block field ${classMap({hidden: this.queuedFilesCount === 0})}">
+                        <h2>${i18n.t('qualified-pdf-upload.queued-files-label')}</h2>
+                        <div class="control">
+                            ${this.getQueuedFilesHtml()}
+                        </div>
+                        <div class="control">
+                            <button @click="${() => { this.signingProcessEnabled = true; }}"
+                                    ?disabled="${this.signingProcessEnabled}"
+                                    title="${this.signingProcessEnabled ? i18n.t('qualified-pdf-upload.start-signing-process-button-running-title') : ""}"
+                                    class="button is-primary">
+                                ${i18n.t('qualified-pdf-upload.start-signing-process-button')}
+                            </button>
+                        </div>
                     </div>
-                    <iframe name="external_iframe" id="iframe"></iframe>
-                </div>
-                <div class="files-block field ${classMap({hidden: this.queuedFilesCount === 0})}">
-                    <h2>${i18n.t('qualified-pdf-upload.queued-files-label')}</h2>
-                    <div class="control">
-                        ${this.getQueuedFilesHtml()}
+                    <div class="field notification is-info ${classMap({hidden: !this.uploadInProgress})}">
+                        <vpu-mini-spinner></vpu-mini-spinner>
+                        <strong>${this.uploadStatusFileName}</strong>
+                        ${this.uploadStatusText}
                     </div>
-                    <div class="control">
-                        <button @click="${() => { this.signingProcessEnabled = true; }}"
-                                ?disabled="${this.signingProcessEnabled}"
-                                title="${this.signingProcessEnabled ? i18n.t('qualified-pdf-upload.start-signing-process-button-running-title') : ""}"
-                                class="button is-primary">
-                            ${i18n.t('qualified-pdf-upload.start-signing-process-button')}
-                        </button>
+                    <div class="files-block field ${classMap({hidden: !this.externalAuthInProgress})}">
+                        <h2>${i18n.t('qualified-pdf-upload.current-signing-process-label')}</h2>
+                        <div class="file">
+                            <a class="is-remove" title="${i18n.t('qualified-pdf-upload.remove-current-file-button-title')}"
+                                @click="${() => { this.externalAuthInProgress = false; }}">
+                                ${this.currentFileName} (${humanFileSize(this.currentFile.file !== undefined ? this.currentFile.file.size : 0)})
+                                <vpu-icon name="close" style="font-size: 0.7em"></vpu-icon>
+                            </a>
+                        </div>
+                        <iframe name="external_iframe" id="iframe"></iframe>
                     </div>
                 </div>
                 <div class="files-block field ${classMap({hidden: this.signedFilesCount === 0})}">
