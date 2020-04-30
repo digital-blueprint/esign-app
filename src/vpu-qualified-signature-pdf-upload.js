@@ -7,7 +7,7 @@ import * as commonUtils from 'vpu-common/utils';
 import * as utils from './utils';
 import {Icon, MiniSpinner, Button} from 'vpu-common';
 import JSZip from 'jszip/dist/jszip.js';
-import 'file-saver';
+import FileSaver from 'file-saver';
 import * as commonStyles from 'vpu-common/styles';
 import {classMap} from 'lit-html/directives/class-map.js';
 import {FileUpload} from 'vpu-file-upload';
@@ -320,9 +320,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
 
         zip.generateAsync({type:"blob"})
             .then(function(content) {
-                // save with FileSaver.js
-                // see: https://github.com/eligrey/FileSaver.js
-                saveAs(content, "signed-documents.zip");
+                FileSaver.saveAs(content, "signed-documents.zip");
 
                 that._("#zip-download-button").stop();
             });
@@ -355,8 +353,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         const arr = utils.convertDataURIToBinary(file.contentUrl);
         const blob = new Blob([arr], { type: utils.getDataURIContentType(file.contentUrl) });
 
-        // see: https://github.com/eligrey/FileSaver.js
-        saveAs(blob, file.name);
+        FileSaver.saveAs(blob, file.name);
     }
 
     /**
