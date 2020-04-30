@@ -28,10 +28,10 @@
     "upload-button-label": "Select PDF files",
     "download-file-button-title": "Download signed PDF",
     "error-files-label": "Failed signing processes",
-    "re-upload-file-button-title": "Upload again",
+    "re-upload-file-button-title": "Queue again",
     "upload-status-file-text": "({{fileSize}}) is currently uploading and being processed...",
-    "re-upload-all-button": "Upload all",
-    "re-upload-all-button-title": "Upload all failed uploads again"
+    "re-upload-all-button": "Queue all",
+    "re-upload-all-button-title": "Queue all failed signing processes again"
   },
   "error-summary": "An error occurred",
   "error-permission-message": "You need have permissions to use the official signature to use this function!",

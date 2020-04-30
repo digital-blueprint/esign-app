@@ -28,10 +28,10 @@
     "upload-button-label": "PDF Dateien auswählen",
     "download-file-button-title": "Signiertes PDF herunterladen",
     "error-files-label": "Fehlgeschlagene Signiervorgänge",
-    "re-upload-file-button-title": "Erneut hochladen",
+    "re-upload-file-button-title": "Erneut in die Warteschlange stellen",
     "upload-status-file-text": "({{fileSize}}) wird hochgeladen und verarbeitet...",
-    "re-upload-all-button": "Alle erneut hochladen",
-    "re-upload-all-button-title": "Alle fehlgeschlagen Uploads erneut hochladen"
+    "re-upload-all-button": "Alle erneut in die Warteschlange stellen",
+    "re-upload-all-button-title": "Alle fehlgeschlagen Signiervorgänge erneut in die Warteschlange stellen"
   },
   "error-summary": "Ein Fehler ist aufgetreten",
   "error-permission-message": "Sie müssen das Recht auf Amtssignaturen besitzen um diese Funktion nutzen zu können!",
