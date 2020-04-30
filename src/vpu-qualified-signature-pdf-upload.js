@@ -210,11 +210,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         this.errorFilesCount++;
     }
 
-    addToQueuedFiles(data) {
-        this.queuedFiles[Math.floor(Math.random() * 1000000)] = data;
-        this.queuedFilesCount++;
-    }
-
     /**
      * @param ev
      */
@@ -364,18 +359,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         saveAs(blob, file.name);
     }
 
-    // /**
-    //  * Uploads a failed pdf file again
-    //  *
-    //  * @param file
-    //  * @param id
-    //  */
-    // async fileUploadClickHandler(file, id) {
-    //     this.uploadInProgress = true;
-    //     await this._("#file-upload").uploadFile(file);
-    //     this.uploadInProgress = false;
-    // }
-
     /**
      * Queues a failed pdf file again
      *
@@ -385,7 +368,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
     async fileQueueingClickHandler(file, id) {
         this.errorFiles.splice(id, 1);
         this.errorFilesCount = Object.keys(this.errorFiles).length;
-        this.addToQueuedFiles(file);
+
+        return this._("#file-upload").queueFile(file);
     }
 
     /**
