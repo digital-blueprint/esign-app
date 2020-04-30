@@ -12,16 +12,18 @@ export default class VPUSignatureLitElement extends LitElement {
     }
 
     _updateAuth() {
-        if (this.isLoggedIn() && !this._loginCalled) {
-            this._loginCalled = true;
-            this.loginCallback();
+        // Every time isLoggedIn()/isLoading() return something different we request a re-render
+        let newLoginState = [this.isLoggedIn(), this.isLoading()];
+        if (this._loginState.toString() !== newLoginState.toString()) {
+            this.requestUpdate();
         }
+        this._loginState = newLoginState;
     }
 
     connectedCallback() {
         super.connectedCallback();
 
-        this._loginCalled = false;
+        this._loginState = [];
         this._subscriber = new events.EventSubscriber('vpu-auth-update', 'vpu-auth-update-request');
         this._updateAuth = this._updateAuth.bind(this);
         this._subscriber.subscribe(this._updateAuth);
@@ -38,9 +40,8 @@ export default class VPUSignatureLitElement extends LitElement {
         return (window.VPUPerson !== undefined && window.VPUPerson !== null);
     }
 
-    loginCallback() {
-        // Implement in subclass
-        this.requestUpdate();
+    isLoading() {
+        return (!this.isLoggedIn() && window.VPUAuthToken !== undefined);
     }
 
     getOrganization() {

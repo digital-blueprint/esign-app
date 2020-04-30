@@ -504,6 +504,9 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
     }
 
     render() {
+        if (this.isLoading()) {
+            return html`<vpu-mini-spinner></vpu-mini-spinner>`;
+        }
         return html`
             <div class="${classMap({hidden: !this.isLoggedIn() || !this.hasSignaturePermissions()})}">
                 <div class="field">
