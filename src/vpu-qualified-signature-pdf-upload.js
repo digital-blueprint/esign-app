@@ -30,6 +30,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         this.uploadStatusText = "";
         this.currentFile = {};
         this.currentFileName = "";
+        this.queueBlockEnabled = false;
         this.queuedFiles = [];
         this.queuedFilesCount = 0;
         this.signingProcessEnabled = false;
@@ -62,6 +63,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
             uploadStatusText: { type: String, attribute: false },
             externalAuthInProgress: { type: Boolean, attribute: false },
             signingProcessEnabled: { type: Boolean, attribute: false },
+            queueBlockEnabled: { type: Boolean, attribute: false },
             currentFile: { type: Object, attribute: false },
             currentFileName: { type: String, attribute: false },
         };
@@ -86,6 +88,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
     }
 
     onQueuedFilesChanged(ev) {
+        this.queueBlockEnabled = true;
         const detail = ev.detail;
         this.queuedFiles = detail.queuedFiles;
         this.queuedFilesCount = detail.queuedFilesCount;
@@ -454,6 +457,10 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
             .error {
                 color: #e4154b;
             }
+
+            .emtpy-queue {
+                margin: 10px 0;
+            }
         `;
     }
 
@@ -517,14 +524,18 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                     </div>
                 </div>
                 <div class="flex-container">
-                    <div class="files-block field ${classMap({hidden: this.queuedFilesCount === 0})}">
+                    <div class="files-block field ${classMap({hidden: !this.queueBlockEnabled})}">
                         <h2>${i18n.t('qualified-pdf-upload.queued-files-label')}</h2>
                         <div class="control">
                             ${this.getQueuedFilesHtml()}
                         </div>
+                        <div class="emtpy-queue control ${classMap({hidden: this.queuedFilesCount !== 0})}">
+                            ${i18n.t('qualified-pdf-upload.queued-files-empty1')}<br />
+                            ${i18n.t('qualified-pdf-upload.queued-files-empty2')}
+                        </div>
                         <div class="control">
                             <button @click="${() => { this.signingProcessEnabled = true; }}"
-                                    ?disabled="${this.signingProcessEnabled}"
+                                    ?disabled="${this.signingProcessEnabled || this.queuedFilesCount === 0}"
                                     title="${this.signingProcessEnabled ? i18n.t('qualified-pdf-upload.start-signing-process-button-running-title') : ""}"
                                     class="button is-primary">
                                 ${i18n.t('qualified-pdf-upload.start-signing-process-button')}
