@@ -13,7 +13,7 @@ import urlPlugin from "@rollup/plugin-url";
 import consts from 'rollup-plugin-consts';
 import del from 'rollup-plugin-delete';
 import emitEJS from 'rollup-plugin-emit-ejs'
-import babel from 'rollup-plugin-babel'
+import babel from '@rollup/plugin-babel'
 import chai from 'chai';
 import selfsigned from 'selfsigned';
 
