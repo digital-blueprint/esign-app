@@ -75,13 +75,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         setInterval(() => { this.handleQueuedFiles(); }, 1000);
 
         this.updateComplete.then(()=>{
-            const fileUpload = this._("#file-upload");
-            fileUpload.addEventListener('vpu-fileupload-all-start', this.onAllUploadStarted.bind(this));
-            fileUpload.addEventListener('vpu-fileupload-file-start', this.onFileUploadStarted.bind(this));
-            fileUpload.addEventListener('vpu-fileupload-file-finished', this.onFileUploadFinished.bind(this));
-            fileUpload.addEventListener('vpu-fileupload-all-finished', this.onAllUploadFinished.bind(this));
-            fileUpload.addEventListener('vpu-fileupload-queued-files-changed', this.onQueuedFilesChanged.bind(this));
-
             // see: https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage
             window.addEventListener('message', this.onReceiveIframeMessage.bind(this));
         });
@@ -512,8 +505,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
 
     render() {
         if (this.isLoading()) {
-            // TODO: breaks upload (added in commit 5dbb3033b4c37ebfb5810d78ed9522047217490d)
-            // return html`<vpu-mini-spinner></vpu-mini-spinner>`;
+            return html`<vpu-mini-spinner></vpu-mini-spinner>`;
         }
         return html`
             <div class="${classMap({hidden: !this.isLoggedIn() || !this.hasSignaturePermissions()})}">
@@ -521,7 +513,14 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                     <h2>${i18n.t('qualified-pdf-upload.upload-field-label')}</h2>
                     <div class="control">
                         <vpu-fileupload id="file-upload" always-send-file deferred lang="${this.lang}" url="${this.signingRequestUrl}" accept="application/pdf"
-                            text="${i18n.t('qualified-pdf-upload.upload-area-text')}" button-label="${i18n.t('qualified-pdf-upload.upload-button-label')}"></vpu-fileupload>
+                            text="${i18n.t('qualified-pdf-upload.upload-area-text')}"
+                            button-label="${i18n.t('qualified-pdf-upload.upload-button-label')}"
+                            @vpu-fileupload-all-start="${this.onAllUploadStarted}"
+                            @vpu-fileupload-file-start="${this.onFileUploadStarted}"
+                            @vpu-fileupload-file-finished="${this.onFileUploadFinished}"
+                            @vpu-fileupload-all-finished="${this.onAllUploadFinished}"
+                            @vpu-fileupload-queued-files-changed="${this.onQueuedFilesChanged}"
+                            ></vpu-fileupload>
                     </div>
                 </div>
                 <div class="flex-container">
