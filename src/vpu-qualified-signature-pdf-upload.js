@@ -81,8 +81,9 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
     }
 
     onQueuedFilesChanged(ev) {
-        this.queueBlockEnabled = true;
         const detail = ev.detail;
+        if (!this.queueBlockEnabled && detail.queuedFilesCount)
+            this.queueBlockEnabled = true;
         this.queuedFiles = detail.queuedFiles;
         this.queuedFilesCount = detail.queuedFilesCount;
     }
