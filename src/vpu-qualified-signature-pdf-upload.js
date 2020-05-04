@@ -504,11 +504,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
     }
 
     render() {
-        if (this.isLoading()) {
-            return html`<vpu-mini-spinner></vpu-mini-spinner>`;
-        }
         return html`
-            <div class="${classMap({hidden: !this.isLoggedIn() || !this.hasSignaturePermissions()})}">
+            <div class="${classMap({hidden: !this.isLoggedIn() || !this.hasSignaturePermissions() || this.isLoading()})}">
                 <div class="field">
                     <h2>${i18n.t('qualified-pdf-upload.upload-field-label')}</h2>
                     <div class="control">
@@ -582,11 +579,14 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                     </div>
                 </div>
             </div>
-            <div class="notification is-warning ${classMap({hidden: this.isLoggedIn()})}">
+            <div class="notification is-warning ${classMap({hidden: this.isLoggedIn() || this.isLoading()})}">
                 ${i18n.t('error-login-message')}
             </div>
-            <div class="notification is-danger ${classMap({hidden: this.hasSignaturePermissions() || !this.isLoggedIn()})}">
+            <div class="notification is-danger ${classMap({hidden: this.hasSignaturePermissions() || !this.isLoggedIn() || this.isLoading()})}">
                 ${i18n.t('error-permission-message')}
+            </div>
+            <div class="${classMap({hidden: !this.isLoading()})}">
+                <vpu-mini-spinner></vpu-mini-spinner>
             </div>
         `;
     }
