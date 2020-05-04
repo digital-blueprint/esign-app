@@ -129,7 +129,13 @@
 </head>
 
 <body>
-<vpu-app-signature lang="de" src="<%= geturl('vpu-signature.topic.metadata.json') %>" entry-point-url="<%= entryPointURL %>" base-path="<%= geturl('') %>"><vpu-loading-spinner></vpu-loading-spinner></vpu-app-signature>
+<vpu-app-signature
+    lang="de"
+    src="<%= geturl('vpu-signature.topic.metadata.json') %>"
+    entry-point-url="<%= entryPointURL %>"
+    base-path="<%= geturl('') %>"
+    keycloak-config='{"url": "<%= keyCloakBaseURL %>", "realm": "tugraz", "clientId": "<%= keyCloakClientId %>", "silentCheckSsoRedirectUri": "<%= geturl('silent-check-sso.html') %>"}'
+><vpu-loading-spinner></vpu-loading-spinner></vpu-app-signature>
 
 <!-- Error handling for too old browsers -->
 <script src="<%= geturl('local/vpu-signature/browser-check.js') %>" defer></script>
