@@ -294,7 +294,8 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitElem
 
     render() {
         if (this.isLoading()) {
-            return html`<vpu-mini-spinner></vpu-mini-spinner>`;
+            // TODO: breaks upload (added in commit 5dbb3033b4c37ebfb5810d78ed9522047217490d)
+            // return html`<vpu-mini-spinner></vpu-mini-spinner>`;
         }
         return html`
             <div class="${classMap({hidden: !this.isLoggedIn() || !this.hasSignaturePermissions()})}">
