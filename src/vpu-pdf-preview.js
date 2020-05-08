@@ -98,11 +98,7 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
 
             // get handle of pdf document
             try {
-                // console.log(data);
-                // this.pdfDoc = await pdfjsLib.getDocument({ url: pdf_url });
-                // this.pdfDoc = await pdfjs.pdfjsLib.getDocument({ url: pdf_url });
                 this.pdfDoc = await pdfjs.getDocument({data: data}).promise;
-                // this.pdfDoc = await pdfjs.getDocument({ url: pdf_url });
             } catch (error) {
                 console.error(error);
 
@@ -135,6 +131,9 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
             this.pdfDoc.getPage(page_no).then(async (page) => {
                 // original width of the pdf page at scale 1
                 const pdf_original_width = page.getViewport({ scale: 1 }).width;
+
+                // set the canvas width to the width of the container
+                this.canvas.width = this._('#pdf-main-container').clientWidth;
 
                 // as the canvas is of a fixed width we need to adjust the scale of the viewport where page is rendered
                 const scale_required = this.canvas.width / pdf_original_width;
@@ -175,10 +174,6 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
         return css`
             ${commonStyles.getGeneralCSS()}
             ${commonStyles.getButtonCSS()}
-
-            #pdf-canvas {
-                width: 100%;
-            }
 
             #pdf-meta input[type=number]{
                 max-width: 50px;
