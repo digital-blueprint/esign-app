@@ -36,6 +36,17 @@
     "re-upload-all-button": "Queue all",
     "re-upload-all-button-title": "Queue all failed signing processes again"
   },
+  "pdf-preview": {
+    "first": "First",
+    "previous": "Previous",
+    "next": "Next",
+    "last": "Last",
+    "first-page": "First page",
+    "previous-page": "Previous page",
+    "next-page": "Next page",
+    "last-page": "Last page",
+    "page-count": "Page {{currentPage}} of {{totalPages}}"
+  },
   "error-summary": "An error occurred",
   "error-permission-message": "You need have permissions to use the official signature to use this function!",
   "error-login-message": "You need to be logged in to use this function!"

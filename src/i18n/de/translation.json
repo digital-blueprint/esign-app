@@ -36,6 +36,17 @@
     "re-upload-all-button": "Alle erneut in die Warteschlange stellen",
     "re-upload-all-button-title": "Alle fehlgeschlagen Signiervorgänge erneut in die Warteschlange stellen"
   },
+  "pdf-preview": {
+    "first": "Erste",
+    "previous": "Vorige",
+    "next": "Nächste",
+    "last": "Letzte",
+    "first-page": "Erste Seite",
+    "previous-page": "Vorige Seite",
+    "next-page": "Nächste Seite",
+    "last-page": "Letzte Seite",
+    "page-count": "Seite {{currentPage}} von {{totalPages}}"
+  },
   "error-summary": "Ein Fehler ist aufgetreten",
   "error-permission-message": "Sie müssen das Recht auf Amtssignaturen besitzen um diese Funktion nutzen zu können!",
   "error-login-message": "Sie müssen eingeloggt sein um diese Funktion nutzen zu können!"
