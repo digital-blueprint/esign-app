@@ -3,6 +3,7 @@ import fs from 'fs';
 import url from 'url';
 import glob from 'glob';
 import resolve from '@rollup/plugin-node-resolve';
+import builtins from "rollup-plugin-node-builtins";
 import commonjs from '@rollup/plugin-commonjs';
 import copy from 'rollup-plugin-copy';
 import {terser} from "rollup-plugin-terser";
@@ -167,6 +168,7 @@ export default {
       format: 'esm',
       sourcemap: true
     },
+    // external: ['zlib', 'http', 'fs', 'https', 'url'],
     manualChunks: useManualChunks ? getManualChunks(pkg) : false,
     onwarn: function (warning, warn) {
         // ignore "suggestions" warning re "use strict"
@@ -218,8 +220,11 @@ export default {
           customResolveOptions: {
             // ignore node_modules from vendored packages
             moduleDirectory: path.join(process.cwd(), 'node_modules')
-          }
+          },
+          browser: true,
+          preferBuiltins: true
         }),
+        builtins(),
         commonjs({
             include: 'node_modules/**',
             namedExports: {
@@ -247,6 +252,8 @@ export default {
                 {src: 'assets/*.css', dest: 'dist/local/' + pkg.name},
                 {src: 'assets/*.ico', dest: 'dist/local/' + pkg.name},
                 {src: 'assets/*.svg', dest: 'dist/local/' + pkg.name},
+                // {src: 'assets/pdfjs/*.js', dest: 'dist/local/' + pkg.name + '/pdfjs'},
+                {src: 'node_modules/pdfjs-dist/build/pdf.worker.min.js', dest: 'dist/local/' + pkg.name + '/pdfjs'},
                 {src: 'node_modules/source-sans-pro/WOFF2/OTF/*', dest: 'dist/local/' + pkg.name + '/fonts'},
                 {src: 'node_modules/vpu-common/src/spinner.js', dest: 'dist/local/' + pkg.name, rename: 'spinner.js'},
                 {src: 'node_modules/vpu-common/misc/browser-check.js', dest: 'dist/local/' + pkg.name, rename: 'browser-check.js'},
