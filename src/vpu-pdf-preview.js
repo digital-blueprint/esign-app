@@ -184,6 +184,10 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
                 align-items: center;
                 justify-content: center;
             }
+
+            canvas {
+                border: solid 1px black;
+            }
         `;
     }
 
