@@ -3,6 +3,7 @@ import {humanFileSize} from 'vpu-common/i18next.js';
 import {css, html} from 'lit-element';
 import {ScopedElementsMixin} from '@open-wc/scoped-elements';
 import VPUSignatureLitElement from "./vpu-signature-lit-element";
+import {PdfPreview} from "./vpu-pdf-preview";
 import * as commonUtils from 'vpu-common/utils';
 import * as utils from './utils';
 import {Icon, MiniSpinner, Button} from 'vpu-common';
@@ -44,6 +45,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         return {
           'vpu-icon': Icon,
           'vpu-fileupload': FileUpload,
+          'vpu-pdf-preview': PdfPreview,
           'vpu-mini-spinner': MiniSpinner,
           'vpu-button': Button,
         };
@@ -111,6 +113,9 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
 
         // take the file off the queue
         const file = this.takeFileFromQueue(key);
+
+        // TODO: show pdf at the appropriate time
+        this._("vpu-pdf-preview").showPDF(file);
 
         this.uploadInProgress = true;
         await this._("#file-upload").uploadFile(file);
@@ -230,34 +235,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
             let iframe = this._("#iframe");
             iframe.src = entryPoint.url;
         }
-    }
-
-    setIframeHTML(iframe, html) {
-        if (typeof iframe.srcdoc !== 'undefined') {
-            iframe.srcdoc = html;
-        } else {
-            iframe.sandbox = 'allow-same-origin';
-            iframe.contentWindow.document.open();
-            iframe.contentWindow.document.write(html);
-            iframe.contentWindow.document.close();
-        }
-    }
-
-    /**
-     * Example taken from https://stackoverflow.com/a/51167233/1581487
-     *
-     * @param iframeElement
-     * @param newHTML
-     */
-    replaceIframeContent(iframeElement, newHTML) {
-        // iframeElement.sandbox = 'allow-same-origin';
-        // iframeElement.src = "data:text/html;charset=utf-8," + encodeURI(newHTML);
-
-        // iframeElement.src = "about:blank";
-        // only works once
-        iframeElement.contentWindow.document.open();
-        iframeElement.contentWindow.document.write(newHTML);
-        iframeElement.contentWindow.document.close();
     }
 
     /**
@@ -567,6 +544,9 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                     <div class="control">
                         <vpu-button id="zip-download-button" value="${i18n.t('qualified-pdf-upload.download-zip-button')}" title="${i18n.t('qualified-pdf-upload.download-zip-button-tooltip')}" @click="${this.zipDownloadClickHandler}" type="is-primary"></vpu-button>
                     </div>
+                </div>
+                <div>
+                    <vpu-pdf-preview></vpu-pdf-preview>
                 </div>
                 <div class="files-block error-files field ${classMap({hidden: this.errorFilesCount === 0})}">
                     <h2 class="error">${i18n.t('qualified-pdf-upload.error-files-label')}</h2>

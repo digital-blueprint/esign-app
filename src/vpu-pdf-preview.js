@@ -6,21 +6,9 @@ import VPULitElement from 'vpu-common/vpu-lit-element';
 import {MiniSpinner} from 'vpu-common';
 import * as commonUtils from "vpu-common/utils";
 import * as commonStyles from 'vpu-common/styles';
-// import './pdfjs/pdf';
 import pdfjs from 'pdfjs-dist';
 
-
-//import '../assets/pdfjs/pdf';
-// import pdfjsLib from './pdfjs/pdf';
-// import pdfjs from '../assets/pdfjs/pdf';
-// import zlib;
-
-// import pdfjsLib from 'pdfjs-dist';
-// import pdfjs from '../node_modules/pdfjs-dist/lib/pdf';
-// import pdfjs from '../node_modules/pdfjs-dist/build/pdf';
-
 const i18n = createI18nInstance();
-
 
 /**
  * PdfPreview web component
@@ -32,6 +20,7 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
         this.pdfDoc = null;
         this.currentPage = 0;
         this.totalPages = 0;
+        this.isShowPage = false;
         this.isPageLoaded = false;
         this.isPageRenderingInProgress = false;
         this.canvas = null;
@@ -51,11 +40,11 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
             lang: { type: String },
             currentPage: { type: Number, attribute: false },
             totalPages: { type: Number, attribute: false },
+            isShowPage: { type: Boolean, attribute: false },
             isPageRenderingInProgress: { type: Boolean, attribute: false },
             isPageLoaded: { type: Boolean, attribute: false },
         };
     }
-
 
     update(changedProperties) {
         changedProperties.forEach((oldValue, propName) => {
@@ -77,11 +66,9 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
         this.updateComplete.then(() => {
             that.canvas = that._('#pdf-canvas');
 
-            this._('#upload-pdf-input').addEventListener('change', function() {
-                // const url = URL.createObjectURL(Array.from(this.files)[0]);
-                // that.showPDF(url);
-                that.showPDF(this.files[0]);
-            });
+            // this._('#upload-pdf-input').addEventListener('change', function() {
+            //     that.showPDF(this.files[0]);
+            // });
 
             // change on page input
             this._("#pdf-page-no").addEventListener('input', async () => {
@@ -102,6 +89,7 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
      * @param file
      */
     async showPDF(file) {
+        this.isShowPage = true;
         let reader = new FileReader();
 
         reader.onload = async () => {
@@ -132,7 +120,11 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
         reader.readAsBinaryString(file);
     }
 
-    // load and render specific page of the PDF
+    /**
+     * Load and render specific page of the PDF
+     *
+     * @param page_no
+     */
     async showPage(page_no) {
         const that = this;
         this.isPageRenderingInProgress = true;
@@ -202,10 +194,12 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
 
     render() {
         return html`
+<!--
             <form>
                 <input type="file" name="pdf" id="upload-pdf-input">
             </form>
-            <div id="pdf-main-container">
+-->
+            <div id="pdf-main-container" class="${classMap({hidden: !this.isShowPage})}">
                 <vpu-mini-spinner class="${classMap({hidden: this.isPageLoaded})}"></vpu-mini-spinner>
                 <div class="${classMap({hidden: !this.isPageLoaded})}">
                     <div id="pdf-meta">
