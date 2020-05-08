@@ -3,8 +3,7 @@ import {css, html} from 'lit-element';
 import {ScopedElementsMixin} from '@open-wc/scoped-elements';
 import VPULitElement from 'vpu-common/vpu-lit-element';
 import * as commonUtils from "vpu-common/utils";
-// import * as commonStyles from 'vpu-common/styles';
-
+import * as commonStyles from 'vpu-common/styles';
 // import './pdfjs/pdf';
 import pdfjs from 'pdfjs-dist';
 
@@ -28,11 +27,11 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
     constructor() {
         super();
         this.lang = 'de';
-        this._PDF_DOC = null;
-        this._CURRENT_PAGE = 0;
-        this._TOTAL_PAGES = 0;
-        this._PAGE_RENDERING_IN_PROGRESS = 0;
-        this._CANVAS = null;
+        this.pdfDoc = null;
+        this.currentPage = 0;
+        this.totalPages = 0;
+        this.isPageRenderingInProgress = false;
+        this.canvas = null;
     }
 
     static get scopedElements() {
@@ -47,6 +46,9 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
     static get properties() {
         return {
             lang: { type: String },
+            currentPage: { type: Number, attribute: false },
+            totalPages: { type: Number, attribute: false },
+            isPageRenderingInProgress: { type: Boolean, attribute: false },
         };
     }
 
@@ -66,58 +68,35 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
     connectedCallback() {
         super.connectedCallback();
         const that = this;
-
-        // commonUtils.initAssetBaseURL('vpu-person-select-src');
-        // const select2CSS = commonUtils.getAssetURL(select2CSSPath);
-
-        // TODO: use commonUtils.getAssetURL to get correct path
-        pdfjs.GlobalWorkerOptions.workerSrc =
-            "/dist/local/vpu-signature/pdfjs/pdf.worker.min.js";
+        pdfjs.GlobalWorkerOptions.workerSrc = commonUtils.getAssetURL('local/vpu-signature/pdfjs/pdf.worker.min.js');
 
         this.updateComplete.then(() => {
-            that._CANVAS = that._('#pdf-canvas');
+            that.canvas = that._('#pdf-canvas');
 
             this._('#upload-pdf-input').addEventListener('change', function() {
-                const url = URL.createObjectURL(Array.from(this.files)[0]);
+                // const url = URL.createObjectURL(Array.from(this.files)[0]);
                 // that.showPDF(url);
                 that.showPDF(this.files[0]);
             });
 
-            // click on the "Previous" page button
-            this._("#pdf-prev").addEventListener('click', function() {
-                if(that._CURRENT_PAGE !== 1)
-                    that.showPage(--that._CURRENT_PAGE);
-            });
-
-            // click on the "Next" page button
-            this._("#pdf-next").addEventListener('click', function() {
-                if(that._CURRENT_PAGE !== that._TOTAL_PAGES)
-                    that.showPage(++that._CURRENT_PAGE);
-            });
-
-            // click on the "First" page button
-            this._("#pdf-first").addEventListener('click', function() {
-                that.showPage(1);
-            });
-
-            // click on the "Last" page button
-            this._("#pdf-last").addEventListener('click', function() {
-                that.showPage(that._TOTAL_PAGES);
-            });
-
             // change on page input
-            this._("#pdf-page-no").addEventListener('input', function() {
+            this._("#pdf-page-no").addEventListener('input', async () => {
                 const page_no = parseInt(that._("#pdf-page-no").value);
                 console.log('page_no = ', page_no);
-                if (page_no > 0 && page_no <= that._TOTAL_PAGES) {
-                    that.showPage(page_no);
+
+                if (page_no > 0 && page_no <= that.totalPages) {
+                    await that.showPage(page_no);
                 }
             });
 
         });
     }
 
-    // initialize and load the PDF
+    /**
+     * Initialize and load the PDF
+     *
+     * @param file
+     */
     async showPDF(file) {
         let reader = new FileReader();
 
@@ -125,48 +104,29 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
             const data = reader.result;
             this._("#pdf-loader").style.display = 'block';
 
-            // try {
-            //     await pdfjs.getDocument({data: pdf_url}).then((pdf) => {
-            //         console.log(pdf);
-            //         this._PDF_DOC = pdf;
-            //
-            //         // total pages in pdf
-            //         this._TOTAL_PAGES = this._PDF_DOC.numPages;
-            //
-            //         // Hide the pdf loader and show pdf container
-            //         this._("#pdf-loader").style.display = 'none';
-            //         this._("#pdf-contents").style.display = 'block';
-            //         this._("#pdf-total-pages").innerHTML = this._TOTAL_PAGES;
-            //
-            //         // show the first page
-            //         this.showPage(1);
-            //     });
-            // }
-            // catch(error) {
-            //     alert(error.message);
-            // }
-
             // get handle of pdf document
             try {
                 // console.log(data);
-                // this._PDF_DOC = await pdfjsLib.getDocument({ url: pdf_url });
-                // this._PDF_DOC = await pdfjs.pdfjsLib.getDocument({ url: pdf_url });
-                this._PDF_DOC = await pdfjs.getDocument({data: data}).promise;
-                // this._PDF_DOC = await pdfjs.getDocument({ url: pdf_url });
+                // this.pdfDoc = await pdfjsLib.getDocument({ url: pdf_url });
+                // this.pdfDoc = await pdfjs.pdfjsLib.getDocument({ url: pdf_url });
+                this.pdfDoc = await pdfjs.getDocument({data: data}).promise;
+                // this.pdfDoc = await pdfjs.getDocument({ url: pdf_url });
             } catch (error) {
-                alert(error);
+                console.error(error);
+
+                return;
             }
 
             // total pages in pdf
-            this._TOTAL_PAGES = this._PDF_DOC.numPages;
+            this.totalPages = this.pdfDoc.numPages;
 
             // Hide the pdf loader and show pdf container
             this._("#pdf-loader").style.display = 'none';
             this._("#pdf-contents").style.display = 'block';
-            this._("#pdf-total-pages").innerHTML = this._TOTAL_PAGES;
+            this._("#pdf-total-pages").innerHTML = this.totalPages;
 
             // show the first page
-            this.showPage(1);
+            await this.showPage(1);
         };
 
         reader.readAsBinaryString(file);
@@ -175,12 +135,8 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
     // load and render specific page of the PDF
     async showPage(page_no) {
         const that = this;
-        this._PAGE_RENDERING_IN_PROGRESS = 1;
-        this._CURRENT_PAGE = page_no;
-
-        // disable Previous & Next buttons while page is being loaded
-        this._("#pdf-next").disabled = true;
-        this._("#pdf-prev").disabled = true;
+        this.isPageRenderingInProgress = true;
+        this.currentPage = page_no;
 
         // while page is being rendered hide the canvas and show a loading message
         this._("#pdf-canvas").style.display = 'none';
@@ -194,30 +150,30 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
         // get handle of page
 
         try {
-            this._PDF_DOC.getPage(page_no).then(async (page) => {
+            this.pdfDoc.getPage(page_no).then(async (page) => {
                 // you can now use *page* here
                 console.log("page");
                 console.log(page);
 
                 // original width of the pdf page at scale 1
-                var pdf_original_width = page.getViewport({ scale: 1 }).width;
+                const pdf_original_width = page.getViewport({ scale: 1 }).width;
 
                 // as the canvas is of a fixed width we need to adjust the scale of the viewport where page is rendered
-                var scale_required = this._CANVAS.width / pdf_original_width;
+                const scale_required = this.canvas.width / pdf_original_width;
 
                 // get viewport to render the page at required scale
-                var viewport = page.getViewport({ scale: scale_required });
+                const viewport = page.getViewport({ scale: scale_required });
 
                 // set canvas height same as viewport height
-                this._CANVAS.height = viewport.height;
+                this.canvas.height = viewport.height;
 
                 // setting page loader height for smooth experience
-                this._("#page-loader").style.height =  this._CANVAS.height + 'px';
-                this._("#page-loader").style.lineHeight = this._CANVAS.height + 'px';
+                this._("#page-loader").style.height =  this.canvas.height + 'px';
+                this._("#page-loader").style.lineHeight = this.canvas.height + 'px';
 
                 // page is rendered on <canvas> element
                 const render_context = {
-                    canvasContext: this._CANVAS.getContext('2d'),
+                    canvasContext: this.canvas.getContext('2d'),
                     viewport: viewport
                 };
 
@@ -225,11 +181,7 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
                 try {
                     page.render(render_context).promise.then(() => {
                         console.log('Page rendered');
-                        that._PAGE_RENDERING_IN_PROGRESS = 0;
-
-                        // re-enable Previous & Next buttons
-                        that._("#pdf-next").disabled = false;
-                        that._("#pdf-prev").disabled = false;
+                        that.isPageRenderingInProgress = false;
 
                         // show the canvas and hide the page loader
                         that._("#pdf-canvas").style.display = 'block';
@@ -249,7 +201,11 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
     static get styles() {
         // language=css
         return css`
-            
+            ${commonStyles.getButtonCSS()}
+
+            #pdf-canvas {
+                width: 100%;
+            }
         `;
     }
 
@@ -263,15 +219,23 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
                 <div id="pdf-contents">
                     <div id="pdf-meta">
                         <div id="pdf-buttons">
-                            <button id="pdf-first">First</button>
-                            <button id="pdf-prev">Previous</button>
-                            <input type="number" id="pdf-page-no">
-                            <button id="pdf-next">Next</button>
-                            <button id="pdf-last">Last</button>
+                            <button class="button is-small"
+                                    @click="${async () => { await this.showPage(1); } }"
+                                    ?disabled="${this.isPageRenderingInProgress}">First</button>
+                            <button class="button is-small"
+                                    @click="${async () => { if (this.currentPage > 1) await this.showPage(--this.currentPage); } }"
+                                    ?disabled="${this.isPageRenderingInProgress}">Previous</button>
+                            <input type="number" id="pdf-page-no" value="${this.currentPage}">
+                            <button class="button is-small"
+                                    @click="${async () => { if (this.currentPage < this.totalPages) await this.showPage(++this.currentPage); } }"
+                                    ?disabled="${this.isPageRenderingInProgress}">Next</button>
+                            <button class="button is-small"
+                                    @click="${async () => { await this.showPage(this.totalPages); } }"
+                                    ?disabled="${this.isPageRenderingInProgress}">Last</button>
                         </div>
-                        <div id="page-count-container">Page <div id="pdf-current-page"></div> of <div id="pdf-total-pages"></div></div>
+                        <span id="page-count-container">Page <span id="pdf-current-page"></span> of <span id="pdf-total-pages"></span></span>
                     </div>
-                    <canvas id="pdf-canvas" width="400"></canvas>
+                    <canvas id="pdf-canvas"></canvas>
                     <div id="page-loader">Loading page ...</div>
                 </div>
             </div>

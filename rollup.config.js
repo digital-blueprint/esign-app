@@ -254,6 +254,7 @@ export default {
                 {src: 'assets/*.svg', dest: 'dist/local/' + pkg.name},
                 // {src: 'assets/pdfjs/*.js', dest: 'dist/local/' + pkg.name + '/pdfjs'},
                 {src: 'node_modules/pdfjs-dist/build/pdf.worker.min.js', dest: 'dist/local/' + pkg.name + '/pdfjs'},
+                {src: 'node_modules/pdfjs-dist/cmaps/*', dest: 'dist/local/' + pkg.name + '/pdfjs'}, // do we want all map files?
                 {src: 'node_modules/source-sans-pro/WOFF2/OTF/*', dest: 'dist/local/' + pkg.name + '/fonts'},
                 {src: 'node_modules/vpu-common/src/spinner.js', dest: 'dist/local/' + pkg.name, rename: 'spinner.js'},
                 {src: 'node_modules/vpu-common/misc/browser-check.js', dest: 'dist/local/' + pkg.name, rename: 'browser-check.js'},
