@@ -115,10 +115,10 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
             // show the first page
             await this.showPage(1);
 
-            // fix width adaption
-            await this.showPage(1);
-
             this.isPageLoaded = true;
+
+            // fix width adaption after "this.isPageLoaded = true"
+            await this.showPage(1);
         };
 
         reader.readAsBinaryString(file);
@@ -136,7 +136,7 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
 
         try {
             // get handle of page
-            this.pdfDoc.getPage(page_no).then(async (page) => {
+            await this.pdfDoc.getPage(page_no).then(async (page) => {
                 // original width of the pdf page at scale 1
                 const pdf_original_width = page.getViewport({ scale: 1 }).width;
 
@@ -164,7 +164,7 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
 
                 // render the page contents in the canvas
                 try {
-                    page.render(render_context).promise.then(() => {
+                    await page.render(render_context).promise.then(() => {
                         console.log('Page rendered');
                         that.isPageRenderingInProgress = false;
                     });
