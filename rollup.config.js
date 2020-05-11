@@ -215,7 +215,6 @@ export default {
             buildinfo: getBuildInfo()
           }
         }),
-
         resolve({
           customResolveOptions: {
             // ignore node_modules from vendored packages
@@ -252,8 +251,12 @@ export default {
                 {src: 'assets/*.css', dest: 'dist/local/' + pkg.name},
                 {src: 'assets/*.ico', dest: 'dist/local/' + pkg.name},
                 {src: 'assets/*.svg', dest: 'dist/local/' + pkg.name},
-                // {src: 'assets/pdfjs/*.js', dest: 'dist/local/' + pkg.name + '/pdfjs'},
-                {src: 'node_modules/pdfjs-dist/build/pdf.worker.min.js', dest: 'dist/local/' + pkg.name + '/pdfjs'},
+                {
+                    src: 'node_modules/pdfjs-dist/build/pdf.worker.min.js',
+                    dest: 'dist/local/' + pkg.name + '/pdfjs',
+                    // enable signatures in pdf preview
+                    transform: (contents) => contents.toString().replace('if("Sig"===a.fieldType){a.fieldValue=null;this.setFlags(r.AnnotationFlag.HIDDEN)}', '')
+                },
                 {src: 'node_modules/pdfjs-dist/cmaps/*', dest: 'dist/local/' + pkg.name + '/pdfjs'}, // do we want all map files?
                 {src: 'node_modules/source-sans-pro/WOFF2/OTF/*', dest: 'dist/local/' + pkg.name + '/fonts'},
                 {src: 'node_modules/vpu-common/src/spinner.js', dest: 'dist/local/' + pkg.name, rename: 'spinner.js'},
