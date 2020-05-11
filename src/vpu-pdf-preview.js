@@ -80,6 +80,10 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
                 }
             });
 
+            // redraw page if window was resized
+            window.onresize = async () => {
+                await that.showPage(that.currentPage);
+            };
         });
     }
 
@@ -110,6 +114,10 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
 
             // show the first page
             await this.showPage(1);
+
+            // fix width adaption
+            await this.showPage(1);
+
             this.isPageLoaded = true;
         };
 
@@ -184,6 +192,13 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
                 align-items: center;
                 justify-content: center;
             }
+
+            /* it's too risky to adapt the height */
+            /*
+            #pdf-meta button, #pdf-meta input {
+                max-height: 15px;
+            }
+            */
 
             canvas {
                 border: solid 1px black;

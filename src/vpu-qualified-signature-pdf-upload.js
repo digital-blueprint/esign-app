@@ -545,7 +545,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                         <vpu-button id="zip-download-button" value="${i18n.t('qualified-pdf-upload.download-zip-button')}" title="${i18n.t('qualified-pdf-upload.download-zip-button-tooltip')}" @click="${this.zipDownloadClickHandler}" type="is-primary"></vpu-button>
                     </div>
                 </div>
-                <div>
+                <div class="field">
                     <vpu-pdf-preview></vpu-pdf-preview>
                 </div>
                 <div class="files-block error-files field ${classMap({hidden: this.errorFilesCount === 0})}">
