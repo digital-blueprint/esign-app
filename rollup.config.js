@@ -2,6 +2,7 @@ import path from 'path';
 import fs from 'fs';
 import url from 'url';
 import glob from 'glob';
+import spdxSatisfies from 'spdx-satisfies';
 import resolve from '@rollup/plugin-node-resolve';
 import builtins from "rollup-plugin-node-builtins";
 import commonjs from '@rollup/plugin-commonjs';
@@ -12,6 +13,7 @@ import replace from "@rollup/plugin-replace";
 import serve from 'rollup-plugin-serve';
 import urlPlugin from "@rollup/plugin-url";
 import consts from 'rollup-plugin-consts';
+import license from 'rollup-plugin-license';
 import del from 'rollup-plugin-delete';
 import emitEJS from 'rollup-plugin-emit-ejs'
 import babel from '@rollup/plugin-babel'
@@ -29,6 +31,7 @@ const USE_HTTPS = false;
 
 const pkg = require('./package.json');
 const build = (typeof process.env.BUILD !== 'undefined') ? process.env.BUILD : 'local';
+const watch = process.env.ROLLUP_WATCH === 'true';
 console.log("build: " + build);
 let basePath = '';
 let entryPointURL = '';
@@ -40,6 +43,7 @@ let matomoSiteId = 131;
 let useTerser = true;
 let useBabel = true;
 let useManualChunks = true;
+let checkLicenses = !watch;
 
 switch (build) {
   case 'local':
@@ -224,6 +228,20 @@ export default {
           preferBuiltins: true
         }),
         builtins(),
+        checkLicenses && license({
+          thirdParty: {
+            allow: {
+              test(dependency) {
+                // https://github.com/mjeanroy/rollup-plugin-license/issues/550
+                if (dependency.name === null)
+                  return true;
+                return spdxSatisfies(dependency.license, "MIT OR BSD-3-Clause OR Apache-2.0 OR LGPL-2.1-or-later");
+              },
+              failOnUnlicensed: true,
+              failOnViolation: true,
+            },
+          },
+        }),
         commonjs({
             include: 'node_modules/**',
             namedExports: {
@@ -285,7 +303,7 @@ export default {
           '@babel/plugin-syntax-dynamic-import',
           '@babel/plugin-syntax-import-meta']
         }),
-        (process.env.ROLLUP_WATCH === 'true') ? serve({
+        watch ? serve({
           contentBase: '.',
           host: '127.0.0.1',
           port: 8001,
