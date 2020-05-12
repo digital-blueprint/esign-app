@@ -229,6 +229,12 @@ export default {
         }),
         builtins(),
         checkLicenses && license({
+            banner: `
+License: <%= pkg.license %>
+Dependencies:
+<% _.forEach(dependencies, function (dependency) { if (dependency.name) { %>
+<%= dependency.name %>: <%= dependency.license %><% }}) %>
+`,
           thirdParty: {
             allow: {
               test(dependency) {
