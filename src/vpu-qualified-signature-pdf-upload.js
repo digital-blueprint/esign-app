@@ -35,6 +35,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         this.queuedFiles = [];
         this.queuedFilesCount = 0;
         this.signingProcessEnabled = false;
+        this.signaturePlacementInProgress = false;
 
         // will be set in function update
         this.signingRequestUrl = "";
@@ -68,6 +69,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
             queueBlockEnabled: { type: Boolean, attribute: false },
             currentFile: { type: Object, attribute: false },
             currentFileName: { type: String, attribute: false },
+            isSignaturePlacement: { type: Boolean, attribute: false },
         };
     }
 
@@ -101,7 +103,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
             return;
         }
 
-        if (!this.signingProcessEnabled || this.externalAuthInProgress || this.uploadInProgress) {
+        if (!this.signingProcessEnabled || this.externalAuthInProgress ||
+            this.uploadInProgress || this.signaturePlacementInProgress) {
             return;
         }
 
@@ -114,13 +117,27 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         // take the file off the queue
         const file = this.takeFileFromQueue(key);
 
-        // TODO: show pdf at the appropriate time
-        this._("vpu-pdf-preview").showPDF(file);
+        this.currentFile = file;
+
+        // start signature placement process
+        this.signaturePlacementInProgress = true;
+        await this._("vpu-pdf-preview").showPDF(file);
+
+        // this.uploadInProgress = true;
+        // await this._("#file-upload").uploadFile(file);
+        // this.uploadInProgress = false;
+    }
+
+    async startUpload(event) {
+        this.signaturePlacementInProgress = false;
+        const data = event.detail;
+        console.log(data);
 
         this.uploadInProgress = true;
-        await this._("#file-upload").uploadFile(file);
+        // TODO: add parameters with the signature position and so on
+        await this._("#file-upload").uploadFile(this.currentFile);
         this.uploadInProgress = false;
-}
+    }
 
     onReceiveIframeMessage(event) {
         const data = event.data;
@@ -380,6 +397,12 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                 margin-right: 20px;
             }
 
+            #pdf-preview {
+                flex: 1 0;
+                margin-right: 0;
+                min-width: 320px;
+            }
+ 
             h2 {
                 margin-bottom: inherit;
             }
@@ -517,6 +540,10 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                             </button>
                         </div>
                     </div>
+                    <div id="pdf-preview" class="field ${classMap({hidden: !this.signaturePlacementInProgress})}">
+                        <h2>${i18n.t('qualified-pdf-upload.signature-placement-label')}</h2>
+                        <vpu-pdf-preview lang="${this.lang}" @vpu-pdf-preview-continue="${this.startUpload}"></vpu-pdf-preview>
+                    </div>
                     <div class="field notification is-info ${classMap({hidden: !this.uploadInProgress})}">
                         <vpu-mini-spinner></vpu-mini-spinner>
                         <strong>${this.uploadStatusFileName}</strong>
@@ -544,9 +571,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                     <div class="control">
                         <vpu-button id="zip-download-button" value="${i18n.t('qualified-pdf-upload.download-zip-button')}" title="${i18n.t('qualified-pdf-upload.download-zip-button-tooltip')}" @click="${this.zipDownloadClickHandler}" type="is-primary"></vpu-button>
                     </div>
-                </div>
-                <div class="field">
-                    <vpu-pdf-preview></vpu-pdf-preview>
                 </div>
                 <div class="files-block error-files field ${classMap({hidden: this.errorFilesCount === 0})}">
                     <h2 class="error">${i18n.t('qualified-pdf-upload.error-files-label')}</h2>

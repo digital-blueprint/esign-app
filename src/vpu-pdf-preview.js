@@ -7,6 +7,7 @@ import {MiniSpinner} from 'vpu-common';
 import * as commonUtils from "vpu-common/utils";
 import * as commonStyles from 'vpu-common/styles';
 import pdfjs from 'pdfjs-dist';
+import {fabric} from 'fabric';
 
 const i18n = createI18nInstance();
 
@@ -24,6 +25,7 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
         this.isPageLoaded = false;
         this.isPageRenderingInProgress = false;
         this.canvas = null;
+        this.fabricCanvas = null;
     }
 
     static get scopedElements() {
@@ -84,6 +86,14 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
             window.onresize = async () => {
                 await that.showPage(that.currentPage);
             };
+
+            // add fabric.js canvas for signature positioning
+            this.fabricCanvas = new fabric.Canvas(this._('#fabric-canvas'));
+            // add signature image
+            // TODO: add real image
+            fabric.Image.fromURL('https://via.placeholder.com/350x120.png?text=Signature', function(image) {
+                that.fabricCanvas.add(image);
+            });
         });
     }
 
@@ -141,15 +151,18 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
                 const pdf_original_width = page.getViewport({ scale: 1 }).width;
 
                 // set the canvas width to the width of the container
+                this.fabricCanvas.setWidth(this._('#pdf-main-container').clientWidth);
                 this.canvas.width = this._('#pdf-main-container').clientWidth;
 
                 // as the canvas is of a fixed width we need to adjust the scale of the viewport where page is rendered
+                // const scale_required = this.fabricCanvas.width / pdf_original_width;
                 const scale_required = this.canvas.width / pdf_original_width;
 
                 // get viewport to render the page at required scale
                 const viewport = page.getViewport({ scale: scale_required });
 
                 // set canvas height same as viewport height
+                this.fabricCanvas.setHeight(viewport.height);
                 this.canvas.height = viewport.height;
 
                 // setting page loader height for smooth experience
@@ -177,6 +190,14 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
         }
     }
 
+    sendContinueEvent() {
+        // TODO: add coordinates from this.fabricCanvas.item(0);
+        const data = { "currentPage": this.currentPage };
+        const event = new CustomEvent("vpu-pdf-preview-continue",
+            { "detail": data, bubbles: true, composed: true });
+        this.dispatchEvent(event);
+    }
+
     static get styles() {
         // language=css
         return css`
@@ -200,7 +221,14 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
             }
             */
 
-            canvas {
+            #canvas-wrapper {
+                position: relative;
+            }
+
+            #canvas-wrapper canvas {
+                position: absolute;
+                top: 0;
+                left: 0;
                 border: solid 1px black;
             }
         `;
@@ -235,10 +263,16 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
                                     title="${i18n.t('pdf-preview.last-page')}"
                                     @click="${async () => { await this.showPage(this.totalPages); } }"
                                     ?disabled="${this.isPageRenderingInProgress}">${i18n.t('pdf-preview.last')}</button>
+                            <button class="button is-primary"
+                                    style="float: right"
+                                    @click="${() => { this.sendContinueEvent(); } }">${i18n.t('pdf-preview.continue')}</button>
                         </div>
                         ${i18n.t('pdf-preview.page-count', {currentPage: this.currentPage, totalPages: this.totalPages, })}
                     </div>
-                    <canvas id="pdf-canvas" class="${classMap({hidden: this.isPageRenderingInProgress})}"></canvas>
+                    <div id="canvas-wrapper" class="${classMap({hidden: this.isPageRenderingInProgress})}">
+                        <canvas id="pdf-canvas"></canvas>
+                        <canvas id="fabric-canvas"></canvas>
+                    </div>
                     <div class="${classMap({hidden: !this.isPageRenderingInProgress})}"><vpu-mini-spinner id="page-loader"></vpu-mini-spinner></div>
                 </div>
             </div>
