@@ -229,12 +229,14 @@ export default {
         }),
         builtins(),
         checkLicenses && license({
-            banner: `
+            banner: {
+                commentStyle: 'ignored',
+                content: `
 License: <%= pkg.license %>
 Dependencies:
 <% _.forEach(dependencies, function (dependency) { if (dependency.name) { %>
 <%= dependency.name %>: <%= dependency.license %><% }}) %>
-`,
+`},
           thirdParty: {
             allow: {
               test(dependency) {
@@ -267,7 +269,7 @@ Dependencies:
         replace({
             "process.env.BUILD": '"' + build + '"',
         }),
-        useTerser ? terser({output: {comments: false}}) : false,
+        useTerser ? terser() : false,
         copy({
             targets: [
                 {src: 'assets/silent-check-sso.html', dest:'dist'},
