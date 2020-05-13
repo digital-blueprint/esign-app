@@ -13,6 +13,7 @@ import * as commonStyles from 'vpu-common/styles';
 import {classMap} from 'lit-html/directives/class-map.js';
 import {FileUpload} from 'vpu-file-upload';
 import JSONLD from "vpu-common/jsonld";
+import {TextSwitch} from './textswitch.js';
 
 const i18n = createI18nInstance();
 
@@ -49,6 +50,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
           'vpu-pdf-preview': PdfPreview,
           'vpu-mini-spinner': MiniSpinner,
           'vpu-button': Button,
+          'vpu-textswitch': TextSwitch,
         };
     }
 
@@ -507,6 +509,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
     render() {
         return html`
             <div class="${classMap({hidden: !this.isLoggedIn() || !this.hasSignaturePermissions() || this.isLoading()})}">
+                <vpu-textswitch name1="auto" name2="manual" value1="Automatic" value2="Manual" @change=${ (e) => console.log(e.target.name) }></vpu-textswitch>
                 <div class="field">
                     <h2>${i18n.t('qualified-pdf-upload.upload-field-label')}</h2>
                     <div class="control">
