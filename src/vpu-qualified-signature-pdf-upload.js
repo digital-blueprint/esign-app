@@ -135,7 +135,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
 
         this.uploadInProgress = true;
         // TODO: add parameters with the signature position and so on
-        await this._("#file-upload").uploadFile(this.currentFile);
+        await this._("#file-upload").uploadFile(this.currentFile, data);
         this.uploadInProgress = false;
     }
 

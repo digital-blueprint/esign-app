@@ -192,7 +192,14 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
 
     sendContinueEvent() {
         // TODO: add coordinates from this.fabricCanvas.item(0);
-        const data = { "currentPage": this.currentPage };
+        const item = this.fabricCanvas.item(0);
+        console.log(this.fabricCanvas.item(0));
+        const data = {
+            "currentPage": this.currentPage,
+            "posX": item.get('translateX'),
+            "posY": item.get('translateY'),
+            "rotation": item.get('angle')
+        };
         const event = new CustomEvent("vpu-pdf-preview-continue",
             { "detail": data, bubbles: true, composed: true });
         this.dispatchEvent(event);
