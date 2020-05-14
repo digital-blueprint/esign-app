@@ -24,6 +24,7 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
         this.isShowPage = false;
         this.isPageLoaded = false;
         this.isPageRenderingInProgress = false;
+        this.isShowPlacement = true;
         this.canvas = null;
         this.fabricCanvas = null;
     }
@@ -45,6 +46,7 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
             isShowPage: { type: Boolean, attribute: false },
             isPageRenderingInProgress: { type: Boolean, attribute: false },
             isPageLoaded: { type: Boolean, attribute: false },
+            isShowPlacement: { type: Boolean, attribute: false },
         };
     }
 
@@ -101,8 +103,10 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
      * Initialize and load the PDF
      *
      * @param file
+     * @param isShowPlacement
      */
-    async showPDF(file) {
+    async showPDF(file, isShowPlacement = false) {
+        this.isShowPlacement = isShowPlacement;
         this.isShowPage = true;
         let reader = new FileReader();
 
@@ -190,7 +194,7 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
         }
     }
 
-    sendContinueEvent() {
+    sendAcceptEvent() {
         // TODO: add coordinates from this.fabricCanvas.item(0);
         const item = this.fabricCanvas.item(0);
         console.log(this.fabricCanvas.item(0));
@@ -200,7 +204,7 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
             "posY": item.get('translateY'),
             "rotation": item.get('angle')
         };
-        const event = new CustomEvent("vpu-pdf-preview-continue",
+        const event = new CustomEvent("vpu-pdf-preview-accept",
             { "detail": data, bubbles: true, composed: true });
         this.dispatchEvent(event);
     }
@@ -238,6 +242,14 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
                 left: 0;
                 border: solid 1px black;
             }
+
+            .buttons {
+                display: flex;
+            }
+
+            .buttons > * {
+                margin-right: 3px;
+            }
         `;
     }
 
@@ -252,33 +264,32 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
                 <vpu-mini-spinner class="${classMap({hidden: this.isPageLoaded})}"></vpu-mini-spinner>
                 <div class="${classMap({hidden: !this.isPageLoaded})}">
                     <div id="pdf-meta">
-                        <div>
-                            <button class="button is-small"
+                        <div class="buttons">
+                            <button class="button"
                                     title="${i18n.t('pdf-preview.first-page')}"
                                     @click="${async () => { await this.showPage(1); } }"
                                     ?disabled="${this.isPageRenderingInProgress}">${i18n.t('pdf-preview.first')}</button>
-                            <button class="button is-small"
+                            <button class="button"
                                     title="${i18n.t('pdf-preview.previous-page')}"
                                     @click="${async () => { if (this.currentPage > 1) await this.showPage(--this.currentPage); } }"
                                     ?disabled="${this.isPageRenderingInProgress}">${i18n.t('pdf-preview.previous')}</button>
                             <input type="number" id="pdf-page-no" min="1" value="${this.currentPage}">
-                            <button class="button is-small"
+                            <button class="button"
                                     title="${i18n.t('pdf-preview.next-page')}"
                                     @click="${async () => { if (this.currentPage < this.totalPages) await this.showPage(++this.currentPage); } }"
                                     ?disabled="${this.isPageRenderingInProgress}">${i18n.t('pdf-preview.next')}</button>
-                            <button class="button is-small"
+                            <button class="button"
                                     title="${i18n.t('pdf-preview.last-page')}"
                                     @click="${async () => { await this.showPage(this.totalPages); } }"
                                     ?disabled="${this.isPageRenderingInProgress}">${i18n.t('pdf-preview.last')}</button>
-                            <button class="button is-primary"
-                                    style="float: right"
-                                    @click="${() => { this.sendContinueEvent(); } }">${i18n.t('pdf-preview.continue')}</button>
+                            <button class="button is-primary ${classMap({hidden: !this.isShowPlacement})}"
+                                    @click="${() => { this.sendAcceptEvent(); } }">${i18n.t('pdf-preview.continue')}</button>
                         </div>
                         ${i18n.t('pdf-preview.page-count', {currentPage: this.currentPage, totalPages: this.totalPages, })}
                     </div>
                     <div id="canvas-wrapper" class="${classMap({hidden: this.isPageRenderingInProgress})}">
                         <canvas id="pdf-canvas"></canvas>
-                        <canvas id="fabric-canvas"></canvas>
+                        <canvas id="fabric-canvas" class="${classMap({hidden: !this.isShowPlacement})}"></canvas>
                     </div>
                     <div class="${classMap({hidden: !this.isPageRenderingInProgress})}"><vpu-mini-spinner id="page-loader"></vpu-mini-spinner></div>
                 </div>

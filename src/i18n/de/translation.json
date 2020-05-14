@@ -23,6 +23,11 @@
     "remove-failed-file-button-title": "Fehlgeschlagene Datei entfernen",
     "remove-queued-file-button-title": "Datei aus der Warteschlange entfernen",
     "start-signing-process-button": "Signiervorgang starten",
+    "stop-signing-process-button": "Signiervorgang unterbrechen",
+    "show-preview": "Vorschau anzeigen",
+    "positioning-automatic": "Automatisch",
+    "positioning-manual": "Manuell",
+    "close-preview": "Vorschau schließen",
     "start-signing-process-button-running-title": "Signiervorgang läuft gerade",
     "remove-current-file-button-title": "Aktuellen Signierprozess abbrechen",
     "signed-files-label": "Signierte Dateien",
@@ -35,7 +40,7 @@
     "upload-status-file-text": "({{fileSize}}) wird hochgeladen und verarbeitet...",
     "re-upload-all-button": "Alle erneut in die Warteschlange stellen",
     "re-upload-all-button-title": "Alle fehlgeschlagen Signiervorgänge erneut in die Warteschlange stellen",
-    "signature-placement-label": "Signatur platzieren"
+    "signature-placement-label": "Vorschau"
   },
   "pdf-preview": {
     "first": "Erste",
@@ -47,7 +52,7 @@
     "next-page": "Nächste Seite",
     "last-page": "Letzte Seite",
     "page-count": "Seite {{currentPage}} von {{totalPages}}",
-    "continue": "Weiter im Signaturprozess"
+    "continue": "Platzierung bestätigen"
   },
   "error-summary": "Ein Fehler ist aufgetreten",
   "error-permission-message": "Sie müssen das Recht auf Amtssignaturen besitzen um diese Funktion nutzen zu können!",

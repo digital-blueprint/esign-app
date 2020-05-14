@@ -37,6 +37,9 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         this.queuedFilesCount = 0;
         this.signingProcessEnabled = false;
         this.signaturePlacementInProgress = false;
+        this.queuedFilesSignaturePlacements = [];
+        this.queuedFilesPlacementModes = [];
+        this.currentPreviewQueueKey = '';
 
         // will be set in function update
         this.signingRequestUrl = "";
@@ -71,6 +74,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
             queueBlockEnabled: { type: Boolean, attribute: false },
             currentFile: { type: Object, attribute: false },
             currentFileName: { type: String, attribute: false },
+            signaturePlacementInProgress: { type: Boolean, attribute: false },
             isSignaturePlacement: { type: Boolean, attribute: false },
         };
     }
@@ -105,10 +109,11 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
             return;
         }
 
-        if (!this.signingProcessEnabled || this.externalAuthInProgress ||
-            this.uploadInProgress || this.signaturePlacementInProgress) {
+        if (!this.signingProcessEnabled || this.externalAuthInProgress || this.uploadInProgress) {
             return;
         }
+
+        this.signaturePlacementInProgress = false;
 
         // seems like keys are sorted, not in the order they were added
         const keys = Object.keys(this.queuedFiles);
@@ -118,20 +123,17 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
 
         // take the file off the queue
         const file = this.takeFileFromQueue(key);
-
         this.currentFile = file;
 
-        // start signature placement process
-        this.signaturePlacementInProgress = true;
-        await this._("vpu-pdf-preview").showPDF(file);
-
-        // this.uploadInProgress = true;
-        // await this._("#file-upload").uploadFile(file);
-        // this.uploadInProgress = false;
+        const data = this.queuedFilesPlacementModes[key] === "manual" ?
+            this.queuedFilesSignaturePlacements[key] : {};
+        this.uploadInProgress = true;
+        await this._("#file-upload").uploadFile(file, data);
+        this.uploadInProgress = false;
     }
 
     async startUpload(event) {
-        this.signaturePlacementInProgress = false;
+        // this.signaturePlacementInProgress = false;
         const data = event.detail;
         console.log(data);
 
@@ -139,6 +141,25 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         // TODO: add parameters with the signature position and so on
         await this._("#file-upload").uploadFile(this.currentFile, data);
         this.uploadInProgress = false;
+    }
+
+    storePDFData(event) {
+        const data = event.detail;
+        console.log(data);
+
+        this.queuedFilesSignaturePlacements[this.currentPreviewQueueKey] = data;
+        this.signaturePlacementInProgress = false;
+    }
+
+    queuePlacementSwitch(key, name) {
+        this.queuedFilesPlacementModes[key] = name;
+        console.log(name);
+
+        if (name === "manual") {
+            this.showPreview(key);
+        } else if (this.currentPreviewQueueKey === key) {
+            this.signaturePlacementInProgress = false;
+        }
     }
 
     onReceiveIframeMessage(event) {
@@ -362,6 +383,25 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
     }
 
     /**
+     * Shows the preview
+     *
+     * @param key
+     */
+    async showPreview(key) {
+        if (this.signingProcessEnabled) {
+            return;
+        }
+
+        const file = this._("#file-upload").getQueuedFile(key);
+        this.currentFile = file;
+        this.currentPreviewQueueKey = key;
+        console.log(file);
+        // start signature placement process
+        this.signaturePlacementInProgress = true;
+        await this._("vpu-pdf-preview").showPDF(file, this.queuedFilesPlacementModes[key] === "manual");
+    }
+
+    /**
      * Takes a file off of the queue
      *
      * @param key
@@ -404,6 +444,10 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                 margin-right: 0;
                 min-width: 320px;
             }
+
+            #pdf-preview .file {
+                margin-bottom: 10px;
+            }
  
             h2 {
                 margin-bottom: inherit;
@@ -416,7 +460,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
             #iframe {
                 width: 100%;
                 height: 240px;
-                border: none;
+                border: solid 1px black;
                 /* keeps the A-Trust webpage aligned left */
                 max-width: 335px;
             }
@@ -463,10 +507,20 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
     getQueuedFilesHtml() {
         return this.queuedFiles.map((file, id) => html`
             <div class="file">
-                <a class="is-remove"
+                <a title="${i18n.t('qualified-pdf-upload.show-preview')}"
+                    @click="${() => { this.showPreview(id); }}">
+                    ${file.name} (${humanFileSize(file.size)})</a>
+                <button class="button"
+                    ?disabled="${this.signingProcessEnabled}"
                     title="${i18n.t('qualified-pdf-upload.remove-queued-file-button-title')}"
-                    @click="${() => {this.takeFileFromQueue(id);}}">
-                    ${file.name} (${humanFileSize(file.size)}) <vpu-icon name="close" style="font-size: 0.7em"></vpu-icon></a>
+                    @click="${() => { this.takeFileFromQueue(id); }}">
+                    <vpu-icon name="close" style="font-size: 0.7em"></vpu-icon></button>
+                <vpu-textswitch name1="auto"
+                    name2="manual"
+                    value1="${i18n.t('qualified-pdf-upload.positioning-automatic')}"
+                    value2="${i18n.t('qualified-pdf-upload.positioning-manual')}"
+                    ?disabled="${this.signingProcessEnabled}"
+                    @change=${ (e) => this.queuePlacementSwitch(id, e.target.name) }></vpu-textswitch>
             </div>
         `);
     }
@@ -509,7 +563,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
     render() {
         return html`
             <div class="${classMap({hidden: !this.isLoggedIn() || !this.hasSignaturePermissions() || this.isLoading()})}">
-                <vpu-textswitch name1="auto" name2="manual" value1="Automatic" value2="Manual" @change=${ (e) => console.log(e.target.name) }></vpu-textswitch>
                 <div class="field">
                     <h2>${i18n.t('qualified-pdf-upload.upload-field-label')}</h2>
                     <div class="control">
@@ -536,16 +589,27 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                         </div>
                         <div class="control">
                             <button @click="${() => { this.signingProcessEnabled = true; }}"
-                                    ?disabled="${this.signingProcessEnabled || this.queuedFilesCount === 0}"
-                                    title="${this.signingProcessEnabled ? i18n.t('qualified-pdf-upload.start-signing-process-button-running-title') : ""}"
-                                    class="button is-primary">
+                                    ?disabled="${this.queuedFilesCount === 0}"
+                                    class="button is-primary ${classMap({hidden: this.signingProcessEnabled})}">
                                 ${i18n.t('qualified-pdf-upload.start-signing-process-button')}
+                            </button>
+                            <button @click="${() => { this.signingProcessEnabled = false; this.externalAuthInProgress = false; }}"
+                                    ?disabled="${this.queuedFilesCount === 0}"
+                                    class="button ${classMap({hidden: !this.signingProcessEnabled})}">
+                                ${i18n.t('qualified-pdf-upload.stop-signing-process-button')}
                             </button>
                         </div>
                     </div>
                     <div id="pdf-preview" class="field ${classMap({hidden: !this.signaturePlacementInProgress})}">
                         <h2>${i18n.t('qualified-pdf-upload.signature-placement-label')}</h2>
-                        <vpu-pdf-preview lang="${this.lang}" @vpu-pdf-preview-continue="${this.startUpload}"></vpu-pdf-preview>
+                        <div class="file">
+                            <a class="is-remove" title="${i18n.t('qualified-pdf-upload.close-preview')}"
+                                @click="${() => { this.signaturePlacementInProgress = false; }}">
+                                ${this.currentFile.name} (${humanFileSize(this.currentFile !== undefined ? this.currentFile.size : 0)})
+                                <vpu-icon name="close" style="font-size: 0.7em"></vpu-icon>
+                            </a>
+                        </div>
+                        <vpu-pdf-preview lang="${this.lang}" @vpu-pdf-preview-accept="${this.storePDFData}"></vpu-pdf-preview>
                     </div>
                     <div class="field notification is-info ${classMap({hidden: !this.uploadInProgress})}">
                         <vpu-mini-spinner></vpu-mini-spinner>

@@ -23,6 +23,11 @@
     "remove-failed-file-button-title": "Remove failed file",
     "remove-queued-file-button-title": "Remove file from queue",
     "start-signing-process-button": "Start signing process",
+    "stop-signing-process-button": "Stop signing process",
+    "show-preview": "Show preview",
+    "positioning-automatic": "Automatic",
+    "positioning-manual": "Manual",
+    "close-preview": "Close preview",
     "start-signing-process-button-running-title": "Signing process running",
     "remove-current-file-button-title": "Cancel current signing process",
     "signed-files-label": "Signed files",
@@ -35,7 +40,7 @@
     "upload-status-file-text": "({{fileSize}}) is currently uploading and being processed...",
     "re-upload-all-button": "Queue all",
     "re-upload-all-button-title": "Queue all failed signing processes again",
-    "signature-placement-label": "Place signature"
+    "signature-placement-label": "Preview"
   },
   "pdf-preview": {
     "first": "First",
@@ -47,7 +52,7 @@
     "next-page": "Next page",
     "last-page": "Last page",
     "page-count": "Page {{currentPage}} of {{totalPages}}",
-    "continue": "Continue signing process"
+    "continue": "Accept signature placing"
   },
   "error-summary": "An error occurred",
   "error-permission-message": "You need have permissions to use the official signature to use this function!",
