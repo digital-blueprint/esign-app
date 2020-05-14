@@ -59,12 +59,18 @@ export class TextSwitch extends LitElement {
     }
 
     update(changedProperties) {
+        if (this._active === BUTTON1) {
+            this.name = this.name1;
+        } else {
+            this.name = this.name2;
+        }
+
         changedProperties.forEach((oldValue, propName) => {
             if (propName === "name") {
-                if (this[propName] == this.name1) {
+                if (this[propName] === this.name1) {
                     this._active = BUTTON1;
                 }
-                if (this[propName] == this.name2) {
+                if (this[propName] === this.name2) {
                     this._active = BUTTON2;
                 }
             } else if (propName === "_active") {
@@ -75,12 +81,6 @@ export class TextSwitch extends LitElement {
                 this.dispatchEvent(event);
             }
         });
-
-        if (this._active === BUTTON1) {
-            this.name = this.name1;
-        } else {
-            this.name = this.name2;
-        }
 
         super.update(changedProperties);
     }
