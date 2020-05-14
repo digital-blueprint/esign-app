@@ -89,6 +89,11 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
                 await that.showPage(that.currentPage);
             };
 
+            // Safari can't use that yet
+            // new ResizeObserver(async () => {
+            //     await that.showPage(that.currentPage);
+            // }).observe(this._('#pdf-main-container'));
+
             // add fabric.js canvas for signature positioning
             this.fabricCanvas = new fabric.Canvas(this._('#fabric-canvas'));
             // add signature image
@@ -144,6 +149,11 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
      * @param page_no
      */
     async showPage(page_no) {
+        // we need to wait unil the last rendering is finished
+        if (this.isPageRenderingInProgress) {
+            return;
+        }
+
         const that = this;
         this.isPageRenderingInProgress = true;
         this.currentPage = page_no;
@@ -154,9 +164,9 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
                 // original width of the pdf page at scale 1
                 const pdf_original_width = page.getViewport({ scale: 1 }).width;
 
-                // set the canvas width to the width of the container
-                this.fabricCanvas.setWidth(this._('#pdf-main-container').clientWidth);
-                this.canvas.width = this._('#pdf-main-container').clientWidth;
+                // set the canvas width to the width of the container (minus the borders)
+                this.fabricCanvas.setWidth(this._('#pdf-main-container').clientWidth - 2);
+                this.canvas.width = this._('#pdf-main-container').clientWidth - 2;
 
                 // as the canvas is of a fixed width we need to adjust the scale of the viewport where page is rendered
                 // const scale_required = this.fabricCanvas.width / pdf_original_width;
@@ -187,10 +197,12 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
                     });
                 } catch(error) {
                     console.error(error.message);
+                    that.isPageRenderingInProgress = false;
                 }
             });
         } catch(error) {
             console.error(error.message);
+            that.isPageRenderingInProgress = false;
         }
     }
 
