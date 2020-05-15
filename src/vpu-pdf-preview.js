@@ -109,8 +109,11 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
      *
      * @param file
      * @param isShowPlacement
+     * @param placementData
      */
-    async showPDF(file, isShowPlacement = false) {
+    async showPDF(file, isShowPlacement = false, placementData = {}) {
+        // TODO: move signature if placementData was set
+        console.log(placementData);
         this.isShowPlacement = isShowPlacement;
         this.isShowPage = true;
         let reader = new FileReader();
@@ -130,14 +133,15 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
 
             // total pages in pdf
             this.totalPages = this.pdfDoc.numPages;
+            const page = placementData.currentPage || 1;
 
             // show the first page
-            await this.showPage(1);
+            await this.showPage(page);
 
             this.isPageLoaded = true;
 
             // fix width adaption after "this.isPageLoaded = true"
-            await this.showPage(1);
+            await this.showPage(page);
         };
 
         reader.readAsBinaryString(file);
@@ -149,7 +153,7 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
      * @param page_no
      */
     async showPage(page_no) {
-        // we need to wait unil the last rendering is finished
+        // we need to wait until the last rendering is finished
         if (this.isPageRenderingInProgress) {
             return;
         }

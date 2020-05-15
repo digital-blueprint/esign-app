@@ -399,7 +399,10 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         console.log(file);
         // start signature placement process
         this.signaturePlacementInProgress = true;
-        await this._("vpu-pdf-preview").showPDF(file, this.queuedFilesPlacementModes[key] === "manual");
+        await this._("vpu-pdf-preview").showPDF(
+            file,
+            this.queuedFilesPlacementModes[key] === "manual",
+            this.queuedFilesSignaturePlacements[key]);
     }
 
     /**
