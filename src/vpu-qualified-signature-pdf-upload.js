@@ -478,6 +478,15 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                 color: #e4154b;
             }
 
+            /* using vpu-icon doesn't work */
+            button > [name=close], a > [name=close] {
+                font-size: 0.7em;
+            }
+
+            a > [name=close] {
+                color: red;
+            }
+
             .empty-queue {
                 margin: 10px 0;
             }
@@ -508,7 +517,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                     ?disabled="${this.signingProcessEnabled}"
                     title="${i18n.t('qualified-pdf-upload.remove-queued-file-button-title')}"
                     @click="${() => { this.takeFileFromQueue(id); }}">
-                    <vpu-icon name="close" style="font-size: 0.7em"></vpu-icon></button>
+                    <vpu-icon name="close"></vpu-icon></button>
                 <vpu-textswitch name1="auto"
                     name2="manual"
                     value1="${i18n.t('qualified-pdf-upload.positioning-automatic')}"
@@ -544,7 +553,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                     <a class="is-remove"
                         title="${i18n.t('qualified-pdf-upload.remove-failed-file-button-title')}"
                         @click="${() => {this.takeFailedFileFromQueue(id);}}">
-                        <vpu-icon name="close" style="font-size: 0.7em"></vpu-icon></a>
+                        <vpu-icon name="close"></vpu-icon></a>
                 </div>
             </div>
         `);
@@ -630,7 +639,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                                 <a class="is-remove" title="${i18n.t('qualified-pdf-upload.close-preview')}"
                                     @click="${() => { this.signaturePlacementInProgress = false; }}">
                                     ${this.currentFile.name} (${humanFileSize(this.currentFile !== undefined ? this.currentFile.size : 0)})
-                                    <vpu-icon name="close" style="font-size: 0.7em"></vpu-icon>
+                                    <vpu-icon name="close"></vpu-icon>
                                 </a>
                             </div>
                             <vpu-pdf-preview lang="${this.lang}" @vpu-pdf-preview-accept="${this.storePDFData}"></vpu-pdf-preview>
@@ -646,7 +655,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                                 <a class="is-remove" title="${i18n.t('qualified-pdf-upload.remove-current-file-button-title')}"
                                     @click="${() => { this.externalAuthInProgress = false; }}">
                                     ${this.currentFileName} (${humanFileSize(this.currentFile.file !== undefined ? this.currentFile.file.size : 0)})
-                                    <vpu-icon name="close" style="font-size: 0.7em"></vpu-icon>
+                                    <vpu-icon name="close"></vpu-icon>
                                 </a>
                             </div>
                             <iframe name="external_iframe" id="iframe"></iframe>
