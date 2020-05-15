@@ -28,6 +28,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         this.errorFiles = [];
         this.errorFilesCount = 0;
         this.uploadInProgress = false;
+        this.queueingInProgress = false;
         this.uploadStatusFileName = "";
         this.uploadStatusText = "";
         this.currentFile = {};
@@ -67,6 +68,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
             errorFiles: { type: Array, attribute: false },
             errorFilesCount: { type: Number, attribute: false },
             uploadInProgress: { type: Boolean, attribute: false },
+            queueingInProgress: { type: Boolean, attribute: false },
             uploadStatusFileName: { type: String, attribute: false },
             uploadStatusText: { type: String, attribute: false },
             externalAuthInProgress: { type: Boolean, attribute: false },
@@ -129,17 +131,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
             this.queuedFilesSignaturePlacements[key] : {};
         this.uploadInProgress = true;
         await this._("#file-upload").uploadFile(file, data);
-        this.uploadInProgress = false;
-    }
-
-    async startUpload(event) {
-        // this.signaturePlacementInProgress = false;
-        const data = event.detail;
-        console.log(data);
-
-        this.uploadInProgress = true;
-        // TODO: add parameters with the signature position and so on
-        await this._("#file-upload").uploadFile(this.currentFile, data);
         this.uploadInProgress = false;
     }
 
@@ -230,8 +221,16 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
      * @param ev
      */
     onAllUploadStarted(ev) {
-        console.log("Start upload process!");
-        this.uploadInProgress = true;
+        console.log("Start queuing process!");
+        this.queueingInProgress = true;
+    }
+
+    /**
+     * @param ev
+     */
+    onAllUploadFinished(ev) {
+        console.log("Finished queuing process!");
+        this.queueingInProgress = false;
     }
 
     /**
@@ -275,14 +274,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
             let iframe = this._("#iframe");
             iframe.src = entryPoint.url;
         }
-    }
-
-    /**
-     * @param ev
-     */
-    onAllUploadFinished(ev) {
-        console.log("Finished upload process!");
-        this.uploadInProgress = false;
     }
 
     update(changedProperties) {
@@ -583,7 +574,12 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                 <div id="grid-container">
                     <div class="left-container">
                         <div class="files-block field ${classMap({hidden: !this.queueBlockEnabled})}">
-                            <h2>${i18n.t('qualified-pdf-upload.queued-files-label')}</h2>
+                            <h2>
+                                ${i18n.t('qualified-pdf-upload.queued-files-label')}
+                                <vpu-mini-spinner id="queueing-in-progress-spinner"
+                                                  style="font-size: 0.7em"
+                                                  class="${classMap({hidden: !this.queueingInProgress})}"></vpu-mini-spinner>
+                            </h2>
                             <div class="control">
                                 ${this.getQueuedFilesHtml()}
                             </div>
