@@ -134,10 +134,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         this.uploadInProgress = true;
         await this._("#file-upload").uploadFile(file, data);
         this.uploadInProgress = false;
-
-        if (this.queuedFilesCount === 0) {
-            this.signingProcessActive = false;
-        }
     }
 
     storePDFData(event) {
@@ -165,6 +161,10 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         // check if this is really a postMessage from our iframe without using event.origin
         if (data.type === 'pdf-as-error') {
             this.externalAuthInProgress = false;
+
+            if (this.queuedFilesCount === 0) {
+                this.signingProcessActive = false;
+            }
 
             // TODO: handle "data.cause" and "data.error"? So far the information that is provided is pretty useless, which information should we show the user?
             return;
@@ -202,6 +202,10 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                 .then(result => {
                     // hide iframe
                     that.externalAuthInProgress = false;
+
+                    if (this.queuedFilesCount === 0) {
+                        this.signingProcessActive = false;
+                    }
 
                     if (!result.ok) throw result;
 
@@ -616,9 +620,12 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                                             this.signingProcessEnabled = false;
                                             this.externalAuthInProgress = false;
                                             this.signingProcessActive = false;
-                                            this._("#file-upload").queueFile(this.currentFile.file);
+                                            if (this.currentFile.file !== undefined) {
+                                                this._("#file-upload").queueFile(this.currentFile.file);
+                                            }
                                         }}"
-                                        class="button ${classMap({hidden: !(this.signingProcessActive)})}">
+                                        ?disabled="${this.uploadInProgress}"
+                                        class="button ${classMap({hidden: !this.signingProcessActive})}">
                                     ${i18n.t('qualified-pdf-upload.stop-signing-process-button')}
                                 </button>
                             </div>
