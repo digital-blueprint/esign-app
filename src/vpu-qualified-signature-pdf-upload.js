@@ -37,6 +37,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         this.queuedFiles = [];
         this.queuedFilesCount = 0;
         this.signingProcessEnabled = false;
+        this.signingProcessActive = false;
         this.signaturePlacementInProgress = false;
         this.queuedFilesSignaturePlacements = [];
         this.queuedFilesPlacementModes = [];
@@ -73,6 +74,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
             uploadStatusText: { type: String, attribute: false },
             externalAuthInProgress: { type: Boolean, attribute: false },
             signingProcessEnabled: { type: Boolean, attribute: false },
+            signingProcessActive: { type: Boolean, attribute: false },
             queueBlockEnabled: { type: Boolean, attribute: false },
             currentFile: { type: Object, attribute: false },
             currentFileName: { type: String, attribute: false },
@@ -132,6 +134,10 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         this.uploadInProgress = true;
         await this._("#file-upload").uploadFile(file, data);
         this.uploadInProgress = false;
+
+        if (this.queuedFilesCount === 0) {
+            this.signingProcessActive = false;
+        }
     }
 
     storePDFData(event) {
@@ -583,49 +589,61 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                 <div id="grid-container">
                     <div class="left-container">
                         <div class="files-block field ${classMap({hidden: !this.queueBlockEnabled})}">
+                            <!-- Queued files headline and queueing spinner -->
                             <h2>
                                 ${i18n.t('qualified-pdf-upload.queued-files-label')}
                                 <vpu-mini-spinner id="queueing-in-progress-spinner"
                                                   style="font-size: 0.7em"
                                                   class="${classMap({hidden: !this.queueingInProgress})}"></vpu-mini-spinner>
                             </h2>
+                            <!-- List of queued files -->
                             <div class="control">
                                 ${this.getQueuedFilesHtml()}
                             </div>
+                            <!-- Text "queue empty" -->
                             <div class="empty-queue control ${classMap({hidden: this.queuedFilesCount !== 0})}">
                                 ${i18n.t('qualified-pdf-upload.queued-files-empty1')}<br />
                                 ${i18n.t('qualified-pdf-upload.queued-files-empty2')}
                             </div>
+                            <!-- Buttons to start/stop signing process -->
                             <div class="control">
-                                <button @click="${() => { this.signingProcessEnabled = true; }}"
+                                <button @click="${() => { this.signingProcessEnabled = true; this.signingProcessActive = true; }}"
                                         ?disabled="${this.queuedFilesCount === 0}"
-                                        class="button is-primary ${classMap({hidden: this.signingProcessEnabled})}">
+                                        class="button is-primary ${classMap({hidden: this.signingProcessActive})}">
                                     ${i18n.t('qualified-pdf-upload.start-signing-process-button')}
                                 </button>
-                                <button @click="${() => { this.signingProcessEnabled = false; this.externalAuthInProgress = false; }}"
-                                        ?disabled="${this.queuedFilesCount === 0}"
-                                        class="button ${classMap({hidden: !this.signingProcessEnabled})}">
+                                <button @click="${() => {
+                                            this.signingProcessEnabled = false;
+                                            this.externalAuthInProgress = false;
+                                            this.signingProcessActive = false;
+                                            this._("#file-upload").queueFile(this.currentFile.file);
+                                        }}"
+                                        class="button ${classMap({hidden: !(this.signingProcessActive)})}">
                                     ${i18n.t('qualified-pdf-upload.stop-signing-process-button')}
                                 </button>
                             </div>
                         </div>
+                        <!-- List of signed PDFs -->
                         <div class="files-block field ${classMap({hidden: this.signedFilesCount === 0})}">
                             <h2>${i18n.t('qualified-pdf-upload.signed-files-label')}</h2>
                             <div class="control">
                                 ${this.getSignedFilesHtml()}
                             </div>
                         </div>
+                        <!-- Button to download all signed PDFs -->
                         <div class="field ${classMap({hidden: this.signedFilesCount === 0})}">
                             <div class="control">
                                 <vpu-button id="zip-download-button" value="${i18n.t('qualified-pdf-upload.download-zip-button')}" title="${i18n.t('qualified-pdf-upload.download-zip-button-tooltip')}" @click="${this.zipDownloadClickHandler}" type="is-primary"></vpu-button>
                             </div>
                         </div>
+                        <!-- List of errored files -->
                         <div class="files-block error-files field ${classMap({hidden: this.errorFilesCount === 0})}">
                             <h2 class="error">${i18n.t('qualified-pdf-upload.error-files-label')}</h2>
                             <div class="control">
                                 ${this.getErrorFilesHtml()}
                             </div>
                         </div>
+                        <!-- Button to upload errored files again -->
                         <div class="field ${classMap({hidden: this.errorFilesCount === 0})}">
                             <div class="control">
                                 <vpu-button id="re-upload-all-button" ?disabled="${this.uploadInProgress}" value="${i18n.t('qualified-pdf-upload.re-upload-all-button')}" title="${i18n.t('qualified-pdf-upload.re-upload-all-button-title')}" @click="${this.reUploadAllClickHandler}" type="is-primary"></vpu-button>
@@ -633,6 +651,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                         </div>
                     </div>
                     <div class="right-container">
+                        <!-- PDF preview -->
                         <div id="pdf-preview" class="field ${classMap({hidden: !this.signaturePlacementInProgress})}">
                             <h2>${i18n.t('qualified-pdf-upload.signature-placement-label')}</h2>
                             <div class="file">
@@ -644,11 +663,13 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                             </div>
                             <vpu-pdf-preview lang="${this.lang}" @vpu-pdf-preview-accept="${this.storePDFData}"></vpu-pdf-preview>
                         </div>
+                        <!-- File upload progress -->
                         <div class="field notification is-info ${classMap({hidden: !this.uploadInProgress})}">
                             <vpu-mini-spinner></vpu-mini-spinner>
                             <strong>${this.uploadStatusFileName}</strong>
                             ${this.uploadStatusText}
                         </div>
+                        <!-- External auth -->
                         <div class="files-block field ${classMap({hidden: !this.externalAuthInProgress})}">
                             <h2>${i18n.t('qualified-pdf-upload.current-signing-process-label')}</h2>
                             <div class="file">
