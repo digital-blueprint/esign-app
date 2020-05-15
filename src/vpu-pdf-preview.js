@@ -280,20 +280,20 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
                             <button class="button"
                                     title="${i18n.t('pdf-preview.first-page')}"
                                     @click="${async () => { await this.showPage(1); } }"
-                                    ?disabled="${this.isPageRenderingInProgress}">${i18n.t('pdf-preview.first')}</button>
+                                    ?disabled="${this.isPageRenderingInProgress || this.currentPage === 1}">${i18n.t('pdf-preview.first')}</button>
                             <button class="button"
                                     title="${i18n.t('pdf-preview.previous-page')}"
                                     @click="${async () => { if (this.currentPage > 1) await this.showPage(--this.currentPage); } }"
-                                    ?disabled="${this.isPageRenderingInProgress}">${i18n.t('pdf-preview.previous')}</button>
+                                    ?disabled="${this.isPageRenderingInProgress || this.currentPage === 1}">${i18n.t('pdf-preview.previous')}</button>
                             <input type="number" id="pdf-page-no" min="1" value="${this.currentPage}">
                             <button class="button"
                                     title="${i18n.t('pdf-preview.next-page')}"
                                     @click="${async () => { if (this.currentPage < this.totalPages) await this.showPage(++this.currentPage); } }"
-                                    ?disabled="${this.isPageRenderingInProgress}">${i18n.t('pdf-preview.next')}</button>
+                                    ?disabled="${this.isPageRenderingInProgress || this.currentPage === this.totalPages}">${i18n.t('pdf-preview.next')}</button>
                             <button class="button"
                                     title="${i18n.t('pdf-preview.last-page')}"
                                     @click="${async () => { await this.showPage(this.totalPages); } }"
-                                    ?disabled="${this.isPageRenderingInProgress}">${i18n.t('pdf-preview.last')}</button>
+                                    ?disabled="${this.isPageRenderingInProgress || this.currentPage === this.totalPages}">${i18n.t('pdf-preview.last')}</button>
                             <button class="button is-primary ${classMap({hidden: !this.isShowPlacement})}"
                                     @click="${() => { this.sendAcceptEvent(); } }">${i18n.t('pdf-preview.continue')}</button>
                         </div>
