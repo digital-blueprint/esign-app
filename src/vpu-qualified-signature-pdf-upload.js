@@ -617,6 +617,9 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                                     ${i18n.t('qualified-pdf-upload.start-signing-process-button')}
                                 </button>
                                 <button @click="${() => {
+                                            if (!this.externalAuthInProgress) {
+                                                return;
+                                            }
                                             this.signingProcessEnabled = false;
                                             this.externalAuthInProgress = false;
                                             this.signingProcessActive = false;
