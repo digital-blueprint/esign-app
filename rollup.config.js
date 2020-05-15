@@ -60,6 +60,7 @@ switch (build) {
     keyCloakServer = 'auth-dev.tugraz.at';
     keyCloakBaseURL = 'https://' + keyCloakServer + '/auth';
     keyCloakClientId = 'auth-dev-mw-frontend';
+    pdfAsQualifiedlySigningServer = 'sig-test.tugraz.at'
     break;
   case 'demo':
     basePath = '/apps/signature/';
