@@ -35,12 +35,11 @@
     "rollup-plugin-copy": "^3.3.0",
     "rollup-plugin-delete": "^1.2.0",
     "rollup-plugin-emit-ejs": "^3.0.0",
-    "rollup-plugin-license": "^2.0.0",
+    "rollup-plugin-license": "^2.0.1",
     "rollup-plugin-node-builtins": "^2.1.2",
     "rollup-plugin-serve": "^1.0.1",
     "rollup-plugin-terser": "^5.2.0",
-    "selfsigned": "^1.10.7",
-    "spdx-satisfies": "^5.0.0"
+    "selfsigned": "^1.10.7"
   },
   "dependencies": {
     "@open-wc/scoped-elements": "^1.1.1",

@@ -2,7 +2,6 @@ import path from 'path';
 import fs from 'fs';
 import url from 'url';
 import glob from 'glob';
-import spdxSatisfies from 'spdx-satisfies';
 import resolve from '@rollup/plugin-node-resolve';
 import builtins from "rollup-plugin-node-builtins";
 import commonjs from '@rollup/plugin-commonjs';
@@ -240,12 +239,7 @@ Dependencies:
 `},
           thirdParty: {
             allow: {
-              test(dependency) {
-                // https://github.com/mjeanroy/rollup-plugin-license/issues/550
-                if (dependency.name === null)
-                  return true;
-                return spdxSatisfies(dependency.license, "MIT OR BSD-3-Clause OR Apache-2.0 OR LGPL-2.1-or-later");
-              },
+              test: '(MIT OR BSD-3-Clause OR Apache-2.0 OR LGPL-2.1-or-later)',
               failOnUnlicensed: true,
               failOnViolation: true,
             },
