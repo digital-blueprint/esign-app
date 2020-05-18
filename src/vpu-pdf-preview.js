@@ -98,9 +98,10 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
             this.fabricCanvas = new fabric.Canvas(this._('#fabric-canvas'));
             // add signature image
             // TODO: add real image
-            fabric.Image.fromURL('https://via.placeholder.com/350x120.png?text=Signature', function(image) {
-                that.fabricCanvas.add(image);
-            });
+            fabric.Image.fromURL(commonUtils.getAssetURL('local/vpu-signature/signature-placeholder.svg'), function(image) {
+                that.signatureRect = that.fabricCanvas.add(image);
+                console.log(that.signatureRect);
+            }, {backgroundColor: "white"});
         });
     }
 
