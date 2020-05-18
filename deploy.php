@@ -55,7 +55,7 @@ host('development')
 host('production')
     ->stage('production')
     ->hostname('mw@mw01-prod.tugraz.at')
-    ->set('deploy_path', '/home/mw/prod_signature/deploy')
+    ->set('deploy_path', '/home/mw/prod_esig/deploy')
     -> set('rsync',[
         'exclude'      => [
             '.git',
