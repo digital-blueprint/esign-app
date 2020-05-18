@@ -37,7 +37,7 @@ let entryPointURL = '';
 let keyCloakServer = '';
 let keyCloakBaseURL = '';
 let keyCloakClientId = '';
-let pdfAsQualifiedlySigningServer = 'sig-dev.tugraz.at';
+let pdfAsQualifiedlySigningServer = '';
 let matomoSiteId = 131;
 let useTerser = true;
 let useBabel = true;
@@ -51,6 +51,7 @@ switch (build) {
     keyCloakServer = 'auth-dev.tugraz.at';
     keyCloakBaseURL = 'https://' + keyCloakServer + '/auth';
     keyCloakClientId = 'auth-dev-mw-frontend-local';
+    pdfAsQualifiedlySigningServer = 'sig-dev.tugraz.at';
     useTerser = false;
     break;
   case 'development':
@@ -59,7 +60,7 @@ switch (build) {
     keyCloakServer = 'auth-dev.tugraz.at';
     keyCloakBaseURL = 'https://' + keyCloakServer + '/auth';
     keyCloakClientId = 'auth-dev-mw-frontend';
-    pdfAsQualifiedlySigningServer = 'sig-test.tugraz.at'
+    pdfAsQualifiedlySigningServer = 'sig-test.tugraz.at';
     break;
   case 'demo':
     basePath = '/apps/signature/';
@@ -67,6 +68,7 @@ switch (build) {
     keyCloakServer = 'auth-test.tugraz.at';
     keyCloakBaseURL = 'https://' + keyCloakServer + '/auth';
     keyCloakClientId = 'ibib-demo_tugraz_at-IBIB';
+    pdfAsQualifiedlySigningServer = 'sig-test.tugraz.at';
     break;
   case 'production':
     basePath = '/';
@@ -83,6 +85,7 @@ switch (build) {
     keyCloakServer = '';
     keyCloakBaseURL = '';
     keyCloakClientId = '';
+    pdfAsQualifiedlySigningServer = '';
     useTerser = false;
     break;
   default:
