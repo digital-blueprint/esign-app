@@ -103,7 +103,7 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
             fabric.Image.fromURL(commonUtils.getAssetURL('local/vpu-signature/signature-placeholder.png'), function(image) {
                 that.sigImageOriginalWidth = image.width;
                 // we will resize the image when the initial pdf page is loaded
-                that.signatureRect = that.fabricCanvas.add(image);
+                that.fabricCanvas.add(image);
             });
 
             // this.fabricCanvas.on("object:moved", function(opt){ console.log(opt); });
