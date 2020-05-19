@@ -212,6 +212,9 @@ export default {
             geturl: (p) => {
               return url.resolve(basePath, p);
             },
+            getprivateurl: (p) => {
+                return url.resolve(`${basePath}local/${pkg.name}/`, p);
+            },
             entryPointURL: entryPointURL,
             keyCloakServer: keyCloakServer,
             keyCloakBaseURL: keyCloakBaseURL,
