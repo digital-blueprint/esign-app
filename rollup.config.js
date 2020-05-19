@@ -72,11 +72,11 @@ switch (build) {
     break;
   case 'production':
     basePath = '/';
-    entryPointURL = 'https://api-demo.tugraz.at';
-    keyCloakServer = 'auth-test.tugraz.at';
+    entryPointURL = 'https://api.tugraz.at';
+    keyCloakServer = 'auth.tugraz.at';
     keyCloakBaseURL = 'https://' + keyCloakServer + '/auth';
-    keyCloakClientId = 'ibib-demo_tugraz_at-IBIB';
-    pdfAsQualifiedlySigningServer = 'sig-test.tugraz.at';
+    keyCloakClientId = 'FIXME_CLIENTID';
+    pdfAsQualifiedlySigningServer = 'sig.tugraz.at';
     matomoSiteId = 130;
     break;
   case 'test':
