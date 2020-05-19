@@ -27,6 +27,8 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
         this.isShowPlacement = true;
         this.canvas = null;
         this.fabricCanvas = null;
+        this.canvasToPdfScale = 1.0;
+        this.sigImageOriginalWidth = 0;
     }
 
     static get scopedElements() {
@@ -96,12 +98,15 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
 
             // add fabric.js canvas for signature positioning
             this.fabricCanvas = new fabric.Canvas(this._('#fabric-canvas'));
+
             // add signature image
-            // TODO: add real image
-            fabric.Image.fromURL(commonUtils.getAssetURL('local/vpu-signature/signature-placeholder.svg'), function(image) {
+            fabric.Image.fromURL(commonUtils.getAssetURL('local/vpu-signature/signature-placeholder.png'), function(image) {
+                that.sigImageOriginalWidth = image.width;
+                // we will resize the image when the initial pdf page is loaded
                 that.signatureRect = that.fabricCanvas.add(image);
-                console.log(that.signatureRect);
-            }, {backgroundColor: "white"});
+            });
+
+            // this.fabricCanvas.on("object:moved", function(opt){ console.log(opt); });
         });
     }
 
@@ -113,8 +118,27 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
      * @param placementData
      */
     async showPDF(file, isShowPlacement = false, placementData = {}) {
-        // TODO: move signature if placementData was set
-        console.log(placementData);
+        let item = this.getSignatureRect();
+
+        // move signature if placementData was set
+        if (item !== undefined) {
+            if (placementData["scaleX"] !== undefined) {
+                item.set("scaleX", placementData["scaleX"] * this.canvasToPdfScale);
+            }
+            if (placementData["scaleY"] !== undefined) {
+                item.set("scaleY", placementData["scaleY"] * this.canvasToPdfScale);
+            }
+            if (placementData["left"] !== undefined) {
+                item.set("left", placementData["left"] * this.canvasToPdfScale);
+            }
+            if (placementData["top"] !== undefined) {
+                item.set("top", placementData["top"] * this.canvasToPdfScale);
+            }
+            if (placementData["angle"] !== undefined) {
+                item.set("angle", placementData["angle"]);
+            }
+        }
+
         this.isShowPlacement = isShowPlacement;
         this.isShowPage = true;
         let reader = new FileReader();
@@ -137,7 +161,8 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
             const page = placementData.currentPage || 1;
 
             // show the first page
-            await this.showPage(page);
+            // if the placementData has no values we want to initialize the signature position
+            await this.showPage(page, placementData["scaleX"] === undefined);
 
             this.isPageLoaded = true;
 
@@ -148,12 +173,17 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
         reader.readAsBinaryString(file);
     }
 
+    getSignatureRect() {
+        return this.fabricCanvas.item(0);
+    }
+
     /**
      * Load and render specific page of the PDF
      *
-     * @param page_no
+     * @param pageNumber
+     * @param initSignature
      */
-    async showPage(page_no) {
+    async showPage(pageNumber, initSignature = false) {
         // we need to wait until the last rendering is finished
         if (this.isPageRenderingInProgress) {
             return;
@@ -161,24 +191,26 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
 
         const that = this;
         this.isPageRenderingInProgress = true;
-        this.currentPage = page_no;
+        this.currentPage = pageNumber;
 
         try {
             // get handle of page
-            await this.pdfDoc.getPage(page_no).then(async (page) => {
+            await this.pdfDoc.getPage(pageNumber).then(async (page) => {
                 // original width of the pdf page at scale 1
-                const pdf_original_width = page.getViewport({ scale: 1 }).width;
+                const pdfOriginalWidth = page.getViewport({ scale: 1 }).width;
 
                 // set the canvas width to the width of the container (minus the borders)
                 this.fabricCanvas.setWidth(this._('#pdf-main-container').clientWidth - 2);
                 this.canvas.width = this._('#pdf-main-container').clientWidth - 2;
 
                 // as the canvas is of a fixed width we need to adjust the scale of the viewport where page is rendered
-                // const scale_required = this.fabricCanvas.width / pdf_original_width;
-                const scale_required = this.canvas.width / pdf_original_width;
+                const oldScale = this.canvasToPdfScale;
+                this.canvasToPdfScale = this.canvas.width / pdfOriginalWidth;
+
+                console.log("this.canvasToPdfScale: " + this.canvasToPdfScale);
 
                 // get viewport to render the page at required scale
-                const viewport = page.getViewport({ scale: scale_required });
+                const viewport = page.getViewport({ scale: this.canvasToPdfScale });
 
                 // set canvas height same as viewport height
                 this.fabricCanvas.setHeight(viewport.height);
@@ -193,6 +225,35 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
                     canvasContext: this.canvas.getContext('2d'),
                     viewport: viewport
                 };
+
+                let signature = this.getSignatureRect();
+
+                // set the initial position of the signature
+                if (initSignature) {
+                    // we want to scale the signature to 40% of the page width
+                    const scale = 0.4 * this.canvas.width / this.sigImageOriginalWidth;
+
+                    signature.set({
+                        scaleX: scale,
+                        scaleY: scale,
+                        angle: 0
+                    });
+
+                    // we want to center the signature at the page
+                    signature.center();
+                } else {
+                    // adapt signature scale to new scale
+                    const scaleAdapt = this.canvasToPdfScale / oldScale;
+
+                    signature.set({
+                        scaleX: signature.get("scaleX") * scaleAdapt,
+                        scaleY: signature.get("scaleY") * scaleAdapt,
+                        left: signature.get("left") * scaleAdapt,
+                        top: signature.get("top") * scaleAdapt
+                    });
+
+                    // signature.setCoords();
+                }
 
                 // render the page contents in the canvas
                 try {
@@ -212,14 +273,14 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
     }
 
     sendAcceptEvent() {
-        // TODO: add coordinates from this.fabricCanvas.item(0);
-        const item = this.fabricCanvas.item(0);
-        console.log(this.fabricCanvas.item(0));
+        const item = this.getSignatureRect();
         const data = {
             "currentPage": this.currentPage,
-            "posX": item.get('translateX'),
-            "posY": item.get('translateY'),
-            "rotation": item.get('angle')
+            "scaleX": item.get("scaleX") / this.canvasToPdfScale,
+            "scaleY": item.get("scaleY") / this.canvasToPdfScale,
+            "left": item.get("left") / this.canvasToPdfScale,
+            "top": item.get("top") / this.canvasToPdfScale,
+            "angle": item.get("angle")
         };
         const event = new CustomEvent("vpu-pdf-preview-accept",
             { "detail": data, bubbles: true, composed: true });

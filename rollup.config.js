@@ -286,6 +286,7 @@ Dependencies:
                 {src: 'node_modules/vpu-common/src/spinner.js', dest: 'dist/local/' + pkg.name, rename: 'spinner.js'},
                 {src: 'node_modules/vpu-common/misc/browser-check.js', dest: 'dist/local/' + pkg.name, rename: 'browser-check.js'},
                 {src: 'assets/icon-*.png', dest: 'dist/local/' + pkg.name},
+                {src: 'assets/signature-placeholder.png', dest: 'dist/local/' + pkg.name},
                 {src: 'assets/manifest.json', dest: 'dist', rename: pkg.name + '.manifest.json'},
                 {src: 'assets/*.metadata.json', dest: 'dist'},
                 {src: 'node_modules/vpu-common/assets/icons/*.svg', dest: 'dist/local/vpu-common/icons'},
