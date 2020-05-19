@@ -16,7 +16,7 @@
 <% } -%>
 
     <!-- PWA manfiest file -->
-    <link rel="manifest" href="<%= geturl('vpu-signature.manifest.json') %>">
+    <link rel="manifest" href="<%= geturl(name + '.manifest.json') %>">
 
     <!-- Loading spinner -->
     <script type="module">
@@ -25,7 +25,7 @@
     </script>
 
     <!-- App bundles-->
-    <script type="module" src="<%= geturl('vpu-signature.js') %>"></script>
+    <script type="module" src="<%= geturl(name + '.js') %>"></script>
 
     <!-- Prevent Chrome/Edge from suggesting to translate the page -->
     <meta name="google" content="notranslate">
@@ -129,13 +129,13 @@
 </head>
 
 <body>
-<vpu-app-signature
+<<%= name %>
     lang="de"
-    src="<%= geturl('vpu-signature.topic.metadata.json') %>"
+    src="<%= geturl(name + '.topic.metadata.json') %>"
     entry-point-url="<%= entryPointURL %>"
     base-path="<%= geturl('') %>"
     keycloak-config='{"url": "<%= keyCloakBaseURL %>", "realm": "tugraz", "clientId": "<%= keyCloakClientId %>", "silentCheckSsoRedirectUri": "<%= geturl('silent-check-sso.html') %>"}'
-><vpu-loading-spinner></vpu-loading-spinner></vpu-app-signature>
+><vpu-loading-spinner></vpu-loading-spinner></<%= name %>>
 
 <!-- Error handling for too old browsers -->
 <script src="<%= getprivateurl('browser-check.js') %>" defer></script>

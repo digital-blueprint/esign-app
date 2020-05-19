@@ -164,7 +164,7 @@ function getBuildInfo() {
 
 export default {
     input: (build != 'test') ? [
-      'src/vpu-signature.js',
+      'src/' + pkg.name + '.js',
       'src/vpu-official-signature-pdf-upload.js',
       'src/vpu-qualified-signature-pdf-upload.js',
     ] : glob.sync('test/**/*.js'),
@@ -215,6 +215,7 @@ export default {
             getprivateurl: (p) => {
                 return url.resolve(`${basePath}local/${pkg.name}/`, p);
             },
+            name: pkg.name,
             entryPointURL: entryPointURL,
             keyCloakServer: keyCloakServer,
             keyCloakBaseURL: keyCloakBaseURL,
