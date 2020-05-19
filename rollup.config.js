@@ -209,10 +209,10 @@ export default {
           src: 'assets',
           include: ['**/*.ejs', '**/.*.ejs'],
           data: {
-            geturl: (p) => {
+            getUrl: (p) => {
               return url.resolve(basePath, p);
             },
-            getprivateurl: (p) => {
+            getPrivateUrl: (p) => {
                 return url.resolve(`${basePath}local/${pkg.name}/`, p);
             },
             name: pkg.name,
@@ -223,7 +223,7 @@ export default {
             pdfAsQualifiedlySigningServer: pdfAsQualifiedlySigningServer,
             environment: build,
             matomoSiteId: matomoSiteId,
-            buildinfo: getBuildInfo()
+            buildInfo: getBuildInfo()
           }
         }),
         resolve({
