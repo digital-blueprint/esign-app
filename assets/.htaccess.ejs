@@ -1,6 +1,6 @@
-DirectoryIndex <%= getUrl('vpu-signature.html') %>
+DirectoryIndex <%= getUrl(name + '.html') %>
 <FilesMatch "^(de|en|)$">
-    FallbackResource <%= getUrl('vpu-signature.html') %>
+    FallbackResource <%= getUrl(name + '.html') %>
 </FilesMatch>
 
 Header set Cache-Control "must-revalidate, max-age=60"
