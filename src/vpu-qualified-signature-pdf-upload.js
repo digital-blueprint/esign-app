@@ -128,11 +128,22 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         // take the file off the queue
         const file = this.takeFileFromQueue(key);
         this.currentFile = file;
-
-        const data = this.queuedFilesPlacementModes[key] === "manual" ?
-            this.queuedFilesSignaturePlacements[key] : {};
         this.uploadInProgress = true;
-        await this._("#file-upload").uploadFile(file, data);
+        let params = {};
+
+        // prepare parameters to tell PDF-AS where and how the signature should be placed
+        if (this.queuedFilesPlacementModes[key] === "manual") {
+            const data = this.queuedFilesSignaturePlacements[key];
+            params = {
+                y: data.currentPageOriginalHeight - data.top,
+                x: data.left,
+                r: data.angle,
+                w: data.width, // only width, no "height" allowed in PDF-AS
+                p: data.currentPage
+            };
+        }
+
+        await this._("#file-upload").uploadFile(file, params);
         this.uploadInProgress = false;
     }
 

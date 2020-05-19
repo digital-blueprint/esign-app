@@ -29,6 +29,7 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
         this.fabricCanvas = null;
         this.canvasToPdfScale = 1.0;
         this.sigImageOriginalWidth = 0;
+        this.currentPageOriginalHeight = 0;
     }
 
     static get scopedElements() {
@@ -198,6 +199,7 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
             await this.pdfDoc.getPage(pageNumber).then(async (page) => {
                 // original width of the pdf page at scale 1
                 const pdfOriginalWidth = page.getViewport({ scale: 1 }).width;
+                this.currentPageOriginalHeight = page.getViewport({ scale: 1 }).height;
 
                 // set the canvas width to the width of the container (minus the borders)
                 this.fabricCanvas.setWidth(this._('#pdf-main-container').clientWidth - 2);
@@ -276,8 +278,11 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
         const item = this.getSignatureRect();
         const data = {
             "currentPage": this.currentPage,
+            "currentPageOriginalHeight": this.currentPageOriginalHeight,
             "scaleX": item.get("scaleX") / this.canvasToPdfScale,
             "scaleY": item.get("scaleY") / this.canvasToPdfScale,
+            "width": item.get("width") * item.get("scaleY") / this.canvasToPdfScale,
+            "height": item.get("height") * item.get("scaleY") / this.canvasToPdfScale,
             "left": item.get("left") / this.canvasToPdfScale,
             "top": item.get("top") / this.canvasToPdfScale,
             "angle": item.get("angle")
