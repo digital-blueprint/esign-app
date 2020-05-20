@@ -614,7 +614,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                             ?disabled="${this.signingProcessEnabled}"
                             title="${i18n.t('qualified-pdf-upload.remove-queued-file-button-title')}"
                             @click="${() => { this.takeFileFromQueue(id); }}">
-                            <vpu-icon name="close"></vpu-icon></button>
+                            <vpu-icon name="trash"></vpu-icon></button>
                     </div>
                     <div class="bottom-line">
                         <span class="headline">${i18n.t('qualified-pdf-upload.positioning')}:</span>
