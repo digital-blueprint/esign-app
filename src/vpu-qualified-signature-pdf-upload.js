@@ -470,7 +470,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
             #iframe {
                 width: 100%;
                 height: 240px;
-                border: solid 1px black;
+                border-width: 0;
                 /* keeps the A-Trust webpage aligned left */
                 max-width: 335px;
             }
