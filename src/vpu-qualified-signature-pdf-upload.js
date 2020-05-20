@@ -172,10 +172,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         // check if this is really a postMessage from our iframe without using event.origin
         if (data.type === 'pdf-as-error') {
             this.externalAuthInProgress = false;
-
-            if (this.queuedFilesCount === 0) {
-                this.signingProcessActive = false;
-            }
+            this.endSigningProcessIfQueueEmpty();
 
             // TODO: handle "data.cause" and "data.error"? So far the information that is provided is pretty useless, which information should we show the user?
             return;
@@ -213,10 +210,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                 .then(result => {
                     // hide iframe
                     that.externalAuthInProgress = false;
-
-                    if (this.queuedFilesCount === 0) {
-                        this.signingProcessActive = false;
-                    }
+                    this.endSigningProcessIfQueueEmpty();
 
                     if (!result.ok) throw result;
 
@@ -236,6 +230,12 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                 });
         }, {}, that.lang);
 
+    }
+
+    endSigningProcessIfQueueEmpty() {
+        if (this.queuedFilesCount === 0 && this.signingProcessActive) {
+            this.signingProcessActive = false;
+        }
     }
 
     /**
@@ -266,6 +266,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
     }
 
     addToErrorFiles(file) {
+        this.endSigningProcessIfQueueEmpty();
+
         // this doesn't seem to trigger an update() execution
         this.errorFiles[Math.floor(Math.random() * 1000000)] = file;
         // this triggers the correct update() execution
