@@ -793,11 +793,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                         <div class="files-block field ${classMap({hidden: !this.externalAuthInProgress})}">
                             <h2>${i18n.t('qualified-pdf-upload.current-signing-process-label')}</h2>
                             <div class="file">
-                                <a class="is-remove" title="${i18n.t('qualified-pdf-upload.remove-current-file-button-title')}"
-                                    @click="${() => { this.externalAuthInProgress = false; }}">
-                                    ${this.currentFileName} (${humanFileSize(this.currentFile.file !== undefined ? this.currentFile.file.size : 0)})
-                                    <vpu-icon name="close"></vpu-icon>
-                                </a>
+                                ${this.currentFileName} (${humanFileSize(this.currentFile.file !== undefined ? this.currentFile.file.size : 0)})
                             </div>
                             <iframe name="external_iframe" id="iframe"></iframe>
                         </div>
