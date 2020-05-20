@@ -531,9 +531,16 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                 flex: 1 0;
             }
 
-            .file-block {
+            .file-block, .box {
                 border: solid 1px black;
                 padding: 10px;
+            }
+
+            .file-block, .box .file {
+                margin-top: 0;
+            }
+
+            .file-block {
                 margin-bottom: 10px;
             }
 
@@ -792,10 +799,12 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                         <!-- External auth -->
                         <div class="files-block field ${classMap({hidden: !this.externalAuthInProgress})}">
                             <h2>${i18n.t('qualified-pdf-upload.current-signing-process-label')}</h2>
-                            <div class="file">
-                                ${this.currentFileName} (${humanFileSize(this.currentFile.file !== undefined ? this.currentFile.file.size : 0)})
+                            <div class="box">
+                                <div class="file">
+                                    ${this.currentFileName} (${humanFileSize(this.currentFile.file !== undefined ? this.currentFile.file.size : 0)})
+                                </div>
+                                <iframe name="external_iframe" id="iframe"></iframe>
                             </div>
-                            <iframe name="external_iframe" id="iframe"></iframe>
                         </div>
                     </div>
                 </div>
