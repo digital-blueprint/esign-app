@@ -42,7 +42,8 @@
     "re-upload-all-button": "Queue all",
     "re-upload-all-button-title": "Queue all failed signing processes again",
     "signature-placement-label": "Preview",
-    "positioning": "Positioning"
+    "positioning": "Positioning",
+    "file-label": "File"
   },
   "pdf-preview": {
     "first": "First",

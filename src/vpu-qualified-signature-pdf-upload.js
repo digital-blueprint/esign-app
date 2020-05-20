@@ -784,7 +784,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                         <div id="pdf-preview" class="field ${classMap({hidden: !this.signaturePlacementInProgress})}">
                             <h2>${i18n.t('qualified-pdf-upload.signature-placement-label')}</h2>
                             <div class="file">
-                                ${this.currentFile.name} (${humanFileSize(this.currentFile !== undefined ? this.currentFile.size : 0)})
+                            ${i18n.t('qualified-pdf-upload.file-label')}: ${this.currentFile.name} (${humanFileSize(this.currentFile !== undefined ? this.currentFile.size : 0)})
                             </div>
                             <vpu-pdf-preview lang="${this.lang}" @vpu-pdf-preview-accept="${this.storePDFData}"></vpu-pdf-preview>
                         </div>

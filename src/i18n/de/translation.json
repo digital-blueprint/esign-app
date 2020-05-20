@@ -42,7 +42,8 @@
     "re-upload-all-button": "Alle erneut in die Warteschlange stellen",
     "re-upload-all-button-title": "Alle fehlgeschlagen Signiervorgänge erneut in die Warteschlange stellen",
     "signature-placement-label": "Vorschau",
-    "positioning": "Positionierung"
+    "positioning": "Positionierung",
+    "file-label": "Datei"
   },
   "pdf-preview": {
     "first": "Erste",
