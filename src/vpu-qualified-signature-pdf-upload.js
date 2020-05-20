@@ -528,33 +528,85 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                 margin-right: 0;
                 flex: 1 0;
             }
+
+            .file-block {
+                border: solid 1px black;
+                padding: 10px;
+                margin-bottom: 10px;
+            }
+
+            .file-block .header {
+                display: grid;
+                align-items: center;
+                grid-template-columns: auto 40px;
+                grid-gap: 10px;
+                margin-bottom: 10px;
+            }
+
+            .file-block div.bottom-line {
+                display: grid;
+                align-items: center;
+                grid-template-columns: auto 190px;
+                grid-gap: 10px;
+            }
+
+            .file-block div.bottom-line .headline {
+                text-align: right;
+            }
         `;
     }
 
+    /**
+     * Returns the list of queued files
+     *
+     * @returns {*[]}
+     */
     getQueuedFilesHtml() {
-        return this.queuedFiles.map((file, id) => html`
-            <div class="file">
-                <a title="${i18n.t('qualified-pdf-upload.show-preview')}"
-                    @click="${() => { this.showPreview(id); }}">
-                    ${file.name} (${humanFileSize(file.size)})</a>
-                <button class="button"
-                    ?disabled="${this.signingProcessEnabled}"
-                    title="${i18n.t('qualified-pdf-upload.remove-queued-file-button-title')}"
-                    @click="${() => { this.takeFileFromQueue(id); }}">
-                    <vpu-icon name="close"></vpu-icon></button>
-                <vpu-textswitch name1="auto"
-                    name2="manual"
-                    value1="${i18n.t('qualified-pdf-upload.positioning-automatic')}"
-                    value2="${i18n.t('qualified-pdf-upload.positioning-manual')}"
-                    ?disabled="${this.signingProcessEnabled}"
-                    @change=${ (e) => this.queuePlacementSwitch(id, e.target.name) }></vpu-textswitch>
-            </div>
-        `);
+        const ids = Object.keys(this.queuedFiles);
+        let results = [];
+
+        ids.forEach((id) => {
+            const file = this.queuedFiles[id];
+
+            results.push(html`
+                <div class="file-block">
+                    <div class="header">
+                        <span>${file.name} (${humanFileSize(file.size)})</span>
+                        <button class="button close"
+                            ?disabled="${this.signingProcessEnabled}"
+                            title="${i18n.t('qualified-pdf-upload.remove-queued-file-button-title')}"
+                            @click="${() => { this.takeFileFromQueue(id); }}">
+                            <vpu-icon name="close"></vpu-icon></button>
+                    </div>
+                    <div class="bottom-line">
+                        <span class="headline">${i18n.t('qualified-pdf-upload.positioning')}:</span>
+                        <vpu-textswitch name1="auto"
+                            name2="manual"
+                            class="switch"
+                            value1="${i18n.t('qualified-pdf-upload.positioning-automatic')}"
+                            value2="${i18n.t('qualified-pdf-upload.positioning-manual')}"
+                            ?disabled="${this.signingProcessEnabled}"
+                            @change=${ (e) => this.queuePlacementSwitch(id, e.target.name) }></vpu-textswitch>
+                        <span class="headline">${i18n.t('qualified-pdf-upload.preview')}:</span>
+                        <button class="button"
+                            ?disabled="${this.signingProcessEnabled}"
+                            @click="${() => { this.showPreview(id); }}">${i18n.t('qualified-pdf-upload.show-preview')}</button>
+                    </div>
+                </div>
+            `);
+        });
+
+        return results;
     }
 
+    /**
+     * Returns the list of successfully signed files
+     *
+     * @returns {*[]}
+     */
     getSignedFilesHtml() {
         return this.signedFiles.map(file => html`
-            <div class="file">
+            <div class="file-block">
                 <a class="is-download"
                     title="${i18n.t('qualified-pdf-upload.download-file-button-title')}"
                     @click="${() => {this.fileDownloadClickHandler(file);}}">
@@ -563,9 +615,14 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         `);
     }
 
+    /**
+     * Returns the list of files of failed signature processes
+     *
+     * @returns {*[]}
+     */
     getErrorFilesHtml() {
         return this.errorFiles.map((data, id) => html`
-            <div class="file">
+            <div class="file-block">
                 <div class="button-box">
                     <button class="button is-small"
                             title="${i18n.t('qualified-pdf-upload.re-upload-file-button-title')}"
@@ -615,7 +672,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                                                   class="${classMap({hidden: !this.queueingInProgress})}"></vpu-mini-spinner>
                             </h2>
                             <!-- List of queued files -->
-                            <div class="control">
+                            <div class="control file-list">
                                 ${this.getQueuedFilesHtml()}
                             </div>
                             <!-- Text "queue empty" -->

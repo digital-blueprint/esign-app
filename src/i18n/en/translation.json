@@ -28,6 +28,7 @@
     "positioning-automatic": "Automatic",
     "positioning-manual": "Manual",
     "close-preview": "Close preview",
+    "preview": "Preview",
     "start-signing-process-button-running-title": "Signing process running",
     "remove-current-file-button-title": "Cancel current signing process",
     "signed-files-label": "Signed files",
@@ -40,7 +41,8 @@
     "upload-status-file-text": "({{fileSize}}) is currently uploading and being processed...",
     "re-upload-all-button": "Queue all",
     "re-upload-all-button-title": "Queue all failed signing processes again",
-    "signature-placement-label": "Preview"
+    "signature-placement-label": "Preview",
+    "positioning": "Positioning"
   },
   "pdf-preview": {
     "first": "First",
