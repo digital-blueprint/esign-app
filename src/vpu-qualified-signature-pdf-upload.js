@@ -811,7 +811,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                             <h2>${i18n.t('qualified-pdf-upload.current-signing-process-label')}</h2>
                             <div class="box">
                                 <div class="file">
-                                    ${this.currentFileName} (${humanFileSize(this.currentFile.file !== undefined ? this.currentFile.file.size : 0)})
+                                ${i18n.t('qualified-pdf-upload.file-label')}:  ${this.currentFileName} (${humanFileSize(this.currentFile.file !== undefined ? this.currentFile.file.size : 0)})
                                 </div>
                                 <iframe name="external_iframe" id="iframe"></iframe>
                             </div>
