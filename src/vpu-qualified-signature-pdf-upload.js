@@ -540,7 +540,14 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                 align-items: center;
                 grid-template-columns: auto 40px;
                 grid-gap: 10px;
-                margin-bottom: 10px;
+            }
+
+            .file-block.error .header {
+                grid-template-columns: auto 80px;
+            }
+
+            .file-block.error .header .buttons {
+                white-space: nowrap;
             }
 
             .file-block div.bottom-line {
@@ -548,6 +555,11 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                 align-items: center;
                 grid-template-columns: auto 190px;
                 grid-gap: 10px;
+                margin-top: 10px;
+            }
+
+            .file-block.error div.bottom-line {
+                display: block;
             }
 
             .file-block div.bottom-line .headline {
@@ -605,14 +617,26 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
      * @returns {*[]}
      */
     getSignedFilesHtml() {
-        return this.signedFiles.map(file => html`
-            <div class="file-block">
-                <a class="is-download"
-                    title="${i18n.t('qualified-pdf-upload.download-file-button-title')}"
-                    @click="${() => {this.fileDownloadClickHandler(file);}}">
-                    ${file.name} (${humanFileSize(file.contentSize)}) <vpu-icon name="download"></vpu-icon></a>
-            </div>
-        `);
+        const ids = Object.keys(this.signedFiles);
+        let results = [];
+
+        ids.forEach((id) => {
+            const file = this.signedFiles[id];
+
+            results.push(html`
+                <div class="file-block">
+                    <div class="header">
+                        <span>${file.name} (${humanFileSize(file.contentSize)})</span>
+                        <button class="button close"
+                            title="${i18n.t('qualified-pdf-upload.download-file-button-title')}"
+                            @click="${() => { this.fileDownloadClickHandler(file); }}">
+                            <vpu-icon name="download"></vpu-icon></button>
+                    </div>
+                </div>
+            `);
+        });
+
+        return results;
     }
 
     /**
@@ -621,23 +645,34 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
      * @returns {*[]}
      */
     getErrorFilesHtml() {
-        return this.errorFiles.map((data, id) => html`
-            <div class="file-block">
-                <div class="button-box">
-                    <button class="button is-small"
-                            title="${i18n.t('qualified-pdf-upload.re-upload-file-button-title')}"
-                            @click="${() => {this.fileQueueingClickHandler(data.file, id);}}"><vpu-icon name="reload"></vpu-icon></button>
+        const ids = Object.keys(this.errorFiles);
+        let results = [];
+
+        ids.forEach((id) => {
+            const data = this.errorFiles[id];
+
+            results.push(html`
+                <div class="file-block error">
+                    <div class="header">
+                        <span>${data.file.name} (${humanFileSize(data.file.size)})</span>
+                        <div class="buttons">
+                            <button class="button"
+                                    title="${i18n.t('qualified-pdf-upload.re-upload-file-button-title')}"
+                                    @click="${() => {this.fileQueueingClickHandler(data.file, id);}}"><vpu-icon name="reload"></vpu-icon></button>
+                            <button class="button"
+                                title="${i18n.t('qualified-pdf-upload.remove-failed-file-button-title')}"
+                                @click="${() => { this.takeFailedFileFromQueue(id); }}">
+                                <vpu-icon name="close"></vpu-icon></button>
+                        </div>
+                    </div>
+                    <div class="bottom-line">
+                        <strong class="error">${data.json["hydra:description"]}</strong>
+                    </div>
                 </div>
-                <div class="info">
-                    ${data.file.name} (${humanFileSize(data.file.size)})
-                    <strong class="error">${data.json["hydra:description"]}</strong>
-                    <a class="is-remove"
-                        title="${i18n.t('qualified-pdf-upload.remove-failed-file-button-title')}"
-                        @click="${() => {this.takeFailedFileFromQueue(id);}}">
-                        <vpu-icon name="close"></vpu-icon></a>
-                </div>
-            </div>
-        `);
+            `);
+        });
+
+        return results;
     }
 
     hasSignaturePermissions() {
