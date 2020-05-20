@@ -679,6 +679,18 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         return this._hasSignaturePermissions('ROLE_SCOPE_QUALIFIED-SIGNATURE');
     }
 
+    stopSigningProcess() {
+        if (!this.externalAuthInProgress) {
+            return;
+        }
+        this.signingProcessEnabled = false;
+        this.externalAuthInProgress = false;
+        this.signingProcessActive = false;
+        if (this.currentFile.file !== undefined) {
+            this._("#file-upload").queueFile(this.currentFile.file);
+        }
+    }
+
     render() {
         return html`
             <div class="${classMap({hidden: !this.isLoggedIn() || !this.hasSignaturePermissions() || this.isLoading()})}">
@@ -722,17 +734,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                                         class="button is-primary ${classMap({hidden: this.signingProcessActive})}">
                                     ${i18n.t('qualified-pdf-upload.start-signing-process-button')}
                                 </button>
-                                <button @click="${() => {
-                                            if (!this.externalAuthInProgress) {
-                                                return;
-                                            }
-                                            this.signingProcessEnabled = false;
-                                            this.externalAuthInProgress = false;
-                                            this.signingProcessActive = false;
-                                            if (this.currentFile.file !== undefined) {
-                                                this._("#file-upload").queueFile(this.currentFile.file);
-                                            }
-                                        }}"
+                                <button @click="${() => { this.stopSigningProcess(); }}"
                                         ?disabled="${this.uploadInProgress}"
                                         class="button ${classMap({hidden: !this.signingProcessActive})}">
                                     ${i18n.t('qualified-pdf-upload.stop-signing-process-button')}
