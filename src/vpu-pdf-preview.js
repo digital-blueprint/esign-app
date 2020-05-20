@@ -361,7 +361,7 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
                                     title="${i18n.t('pdf-preview.previous-page')}"
                                     @click="${async () => { if (this.currentPage > 1) await this.showPage(--this.currentPage); } }"
                                     ?disabled="${this.isPageRenderingInProgress || this.currentPage === 1}">${i18n.t('pdf-preview.previous')}</button>
-                            <input type="number" id="pdf-page-no" min="1" value="${this.currentPage}">
+                            <input type="number" id="pdf-page-no" min="1" max="${this.totalPages}" value="${this.currentPage}">
                             <button class="button"
                                     title="${i18n.t('pdf-preview.next-page')}"
                                     @click="${async () => { if (this.currentPage < this.totalPages) await this.showPage(++this.currentPage); } }"
