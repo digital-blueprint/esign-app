@@ -324,19 +324,35 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
                 top: 0;
                 left: 0;
                 border: solid 1px black;
+                border-top-color: #888;
             }
 
             .buttons {
                 display: flex;
+                flex-wrap: wrap;
             }
 
             .buttons > * {
-                margin-right: 3px;
+                margin: 2px;
             }
 
             input[type=number] {
                 border: 1px solid #000;
                 padding: 0 0.3em;
+            }
+
+            #pdf-meta {
+                border-color: #000;
+                border-width: 1px;
+                border-style: solid;
+                padding: 0.54em;
+                border-bottom-width: 0;
+                border-top-width: 0;
+            }
+
+            .page-info {
+                white-space: nowrap;
+                margin: auto 0 auto auto;
             }
         `;
     }
@@ -372,8 +388,9 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
                                     ?disabled="${this.isPageRenderingInProgress || this.currentPage === this.totalPages}">${i18n.t('pdf-preview.last')}</button>
                             <button class="button is-primary ${classMap({hidden: !this.isShowPlacement})}"
                                     @click="${() => { this.sendAcceptEvent(); } }">${i18n.t('pdf-preview.continue')}</button>
+
+                            <div class="page-info">${i18n.t('pdf-preview.page-count', {currentPage: this.currentPage, totalPages: this.totalPages, })}</div>
                         </div>
-                        ${i18n.t('pdf-preview.page-count', {currentPage: this.currentPage, totalPages: this.totalPages, })}
                     </div>
                     <div id="canvas-wrapper" class="${classMap({hidden: this.isPageRenderingInProgress})}">
                         <canvas id="pdf-canvas"></canvas>
