@@ -1,11 +1,11 @@
 {
   "official-pdf-upload": {
-    "upload-field-label": "Upload PDF files to sign",
-    "upload-area-text": "In this area you can upload PDF files via Drag & Drop or by selecting them directly",
+    "upload-field-label": "Upload PDF-files to sign",
+    "upload-area-text": "In this area you can upload PDF-files via Drag & Drop or by selecting them directly",
     "signed-files-label": "Signed files",
     "download-zip-button": "Download ZIP",
     "download-zip-button-tooltip": "Download all signed files as ZIP file",
-    "upload-button-label": "Select PDF files",
+    "upload-button-label": "Select PDF-files",
     "download-file-button-title": "Download signed PDF",
     "error-files-label": "Failed signing processes",
     "re-upload-file-button-title": "Upload again",
@@ -14,8 +14,8 @@
     "re-upload-all-button-title": "Upload all failed uploads again"
   },
   "qualified-pdf-upload": {
-    "upload-field-label": "Upload PDF files to sign",
-    "upload-area-text": "In this area you can upload PDF files via Drag & Drop or by selecting them directly",
+    "upload-field-label": "Upload PDF-files to sign",
+    "upload-area-text": "In this area you can upload PDF-files via Drag & Drop or by selecting them directly",
     "current-signing-process-label": "Current signing process",
     "queued-files-label": "Queued files",
     "queued-files-empty1": "No queued files",
@@ -34,7 +34,7 @@
     "signed-files-label": "Signed files",
     "download-zip-button": "Download ZIP",
     "download-zip-button-tooltip": "Download all signed files as ZIP file",
-    "upload-button-label": "Select PDF files",
+    "upload-button-label": "Select PDF-files",
     "download-file-button-title": "Download signed PDF",
     "error-files-label": "Failed signing processes",
     "re-upload-file-button-title": "Queue again",

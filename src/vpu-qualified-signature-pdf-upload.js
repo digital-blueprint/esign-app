@@ -325,7 +325,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
     }
 
     /**
-     * Download signed pdf files as zip
+     * Download signed pdf-files as zip
      */
     zipDownloadClickHandler() {
         // see: https://stuk.github.io/jszip/
@@ -333,7 +333,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         const that = this;
         let fileNames = [];
 
-        // add all signed pdf files
+        // add all signed pdf-files
         this.signedFiles.forEach((file) => {
             let fileName = file.name;
 
@@ -373,7 +373,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
     }
 
     /**
-     * Download one signed pdf file
+     * Download one signed pdf-file
      *
      * @param file
      */
@@ -385,7 +385,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
     }
 
     /**
-     * Queues a failed pdf file again
+     * Queues a failed pdf-file again
      *
      * @param file
      * @param id
