@@ -47,11 +47,11 @@
   },
   "pdf-preview": {
     "first": "Erste",
-    "previous": "Vorige",
+    "previous": "Vorherige",
     "next": "Nächste",
     "last": "Letzte",
     "first-page": "Erste Seite",
-    "previous-page": "Vorige Seite",
+    "previous-page": "Vorherige Seite",
     "next-page": "Nächste Seite",
     "last-page": "Letzte Seite",
     "page-count": "Seite {{currentPage}} von {{totalPages}}",
