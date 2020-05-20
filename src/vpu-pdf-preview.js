@@ -333,6 +333,11 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
             .buttons > * {
                 margin-right: 3px;
             }
+
+            input[type=number] {
+                border: 1px solid #000;
+                padding: 0 0.3em;
+            }
         `;
     }
 
