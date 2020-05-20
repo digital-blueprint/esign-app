@@ -380,5 +380,3 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
         `;
     }
 }
-
-commonUtils.defineCustomElement('vpu-pdf-preview', PdfPreview);
