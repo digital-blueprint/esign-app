@@ -535,6 +535,10 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                 flex: 1 0;
             }
 
+            .file-block {
+                max-width: 320px;
+            }
+
             .file-block, .box {
                 border: solid 1px black;
                 padding: 10px;
@@ -578,6 +582,12 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
             .file-block div.bottom-line .headline {
                 text-align: right;
             }
+
+            .file-block .filename {
+                text-overflow: ellipsis;
+                overflow: hidden;
+                white-space: nowrap;
+            }
         `;
     }
 
@@ -596,7 +606,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
             results.push(html`
                 <div class="file-block">
                     <div class="header">
-                        <span>${file.name} (${humanFileSize(file.size)})</span>
+                        <span class="filename">${i18n.t('qualified-pdf-upload.file-label')}: ${file.name} (${humanFileSize(file.size)})</span>
                         <button class="button close"
                             ?disabled="${this.signingProcessEnabled}"
                             title="${i18n.t('qualified-pdf-upload.remove-queued-file-button-title')}"
@@ -612,7 +622,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                             value2="${i18n.t('qualified-pdf-upload.positioning-manual')}"
                             ?disabled="${this.signingProcessEnabled}"
                             @change=${ (e) => this.queuePlacementSwitch(id, e.target.name) }></vpu-textswitch>
-                        <span class="headline">${i18n.t('qualified-pdf-upload.preview')}:</span>
+                        <div></div>
                         <button class="button"
                             ?disabled="${this.signingProcessEnabled}"
                             @click="${() => { this.showPreview(id); }}">${i18n.t('qualified-pdf-upload.show-preview')}</button>
