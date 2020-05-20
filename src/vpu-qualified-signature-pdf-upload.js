@@ -134,13 +134,16 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         // prepare parameters to tell PDF-AS where and how the signature should be placed
         if (this.queuedFilesPlacementModes[key] === "manual") {
             const data = this.queuedFilesSignaturePlacements[key];
-            params = {
-                y: data.currentPageOriginalHeight - data.top,
-                x: data.left,
-                r: data.angle,
-                w: data.width, // only width, no "height" allowed in PDF-AS
-                p: data.currentPage
-            };
+
+            if (data !== undefined) {
+                params = {
+                    y: data.currentPageOriginalHeight - data.top,
+                    x: data.left,
+                    r: data.angle,
+                    w: data.width, // only width, no "height" allowed in PDF-AS
+                    p: data.currentPage
+                };
+            }
         }
 
         await this._("#file-upload").uploadFile(file, params);
