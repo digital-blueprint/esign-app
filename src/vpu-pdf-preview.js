@@ -186,7 +186,7 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
      */
     async showPage(pageNumber, initSignature = false) {
         // we need to wait until the last rendering is finished
-        if (this.isPageRenderingInProgress) {
+        if (this.isPageRenderingInProgress || this.pdfDoc === null) {
             return;
         }
 
