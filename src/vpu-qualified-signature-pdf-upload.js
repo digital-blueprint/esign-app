@@ -723,7 +723,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                 <div class="field">
                     <h2>${i18n.t('qualified-pdf-upload.upload-field-label')}</h2>
                     <div class="control">
-                        <vpu-fileupload id="file-upload" always-send-file deferred lang="${this.lang}" url="${this.signingRequestUrl}" accept="application/pdf"
+                        <vpu-fileupload id="file-upload" allowed-mime-types="application/pdf" always-send-file deferred lang="${this.lang}" url="${this.signingRequestUrl}" accept="application/pdf"
                             text="${i18n.t('qualified-pdf-upload.upload-area-text')}"
                             button-label="${i18n.t('qualified-pdf-upload.upload-button-label')}"
                             @vpu-fileupload-all-start="${this.onAllUploadStarted}"
