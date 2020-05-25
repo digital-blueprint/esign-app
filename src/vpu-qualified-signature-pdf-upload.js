@@ -613,6 +613,10 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                             <vpu-icon name="trash"></vpu-icon></button>
                     </div>
                     <div class="bottom-line">
+                        <div></div>
+                        <button class="button"
+                            ?disabled="${this.signingProcessEnabled}"
+                            @click="${() => { this.showPreview(id); }}">${i18n.t('qualified-pdf-upload.show-preview')}</button>
                         <span class="headline">${i18n.t('qualified-pdf-upload.positioning')}:</span>
                         <vpu-textswitch name1="auto"
                             name2="manual"
@@ -621,10 +625,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                             value2="${i18n.t('qualified-pdf-upload.positioning-manual')}"
                             ?disabled="${this.signingProcessEnabled}"
                             @change=${ (e) => this.queuePlacementSwitch(id, e.target.name) }></vpu-textswitch>
-                        <div></div>
-                        <button class="button"
-                            ?disabled="${this.signingProcessEnabled}"
-                            @click="${() => { this.showPreview(id); }}">${i18n.t('qualified-pdf-upload.show-preview')}</button>
                     </div>
                 </div>
             `);
