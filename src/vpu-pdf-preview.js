@@ -247,7 +247,8 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
                         scaleY: scale,
                         angle: 0,
                         top: 0,
-                        left: 0
+                        left: 0,
+                        lockUniScaling: true  // lock aspect ratio when resizing
                     });
 
                     // we want to center the signature at the page
