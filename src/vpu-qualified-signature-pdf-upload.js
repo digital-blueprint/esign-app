@@ -748,17 +748,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                                                   style="font-size: 0.7em"
                                                   class="${classMap({hidden: !this.queueingInProgress})}"></vpu-mini-spinner>
                             </h2>
-                            <!-- List of queued files -->
-                            <div class="control file-list">
-                                ${this.getQueuedFilesHtml()}
-                            </div>
-                            <!-- Text "queue empty" -->
-                            <div class="empty-queue control ${classMap({hidden: this.queuedFilesCount !== 0})}">
-                                ${i18n.t('qualified-pdf-upload.queued-files-empty1')}<br />
-                                ${i18n.t('qualified-pdf-upload.queued-files-empty2')}
-                            </div>
                             <!-- Buttons to start/stop signing process -->
-                            <div class="control">
+                            <div class="control field">
                                 <button @click="${() => { this.signingProcessEnabled = true; this.signingProcessActive = true; }}"
                                         ?disabled="${this.queuedFilesCount === 0}"
                                         class="button is-primary ${classMap({hidden: this.signingProcessActive})}">
@@ -770,31 +761,40 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                                     ${i18n.t('qualified-pdf-upload.stop-signing-process-button')}
                                 </button>
                             </div>
+                            <!-- List of queued files -->
+                            <div class="control file-list">
+                                ${this.getQueuedFilesHtml()}
+                            </div>
+                            <!-- Text "queue empty" -->
+                            <div class="empty-queue control ${classMap({hidden: this.queuedFilesCount !== 0})}">
+                                ${i18n.t('qualified-pdf-upload.queued-files-empty1')}<br />
+                                ${i18n.t('qualified-pdf-upload.queued-files-empty2')}
+                            </div>
                         </div>
                         <!-- List of signed PDFs -->
                         <div class="files-block field ${classMap({hidden: this.signedFilesCount === 0})}">
                             <h2>${i18n.t('qualified-pdf-upload.signed-files-label')}</h2>
+                            <!-- Button to download all signed PDFs -->
+                            <div class="field ${classMap({hidden: this.signedFilesCount === 0})}">
+                                <div class="control">
+                                    <vpu-button id="zip-download-button" value="${i18n.t('qualified-pdf-upload.download-zip-button')}" title="${i18n.t('qualified-pdf-upload.download-zip-button-tooltip')}" @click="${this.zipDownloadClickHandler}" type="is-primary"></vpu-button>
+                                </div>
+                            </div>
                             <div class="control">
                                 ${this.getSignedFilesHtml()}
-                            </div>
-                        </div>
-                        <!-- Button to download all signed PDFs -->
-                        <div class="field ${classMap({hidden: this.signedFilesCount === 0})}">
-                            <div class="control">
-                                <vpu-button id="zip-download-button" value="${i18n.t('qualified-pdf-upload.download-zip-button')}" title="${i18n.t('qualified-pdf-upload.download-zip-button-tooltip')}" @click="${this.zipDownloadClickHandler}" type="is-primary"></vpu-button>
                             </div>
                         </div>
                         <!-- List of errored files -->
                         <div class="files-block error-files field ${classMap({hidden: this.errorFilesCount === 0})}">
                             <h2>${i18n.t('qualified-pdf-upload.error-files-label')}</h2>
+                            <!-- Button to upload errored files again -->
+                            <div class="field ${classMap({hidden: this.errorFilesCount === 0})}">
+                                <div class="control">
+                                    <vpu-button id="re-upload-all-button" ?disabled="${this.uploadInProgress}" value="${i18n.t('qualified-pdf-upload.re-upload-all-button')}" title="${i18n.t('qualified-pdf-upload.re-upload-all-button-title')}" @click="${this.reUploadAllClickHandler}" type="is-primary"></vpu-button>
+                                </div>
+                            </div>
                             <div class="control">
                                 ${this.getErrorFilesHtml()}
-                            </div>
-                        </div>
-                        <!-- Button to upload errored files again -->
-                        <div class="field ${classMap({hidden: this.errorFilesCount === 0})}">
-                            <div class="control">
-                                <vpu-button id="re-upload-all-button" ?disabled="${this.uploadInProgress}" value="${i18n.t('qualified-pdf-upload.re-upload-all-button')}" title="${i18n.t('qualified-pdf-upload.re-upload-all-button-title')}" @click="${this.reUploadAllClickHandler}" type="is-primary"></vpu-button>
                             </div>
                         </div>
                     </div>
