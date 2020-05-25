@@ -785,7 +785,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                         </div>
                         <!-- List of errored files -->
                         <div class="files-block error-files field ${classMap({hidden: this.errorFilesCount === 0})}">
-                            <h2 class="error">${i18n.t('qualified-pdf-upload.error-files-label')}</h2>
+                            <h2>${i18n.t('qualified-pdf-upload.error-files-label')}</h2>
                             <div class="control">
                                 ${this.getErrorFilesHtml()}
                             </div>
