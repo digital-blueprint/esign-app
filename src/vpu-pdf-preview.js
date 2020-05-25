@@ -303,7 +303,7 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
                         top: signature.get("top") * scaleAdapt
                     });
 
-                    // signature.setCoords();
+                    signature.setCoords();
                 }
 
                 // render the page contents in the canvas
