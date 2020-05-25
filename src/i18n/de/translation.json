@@ -56,7 +56,8 @@
     "next-page": "Nächste Seite",
     "last-page": "Letzte Seite",
     "page-count": "Seite {{currentPage}} von {{totalPages}}",
-    "continue": "Platzierung bestätigen"
+    "continue": "Platzierung bestätigen",
+    "cancel": "X"
   },
   "error-summary": "Ein Fehler ist aufgetreten",
   "error-permission-message": "Sie müssen das Recht auf Amtssignaturen besitzen um diese Funktion nutzen zu können!",

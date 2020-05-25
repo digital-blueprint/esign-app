@@ -55,7 +55,8 @@
     "next-page": "Next page",
     "last-page": "Last page",
     "page-count": "Page {{currentPage}} of {{totalPages}}",
-    "continue": "Accept signature placing"
+    "continue": "Accept signature placing",
+    "cancel": "X"
   },
   "error-summary": "An error occurred",
   "error-permission-message": "You need have permissions to use the official signature to use this function!",

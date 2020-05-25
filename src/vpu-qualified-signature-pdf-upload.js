@@ -39,6 +39,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         this.signingProcessEnabled = false;
         this.signingProcessActive = false;
         this.signaturePlacementInProgress = false;
+        this.withSigBlock = false;
         this.queuedFilesSignaturePlacements = [];
         this.queuedFilesPlacementModes = [];
         this.currentPreviewQueueKey = '';
@@ -79,6 +80,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
             currentFile: { type: Object, attribute: false },
             currentFileName: { type: String, attribute: false },
             signaturePlacementInProgress: { type: Boolean, attribute: false },
+            withSigBlock: { type: Boolean, attribute: false },
             isSignaturePlacement: { type: Boolean, attribute: false },
         };
     }
@@ -158,12 +160,18 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         this.signaturePlacementInProgress = false;
     }
 
+    hidePDF(event) {
+        this.queuedFilesPlacementModes[this.currentPreviewQueueKey] = "auto";
+        // TODO: update toggleSwitch display ...
+        this.signaturePlacementInProgress = false;
+    }
+
     queuePlacementSwitch(key, name) {
         this.queuedFilesPlacementModes[key] = name;
         console.log(name);
 
         if (name === "manual") {
-            this.showPreview(key);
+            this.showPreview(key, true);
         } else if (this.currentPreviewQueueKey === key) {
             this.signaturePlacementInProgress = false;
         }
@@ -404,8 +412,9 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
      * Shows the preview
      *
      * @param key
+     * @param withSigBlock
      */
-    async showPreview(key) {
+    async showPreview(key, withSigBlock=false) {
         if (this.signingProcessEnabled) {
             return;
         }
@@ -416,11 +425,12 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         console.log(file);
         // start signature placement process
         this.signaturePlacementInProgress = true;
+        this.withSigBlock = withSigBlock;
 
         const previewTag = this.constructor.getScopedTagName("vpu-pdf-preview");
         await this._(previewTag).showPDF(
             file,
-            this.queuedFilesPlacementModes[key] === "manual",
+            withSigBlock, //this.queuedFilesPlacementModes[key] === "manual",
             this.queuedFilesSignaturePlacements[key]);
     }
 
@@ -801,11 +811,13 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                     <div class="right-container">
                         <!-- PDF preview -->
                         <div id="pdf-preview" class="field ${classMap({hidden: !this.signaturePlacementInProgress})}">
-                            <h2>${i18n.t('qualified-pdf-upload.signature-placement-label')}</h2>
+                            <h2>${this.withSigBlock ? i18n.t('qualified-pdf-upload.signature-placement-label') : i18n.t('qualified-pdf-upload.preview-label')}</h2>
                             <div class="file">
                             <strong>${this.currentFile.name}</strong> (${humanFileSize(this.currentFile !== undefined ? this.currentFile.size : 0)})
                             </div>
-                            <vpu-pdf-preview lang="${this.lang}" @vpu-pdf-preview-accept="${this.storePDFData}"></vpu-pdf-preview>
+                            <vpu-pdf-preview lang="${this.lang}"
+                                             @vpu-pdf-preview-accept="${this.storePDFData}"
+                                             @vpu-pdf-preview-cancel="${this.hidePDF}"></vpu-pdf-preview>
                         </div>
                         <!-- File upload progress -->
                         <div class="field notification is-info ${classMap({hidden: !this.uploadInProgress})}">
