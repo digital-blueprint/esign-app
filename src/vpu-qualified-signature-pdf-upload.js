@@ -617,7 +617,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                 <div class="file-block">
                     <div class="header">
                         <span class="filename"><strong>${file.name}</strong> (${humanFileSize(file.size)})</span>
-                        <button class="button close"
+                        <button class="button close is-danger"
                             ?disabled="${this.signingProcessEnabled}"
                             title="${i18n.t('qualified-pdf-upload.remove-queued-file-button-title')}"
                             @click="${() => { this.takeFileFromQueue(id); }}">
@@ -692,7 +692,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                             <button class="button"
                                     title="${i18n.t('qualified-pdf-upload.re-upload-file-button-title')}"
                                     @click="${() => {this.fileQueueingClickHandler(data.file, id);}}"><vpu-icon name="reload"></vpu-icon></button>
-                            <button class="button"
+                            <button class="button is-danger"
                                 title="${i18n.t('qualified-pdf-upload.remove-failed-file-button-title')}"
                                 @click="${() => { this.takeFailedFileFromQueue(id); }}">
                                 <vpu-icon name="close"></vpu-icon></button>
@@ -767,7 +767,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                                 </button>
                                 <button @click="${() => { this.stopSigningProcess(); }}"
                                         ?disabled="${this.uploadInProgress}"
-                                        class="button ${classMap({hidden: !this.signingProcessActive})}">
+                                        class="button is-danger ${classMap({hidden: !this.signingProcessActive})}">
                                     ${i18n.t('qualified-pdf-upload.stop-signing-process-button')}
                                 </button>
                             </div>
