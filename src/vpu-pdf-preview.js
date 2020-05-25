@@ -115,6 +115,25 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
             });
 
             // this.fabricCanvas.on("object:moved", function(opt){ console.log(opt); });
+
+            // disallow moving of signature outside of canvas boundaries
+            this.fabricCanvas.on('object:moving', function (e) {
+                let obj = e.target;
+                obj.setCoords();
+
+                // top-left corner
+                if (obj.getBoundingRect().top < 0 || obj.getBoundingRect().left < 0) {
+                    obj.top = Math.max(obj.top, obj.top - obj.getBoundingRect().top);
+                    obj.left = Math.max(obj.left, obj.left - obj.getBoundingRect().left);
+                }
+
+                // bottom-right corner
+                if (obj.getBoundingRect().top + obj.getBoundingRect().height > obj.canvas.height ||
+                    obj.getBoundingRect().left + obj.getBoundingRect().width > obj.canvas.width) {
+                    obj.top = Math.min(obj.top, obj.canvas.height - obj.getBoundingRect().height + obj.top - obj.getBoundingRect().top);
+                    obj.left = Math.min(obj.left, obj.canvas.width - obj.getBoundingRect().width + obj.left - obj.getBoundingRect().left);
+                }
+            });
         });
     }
 
