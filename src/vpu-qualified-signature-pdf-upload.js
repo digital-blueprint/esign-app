@@ -174,6 +174,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
 
         // check if this is really a postMessage from our iframe without using event.origin
         if (data.type === 'pdf-as-error') {
+            this.addToErrorFiles(this.currentFile);
             this.externalAuthInProgress = false;
             this.endSigningProcessIfQueueEmpty();
 
