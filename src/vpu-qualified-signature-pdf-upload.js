@@ -605,7 +605,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
             results.push(html`
                 <div class="file-block">
                     <div class="header">
-                        <span class="filename">${i18n.t('qualified-pdf-upload.file-label')}: ${file.name} (${humanFileSize(file.size)})</span>
+                        <span class="filename"><strong>${file.name}</strong> (${humanFileSize(file.size)})</span>
                         <button class="button close"
                             ?disabled="${this.signingProcessEnabled}"
                             title="${i18n.t('qualified-pdf-upload.remove-queued-file-button-title')}"
@@ -648,7 +648,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
             results.push(html`
                 <div class="file-block">
                     <div class="header">
-                        <span>${file.name} (${humanFileSize(file.contentSize)})</span>
+                        <span><strong>${file.name}</strong> (${humanFileSize(file.contentSize)})</span>
                         <button class="button close"
                             title="${i18n.t('qualified-pdf-upload.download-file-button-title')}"
                             @click="${() => { this.fileDownloadClickHandler(file); }}">
@@ -676,7 +676,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
             results.push(html`
                 <div class="file-block error">
                     <div class="header">
-                        <span>${data.file.name} (${humanFileSize(data.file.size)})</span>
+                        <span><strong>${data.file.name}</strong> (${humanFileSize(data.file.size)})</span>
                         <div class="buttons">
                             <button class="button"
                                     title="${i18n.t('qualified-pdf-upload.re-upload-file-button-title')}"
@@ -802,7 +802,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                         <div id="pdf-preview" class="field ${classMap({hidden: !this.signaturePlacementInProgress})}">
                             <h2>${i18n.t('qualified-pdf-upload.signature-placement-label')}</h2>
                             <div class="file">
-                            ${i18n.t('qualified-pdf-upload.file-label')}: ${this.currentFile.name} (${humanFileSize(this.currentFile !== undefined ? this.currentFile.size : 0)})
+                            <strong>${this.currentFile.name}</strong> (${humanFileSize(this.currentFile !== undefined ? this.currentFile.size : 0)})
                             </div>
                             <vpu-pdf-preview lang="${this.lang}" @vpu-pdf-preview-accept="${this.storePDFData}"></vpu-pdf-preview>
                         </div>
@@ -817,7 +817,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                             <h2>${i18n.t('qualified-pdf-upload.current-signing-process-label')}</h2>
                             <div class="box">
                                 <div class="file">
-                                ${i18n.t('qualified-pdf-upload.file-label')}:  ${this.currentFileName} (${humanFileSize(this.currentFile.file !== undefined ? this.currentFile.file.size : 0)})
+                                <strong>${this.currentFileName}</strong> (${humanFileSize(this.currentFile.file !== undefined ? this.currentFile.file.size : 0)})
                                 </div>
                                 <iframe id="iframe"></iframe>
                             </div>

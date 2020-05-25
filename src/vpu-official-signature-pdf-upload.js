@@ -259,7 +259,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitElem
                 <a class="is-download"
                     title="${i18n.t('official-pdf-upload.download-file-button-title')}"
                     @click="${() => {this.fileDownloadClickHandler(file);}}">
-                    ${file.name} (${humanFileSize(file.contentSize)}) <vpu-icon name="download"></vpu-icon></a>
+                    <strong>${file.name}</strong> (${humanFileSize(file.contentSize)}) <vpu-icon name="download"></vpu-icon></a>
             </div>
         `);
     }
@@ -273,7 +273,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitElem
                             @click="${() => {this.fileUploadClickHandler(data.file, id);}}"><vpu-icon name="reload"></vpu-icon></button>
                 </div>
                 <div class="info">
-                    ${data.file.name} (${humanFileSize(data.file.size)})
+                    <strong>${data.file.name}</strong> (${humanFileSize(data.file.size)})
                     <strong class="error">${data.json["hydra:description"]}</strong>
                 </div>
             </div>
