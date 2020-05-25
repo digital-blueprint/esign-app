@@ -103,6 +103,13 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
             // add signature image
             fabric.Image.fromURL(commonUtils.getAssetURL('local/vpu-signature/signature-placeholder.png'), function(image) {
                 that.sigImageOriginalWidth = image.width;
+
+                // add a red border around the signature placeholder
+                image.set({stroke: "#e4154b", strokeWidth: 3});
+
+                // TODO: un-lock rotation when rotation point in PDF-AS is matched
+                image.lockRotation = true;
+
                 // we will resize the image when the initial pdf page is loaded
                 that.fabricCanvas.add(image);
             });
@@ -238,11 +245,13 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
                     signature.set({
                         scaleX: scale,
                         scaleY: scale,
-                        angle: 0
+                        angle: 0,
+                        top: 0,
+                        left: 0
                     });
 
                     // we want to center the signature at the page
-                    signature.center();
+                    // signature.center();
                 } else {
                     // adapt signature scale to new scale
                     const scaleAdapt = this.canvasToPdfScale / oldScale;
