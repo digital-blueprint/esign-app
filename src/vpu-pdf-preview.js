@@ -98,6 +98,7 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
             // }).observe(this._('#pdf-main-container'));
 
             // add fabric.js canvas for signature positioning
+            // , {stateful : true}
             this.fabricCanvas = new fabric.Canvas(this._('#fabric-canvas'));
 
             // add signature image
@@ -109,6 +110,9 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
 
                 // TODO: un-lock rotation when rotation point in PDF-AS is matched
                 image.lockRotation = true;
+
+                // TODO: turn on controls when we enable rotation and resizing again
+                image.hasControls = false;
 
                 // we will resize the image when the initial pdf page is loaded
                 that.fabricCanvas.add(image);
@@ -134,6 +138,17 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
                     obj.left = Math.min(obj.left, obj.canvas.width - obj.getBoundingRect().width + obj.left - obj.getBoundingRect().left);
                 }
             });
+
+            // TODO: prevent scaling the signature in a way that it is crossing the canvas boundaries
+            // it's very hard to calculate the way back from obj.scaleX and obj.translateX
+            // obj.getBoundingRect() will not be updated in the object:scaling event, it is only updated after the scaling is done
+            // this.fabricCanvas.observe('object:scaling', function (e) {
+            //     let obj = e.target;
+            //
+            //     console.log(obj);
+            //     console.log(obj.scaleX);
+            //     console.log(obj.translateX);
+            // });
         });
     }
 
@@ -259,7 +274,12 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
                 // set the initial position of the signature
                 if (initSignature) {
                     // we want to scale the signature to 40% of the page width
-                    const scale = 0.4 * this.canvas.width / this.sigImageOriginalWidth;
+                    // const scale = 0.4 * this.canvas.width / this.sigImageOriginalWidth;
+
+                    // We calculate the scale from a fixed with that mimics the width that is used by PDF-AS
+                    // There currently seems to be no way in pdf.js to get the width in inch or mm so we are assuming
+                    // pixel from a default A4 document
+                    const scale = 243 / this.sigImageOriginalWidth;
 
                     signature.set({
                         scaleX: scale,
