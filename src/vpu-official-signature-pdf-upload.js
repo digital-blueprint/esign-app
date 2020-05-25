@@ -206,13 +206,9 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitElem
         // language=css
         return css`
             ${commonStyles.getThemeCSS()}
-            ${commonStyles.getGeneralCSS()}
+            ${commonStyles.getGeneralCSS(false)}
             ${commonStyles.getButtonCSS()}
             ${commonStyles.getNotificationCSS()}
-
-            h2 {
-                margin-bottom: inherit;
-            }
 
             .hidden {
                 display: none;
