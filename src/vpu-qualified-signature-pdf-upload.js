@@ -448,7 +448,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         // language=css
         return css`
             ${commonStyles.getThemeCSS()}
-            ${commonStyles.getGeneralCSS()}
+            ${commonStyles.getGeneralCSS(false)}
             ${commonStyles.getButtonCSS()}
             ${commonStyles.getNotificationCSS()}
 
@@ -460,10 +460,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                 border: 1px solid #000;
                 border-bottom-width: 0;
                 padding: 0.4em 0 0 0.5em;
-            }
- 
-            h2 {
-                margin-bottom: inherit;
             }
 
             .hidden {
