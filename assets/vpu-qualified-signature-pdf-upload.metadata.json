@@ -3,7 +3,7 @@
   "module_src": "vpu-qualified-signature-pdf-upload.js",
   "routing_name": "qualified-pdf-upload",
   "name": {
-    "de": "Persönliche aufbringen",
+    "de": "Persönliche Signatur aufbringen",
     "en": "Qualifiedly sign"
   },
   "short_name": {
