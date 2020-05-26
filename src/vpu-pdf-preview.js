@@ -397,6 +397,7 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
             .buttons {
                 display: flex;
                 flex-wrap: wrap;
+                width: 100%;
             }
 
             .buttons > * {

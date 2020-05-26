@@ -556,7 +556,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
 
             /* using vpu-icon doesn't work */
             button > [name=close], a > [name=close] {
-                font-size: 0.7em;
+                font-size: 0.8em;
             }
 
             a > [name=close] {
@@ -895,7 +895,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                             <div class="file">
                                 <strong>${this.currentFile.name}</strong> (${humanFileSize(this.currentFile !== undefined ? this.currentFile.size : 0)})
                                 <button class="button is-cancel"
-                                    @click="${this.hidePDF}">${i18n.t('pdf-preview.cancel')}</button>
+                                    @click="${this.hidePDF}"><vpu-icon name="close"></vpu-icon></button>
                             </div>
                             <vpu-pdf-preview lang="${this.lang}"
                                              @vpu-pdf-preview-accept="${this.storePDFData}"
