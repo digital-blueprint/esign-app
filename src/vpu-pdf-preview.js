@@ -239,8 +239,9 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
             // get handle of page
             await this.pdfDoc.getPage(pageNumber).then(async (page) => {
                 // original width of the pdf page at scale 1
-                const pdfOriginalWidth = page.getViewport({ scale: 1 }).width;
-                this.currentPageOriginalHeight = page.getViewport({ scale: 1 }).height;
+                const originalViewport = page.getViewport({ scale: 1 });
+                const pdfOriginalWidth = originalViewport.width;
+                this.currentPageOriginalHeight = originalViewport.height;
 
                 // set the canvas width to the width of the container (minus the borders)
                 this.fabricCanvas.setWidth(this._('#pdf-main-container').clientWidth - 2);
@@ -273,13 +274,11 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
 
                 // set the initial position of the signature
                 if (initSignature) {
-                    // we want to scale the signature to 40% of the page width
-                    // const scale = 0.4 * this.canvas.width / this.sigImageOriginalWidth;
-
                     // We calculate the scale from a fixed with that mimics the width that is used by PDF-AS
                     // There currently seems to be no way in pdf.js to get the width in inch or mm so we are assuming
-                    // pixel from a default A4 document
-                    const scale = 243 / this.sigImageOriginalWidth;
+                    // pixel from a default A4 document (width in portrait, height in landscape)
+                    const docSize = Math.max(originalViewport.width, originalViewport.height);
+                    const scale = 128.1 / docSize;
 
                     signature.set({
                         scaleX: scale,
