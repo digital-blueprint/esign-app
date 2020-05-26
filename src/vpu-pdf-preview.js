@@ -31,6 +31,8 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
         this.canvasToPdfScale = 1.0;
         this.sigImageOriginalWidth = 0;
         this.currentPageOriginalHeight = 0;
+
+        this._onWindowResize = this._onWindowResize.bind(this);
     }
 
     static get scopedElements() {
@@ -66,10 +68,21 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
         super.update(changedProperties);
     }
 
+    _onWindowResize() {
+        this.showPage(this.currentPage);
+    }
+
+    disconnectedCallback() {
+        window.removeEventListener('resize', this._onWindowResize);
+        super.disconnectedCallback();
+      }
+
     connectedCallback() {
         super.connectedCallback();
         const that = this;
         pdfjs.GlobalWorkerOptions.workerSrc = commonUtils.getAssetURL('local/vpu-signature/pdfjs/pdf.worker.min.js');
+
+        window.addEventListener('resize', this._onWindowResize);
 
         this.updateComplete.then(() => {
             that.canvas = that._('#pdf-canvas');
@@ -77,16 +90,6 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
             // this._('#upload-pdf-input').addEventListener('change', function() {
             //     that.showPDF(this.files[0]);
             // });
-
-            // redraw page if window was resized
-            window.onresize = async () => {
-                await that.showPage(that.currentPage);
-            };
-
-            // Safari can't use that yet
-            // new ResizeObserver(async () => {
-            //     await that.showPage(that.currentPage);
-            // }).observe(this._('#pdf-main-container'));
 
             // add fabric.js canvas for signature positioning
             // , {stateful : true}
