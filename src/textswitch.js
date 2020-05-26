@@ -52,7 +52,7 @@ export class TextSwitch extends LitElement {
             }
 
             .active {
-                background-color: var(--vpu-primary-bg-color) !important;
+                background-color: black !important;
                 color: var(--vpu-primary-text-color) !important;
             }
         `;

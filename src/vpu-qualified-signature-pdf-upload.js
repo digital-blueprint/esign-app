@@ -455,6 +455,22 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         return file;
     }
 
+    clearQueuedFiles() {
+        this.queuedFilesSignaturePlacements = [];
+        this.queuedFilesPlacementModes = [];
+        this._("#file-upload").clearQueuedFiles();
+    }
+
+    clearSignedFiles() {
+        this.signedFiles = [];
+        this.signedFilesCount = 0;
+    }
+
+    clearErrorFiles() {
+        this.errorFiles = [];
+        this.errorFilesCount = 0;
+    }
+
     static get styles() {
         // language=css
         return css`
@@ -465,6 +481,10 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
 
             #pdf-preview {
                 min-width: 320px;
+            }
+
+            h2 {
+                margin-bottom: 10px;
             }
 
             #pdf-preview .file {
@@ -483,6 +503,10 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                 border-width: 0;
                 /* keeps the A-Trust webpage aligned left */
                 max-width: 335px;
+            }
+
+            .files-block.field:not(:last-child) {
+                margin-bottom: 40px;
             }
 
             .files-block .file {
@@ -598,6 +622,20 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                 overflow: hidden;
                 white-space: nowrap;
             }
+
+            #pdf-preview .button.is-cancel {
+                color: #e4154b;
+                float: right;
+                margin-right: 10px;
+            }
+
+            .is-right {
+                float: right;
+            }
+
+            .error-files .header {
+                color: black;
+            }
         `;
     }
 
@@ -617,7 +655,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                 <div class="file-block">
                     <div class="header">
                         <span class="filename"><strong>${file.name}</strong> (${humanFileSize(file.size)})</span>
-                        <button class="button close is-danger"
+                        <button class="button close"
                             ?disabled="${this.signingProcessEnabled}"
                             title="${i18n.t('qualified-pdf-upload.remove-queued-file-button-title')}"
                             @click="${() => { this.takeFileFromQueue(id); }}">
@@ -692,10 +730,10 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                             <button class="button"
                                     title="${i18n.t('qualified-pdf-upload.re-upload-file-button-title')}"
                                     @click="${() => {this.fileQueueingClickHandler(data.file, id);}}"><vpu-icon name="reload"></vpu-icon></button>
-                            <button class="button is-danger"
+                            <button class="button"
                                 title="${i18n.t('qualified-pdf-upload.remove-failed-file-button-title')}"
                                 @click="${() => { this.takeFailedFileFromQueue(id); }}">
-                                <vpu-icon name="close"></vpu-icon></button>
+                                <vpu-icon name="trash"></vpu-icon></button>
                         </div>
                     </div>
                     <div class="bottom-line">
@@ -758,18 +796,25 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                                                   style="font-size: 0.7em"
                                                   class="${classMap({hidden: !this.queueingInProgress})}"></vpu-mini-spinner>
                             </h2>
-                            <!-- Buttons to start/stop signing process -->
+                            <!-- Buttons to start/stop signing process and clear queue -->
                             <div class="control field">
+                                <button @click="${this.clearQueuedFiles}"
+                                        ?disabled="${this.queuedFilesCount === 0}"
+                                        class="button ${classMap({hidden: this.signingProcessActive})}">
+                                    ${i18n.t('qualified-pdf-upload.clear-all')}
+                                </button>
                                 <button @click="${() => { this.signingProcessEnabled = true; this.signingProcessActive = true; }}"
                                         ?disabled="${this.queuedFilesCount === 0}"
-                                        class="button is-primary ${classMap({hidden: this.signingProcessActive})}">
+                                        class="button is-right is-primary ${classMap({hidden: this.signingProcessActive})}">
                                     ${i18n.t('qualified-pdf-upload.start-signing-process-button')}
                                 </button>
+                                <!--
                                 <button @click="${() => { this.stopSigningProcess(); }}"
                                         ?disabled="${this.uploadInProgress}"
-                                        class="button is-danger ${classMap({hidden: !this.signingProcessActive})}">
+                                        class="button ${classMap({hidden: !this.signingProcessActive})}">
                                     ${i18n.t('qualified-pdf-upload.stop-signing-process-button')}
                                 </button>
+                                -->
                             </div>
                             <!-- List of queued files -->
                             <div class="control file-list">
@@ -787,7 +832,16 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                             <!-- Button to download all signed PDFs -->
                             <div class="field ${classMap({hidden: this.signedFilesCount === 0})}">
                                 <div class="control">
-                                    <vpu-button id="zip-download-button" value="${i18n.t('qualified-pdf-upload.download-zip-button')}" title="${i18n.t('qualified-pdf-upload.download-zip-button-tooltip')}" @click="${this.zipDownloadClickHandler}" type="is-primary"></vpu-button>
+                                    <button @click="${this.clearSignedFiles}"
+                                            class="button">
+                                        ${i18n.t('qualified-pdf-upload.clear-all')}
+                                    </button>
+                                    <vpu-button id="zip-download-button"
+                                                value="${i18n.t('qualified-pdf-upload.download-zip-button')}"
+                                                title="${i18n.t('qualified-pdf-upload.download-zip-button-tooltip')}"
+                                                class="is-right"
+                                                @click="${this.zipDownloadClickHandler}"
+                                                type="is-primary"></vpu-button>
                                 </div>
                             </div>
                             <div class="control">
@@ -800,7 +854,17 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                             <!-- Button to upload errored files again -->
                             <div class="field ${classMap({hidden: this.errorFilesCount === 0})}">
                                 <div class="control">
-                                    <vpu-button id="re-upload-all-button" ?disabled="${this.uploadInProgress}" value="${i18n.t('qualified-pdf-upload.re-upload-all-button')}" title="${i18n.t('qualified-pdf-upload.re-upload-all-button-title')}" @click="${this.reUploadAllClickHandler}" type="is-primary"></vpu-button>
+                                    <button @click="${this.clearErrorFiles}"
+                                            class="button">
+                                        ${i18n.t('qualified-pdf-upload.clear-all')}
+                                    </button>
+                                    <vpu-button id="re-upload-all-button"
+                                                ?disabled="${this.uploadInProgress}"
+                                                value="${i18n.t('qualified-pdf-upload.re-upload-all-button')}"
+                                                title="${i18n.t('qualified-pdf-upload.re-upload-all-button-title')}"
+                                                class="is-right"
+                                                @click="${this.reUploadAllClickHandler}"
+                                                type="is-primary"></vpu-button>
                                 </div>
                             </div>
                             <div class="control">
@@ -813,7 +877,9 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                         <div id="pdf-preview" class="field ${classMap({hidden: !this.signaturePlacementInProgress})}">
                             <h2>${this.withSigBlock ? i18n.t('qualified-pdf-upload.signature-placement-label') : i18n.t('qualified-pdf-upload.preview-label')}</h2>
                             <div class="file">
-                            <strong>${this.currentFile.name}</strong> (${humanFileSize(this.currentFile !== undefined ? this.currentFile.size : 0)})
+                                <strong>${this.currentFile.name}</strong> (${humanFileSize(this.currentFile !== undefined ? this.currentFile.size : 0)})
+                                <button class="button is-cancel"
+                                    @click="${this.hidePDF}">${i18n.t('pdf-preview.cancel')}</button>
                             </div>
                             <vpu-pdf-preview lang="${this.lang}"
                                              @vpu-pdf-preview-accept="${this.storePDFData}"

@@ -409,6 +409,10 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
                 white-space: nowrap;
                 margin: auto 0 auto auto;
             }
+
+            .button.is-cancel {
+                color: #e4154b;
+            }
         `;
     }
 
@@ -443,8 +447,10 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
                                     ?disabled="${this.isPageRenderingInProgress || this.currentPage === this.totalPages}">${i18n.t('pdf-preview.last')}</button>
                             <button class="button is-primary ${classMap({hidden: !this.isShowPlacement})}"
                                     @click="${() => { this.sendAcceptEvent(); } }">${i18n.t('pdf-preview.continue')}</button>
-                            <button class="button is-danger"
+<!--
+                            <button class="button is-cancel"
                                     @click="${() => { this.sendCancelEvent(); } }">${i18n.t('pdf-preview.cancel')}</button>
+-->
 
                             <div class="page-info">${i18n.t('pdf-preview.page-count', {currentPage: this.currentPage, totalPages: this.totalPages, })}</div>
                         </div>
