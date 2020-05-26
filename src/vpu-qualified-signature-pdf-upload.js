@@ -475,6 +475,10 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         this.errorFilesCount = 0;
     }
 
+    isUserInterfaceDisabled() {
+        return this.signaturePlacementInProgress || this.externalAuthInProgress;
+    }
+
     static get styles() {
         // language=css
         return css`
@@ -542,8 +546,12 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                 margin-right: 5px;
             }
 
-            .error {
+            .error, #cancel-signing-process {
                 color: #e4154b;
+            }
+
+            #cancel-signing-process:hover {
+                color: white;
             }
 
             /* using vpu-icon doesn't work */
@@ -639,6 +647,10 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
 
             .error-files .header {
                 color: black;
+            }
+
+            .is-disabled {
+                opacity: 0.2;
             }
         `;
     }
@@ -769,7 +781,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
     render() {
         return html`
             <div class="${classMap({hidden: !this.isLoggedIn() || !this.hasSignaturePermissions() || this.isLoading()})}">
-                <div class="field">
+                <div class="field ${classMap({"is-disabled": this.isUserInterfaceDisabled()})}">
                     <h2>${i18n.t('qualified-pdf-upload.upload-field-label')}</h2>
                     <div class="control">
                         <vpu-fileupload id="file-upload"
@@ -794,7 +806,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                     <div class="left-container">
                         <div class="files-block field ${classMap({hidden: !this.queueBlockEnabled})}">
                             <!-- Queued files headline and queueing spinner -->
-                            <h2>
+                            <h2 class="${classMap({"is-disabled": this.isUserInterfaceDisabled()})}">
                                 ${i18n.t('qualified-pdf-upload.queued-files-label')}
                                 <vpu-mini-spinner id="queueing-in-progress-spinner"
                                                   style="font-size: 0.7em"
@@ -803,8 +815,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                             <!-- Buttons to start/stop signing process and clear queue -->
                             <div class="control field">
                                 <button @click="${this.clearQueuedFiles}"
-                                        ?disabled="${this.queuedFilesCount === 0}"
-                                        class="button ${classMap({hidden: this.signingProcessActive})}">
+                                        ?disabled="${this.queuedFilesCount === 0 || this.signingProcessActive || this.isUserInterfaceDisabled()}"
+                                        class="button ${classMap({"is-disabled": this.isUserInterfaceDisabled()})}">
                                     ${i18n.t('qualified-pdf-upload.clear-all')}
                                 </button>
                                 <button @click="${() => { this.signingProcessEnabled = true; this.signingProcessActive = true; }}"
@@ -812,16 +824,15 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                                         class="button is-right is-primary ${classMap({hidden: this.signingProcessActive})}">
                                     ${i18n.t('qualified-pdf-upload.start-signing-process-button')}
                                 </button>
-                                <!--
                                 <button @click="${() => { this.stopSigningProcess(); }}"
                                         ?disabled="${this.uploadInProgress}"
-                                        class="button ${classMap({hidden: !this.signingProcessActive})}">
+                                        id="cancel-signing-process"
+                                        class="button is-right ${classMap({hidden: !this.signingProcessActive})}">
                                     ${i18n.t('qualified-pdf-upload.stop-signing-process-button')}
                                 </button>
-                                -->
                             </div>
                             <!-- List of queued files -->
-                            <div class="control file-list">
+                            <div class="control file-list ${classMap({"is-disabled": this.isUserInterfaceDisabled()})}">
                                 ${this.getQueuedFilesHtml()}
                             </div>
                             <!-- Text "queue empty" -->
@@ -831,7 +842,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                             </div>
                         </div>
                         <!-- List of signed PDFs -->
-                        <div class="files-block field ${classMap({hidden: this.signedFilesCount === 0})}">
+                        <div class="files-block field ${classMap({hidden: this.signedFilesCount === 0, "is-disabled": this.isUserInterfaceDisabled()})}">
                             <h2>${i18n.t('qualified-pdf-upload.signed-files-label')}</h2>
                             <!-- Button to download all signed PDFs -->
                             <div class="field ${classMap({hidden: this.signedFilesCount === 0})}">
@@ -853,7 +864,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                             </div>
                         </div>
                         <!-- List of errored files -->
-                        <div class="files-block error-files field ${classMap({hidden: this.errorFilesCount === 0})}">
+                        <div class="files-block error-files field ${classMap({hidden: this.errorFilesCount === 0, "is-disabled": this.isUserInterfaceDisabled()})}">
                             <h2>${i18n.t('qualified-pdf-upload.error-files-label')}</h2>
                             <!-- Button to upload errored files again -->
                             <div class="field ${classMap({hidden: this.errorFilesCount === 0})}">
