@@ -63,11 +63,7 @@ export class TextSwitch extends LitElement {
     }
 
     update(changedProperties) {
-        if (this._active === BUTTON1) {
-            this.name = this.name1;
-        } else {
-            this.name = this.name2;
-        }
+        this.name = this._active === BUTTON1 ? this.name1 : this.name2;
 
         changedProperties.forEach((oldValue, propName) => {
             if (propName === "name") {
