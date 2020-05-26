@@ -109,6 +109,15 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
                 that.fabricCanvas.add(image);
             });
 
+            this.fabricCanvas.on({
+                'object:moving': function(e) {
+                  e.target.opacity = 0.5;
+                },
+                'object:modified': function(e) {
+                  e.target.opacity = 1;
+                }
+            });
+
             // this.fabricCanvas.on("object:moved", function(opt){ console.log(opt); });
 
             // disallow moving of signature outside of canvas boundaries
