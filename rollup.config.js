@@ -77,6 +77,7 @@ switch (build) {
     keyCloakBaseURL = 'https://' + keyCloakServer + '/auth';
     keyCloakClientId = 'esig_tugraz_at';
     pdfAsQualifiedlySigningServer = 'sig.tugraz.at';
+    matomoSiteId = 137;
     break;
   case 'test':
     basePath = '/apps/signature/';
