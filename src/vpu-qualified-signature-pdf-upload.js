@@ -651,6 +651,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
 
             .is-disabled {
                 opacity: 0.2;
+                pointer-events: none;
             }
         `;
     }
