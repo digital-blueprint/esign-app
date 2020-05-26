@@ -1,6 +1,7 @@
 import {createI18nInstance} from './i18n.js';
 import {css, html} from 'lit-element';
 import {classMap} from 'lit-html/directives/class-map.js';
+import {live} from 'lit-html/directives/live.js';
 import {ScopedElementsMixin} from '@open-wc/scoped-elements';
 import VPULitElement from 'vpu-common/vpu-lit-element';
 import {MiniSpinner} from 'vpu-common';
@@ -77,16 +78,6 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
             //     that.showPDF(this.files[0]);
             // });
 
-            // change on page input
-            this._("#pdf-page-no").addEventListener('input', async () => {
-                const page_no = parseInt(that._("#pdf-page-no").value);
-                console.log('page_no = ', page_no);
-
-                if (page_no > 0 && page_no <= that.totalPages) {
-                    await that.showPage(page_no);
-                }
-            });
-
             // redraw page if window was resized
             window.onresize = async () => {
                 await that.showPage(that.currentPage);
@@ -150,6 +141,16 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
             //     console.log(obj.translateX);
             // });
         });
+    }
+
+    async onPageNumberChanged(e) {
+        let obj = e.target;
+        const page_no = parseInt(obj.value);
+        console.log('page_no = ', page_no);
+
+        if (page_no > 0 && page_no <= this.totalPages) {
+            await this.showPage(page_no);
+        }
     }
 
     /**
@@ -435,7 +436,11 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
                                     title="${i18n.t('pdf-preview.previous-page')}"
                                     @click="${async () => { if (this.currentPage > 1) await this.showPage(--this.currentPage); } }"
                                     ?disabled="${this.isPageRenderingInProgress || this.currentPage === 1}">${i18n.t('pdf-preview.previous')}</button>
-                            <input type="number" id="pdf-page-no" min="1" max="${this.totalPages}" value="${this.currentPage}">
+                            <input type="number"
+                                   min="1"
+                                   max="${this.totalPages}"
+                                   @input="${this.onPageNumberChanged}"
+                                   .value="${live(this.currentPage)}">
                             <button class="button"
                                     title="${i18n.t('pdf-preview.next-page')}"
                                     @click="${async () => { if (this.currentPage < this.totalPages) await this.showPage(++this.currentPage); } }"
