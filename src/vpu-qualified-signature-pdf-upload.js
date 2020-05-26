@@ -673,7 +673,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                             value1="${i18n.t('qualified-pdf-upload.positioning-automatic')}"
                             value2="${i18n.t('qualified-pdf-upload.positioning-manual')}"
                             ?disabled="${this.signingProcessEnabled}"
-                            @click=${ (e) => this.queuePlacementSwitch(id, e.target.name) }></vpu-textswitch>
+                            @change=${ (e) => this.queuePlacementSwitch(id, e.target.name) }></vpu-textswitch>
                     </div>
                 </div>
             `);

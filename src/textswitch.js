@@ -8,11 +8,11 @@ const BUTTON2 = "button2";
  * Attributes:
  *  value1/value2: The values of the buttons
  *  name1/name2: The names of the buttons
- *  name: Tshe active name
+ *  name: The active name
  *  disabled: Disable the switch
  * 
  * Events:
- *  change: emitted when the active name changes
+ *  change: emitted when the active name changes or the same button is clicked again
  * 
  * Example:
  *  <my-tag name="one" name1="one" name2="two" value1="One", value2="Two"></my-tag>
@@ -87,7 +87,15 @@ export class TextSwitch extends LitElement {
 
     render() {
         const onClick = function (e) {
-            this._active = e.target.id;
+            let new_id = e.target.id;
+            if (new_id === this._active) {
+                const event = new CustomEvent("change", {
+                    bubbles: true,
+                    cancelable: false,
+                });
+                this.dispatchEvent(event);
+            }
+            this._active = new_id;
         };
 
         return html`
