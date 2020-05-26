@@ -822,7 +822,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                                 </button>
                                 <button @click="${() => { this.signingProcessEnabled = true; this.signingProcessActive = true; }}"
                                         ?disabled="${this.queuedFilesCount === 0}"
-                                        class="button is-right is-primary ${classMap({hidden: this.signingProcessActive})}">
+                                        class="button is-right is-primary ${classMap({hidden: this.signingProcessActive, "is-disabled": this.isUserInterfaceDisabled()})}">
                                     ${i18n.t('qualified-pdf-upload.start-signing-process-button')}
                                 </button>
                                 <button @click="${() => { this.stopSigningProcess(); }}"
