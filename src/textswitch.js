@@ -55,6 +55,10 @@ export class TextSwitch extends LitElement {
                 background-color: black !important;
                 color: var(--vpu-primary-text-color) !important;
             }
+
+            .button:hover {
+                background-color: var(--vpu-secondary-bg-color) !important;
+            }
         `;
     }
 
