@@ -182,11 +182,15 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
 
         // check if this is really a postMessage from our iframe without using event.origin
         if (data.type === 'pdf-as-error') {
-            this.addToErrorFiles(this.currentFile);
+            let file = this.currentFile;
+            let error = data.error;
+            if (data.cause) {
+                error = `${error}: ${data.cause}`;
+            }
+            file.json = {"hydra:description" : error};
+            this.addToErrorFiles(file);
             this.externalAuthInProgress = false;
             this.endSigningProcessIfQueueEmpty();
-
-            // TODO: handle "data.cause" and "data.error"? So far the information that is provided is pretty useless, which information should we show the user?
             return;
         }
 
