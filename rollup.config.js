@@ -67,7 +67,7 @@ switch (build) {
     entryPointURL = 'https://api-demo.tugraz.at';
     keyCloakServer = 'auth-test.tugraz.at';
     keyCloakBaseURL = 'https://' + keyCloakServer + '/auth';
-    keyCloakClientId = 'ibib-demo_tugraz_at-IBIB';
+    keyCloakClientId = 'esig-demo_tugraz_at-ESIG';
     pdfAsQualifiedlySigningServer = 'sig-test.tugraz.at';
     break;
   case 'production':
