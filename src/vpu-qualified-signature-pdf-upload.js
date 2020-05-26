@@ -476,7 +476,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
     }
 
     isUserInterfaceDisabled() {
-        return this.signaturePlacementInProgress || this.externalAuthInProgress;
+        return this.signaturePlacementInProgress || this.externalAuthInProgress || this.uploadInProgress;
     }
 
     static get styles() {
@@ -649,7 +649,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                 color: black;
             }
 
-            .is-disabled {
+            .is-disabled, .is-disabled.button[disabled] {
                 opacity: 0.2;
                 pointer-events: none;
             }
