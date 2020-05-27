@@ -67,7 +67,7 @@ deploy_production:
       - production
   environment:
     name: production
-    url: https://esig.tugraz.at
+    url: https://esign.tugraz.at
   variables:
     DEPLOY_HOST: mw01-prod.tugraz.at
     DEPLOY_KEY: "$DEPLOY_SSH_KEY"
