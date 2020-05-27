@@ -210,6 +210,10 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitElem
             ${commonStyles.getButtonCSS()}
             ${commonStyles.getNotificationCSS()}
 
+            strong {
+                font-weight: 600;
+            }
+
             .hidden {
                 display: none;
             }

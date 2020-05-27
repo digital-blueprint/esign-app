@@ -495,6 +495,10 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                 margin-bottom: 10px;
             }
 
+            strong {
+                font-weight: 600;
+            }
+
             #pdf-preview .file {
                 border: 1px solid #000;
                 border-bottom-width: 0;
