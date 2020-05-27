@@ -445,7 +445,7 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
                 <vpu-mini-spinner class="${classMap({hidden: this.isPageLoaded})}"></vpu-mini-spinner>
                 <div class="${classMap({hidden: !this.isPageLoaded})}">
                     <div id="pdf-meta">
-                        <div class="buttons" class="${classMap({hidden: !this.isPageLoaded})}">
+                        <div class="buttons ${classMap({hidden: !this.isPageLoaded})}">
                             <button class="button"
                                     title="${i18n.t('pdf-preview.first-page')}"
                                     @click="${async () => { await this.showPage(1); } }"
