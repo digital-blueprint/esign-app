@@ -160,9 +160,17 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         this.signaturePlacementInProgress = false;
     }
 
+    /**
+     * Called when preview is "canceled"
+     *
+     * @param event
+     */
     hidePDF(event) {
-        this.queuedFilesPlacementModes[this.currentPreviewQueueKey] = "auto";
-        // TODO: update toggleSwitch display ...
+        // reset placement mode to "auto" if no placement was confirmed previously
+        if (this.queuedFilesSignaturePlacements[this.currentPreviewQueueKey] === undefined) {
+            this.queuedFilesPlacementModes[this.currentPreviewQueueKey] = "auto";
+        }
+
         this.signaturePlacementInProgress = false;
     }
 
