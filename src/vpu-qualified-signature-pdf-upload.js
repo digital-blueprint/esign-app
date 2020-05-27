@@ -801,7 +801,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                             deferred
                             lang="${this.lang}"
                             url="${this.signingRequestUrl}"
-                            accept="application/pdf"
+                            allowed-mime-types="application/pdf"
                             ?disabled="${this.signingProcessActive}"
                             text="${i18n.t('qualified-pdf-upload.upload-area-text')}"
                             button-label="${i18n.t('qualified-pdf-upload.upload-button-label')}"
