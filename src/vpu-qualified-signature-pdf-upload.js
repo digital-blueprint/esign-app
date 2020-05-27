@@ -722,7 +722,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
             results.push(html`
                 <div class="file-block">
                     <div class="header">
-                        <span><strong>${file.name}</strong> (${humanFileSize(file.contentSize)})</span>
+                        <span class="filename"><strong>${file.name}</strong> (${humanFileSize(file.contentSize)})</span>
                         <button class="button close"
                             title="${i18n.t('qualified-pdf-upload.download-file-button-title')}"
                             @click="${() => { this.fileDownloadClickHandler(file); }}">
@@ -750,7 +750,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
             results.push(html`
                 <div class="file-block error">
                     <div class="header">
-                        <span><strong>${data.file.name}</strong> (${humanFileSize(data.file.size)})</span>
+                        <span class="filename"><strong>${data.file.name}</strong> (${humanFileSize(data.file.size)})</span>
                         <div class="buttons">
                             <button class="button"
                                     title="${i18n.t('qualified-pdf-upload.re-upload-file-button-title')}"
