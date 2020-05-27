@@ -100,7 +100,7 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
                 that.sigImageOriginalWidth = image.width;
 
                 // add a red border around the signature placeholder
-                image.set({stroke: "#e4154b", strokeWidth: 3});
+                image.set({stroke: "#e4154b", strokeWidth: 8});
 
                 // TODO: un-lock rotation when rotation point in PDF-AS is matched
                 image.lockRotation = true;
