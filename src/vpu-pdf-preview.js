@@ -174,6 +174,7 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
      */
     async showPDF(file, isShowPlacement = false, placementData = {}) {
         let item = this.getSignatureRect();
+        this.isPageLoaded = false; // prevent redisplay of previous pdf
 
         // move signature if placementData was set
         if (item !== undefined) {
@@ -199,7 +200,7 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
         let reader = new FileReader();
 
         reader.onload = async () => {
-            this.isPageLoaded = false;
+            //this.isPageLoaded = false;
             const data = reader.result;
 
             // get handle of pdf document
@@ -440,7 +441,7 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
                 <vpu-mini-spinner class="${classMap({hidden: this.isPageLoaded})}"></vpu-mini-spinner>
                 <div class="${classMap({hidden: !this.isPageLoaded})}">
                     <div id="pdf-meta">
-                        <div class="buttons">
+                        <div class="buttons" class="${classMap({hidden: !this.isPageLoaded})}">
                             <button class="button"
                                     title="${i18n.t('pdf-preview.first-page')}"
                                     @click="${async () => { await this.showPage(1); } }"
