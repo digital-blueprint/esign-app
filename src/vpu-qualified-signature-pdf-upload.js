@@ -516,6 +516,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
             #iframe {
                 width: 100%;
                 height: 240px;
+                /* "overflow" should not be supported by browsers, but some seem to use it */
+                overflow: hidden;
                 border-width: 0;
                 /* keeps the A-Trust webpage aligned left */
                 max-width: 335px;
@@ -922,7 +924,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                                 <div class="file">
                                 <strong>${this.currentFileName}</strong> (${humanFileSize(this.currentFile.file !== undefined ? this.currentFile.file.size : 0)})
                                 </div>
-                                <iframe id="iframe"></iframe>
+                                <!-- "scrolling" is deprecated, but still seem to help -->
+                                <iframe id="iframe" scrolling="no"></iframe>
                             </div>
                         </div>
                     </div>
