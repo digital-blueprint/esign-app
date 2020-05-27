@@ -491,6 +491,10 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                 min-width: 320px;
             }
 
+            h2:first-child {
+                margin-top: 0;
+            }
+
             h2 {
                 margin-bottom: 10px;
             }
