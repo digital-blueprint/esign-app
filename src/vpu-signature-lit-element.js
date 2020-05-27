@@ -11,7 +11,8 @@ export default class VPUSignatureLitElement extends LitElement {
         return (window.VPUPerson && Array.isArray(window.VPUPerson.roles) && window.VPUPerson.roles.indexOf(roleName) !== -1);
     }
 
-    _updateAuth() {
+    _updateAuth(e) {
+        this._loginStatus = e.status;
         // Every time isLoggedIn()/isLoading() return something different we request a re-render
         let newLoginState = [this.isLoggedIn(), this.isLoading()];
         if (this._loginState.toString() !== newLoginState.toString()) {
@@ -23,6 +24,7 @@ export default class VPUSignatureLitElement extends LitElement {
     connectedCallback() {
         super.connectedCallback();
 
+        this._loginStatus = '';
         this._loginState = [];
         this._subscriber = new events.EventSubscriber('vpu-auth-update', 'vpu-auth-update-request');
         this._updateAuth = this._updateAuth.bind(this);
@@ -41,6 +43,8 @@ export default class VPUSignatureLitElement extends LitElement {
     }
 
     isLoading() {
+        if (this._loginStatus === "logged-out")
+            return false;
         return (!this.isLoggedIn() && window.VPUAuthToken !== undefined);
     }
 
