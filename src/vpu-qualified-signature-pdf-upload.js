@@ -696,6 +696,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                         <span class="headline">${i18n.t('qualified-pdf-upload.positioning')}:</span>
                         <vpu-textswitch name1="auto"
                             name2="manual"
+                            name="${this.queuedFilesPlacementModes[id] ?? "auto"}"
                             class="switch"
                             value1="${i18n.t('qualified-pdf-upload.positioning-automatic')}"
                             value2="${i18n.t('qualified-pdf-upload.positioning-manual')}"

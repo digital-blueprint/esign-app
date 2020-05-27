@@ -12,7 +12,7 @@ const BUTTON2 = "button2";
  *  disabled: Disable the switch
  * 
  * Events:
- *  change: emitted when the active name changes or the same button is clicked again
+ *  change: when button is clicked
  * 
  * Example:
  *  <my-tag name="one" name1="one" name2="two" value1="One", value2="Two"></my-tag>
@@ -63,22 +63,13 @@ export class TextSwitch extends LitElement {
     }
 
     update(changedProperties) {
-        this.name = this._active === BUTTON1 ? this.name1 : this.name2;
-
         changedProperties.forEach((oldValue, propName) => {
             if (propName === "name") {
                 if (this[propName] === this.name1) {
                     this._active = BUTTON1;
-                }
-                if (this[propName] === this.name2) {
+                } else if (this[propName] === this.name2) {
                     this._active = BUTTON2;
                 }
-            } else if (propName === "_active") {
-                const event = new CustomEvent("change", {
-                    bubbles: true,
-                    cancelable: false,
-                });
-                this.dispatchEvent(event);
             }
         });
 
@@ -87,15 +78,16 @@ export class TextSwitch extends LitElement {
 
     render() {
         const onClick = function (e) {
-            let new_id = e.target.id;
-            if (new_id === this._active) {
-                const event = new CustomEvent("change", {
-                    bubbles: true,
-                    cancelable: false,
-                });
-                this.dispatchEvent(event);
-            }
-            this._active = new_id;
+            this._active = e.target.id;
+            this.name = this._active === BUTTON1 ? this.name1 : this.name2;
+
+            // send event only when buttons are clicked
+            const event = new CustomEvent("change", {
+                bubbles: true,
+                cancelable: false,
+            });
+
+            this.dispatchEvent(event);
         };
 
         return html`
