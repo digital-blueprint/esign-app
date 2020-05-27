@@ -139,7 +139,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
 
             if (data !== undefined) {
                 params = {
-                    y: data.currentPageOriginalHeight - data.top,
+                    y: data.bottom,
                     x: data.left,
                     r: data.angle,
                     w: data.width, // only width, no "height" allowed in PDF-AS

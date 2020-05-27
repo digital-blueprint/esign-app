@@ -29,7 +29,6 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
         this.canvas = null;
         this.fabricCanvas = null;
         this.canvasToPdfScale = 1.0;
-        this.sigImageOriginalWidth = 0;
         this.currentPageOriginalHeight = 0;
 
         this._onWindowResize = this._onWindowResize.bind(this);
@@ -97,8 +96,6 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
 
             // add signature image
             fabric.Image.fromURL(commonUtils.getAssetURL('local/vpu-signature/signature-placeholder.png'), function(image) {
-                that.sigImageOriginalWidth = image.width;
-
                 // add a red border around the signature placeholder
                 image.set({stroke: "#e4154b", strokeWidth: 8});
 
@@ -254,7 +251,6 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
             await this.pdfDoc.getPage(pageNumber).then(async (page) => {
                 // original width of the pdf page at scale 1
                 const originalViewport = page.getViewport({ scale: 1 });
-                const pdfOriginalWidth = originalViewport.width;
                 this.currentPageOriginalHeight = originalViewport.height;
 
                 // set the canvas width to the width of the container (minus the borders)
@@ -263,7 +259,7 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
 
                 // as the canvas is of a fixed width we need to adjust the scale of the viewport where page is rendered
                 const oldScale = this.canvasToPdfScale;
-                this.canvasToPdfScale = this.canvas.width / pdfOriginalWidth;
+                this.canvasToPdfScale = this.canvas.width / originalViewport.width;
 
                 console.log("this.canvasToPdfScale: " + this.canvasToPdfScale);
 
@@ -288,23 +284,31 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
 
                 // set the initial position of the signature
                 if (initSignature) {
-                    // We calculate the scale from a fixed with that mimics the width that is used by PDF-AS
-                    // There currently seems to be no way in pdf.js to get the width in inch or mm so we are assuming
-                    // pixel from a default A4 document (width in portrait, height in landscape)
-                    const docSize = Math.max(originalViewport.width, originalViewport.height);
-                    const scale = 128.1 / docSize;
+                    const sigSizeMM = {width: 80, height: 29};
+                    const sigPosMM = {top: 5, left: 5};
+
+                    const inchPerMM = 0.03937007874;
+                    const DPI = 72;
+                    const pointsPerMM = inchPerMM * DPI;
+                    const documentSizeMM = {
+                        width: originalViewport.width / pointsPerMM,
+                        height: originalViewport.height / pointsPerMM,
+                    }
+
+                    const sigSize = signature.getOriginalSize();
+                    const scaleX = (this.canvas.width / sigSize.width) * (sigSizeMM.width / documentSizeMM.width);
+                    const scaleY = (this.canvas.height / sigSize.height) * (sigSizeMM.height / documentSizeMM.height);
+                    const offsetTop = sigPosMM.top * pointsPerMM;
+                    const offsetLeft = sigPosMM.left * pointsPerMM;
 
                     signature.set({
-                        scaleX: scale,
-                        scaleY: scale,
+                        scaleX: scaleX,
+                        scaleY: scaleY,
                         angle: 0,
-                        top: 0,
-                        left: 0,
+                        top: offsetTop,
+                        left: offsetLeft,
                         lockUniScaling: true  // lock aspect ratio when resizing
                     });
-
-                    // we want to center the signature at the page
-                    // signature.center();
                 } else {
                     // adapt signature scale to new scale
                     const scaleAdapt = this.canvasToPdfScale / oldScale;
@@ -340,13 +344,13 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
         const item = this.getSignatureRect();
         const data = {
             "currentPage": this.currentPage,
-            "currentPageOriginalHeight": this.currentPageOriginalHeight,
             "scaleX": item.get("scaleX") / this.canvasToPdfScale,
             "scaleY": item.get("scaleY") / this.canvasToPdfScale,
-            "width": item.get("width") * item.get("scaleY") / this.canvasToPdfScale,
+            "width": item.get("width") * item.get("scaleX") / this.canvasToPdfScale,
             "height": item.get("height") * item.get("scaleY") / this.canvasToPdfScale,
             "left": item.get("left") / this.canvasToPdfScale,
             "top": item.get("top") / this.canvasToPdfScale,
+            "bottom": this.currentPageOriginalHeight - (item.get("top") / this.canvasToPdfScale),
             "angle": item.get("angle")
         };
         const event = new CustomEvent("vpu-pdf-preview-accept",
