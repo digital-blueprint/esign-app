@@ -55,7 +55,7 @@
     "previous-page": "Previous page",
     "next-page": "Next page",
     "last-page": "Last page",
-    "page-count": "Page {{currentPage}} of {{totalPages}}",
+    "page-count": "of {{totalPages}}",
     "continue": "Accept signature placing",
     "cancel": "X"
   },

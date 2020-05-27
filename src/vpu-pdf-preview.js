@@ -403,6 +403,11 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
                 display: flex;
                 flex-wrap: wrap;
                 width: 100%;
+                justify-content: center;
+            }
+
+            .buttons .page-info {
+                align-self: center;
             }
 
             .buttons > * {
@@ -421,11 +426,6 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
                 padding: 0.54em;
                 border-bottom-width: 0;
                 border-top-width: 0;
-            }
-
-            .page-info {
-                white-space: nowrap;
-                margin: auto 0 auto auto;
             }
 
             .button.is-cancel {
@@ -459,6 +459,7 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
                                    max="${this.totalPages}"
                                    @input="${this.onPageNumberChanged}"
                                    .value="${live(this.currentPage)}">
+                            <div class="page-info">${i18n.t('pdf-preview.page-count', {totalPages: this.totalPages, })}</div>
                             <button class="button"
                                     title="${i18n.t('pdf-preview.next-page')}"
                                     @click="${async () => { if (this.currentPage < this.totalPages) await this.showPage(++this.currentPage); } }"
@@ -473,8 +474,6 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
                             <button class="button is-cancel"
                                     @click="${() => { this.sendCancelEvent(); } }">${i18n.t('pdf-preview.cancel')}</button>
 -->
-
-                            <div class="page-info">${i18n.t('pdf-preview.page-count', {currentPage: this.currentPage, totalPages: this.totalPages, })}</div>
                         </div>
                     </div>
                     <div id="canvas-wrapper" class="${classMap({hidden: this.isPageRenderingInProgress})}">
