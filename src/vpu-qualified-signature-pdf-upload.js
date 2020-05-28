@@ -647,9 +647,12 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                 text-align: right;
             }
 
-            .file-block .filename {
+            .file-block .filename, .file-block div.bottom-line .headline {
                 text-overflow: ellipsis;
                 overflow: hidden;
+            }
+
+            .file-block .filename {
                 white-space: nowrap;
             }
 
@@ -692,6 +695,15 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                     left: 10px;
                     right: 10px;
                     bottom: inherit;
+                }
+
+                #grid-container > div {
+                    margin-right: 0;
+                    width: 100%;
+                }
+
+                .file-block {
+                    max-width: inherit;
                 }
             }
         `;

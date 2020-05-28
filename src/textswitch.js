@@ -47,6 +47,10 @@ export class TextSwitch extends LitElement {
             ${commonStyles.getThemeCSS()}
             ${commonStyles.getButtonCSS()}
 
+            div {
+                white-space: nowrap;
+            }
+
             #button1 {
                 border-right-width: 0;
             }
@@ -91,11 +95,13 @@ export class TextSwitch extends LitElement {
         };
 
         return html`
-            <button @click="${onClick}" class="button ${this._active === BUTTON1 ? `active` : ``}" id="${BUTTON1}" ?disabled="${this.disabled}">
-                ${this.value1}
-            </button><button @click="${onClick}" class="button ${this._active === BUTTON2 ? `active` : ``}" id="${BUTTON2}" ?disabled="${this.disabled}">
-                ${this.value2}
-            </button>
+            <div>
+                <button @click="${onClick}" class="button ${this._active === BUTTON1 ? `active` : ``}" id="${BUTTON1}" ?disabled="${this.disabled}">
+                    ${this.value1}
+                </button><button @click="${onClick}" class="button ${this._active === BUTTON2 ? `active` : ``}" id="${BUTTON2}" ?disabled="${this.disabled}">
+                    ${this.value2}
+                </button>
+            </div>
         `;
     }
 }
