@@ -93,7 +93,10 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
             // add fabric.js canvas for signature positioning
             // , {stateful : true}
             // selection is turned off because it makes troubles on mobile devices
-            this.fabricCanvas = new fabric.Canvas(this._('#fabric-canvas'), {selection: false});
+            this.fabricCanvas = new fabric.Canvas(this._('#fabric-canvas'), {
+                selection: false,
+                allowTouchScrolling: true,
+            });
 
             // add signature image
             fabric.Image.fromURL(commonUtils.getAssetURL('local/vpu-signature/signature-placeholder.png'), function(image) {
