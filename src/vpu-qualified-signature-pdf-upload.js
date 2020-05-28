@@ -653,7 +653,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                 white-space: nowrap;
             }
 
-            #pdf-preview .button.is-cancel {
+            #pdf-preview .button.is-cancel, #external-auth .button.is-cancel {
                 color: #e4154b;
                 float: right;
                 margin-right: 10px;
@@ -841,22 +841,24 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                                 </button>
                                 <button @click="${() => { this.signingProcessEnabled = true; this.signingProcessActive = true; }}"
                                         ?disabled="${this.queuedFilesCount === 0}"
-                                        class="button is-right is-primary ${classMap({hidden: this.signingProcessActive, "is-disabled": this.isUserInterfaceDisabled()})}">
+                                        class="button is-right is-primary ${classMap({"is-disabled": this.isUserInterfaceDisabled()})}">
                                     ${i18n.t('qualified-pdf-upload.start-signing-process-button')}
                                 </button>
-                                <button @click="${() => { this.stopSigningProcess(); }}"
+                                <!--
+                                <button @click="${this.stopSigningProcess}"
                                         ?disabled="${this.uploadInProgress}"
                                         id="cancel-signing-process"
                                         class="button is-right ${classMap({hidden: !this.signingProcessActive})}">
                                     ${i18n.t('qualified-pdf-upload.stop-signing-process-button')}
                                 </button>
+                                -->
                             </div>
                             <!-- List of queued files -->
                             <div class="control file-list ${classMap({"is-disabled": this.isUserInterfaceDisabled()})}">
                                 ${this.getQueuedFilesHtml()}
                             </div>
                             <!-- Text "queue empty" -->
-                            <div class="empty-queue control ${classMap({hidden: this.queuedFilesCount !== 0})}">
+                            <div class="empty-queue control ${classMap({hidden: this.queuedFilesCount !== 0, "is-disabled": this.isUserInterfaceDisabled()})}">
                                 ${i18n.t('qualified-pdf-upload.queued-files-empty1')}<br />
                                 ${i18n.t('qualified-pdf-upload.queued-files-empty2')}
                             </div>
@@ -927,11 +929,14 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                             ${this.uploadStatusText}
                         </div>
                         <!-- External auth -->
-                        <div class="files-block field ${classMap({hidden: !this.externalAuthInProgress})}">
+                        <div id="external-auth" class="files-block field ${classMap({hidden: !this.externalAuthInProgress})}">
                             <h2>${i18n.t('qualified-pdf-upload.current-signing-process-label')}</h2>
                             <div class="box">
                                 <div class="file">
-                                <strong>${this.currentFileName}</strong> (${humanFileSize(this.currentFile.file !== undefined ? this.currentFile.file.size : 0)})
+                                    <strong>${this.currentFileName}</strong> (${humanFileSize(this.currentFile.file !== undefined ? this.currentFile.file.size : 0)})
+                                    <button class="button is-cancel"
+                                            title="${i18n.t('qualified-pdf-upload.stop-signing-process-button')}"
+                                            @click="${this.stopSigningProcess}"><vpu-icon name="close"></vpu-icon></button>
                                 </div>
                                 <!-- "scrolling" is deprecated, but still seem to help -->
                                 <iframe id="iframe" scrolling="no"></iframe>
