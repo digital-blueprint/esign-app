@@ -672,8 +672,9 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                 pointer-events: none;
             }
 
-            /* modal preview and external auth on small displays (like mobile devices) */
+            /* Handling for small displays (like mobile devices) */
             @media (max-width: 680px) {
+                /* Modal preview, upload and external auth */
                 div.right-container > * {
                     position: fixed;
                     padding: 10px;
@@ -685,6 +686,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                     overflow-y: scroll;
                 }
 
+                /* Don't use the whole screen for the upload progress */
                 #upload-progress {
                     top: 10px;
                     left: 10px;
