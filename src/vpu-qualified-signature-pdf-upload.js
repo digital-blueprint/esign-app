@@ -517,10 +517,10 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                 font-weight: 600;
             }
 
-            #pdf-preview .file {
+            #pdf-preview .box-header {
                 border: 1px solid #000;
                 border-bottom-width: 0;
-                padding: 0.4em 0 0 0.5em;
+                padding: 0.5em 0.5em 0 0.5em;
             }
 
             .hidden {
@@ -664,8 +664,10 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
 
             #pdf-preview .button.is-cancel, #external-auth .button.is-cancel {
                 color: #e4154b;
-                float: right;
-                margin-right: 10px;
+            }
+
+            #external-auth iframe {
+                margin-top: 0.5em;
             }
 
             .is-right {
@@ -685,6 +687,18 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
             .is-disabled, .is-disabled.button[disabled] {
                 opacity: 0.2;
                 pointer-events: none;
+            }
+
+            #pdf-preview .box-header, #external-auth .box-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: start;
+            }
+
+            #pdf-preview .box-header .filename, #external-auth .box-header .filename {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                margin-right: 0.5em;
             }
 
             /* Handling for small displays (like mobile devices) */
@@ -967,8 +981,10 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                         <!-- PDF preview -->
                         <div id="pdf-preview" class="field ${classMap({hidden: !this.signaturePlacementInProgress})}">
                             <h2>${this.withSigBlock ? i18n.t('qualified-pdf-upload.signature-placement-label') : i18n.t('qualified-pdf-upload.preview-label')}</h2>
-                            <div class="file">
-                                <strong>${this.currentFile.name}</strong> (${humanFileSize(this.currentFile !== undefined ? this.currentFile.size : 0)})
+                            <div class="box-header">
+                                <div class="filename">
+                                    <strong>${this.currentFile.name}</strong> (${humanFileSize(this.currentFile !== undefined ? this.currentFile.size : 0)})
+                                </div>
                                 <button class="button is-cancel"
                                     @click="${this.hidePDF}"><vpu-icon name="close"></vpu-icon></button>
                             </div>
@@ -986,8 +1002,10 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                         <div id="external-auth" class="files-block field ${classMap({hidden: !this.externalAuthInProgress})}">
                             <h2>${i18n.t('qualified-pdf-upload.current-signing-process-label')}</h2>
                             <div class="box">
-                                <div class="file">
-                                    <strong>${this.currentFileName}</strong> (${humanFileSize(this.currentFile.file !== undefined ? this.currentFile.file.size : 0)})
+                                <div class="box-header">
+                                    <div class="filename">
+                                        <strong>${this.currentFileName}</strong> (${humanFileSize(this.currentFile.file !== undefined ? this.currentFile.file.size : 0)})
+                                    </div>
                                     <button class="button is-cancel"
                                             title="${i18n.t('qualified-pdf-upload.stop-signing-process-button')}"
                                             @click="${this.stopSigningProcess}"><vpu-icon name="close"></vpu-icon></button>
