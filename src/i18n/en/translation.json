@@ -29,7 +29,7 @@
     "positioning-automatic": "Automatic",
     "positioning-manual": "Manual",
     "close-preview": "Close preview",
-    "preview": "Preview",
+    "preview-label": "Document view",
     "start-signing-process-button-running-title": "Signing process running",
     "remove-current-file-button-title": "Cancel current signing process",
     "signed-files-label": "Signed documents",
@@ -42,7 +42,7 @@
     "upload-status-file-text": "({{fileSize}}) is currently uploading and being processed...",
     "re-upload-all-button": "Queue all",
     "re-upload-all-button-title": "Queue all failed signing processes again",
-    "signature-placement-label": "Preview",
+    "signature-placement-label": "Place signature",
     "positioning": "Positioning",
     "file-label": "document"
   },
@@ -56,8 +56,7 @@
     "next-page": "Next page",
     "last-page": "Last page",
     "page-count": "of {{totalPages}}",
-    "continue": "Accept signature placing",
-    "cancel": "X"
+    "continue": "Confirm placement"
   },
   "error-summary": "An error occurred",
   "error-permission-message": "You need have permissions to use the official signature to use this function!",

@@ -29,7 +29,6 @@
     "positioning-automatic": "Automatisch",
     "positioning-manual": "Manuell",
     "close-preview": "Dokumentansicht schließen",
-    "preview": "Dokumentenansicht",
     "preview-label": "Dokumentenansicht",
     "start-signing-process-button-running-title": "Signaturvorgang läuft gerade",
     "remove-current-file-button-title": "Aktuellen Signaturprozess abbrechen",
@@ -57,8 +56,7 @@
     "next-page": "Nächste Seite",
     "last-page": "Letzte Seite",
     "page-count": "von {{totalPages}}",
-    "continue": "Platzierung bestätigen",
-    "cancel": "X"
+    "continue": "Platzierung bestätigen"
   },
   "error-summary": "Ein Fehler ist aufgetreten",
   "error-permission-message": "Sie müssen das Recht auf Amtssignaturen besitzen um diese Funktion nutzen zu können!",

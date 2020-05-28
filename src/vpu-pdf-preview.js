@@ -474,10 +474,6 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
                                     ?disabled="${this.isPageRenderingInProgress || this.currentPage === this.totalPages}">${i18n.t('pdf-preview.last')}</button>
                             <button class="button is-primary ${classMap({hidden: !this.isShowPlacement})}"
                                     @click="${() => { this.sendAcceptEvent(); } }">${i18n.t('pdf-preview.continue')}</button>
-<!--
-                            <button class="button is-cancel"
-                                    @click="${() => { this.sendCancelEvent(); } }">${i18n.t('pdf-preview.cancel')}</button>
--->
                         </div>
                     </div>
                     <div id="canvas-wrapper" class="${classMap({hidden: this.isPageRenderingInProgress})}">
