@@ -671,6 +671,27 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                 opacity: 0.2;
                 pointer-events: none;
             }
+
+            /* modal preview and external auth on small displays (like mobile devices) */
+            @media (max-width: 680px) {
+                div.right-container > * {
+                    position: fixed;
+                    padding: 10px;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background-color: white;
+                    overflow-y: scroll;
+                }
+
+                #upload-progress {
+                    top: 10px;
+                    left: 10px;
+                    right: 10px;
+                    bottom: inherit;
+                }
+            }
         `;
     }
 
@@ -923,7 +944,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                                              @vpu-pdf-preview-cancel="${this.hidePDF}"></vpu-pdf-preview>
                         </div>
                         <!-- File upload progress -->
-                        <div class="field notification is-info ${classMap({hidden: !this.uploadInProgress})}">
+                        <div id="upload-progress" class="field notification is-info ${classMap({hidden: !this.uploadInProgress})}">
                             <vpu-mini-spinner></vpu-mini-spinner>
                             <strong>${this.uploadStatusFileName}</strong>
                             ${this.uploadStatusText}
