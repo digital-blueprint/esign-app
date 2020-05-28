@@ -667,6 +667,12 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                 color: black;
             }
 
+            /* prevent hovering of disabled default button */
+            .button[disabled]:not(.is-primary):hover {
+                background-color: inherit;
+                color: inherit;
+            }
+
             .is-disabled, .is-disabled.button[disabled] {
                 opacity: 0.2;
                 pointer-events: none;
