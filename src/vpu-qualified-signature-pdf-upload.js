@@ -7,7 +7,6 @@ import {PdfPreview} from "./vpu-pdf-preview";
 import * as commonUtils from 'vpu-common/utils';
 import * as utils from './utils';
 import {Icon, MiniSpinner, Button} from 'vpu-common';
-import JSZip from 'jszip/dist/jszip.js';
 import FileSaver from 'file-saver';
 import * as commonStyles from 'vpu-common/styles';
 import {classMap} from 'lit-html/directives/class-map.js';
@@ -351,8 +350,9 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
     /**
      * Download signed pdf-files as zip
      */
-    zipDownloadClickHandler() {
+    async zipDownloadClickHandler() {
         // see: https://stuk.github.io/jszip/
+        let JSZip = (await import('jszip/dist/jszip.js')).default;
         let zip = new JSZip();
         const that = this;
         let fileNames = [];
@@ -370,12 +370,9 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
             zip.file(fileName, utils.getPDFFileBase64Content(file), {base64: true});
         });
 
-        zip.generateAsync({type:"blob"})
-            .then(function(content) {
-                FileSaver.saveAs(content, "signed-documents.zip");
-
-                that._("#zip-download-button").stop();
-            });
+        let content = await zip.generateAsync({type:"blob"});
+        FileSaver.saveAs(content, "signed-documents.zip");
+        that._("#zip-download-button").stop();
     }
 
     /**
