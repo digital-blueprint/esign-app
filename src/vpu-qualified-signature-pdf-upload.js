@@ -196,6 +196,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
             }
             file.json = {"hydra:description" : error};
             this.addToErrorFiles(file);
+            this._("#iframe").src = "about:blank";
             this.externalAuthInProgress = false;
             this.endSigningProcessIfQueueEmpty();
             return;
@@ -233,6 +234,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                 .then(result => {
                     // hide iframe
                     that.externalAuthInProgress = false;
+                    this._("#iframe").src = "about:blank";
                     this.endSigningProcessIfQueueEmpty();
 
                     if (!result.ok) throw result;
@@ -828,9 +830,12 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         if (!this.externalAuthInProgress) {
             return;
         }
+
+        this._("#iframe").src = "about:blank";
         this.signingProcessEnabled = false;
         this.externalAuthInProgress = false;
         this.signingProcessActive = false;
+
         if (this.currentFile.file !== undefined) {
             this._("#file-upload").queueFile(this.currentFile.file);
         }
