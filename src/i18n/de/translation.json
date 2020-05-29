@@ -44,7 +44,8 @@
     "re-upload-all-button-title": "Alle fehlgeschlagen Signaturvorgänge erneut in die Warteschlange stellen",
     "signature-placement-label": "Signatur platzieren",
     "positioning": "Positionierung",
-    "file-label": "Dokument"
+    "file-label": "Dokument",
+    "confirm-page-leave": "Sind Sie sicher, dass Sie die Seite verlassen wollen? Es stehen signierte Dokumente zum Download bereit."
   },
   "pdf-preview": {
     "first": "Erste",

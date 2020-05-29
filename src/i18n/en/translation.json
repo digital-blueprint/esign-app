@@ -44,7 +44,8 @@
     "re-upload-all-button-title": "Queue all failed signing processes again",
     "signature-placement-label": "Place signature",
     "positioning": "Positioning",
-    "file-label": "document"
+    "file-label": "document",
+    "confirm-page-leave": "Are you sure you want to leave this page? There are still signed documents ready to be downloaded."
   },
   "pdf-preview": {
     "first": "First",

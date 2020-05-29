@@ -48,6 +48,9 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         // will be set in function update
         this.signingRequestUrl = "";
         this.signingUrl = "";
+
+        this._onReceiveIframeMessage = this.onReceiveIframeMessage.bind(this);
+        this._onReceiveBeforeUnload = this.onReceiveBeforeUnload.bind(this);
     }
 
     static get scopedElements() {
@@ -93,8 +96,19 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
 
         this.updateComplete.then(()=>{
             // see: https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage
-            window.addEventListener('message', this.onReceiveIframeMessage.bind(this));
+            window.addEventListener('message', this._onReceiveIframeMessage);
+
+            // we want to be able to cancel the leaving of the page
+            window.addEventListener('beforeunload', this._onReceiveBeforeUnload);
         });
+    }
+
+    disconnectedCallback() {
+        // remove event listeners
+        window.removeEventListener('message', this._onReceiveIframeMessage);
+        window.removeEventListener('beforeunload', this._onReceiveBeforeUnload);
+
+        super.disconnectedCallback();
     }
 
     onQueuedFilesChanged(ev) {
@@ -189,6 +203,36 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         } else if (this.currentPreviewQueueKey === key) {
             this.signaturePlacementInProgress = false;
         }
+    }
+
+    /**
+     * Decides if the "beforeunload" event needs to be canceled
+     *
+     * @param event
+     */
+    onReceiveBeforeUnload(event) {
+        // we don't need to stop if there are no signed files
+        if (this.signedFilesCount === 0) {
+            return;
+        }
+
+        // we need to handle custom events ourselves
+        if (!event.isTrusted) {
+            // note that this only works with custom event since calls of "confirm" are ignored
+            // in the non-custom event, see https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeunload_event
+            const result = confirm(i18n.t('qualified-pdf-upload.confirm-page-leave'));
+
+            // don't stop the page leave if the user wants to leave
+            if (result) {
+                return;
+            }
+        }
+
+        // Cancel the event as stated by the standard
+        event.preventDefault();
+
+        // Chrome requires returnValue to be set
+        event.returnValue = '';
     }
 
     onReceiveIframeMessage(event) {
