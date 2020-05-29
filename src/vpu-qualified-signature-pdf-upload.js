@@ -297,6 +297,10 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                     that.signedFiles.push(document);
                     // this triggers the correct update() execution
                     that.signedFilesCount++;
+
+                    if (window._paq !== undefined) {
+                        window._paq.push(['trackEvent', 'QualifiedlySigning', 'DocumentSigned', document.contentSize]);
+                    }
                 }).catch(error => {
                     let file = this.currentFile;
                     // let's override the json to inject an error message
@@ -348,6 +352,10 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         this.errorFiles[Math.floor(Math.random() * 1000000)] = file;
         // this triggers the correct update() execution
         this.errorFilesCount++;
+
+        if (window._paq !== undefined) {
+            window._paq.push(['trackEvent', 'QualifiedlySigning', 'SigningFailed', file.json["hydra:description"]]);
+        }
     }
 
     /**
