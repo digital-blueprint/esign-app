@@ -32,6 +32,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         this.uploadStatusText = "";
         this.currentFile = {};
         this.currentFileName = "";
+        this.currentFilePlacementMode = "";
+        this.currentFileSignaturePlacement = {};
         this.queueBlockEnabled = false;
         this.queuedFiles = [];
         this.queuedFilesCount = 0;
@@ -129,6 +131,11 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         // take the file off the queue
         const file = this.takeFileFromQueue(key);
         this.currentFile = file;
+
+        // set placement mode and parameters to restore them when canceled
+        this.currentFilePlacementMode = this.queuedFilesPlacementModes[key];
+        this.currentFileSignaturePlacement = this.queuedFilesSignaturePlacements[key];
+
         this.uploadInProgress = true;
         let params = {};
 
@@ -826,7 +833,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         return this._hasSignaturePermissions('ROLE_SCOPE_QUALIFIED-SIGNATURE');
     }
 
-    stopSigningProcess() {
+    async stopSigningProcess() {
         if (!this.externalAuthInProgress) {
             return;
         }
@@ -837,7 +844,11 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         this.signingProcessActive = false;
 
         if (this.currentFile.file !== undefined) {
-            this._("#file-upload").queueFile(this.currentFile.file);
+            const key = await this._("#file-upload").queueFile(this.currentFile.file);
+
+            // set placement mode and parameters so they are restore when canceled
+            this.queuedFilesPlacementModes[key] = this.currentFilePlacementMode;
+            this.queuedFilesSignaturePlacements[key] = this.currentFileSignaturePlacement;
         }
     }
 
