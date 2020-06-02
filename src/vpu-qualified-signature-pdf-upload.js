@@ -136,11 +136,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
 
         this.signaturePlacementInProgress = false;
 
-        // seems like keys are sorted, not in the order they were added
-        const keys = Object.keys(this.queuedFiles);
-
-        // get a key to process
-        const key = keys.slice(0, 1);
+        const key = Object.keys(this.queuedFiles)[0];
 
         // take the file off the queue
         const file = this.takeFileFromQueue(key);
@@ -174,7 +170,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
 
     storePDFData(event) {
         const data = event.detail;
-        console.log(data);
 
         this.queuedFilesSignaturePlacements[this.currentPreviewQueueKey] = data;
         this.signaturePlacementInProgress = false;
