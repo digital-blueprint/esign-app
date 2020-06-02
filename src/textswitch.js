@@ -49,6 +49,7 @@ export class TextSwitch extends LitElement {
 
             div {
                 white-space: nowrap;
+                display: flex;
             }
 
             #button1 {
@@ -58,6 +59,10 @@ export class TextSwitch extends LitElement {
             .active {
                 background-color: black !important;
                 color: var(--vpu-primary-text-color) !important;
+            }
+
+            .button {
+                flex-grow: 1;
             }
 
             .button:hover {
