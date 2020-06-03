@@ -23,7 +23,7 @@
     "remove-failed-file-button-title": "Remove failed document",
     "remove-queued-file-button-title": "Remove document from queue",
     "clear-all": "Clear all",
-    "start-signing-process-button": "Sign all",
+    "start-signing-process-button": "Start signing",
     "stop-signing-process-button": "Stop signing",
     "show-preview": "Show document",
     "positioning-automatic": "Automatic",

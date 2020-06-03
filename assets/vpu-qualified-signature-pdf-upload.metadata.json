@@ -4,14 +4,14 @@
   "routing_name": "qualified-pdf-upload",
   "name": {
     "de": "Dokument persönlich signieren",
-    "en": "Qualifiedly sign"
+    "en": "Personally Sign Document"
   },
   "short_name": {
     "de": "Dokument persönlich signieren",
-    "en": "Qualifiedly sign"
+    "en": "Personally Sign Document"
   },
   "description": {
     "de": "Erlaubt das Hochladen von PDF-Dokumenten, um sie mit einer persönlichen elektronischen Signatur zu versehen",
-    "en": "Allows upload of PDF-files to qualifiedly sign them"
+    "en": "Allows upload of PDF-documents to personally sign them"
   }
 }
