@@ -288,6 +288,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                     return result.json();
                 })
                 .then((document) => {
+                    // PDF-AS garbles some filenames (e.g. containing a '#')
+                    document.signedFilename = this.currentFileName.replace(/\.pdf$/i, '.sig.pdf');
                     // this doesn't seem to trigger an update() execution
                     that.signedFiles.push(document);
                     // this triggers the correct update() execution
@@ -415,7 +417,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
 
         // add all signed pdf-files
         this.signedFiles.forEach((file) => {
-            let fileName = file.name;
+            let fileName = file.signedFilename; // file.name;
 
             // add pseudo-random string on duplicate file name
             if (fileNames.indexOf(fileName) !== -1) {
@@ -458,7 +460,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         const arr = utils.convertDataURIToBinary(file.contentUrl);
         const blob = new Blob([arr], { type: utils.getDataURIContentType(file.contentUrl) });
 
-        FileSaver.saveAs(blob, file.name);
+        FileSaver.saveAs(blob, file.signedFilename); // file.name);
     }
 
     /**
@@ -841,7 +843,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
             results.push(html`
                 <div class="file-block">
                     <div class="header">
-                        <span class="filename"><strong>${file.name}</strong> (${humanFileSize(file.contentSize)})</span>
+                        <span class="filename"><strong>${file.signedFilename}</strong> (${humanFileSize(file.contentSize)})</span>
                         <button class="button close"
                             title="${i18n.t('qualified-pdf-upload.download-file-button-title')}"
                             @click="${() => { this.fileDownloadClickHandler(file); }}">
