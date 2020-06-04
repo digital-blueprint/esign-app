@@ -29,6 +29,7 @@ const USE_HTTPS = false;
 const pkg = require('./package.json');
 const build = (typeof process.env.BUILD !== 'undefined') ? process.env.BUILD : 'local';
 const watch = process.env.ROLLUP_WATCH === 'true';
+const watchFull = process.env.WATCH_FULL !== undefined;
 console.log("build: " + build);
 let basePath = '';
 let entryPointURL = '';
@@ -37,9 +38,9 @@ let keyCloakBaseURL = '';
 let keyCloakClientId = '';
 let pdfAsQualifiedlySigningServer = '';
 let matomoSiteId = 131;
-let useTerser = true;
-let useBabel = true;
-let checkLicenses = !watch;
+let useTerser = !watch || watchFull;
+let useBabel = !watch || watchFull;
+let checkLicenses = !watch || watchFull;
 
 switch (build) {
   case 'local':
@@ -49,7 +50,6 @@ switch (build) {
     keyCloakBaseURL = 'https://' + keyCloakServer + '/auth';
     keyCloakClientId = 'auth-dev-mw-frontend-local';
     pdfAsQualifiedlySigningServer = 'sig-dev.tugraz.at';
-    useTerser = false;
     break;
   case 'development':
     basePath = '/apps/signature/';
@@ -83,7 +83,6 @@ switch (build) {
     keyCloakBaseURL = '';
     keyCloakClientId = '';
     pdfAsQualifiedlySigningServer = '';
-    useTerser = false;
     break;
   default:
     console.error('Unknown build environment: ' + build);

@@ -68,9 +68,9 @@
     "build-demo": "rollup -c --environment BUILD:demo",
     "build-test": "rollup -c --environment BUILD:test",
     "i18next": "i18next-scanner",
-    "watch": "npm run watch-local",
-    "watch-local": "rollup -c --watch",
-    "watch-dev": "rollup -c --watch --environment BUILD:development",
+    "watch": "rollup -c --watch",
+    "watch-local": "npm run watch",
+    "watch-full": "rollup -c --watch --environment WATCH_FULL",
     "test": "npm run build-test && karma start --singleRun",
     "lint": "eslint ."
   }

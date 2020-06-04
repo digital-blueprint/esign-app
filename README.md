@@ -14,7 +14,10 @@ git submodule update --init
 npm install
 
 # constantly build dist/bundle.js and run a local web-server on port 8001 
-npm run watch-local
+npm run watch
+
+# same as watch, but with babel, terser, etc active -> very slow
+npm run watch-full
 
 # run tests
 npm test
