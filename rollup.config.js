@@ -322,7 +322,7 @@ Dependencies:
           historyApiFallback: basePath + pkg.name + '.html',
           https: USE_HTTPS ? generateTLSConfig() : false,
           headers: {
-              'Content-Security-Policy': `default-src 'self' 'unsafe-eval' 'unsafe-inline' analytics.tugraz.at ${keyCloakServer} ${entryPointURL} httpbin.org www.handy-signatur.at ${pdfAsQualifiedlySigningServer} ; img-src *`
+              'Content-Security-Policy': `default-src 'self' 'unsafe-eval' 'unsafe-inline' analytics.tugraz.at ${keyCloakServer} ${entryPointURL} httpbin.org www.handy-signatur.at ${pdfAsQualifiedlySigningServer} ; img-src * blob: data:`
           },
         }) : false
     ]
