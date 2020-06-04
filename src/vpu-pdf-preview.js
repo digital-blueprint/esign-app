@@ -8,7 +8,6 @@ import {MiniSpinner} from 'vpu-common';
 import * as commonUtils from "vpu-common/utils";
 import * as commonStyles from 'vpu-common/styles';
 import pdfjs from 'pdfjs-dist';
-import {fabric} from 'fabric';
 
 const i18n = createI18nInstance();
 
@@ -83,7 +82,8 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
 
         window.addEventListener('resize', this._onWindowResize);
 
-        this.updateComplete.then(() => {
+        this.updateComplete.then(async () => {
+            const fabric = (await import('fabric')).fabric;
             that.canvas = that._('#pdf-canvas');
 
             // this._('#upload-pdf-input').addEventListener('change', function() {
