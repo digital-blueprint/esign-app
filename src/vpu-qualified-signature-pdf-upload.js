@@ -923,11 +923,11 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                     <div class="control">
                         <vpu-fileupload id="file-upload"
                             allowed-mime-types="application/pdf"
+                            decompress-zip
                             always-send-file
                             deferred
                             lang="${this.lang}"
                             url="${this.signingRequestUrl}"
-                            allowed-mime-types="application/pdf"
                             ?disabled="${this.signingProcessActive}"
                             text="${i18n.t('qualified-pdf-upload.upload-area-text')}"
                             button-label="${i18n.t('qualified-pdf-upload.upload-button-label')}"
