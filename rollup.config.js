@@ -3,7 +3,6 @@ import fs from 'fs';
 import url from 'url';
 import glob from 'glob';
 import resolve from '@rollup/plugin-node-resolve';
-import builtins from "rollup-plugin-node-builtins";
 import commonjs from '@rollup/plugin-commonjs';
 import copy from 'rollup-plugin-copy';
 import {terser} from "rollup-plugin-terser";
@@ -234,7 +233,6 @@ export default {
           browser: true,
           preferBuiltins: true
         }),
-        builtins(),
         checkLicenses && license({
             banner: {
                 commentStyle: 'ignored',
