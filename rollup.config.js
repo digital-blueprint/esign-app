@@ -15,7 +15,6 @@ import license from 'rollup-plugin-license';
 import del from 'rollup-plugin-delete';
 import emitEJS from 'rollup-plugin-emit-ejs'
 import babel from '@rollup/plugin-babel'
-import chai from 'chai';
 import selfsigned from 'selfsigned';
 
 // -------------------------------
@@ -252,9 +251,6 @@ Dependencies:
         }),
         commonjs({
             include: 'node_modules/**',
-            namedExports: {
-              'chai': Object.keys(chai),
-            }
         }),
         json(),
         urlPlugin({
