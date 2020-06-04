@@ -13,7 +13,6 @@ test:
   script:
     - npm install
     - npm run build-dev
-    - npm run build
     - npm test
 
 linting:
