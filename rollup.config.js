@@ -297,7 +297,10 @@ Dependencies:
             ],
         }),
         useBabel && babel({
-          exclude: 'node_modules/**',
+          include: [
+              'src/**',
+              'node_modules/pdfjs-dist/**', // uses Promise.allSettled
+          ],
           babelHelpers: 'runtime',
           babelrc: false,
           presets: [[
