@@ -153,11 +153,14 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         if (this.queuedFilesPlacementModes[key] === "manual") {
             const data = this.queuedFilesSignaturePlacements[key];
 
+            // rotation translation
+            const rotations = {0: 0, 90: 270, 180: 180, 270: 90};
+
             if (data !== undefined) {
                 params = {
                     y: data.bottom,
                     x: data.left,
-                    r: data.angle,
+                    r: rotations[data.angle],
                     w: data.width, // only width, no "height" allowed in PDF-AS
                     p: data.currentPage
                 };

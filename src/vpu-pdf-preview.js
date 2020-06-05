@@ -103,10 +103,7 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
                 // add a red border around the signature placeholder
                 image.set({stroke: "#e4154b", strokeWidth: 8});
 
-                // TODO: un-lock rotation when rotation point in PDF-AS is matched
-                image.lockRotation = true;
-
-                // TODO: turn on controls when we enable rotation and resizing again
+                // disable controls, we currently don't want resizing and do rotation with a button
                 image.hasControls = false;
 
                 // we will resize the image when the initial pdf page is loaded
@@ -128,19 +125,7 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
             this.fabricCanvas.on('object:moving', function (e) {
                 let obj = e.target;
                 obj.setCoords();
-
-                // top-left corner
-                if (obj.getBoundingRect().top < 0 || obj.getBoundingRect().left < 0) {
-                    obj.top = Math.max(obj.top, obj.top - obj.getBoundingRect().top);
-                    obj.left = Math.max(obj.left, obj.left - obj.getBoundingRect().left);
-                }
-
-                // bottom-right corner
-                if (obj.getBoundingRect().top + obj.getBoundingRect().height > obj.canvas.height ||
-                    obj.getBoundingRect().left + obj.getBoundingRect().width > obj.canvas.width) {
-                    obj.top = Math.min(obj.top, obj.canvas.height - obj.getBoundingRect().height + obj.top - obj.getBoundingRect().top);
-                    obj.left = Math.min(obj.left, obj.canvas.width - obj.getBoundingRect().width + obj.left - obj.getBoundingRect().left);
-                }
+                that.enforceCanvasBoundaries(obj);
             });
 
             // TODO: prevent scaling the signature in a way that it is crossing the canvas boundaries
@@ -154,6 +139,21 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
             //     console.log(obj.translateX);
             // });
         });
+    }
+
+    enforceCanvasBoundaries(obj) {
+        // top-left corner
+        if (obj.getBoundingRect().top < 0 || obj.getBoundingRect().left < 0) {
+            obj.top = Math.max(obj.top, obj.top - obj.getBoundingRect().top);
+            obj.left = Math.max(obj.left, obj.left - obj.getBoundingRect().left);
+        }
+
+        // bottom-right corner
+        if (obj.getBoundingRect().top + obj.getBoundingRect().height > obj.canvas.height ||
+            obj.getBoundingRect().left + obj.getBoundingRect().width > obj.canvas.width) {
+            obj.top = Math.min(obj.top, obj.canvas.height - obj.getBoundingRect().height + obj.top - obj.getBoundingRect().top);
+            obj.left = Math.min(obj.left, obj.canvas.width - obj.getBoundingRect().width + obj.left - obj.getBoundingRect().left);
+        }
     }
 
     async onPageNumberChanged(e) {
@@ -297,7 +297,7 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
                     const documentSizeMM = {
                         width: originalViewport.width / pointsPerMM,
                         height: originalViewport.height / pointsPerMM,
-                    }
+                    };
 
                     const sigSize = signature.getOriginalSize();
                     const scaleX = (this.canvas.width / sigSize.width) * (sigSizeMM.width / documentSizeMM.width);
@@ -366,6 +366,25 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
         const event = new CustomEvent("vpu-pdf-preview-cancel",
             { "detail": {}, bubbles: true, composed: true });
         this.dispatchEvent(event);
+    }
+
+    /**
+     * Rotates the signature clock-wise in 90° steps
+     */
+    async rotateSignature() {
+        let signature = this.getSignatureRect();
+        let angel = signature.get("angle") + 90;
+
+        if (angel >= 360) {
+            angel = 0;
+        }
+
+        signature.set({ angle: angel });
+        signature.setCoords();
+        this.enforceCanvasBoundaries(signature);
+
+        // update page to show rotated signature
+        await this.showPage(this.currentPage);
     }
 
     static get styles() {
@@ -472,6 +491,10 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
                                     title="${i18n.t('pdf-preview.last-page')}"
                                     @click="${async () => { await this.showPage(this.totalPages); } }"
                                     ?disabled="${this.isPageRenderingInProgress || this.currentPage === this.totalPages}">${i18n.t('pdf-preview.last')}</button>
+                            <button class="button ${classMap({hidden: !this.isShowPlacement})}"
+                                    title="${i18n.t('pdf-preview.rotate-signature')}"
+                                    @click="${() => { this.rotateSignature(); } }"
+                                    ?disabled="${this.isPageRenderingInProgress}">${i18n.t('pdf-preview.rotate')}</button>
                             <button class="button is-primary ${classMap({hidden: !this.isShowPlacement})}"
                                     @click="${() => { this.sendAcceptEvent(); } }">${i18n.t('pdf-preview.continue')}</button>
                         </div>

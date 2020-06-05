@@ -57,6 +57,8 @@
     "next-page": "Nächste Seite",
     "last-page": "Letzte Seite",
     "page-count": "von {{totalPages}}",
+    "rotate-signature": "Signatur rotieren",
+    "rotate": "Rotieren",
     "continue": "Platzierung bestätigen"
   },
   "error-summary": "Ein Fehler ist aufgetreten",
