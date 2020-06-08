@@ -494,7 +494,7 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
                             <button class="button ${classMap({hidden: !this.isShowPlacement})}"
                                     title="${i18n.t('pdf-preview.rotate-signature')}"
                                     @click="${() => { this.rotateSignature(); } }"
-                                    ?disabled="${this.isPageRenderingInProgress}">${i18n.t('pdf-preview.rotate')}</button>
+                                    ?disabled="${this.isPageRenderingInProgress}">&#10227; ${i18n.t('pdf-preview.rotate')}</button>
                             <button class="button is-primary ${classMap({hidden: !this.isShowPlacement})}"
                                     @click="${() => { this.sendAcceptEvent(); } }">${i18n.t('pdf-preview.continue')}</button>
                         </div>

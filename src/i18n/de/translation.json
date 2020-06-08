@@ -57,7 +57,7 @@
     "next-page": "Nächste Seite",
     "last-page": "Letzte Seite",
     "page-count": "von {{totalPages}}",
-    "rotate-signature": "Signatur rotieren",
+    "rotate-signature": "Signatur im Uhrzeigersinn rotieren",
     "rotate": "Rotieren",
     "continue": "Platzierung bestätigen"
   },
