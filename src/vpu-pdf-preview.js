@@ -29,6 +29,9 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
         this.fabricCanvas = null;
         this.canvasToPdfScale = 1.0;
         this.currentPageOriginalHeight = 0;
+        this.placeholder = 'signature-placeholder.png';
+        this.signature_width = 80;
+        this.signature_height = 29;
 
         this._onWindowResize = this._onWindowResize.bind(this);
     }
@@ -51,6 +54,9 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
             isPageRenderingInProgress: { type: Boolean, attribute: false },
             isPageLoaded: { type: Boolean, attribute: false },
             isShowPlacement: { type: Boolean, attribute: false },
+            placeholder: { type: String, attribute: 'signature-placeholder-image' },
+            signature_width: { type: Number, attribute: 'signature-width' },
+            signature_height: { type: Number, attribute: 'signature-height' },
         };
     }
 
@@ -99,7 +105,7 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
             });
 
             // add signature image
-            fabric.Image.fromURL(commonUtils.getAssetURL('local/vpu-signature/signature-placeholder.png'), function(image) {
+            fabric.Image.fromURL(commonUtils.getAssetURL('local/vpu-signature/' + this.placeholder), function(image) {
                 // add a red border around the signature placeholder
                 image.set({stroke: "#e4154b", strokeWidth: 8});
 
@@ -288,7 +294,7 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
 
                 // set the initial position of the signature
                 if (initSignature) {
-                    const sigSizeMM = {width: 80, height: 29};
+                    const sigSizeMM = {width: this.signature_width, height: this.signature_height};
                     const sigPosMM = {top: 5, left: 5};
 
                     const inchPerMM = 0.03937007874;
@@ -369,7 +375,7 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
     }
 
     /**
-     * Rotates the signature clock-wise in 90° steps
+     * Rotates the signature clock-wise in 90ï¿½ steps
      */
     async rotateSignature() {
         let signature = this.getSignatureRect();
