@@ -153,15 +153,39 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         if (this.queuedFilesPlacementModes[key] === "manual") {
             const data = this.queuedFilesSignaturePlacements[key];
 
-            // rotation translation
-            const rotations = {0: 0, 90: 270, 180: 180, 270: 90};
-
             if (data !== undefined) {
+                let angle = data.angle;
+                let bottom = data.bottom;
+                let left = data.left;
+
+                if (angle !== 0) {
+                    // attempt to adapt positioning in the rotated states to fit PDF-AS
+                    switch (angle) {
+                        case 90:
+                            // 321 / 118;
+                            bottom += data.width / 2.72034;
+                            left -= data.width / 2.72034;
+                            break;
+                        case 180:
+                            // 321 / 237;
+                            bottom += data.width / 1.3544;
+                            break;
+                        case 270:
+                            left += data.height;
+                            bottom += data.height;
+                            break;
+                    }
+
+                    // adapt rotation to fit PDF-AS
+                    const rotations = {0: 0, 90: 270, 180: 180, 270: 90};
+                    angle = rotations[data.angle];
+                }
+
                 params = {
-                    y: data.bottom,
-                    x: data.left,
-                    r: rotations[data.angle],
-                    w: data.width, // only width, no "height" allowed in PDF-AS
+                    y: Math.round(bottom),
+                    x: Math.round(left),
+                    r: angle,
+                    w: Math.round(data.width), // only width, no "height" allowed in PDF-AS
                     p: data.currentPage
                 };
             }
@@ -273,7 +297,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
             const apiUrl = jsonld.getApiUrlForEntityName("QualifiedlySignedDocument") + '/' + sessionId + '?fileName=' +
                 encodeURI(fileName);
 
-            // TODO: Improve error handling
             fetch(apiUrl, {
                 headers: {
                     'Content-Type': 'application/ld+json',
