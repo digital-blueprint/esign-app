@@ -609,7 +609,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                 overflow: hidden;
                 border-width: 0;
                 /* keeps the A-Trust webpage aligned left */
-                max-width: 335px;
+                max-width: 575px;
             }
 
             .files-block.field:not(:last-child) {
