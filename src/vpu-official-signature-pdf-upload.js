@@ -1066,8 +1066,8 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitElem
                             </div>
                             <vpu-pdf-preview lang="${this.lang}"
                                              signature-placeholder-image="official-signature-placeholder.png"
-                                             signature-width="147"
-                                             signature-height="29"
+                                             signature-width="146"
+                                             signature-height="42"
                                              @vpu-pdf-preview-accept="${this.storePDFData}"
                                              @vpu-pdf-preview-cancel="${this.hidePDF}"></vpu-pdf-preview>
                         </div>
