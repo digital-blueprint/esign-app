@@ -21,7 +21,6 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitElem
         super();
         this.lang = i18n.language;
         this.entryPointUrl = commonUtils.getAPiUrl();
-
         this.signedFiles = [];
         this.signedFilesCount = 0;
         this.errorFiles = [];
@@ -46,10 +45,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitElem
         this.currentPreviewQueueKey = '';
 
         // will be set in function update
-
         this.signingUrl = "";
-
-
     }
 
     static get scopedElements() {
@@ -76,7 +72,6 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitElem
             queueingInProgress: { type: Boolean, attribute: false },
             uploadStatusFileName: { type: String, attribute: false },
             uploadStatusText: { type: String, attribute: false },
-
             signingProcessEnabled: { type: Boolean, attribute: false },
             signingProcessActive: { type: Boolean, attribute: false },
             queueBlockEnabled: { type: Boolean, attribute: false },
@@ -92,23 +87,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitElem
         super.connectedCallback();
         // needs to be called in a function to get the variable scope of "this"
         setInterval(() => { this.handleQueuedFiles(); }, 1000);
-
-
-
-
-
-
-
-
     }
-
-    /* disconnectedCallback()
-
-
-
-
-
-    */
 
     onQueuedFilesChanged(ev) {
         const detail = ev.detail;
@@ -122,13 +101,10 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitElem
      * Processes queued files
      */
     async handleQueuedFiles() {
-
         this.endSigningProcessIfQueueEmpty();
-
         if (this.queuedFilesCount === 0) {
             // reset signingProcessEnabled button
             this.signingProcessEnabled = false;
-
             return;
         }
 
@@ -147,7 +123,6 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitElem
         // set placement mode and parameters to restore them when canceled
         this.currentFilePlacementMode = this.queuedFilesPlacementModes[key];
         this.currentFileSignaturePlacement = this.queuedFilesSignaturePlacements[key];
-
         this.uploadInProgress = true;
         let params = {};
 
@@ -214,7 +189,6 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitElem
         if (this.queuedFilesSignaturePlacements[this.currentPreviewQueueKey] === undefined) {
             this.queuedFilesPlacementModes[this.currentPreviewQueueKey] = "auto";
         }
-
         this.signaturePlacementInProgress = false;
     }
 
@@ -258,84 +232,6 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitElem
         // Chrome requires returnValue to be set
         event.returnValue = '';
     }
-
-    /* onReceiveIframeMessage(event)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    */
 
     endSigningProcessIfQueueEmpty() {
         if (this.queuedFilesCount === 0 && this.signingProcessActive) {
@@ -394,15 +290,8 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitElem
             this.signedFiles.push(ev.detail.json);
             // this triggers the correct update() execution
             this.signedFilesCount++;
-
-
             const entryPoint = data.json;
             this.currentFileName = entryPoint.name;
-
-
-
-
-
             this.endSigningProcessIfQueueEmpty();
         }
     }
@@ -416,7 +305,6 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitElem
                 case "entryPointUrl":
                     JSONLD.initialize(this.entryPointUrl, (jsonld) => {
                         const apiUrlBase = jsonld.getApiUrlForEntityName("OfficiallySignedDocument");
-
                         this.signingUrl = apiUrlBase + "/sign";
                     });
                     break;
@@ -498,7 +386,6 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitElem
      */
     async fileQueueingClickHandler(file, id) {
         this.takeFailedFileFromQueue(id);
-
         return this._("#file-upload").queueFile(file);
     }
 
@@ -520,7 +407,6 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitElem
         // start signature placement process
         this.signaturePlacementInProgress = true;
         this.withSigBlock = withSigBlock;
-
         const previewTag = this.constructor.getScopedTagName("vpu-pdf-preview");
         await this._(previewTag).showPDF(
             file,
@@ -545,7 +431,6 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitElem
     takeFailedFileFromQueue(key) {
         const file = this.errorFiles.splice(key, 1);
         this.errorFilesCount = Object.keys(this.errorFiles).length;
-
         return file;
     }
 
@@ -602,16 +487,6 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitElem
             .hidden {
                 display: none;
             }
-
-
-
-
-
-
-
-
-
-
 
             .files-block.field:not(:last-child) {
                 margin-bottom: 40px;
@@ -923,25 +798,6 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitElem
         return this._hasSignaturePermissions('ROLE_SCOPE_OFFICIAL-SIGNATURE');
     }
 
-    /* stopSigningProcess()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-     */
-
     render() {
         return html`
             <div class="${classMap({hidden: !this.isLoggedIn() || !this.hasSignaturePermissions() || this.isLoading()})}">
@@ -1077,22 +933,6 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitElem
                             <strong>${this.uploadStatusFileName}</strong>
                             ${this.uploadStatusText}
                         </div>
-                        <!-- External auth -->
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                     </div>
                 </div>
             </div>
