@@ -290,7 +290,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitElem
             this.signedFiles.push(ev.detail.json);
             // this triggers the correct update() execution
             this.signedFilesCount++;
-            const entryPoint = data.json;
+            const entryPoint = ev.detail.json;
             this.currentFileName = entryPoint.name;
             this.endSigningProcessIfQueueEmpty();
         }
@@ -841,7 +841,11 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitElem
                                 </button>
                                 <button @click="${() => { this.signingProcessEnabled = true; this.signingProcessActive = true; }}"
                                         ?disabled="${this.queuedFilesCount === 0}"
-                                        class="button is-right is-primary ${classMap({"is-disabled": this.isUserInterfaceDisabled()})}">
+                                        class="button is-right is-primary ${classMap(
+                                            {
+                                                "is-disabled": this.isUserInterfaceDisabled(),
+                                                hidden: this.signingProcessActive
+                                            })}">
                                     ${i18n.t('official-pdf-upload.start-signing-process-button')}
                                 </button>
                                 <!-- -->
