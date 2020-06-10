@@ -1,7 +1,7 @@
 {
   "official-pdf-upload": {
     "upload-field-label": "Upload PDF-files to sign",
-    "upload-area-text": "In this area you can upload PDF-files via Drag & Drop or by selecting them directly",
+    "upload-area-text": "In this area you can upload PDF-documents via Drag & Drop or by selecting them directly. The PDF-documents can also be located in a ZIP-file.",
     "current-signing-process-label": "Current signing process",
     "queued-files-label": "Queued documents",
     "queued-files-empty1": "No queued documents",

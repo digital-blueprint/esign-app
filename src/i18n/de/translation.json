@@ -1,7 +1,7 @@
 {
   "official-pdf-upload": {
     "upload-field-label": "PDF-Dokumente zum Signieren hochladen",
-    "upload-area-text": "Sie können in diesem Bereich PDF-Dokumente per Drag & Drop oder per Direktauswahl hochladen",
+    "upload-area-text": "Sie können in diesem Bereich PDF-Dokumente per Drag & Drop oder per Direktauswahl hochladen. Die PDF-Dokumente dürfen sich auch in ZIP-Dateien befinden.",
     "current-signing-process-label": "Aktueller Signaturprozess",
     "queued-files-label": "Dokumente in der Warteschlange",
     "queued-files-empty1": "Kein Dokument in der Warteschlange",
