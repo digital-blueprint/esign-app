@@ -12,6 +12,6 @@
   },
   "description": {
     "de": "Erlaubt das Hochladen von PDF-Dokumenten, um sie mit einer Amtssignatur zu versehen",
-    "en": "Allows upload of PDF-files to officially sign them"
+    "en": "Allows upload of PDF-documents to officially sign them"
   }
 }
