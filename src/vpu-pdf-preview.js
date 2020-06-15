@@ -8,6 +8,7 @@ import {MiniSpinner} from 'vpu-common';
 import * as commonUtils from "vpu-common/utils";
 import * as commonStyles from 'vpu-common/styles';
 import pdfjs from 'pdfjs-dist';
+import buildinfo from 'consts:buildinfo';
 
 const i18n = createI18nInstance();
 
@@ -464,7 +465,10 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
     }
 
     render() {
+        const isRotationHidden = buildinfo.env === 'production' || buildinfo.env === 'demo';
+
         return html`
+
 <!--
             <form>
                 <input type="file" name="pdf" id="upload-pdf-input">
@@ -497,7 +501,7 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
                                     title="${i18n.t('pdf-preview.last-page')}"
                                     @click="${async () => { await this.showPage(this.totalPages); } }"
                                     ?disabled="${this.isPageRenderingInProgress || this.currentPage === this.totalPages}">${i18n.t('pdf-preview.last')}</button>
-                            <button class="button ${classMap({hidden: !this.isShowPlacement})}"
+                            <button class="button ${classMap({hidden: !this.isShowPlacement || isRotationHidden})}"
                                     title="${i18n.t('pdf-preview.rotate-signature')}"
                                     @click="${() => { this.rotateSignature(); } }"
                                     ?disabled="${this.isPageRenderingInProgress}">&#10227; ${i18n.t('pdf-preview.rotate')}</button>
