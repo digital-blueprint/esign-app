@@ -1,6 +1,6 @@
 {
   "official-pdf-upload": {
-    "upload-field-label": "Upload PDF-files to sign",
+    "upload-field-label": "Upload PDF-documents to sign",
     "upload-area-text": "In this area you can upload PDF-documents via Drag & Drop or by selecting them directly. The PDF-documents can also be located in a ZIP-file.",
     "current-signing-process-label": "Current signing process",
     "queued-files-label": "Queued documents",
@@ -18,10 +18,10 @@
     "preview-label": "Document view",
     "start-signing-process-button-running-title": "Signing process running",
     "remove-current-file-button-title": "Cancel current signing process",
-    "signed-files-label": "Signed files",
+    "signed-files-label": "Signed documents",
     "download-zip-button": "Download ZIP",
-    "download-zip-button-tooltip": "Download all signed files as ZIP file",
-    "upload-button-label": "Select PDF-files",
+    "download-zip-button-tooltip": "Download all signed documents as ZIP file",
+    "upload-button-label": "Select PDF-documents",
     "download-file-button-title": "Download signed PDF",
     "error-files-label": "Failed signing processes",
     "re-upload-file-button-title": "Upload again",
