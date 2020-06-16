@@ -95,7 +95,11 @@
     "re-upload-all-button-title": "Alle fehlgeschlagen Uploads erneut hochladen",
     "file-label": "Dokument",
     "given-name": "Vorname",
-    "last-name": "Nachname"
+    "last-name": "Nachname",
+    "nationality": "Nationalität",
+    "serial-number": "Seriennummer",
+    "value-message": "Überprüfung",
+    "no-signatures-found": "Es wurden keine Signaturen gefunden"
   },
   "pdf-preview": {
     "first": "Erste",

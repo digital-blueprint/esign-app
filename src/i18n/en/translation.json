@@ -95,7 +95,11 @@
     "re-upload-all-button-title": "Upload all failed uploads again",
     "file-label": "document",
     "given-name": "Given name",
-    "last-name": "Last name"
+    "last-name": "Last name",
+    "nationality": "Nationality",
+    "serial-number": "Serial number",
+    "value-message": "Verification",
+    "no-signatures-found": "No signatures were found"
   },
   "pdf-preview": {
     "first": "First",

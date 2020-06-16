@@ -530,6 +530,10 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
                 margin-top: 10px;
             }
 
+            .verified-files .file-block {
+                max-width: inherit;
+            }
+
             /* Handling for small displays (like mobile devices) */
             @media (max-width: 680px) {
                 /* Modal preview, upload and external auth */
@@ -620,6 +624,9 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
                     <tr>
                         <td>${signature.givenName}</td>
                         <td>${signature.familyName}</td>
+                        <td>${signature.nationality}</td>
+                        <td>${signature.serialNumber}</td>
+                        <td>${signature.valueMessage}</td>
                     </tr>
                 `);
             });
@@ -629,15 +636,21 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
                     <div class="header">
                         <span class="filename"><strong>${report.name}</strong></span>
                     </div>
-                    <table class="signatures">
+                    <table class="signatures ${classMap({hidden: signatures.length === 0})}">
                         <thead>
                             <th>${i18n.t('signature-verification.given-name')}</th>
                             <th>${i18n.t('signature-verification.last-name')}</th>
+                            <th>${i18n.t('signature-verification.nationality')}</th>
+                            <th>${i18n.t('signature-verification.serial-number')}</th>
+                            <th>${i18n.t('signature-verification.value-message')}</th>
                         </thead>
                         <tbody>
                             ${signatures}
                         </tbody>
                     </table>
+                    <div class="${classMap({hidden: signatures.length !== 0})}">
+                        ${i18n.t('signature-verification.no-signatures-found')}
+                    </div>
                 </div>
             `);
         });
@@ -709,7 +722,7 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
                             ></vpu-fileupload>
                     </div>
                 </div>
-                           <div id="grid-container">
+                <div id="grid-container">
                     <div class="left-container">
                         <div class="files-block field ${classMap({hidden: !this.queueBlockEnabled})}">
                             <!-- Queued files headline and queueing spinner -->
@@ -729,10 +742,10 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
                                 <button @click="${() => { this.verificationProcessEnabled = true; this.verificationProcessActive = true; }}"
                                         ?disabled="${this.queuedFilesCount === 0}"
                                         class="button is-right is-primary ${classMap(
-            {
-                "is-disabled": this.isUserInterfaceDisabled(),
-                hidden: this.verificationProcessActive
-            })}">
+                                            {
+                                                "is-disabled": this.isUserInterfaceDisabled(),
+                                                hidden: this.verificationProcessActive
+                                            })}">
                                     ${i18n.t('signature-verification.start-verification-process-button')}
                                 </button>
                                 <!-- -->
@@ -752,22 +765,6 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
                             <div class="empty-queue control ${classMap({hidden: this.queuedFilesCount !== 0, "is-disabled": this.isUserInterfaceDisabled()})}">
                                 ${i18n.t('signature-verification.queued-files-empty1')}<br />
                                 ${i18n.t('signature-verification.queued-files-empty2')}
-                            </div>
-                        </div>
-                        <!-- List of verified PDFs -->
-                        <div class="files-block field ${classMap({hidden: this.verifiedFilesCount === 0, "is-disabled": this.isUserInterfaceDisabled()})}">
-                            <h2>${i18n.t('signature-verification.verified-files-label')}</h2>
-                            <!-- Button to clear verified PDFs -->
-                            <div class="field ${classMap({hidden: this.verifiedFilesCount === 0})}">
-                                <div class="control">
-                                    <button @click="${this.clearVerifiedFiles}"
-                                            class="button">
-                                        ${i18n.t('signature-verification.clear-all')}
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="control">
-                                ${this.getVerifiedFilesHtml()}
                             </div>
                         </div>
                         <!-- List of errored files -->
@@ -817,6 +814,22 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
                             <strong>${this.uploadStatusFileName}</strong>
                             ${this.uploadStatusText}
                         </div>
+                    </div>
+                </div>
+                <!-- List of verified PDFs -->
+                <div class="verified-files files-block field ${classMap({hidden: this.verifiedFilesCount === 0, "is-disabled": this.isUserInterfaceDisabled()})}">
+                    <h2>${i18n.t('signature-verification.verified-files-label')}</h2>
+                    <!-- Button to clear verified PDFs -->
+                    <div class="field ${classMap({hidden: this.verifiedFilesCount === 0})}">
+                        <div class="control">
+                            <button @click="${this.clearVerifiedFiles}"
+                                    class="button">
+                                ${i18n.t('signature-verification.clear-all')}
+                            </button>
+                        </div>
+                    </div>
+                    <div class="control">
+                        ${this.getVerifiedFilesHtml()}
                     </div>
                 </div>
             </div>
