@@ -613,12 +613,8 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitElem
                 white-space: nowrap;
             }
 
-            #pdf-preview .button.is-cancel, #external-auth .button.is-cancel {
+            #pdf-preview .button.is-cancel {
                 color: #e4154b;
-            }
-
-            #external-auth iframe {
-                margin-top: 0.5em;
             }
 
             .is-right {
@@ -640,13 +636,13 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitElem
                 pointer-events: none;
             }
 
-            #pdf-preview .box-header, #external-auth .box-header {
+            #pdf-preview .box-header {
                 display: flex;
                 justify-content: space-between;
                 align-items: start;
             }
 
-            #pdf-preview .box-header .filename, #external-auth .box-header .filename {
+            #pdf-preview .box-header .filename {
                 overflow: hidden;
                 text-overflow: ellipsis;
                 margin-right: 0.5em;
