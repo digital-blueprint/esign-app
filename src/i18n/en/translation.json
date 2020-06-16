@@ -99,7 +99,7 @@
     "nationality": "Nationality",
     "serial-number": "Serial number",
     "value-message": "Verification",
-    "no-signatures-found": "No signatures were found"
+    "no-signatures-found": "No signatures were found."
   },
   "pdf-preview": {
     "first": "First",
