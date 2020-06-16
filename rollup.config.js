@@ -137,6 +137,7 @@ export default {
       'src/' + pkg.name + '.js',
       'src/vpu-official-signature-pdf-upload.js',
       'src/vpu-qualified-signature-pdf-upload.js',
+      'src/vpu-signature-verification.js',
     ] : glob.sync('test/**/*.js'),
     output: {
       dir: 'dist',
