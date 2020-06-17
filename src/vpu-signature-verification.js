@@ -534,6 +534,10 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
                 max-width: inherit;
             }
 
+            .verification-ok {
+                background-color: #a4ffa4;
+            }
+
             /* Handling for small displays (like mobile devices) */
             @media (max-width: 680px) {
                 /* Modal preview, upload and external auth */
@@ -626,7 +630,7 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
                         <td>${signature.familyName}</td>
                         <td>${signature.nationality}</td>
                         <td>${signature.serialNumber}</td>
-                        <td>${signature.valueMessage}</td>
+                        <td class="${classMap({"verification-ok": signature.valueMessage === "OK"})}">${signature.valueMessage}</td>
                     </tr>
                 `);
             });
