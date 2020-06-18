@@ -13,6 +13,8 @@ import {classMap} from 'lit-html/directives/class-map.js';
 import {FileUpload} from 'vpu-file-upload';
 import JSONLD from "vpu-common/jsonld";
 import {TextSwitch} from './textswitch.js';
+import {FilePicker} from "./vpu-file-picker";
+import nextcloudBaseURL from 'consts:nextcloudBaseURL';
 
 const i18n = createI18nInstance();
 
@@ -61,6 +63,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
           'vpu-mini-spinner': MiniSpinner,
           'vpu-button': Button,
           'vpu-textswitch': TextSwitch,
+          'vpu-file-picker': FilePicker,
         };
     }
 
@@ -1101,6 +1104,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
             <div class="${classMap({hidden: !this.isLoading()})}">
                 <vpu-mini-spinner></vpu-mini-spinner>
             </div>
+            <!-- File picker test --> 
+<!--            <vpu-file-picker base-url="${nextcloudBaseURL}"></vpu-file-picker>-->
         `;
     }
 }

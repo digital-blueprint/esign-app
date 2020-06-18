@@ -33,6 +33,7 @@ const watchFull = process.env.WATCH_FULL !== undefined;
 console.log("build: " + build);
 let basePath = '';
 let entryPointURL = '';
+let nextcloudBaseURL = 'https://cloud.tugraz.at';
 let keyCloakServer = '';
 let keyCloakBaseURL = '';
 let keyCloakClientId = '';
@@ -46,6 +47,7 @@ switch (build) {
   case 'local':
     basePath = '/dist/';
     entryPointURL = 'http://127.0.0.1:8000';
+    nextcloudBaseURL = 'http://localhost:8081/index.php';
     keyCloakServer = 'auth-dev.tugraz.at';
     keyCloakBaseURL = 'https://' + keyCloakServer + '/auth';
     keyCloakClientId = 'auth-dev-mw-frontend-local';
@@ -79,6 +81,7 @@ switch (build) {
   case 'test':
     basePath = '/apps/signature/';
     entryPointURL = '';
+    nextcloudBaseURL = '';
     keyCloakServer = '';
     keyCloakBaseURL = '';
     keyCloakClientId = '';
@@ -175,6 +178,7 @@ export default {
         consts({
           environment: build,
           buildinfo: getBuildInfo(),
+          nextcloudBaseURL: nextcloudBaseURL,
         }),
         emitEJS({
           src: 'assets',
@@ -188,6 +192,7 @@ export default {
             },
             name: pkg.name,
             entryPointURL: entryPointURL,
+            nextcloudBaseURL: nextcloudBaseURL,
             keyCloakServer: keyCloakServer,
             keyCloakBaseURL: keyCloakBaseURL,
             keyCloakClientId: keyCloakClientId,
@@ -295,7 +300,7 @@ Dependencies:
           historyApiFallback: basePath + pkg.name + '.html',
           https: USE_HTTPS ? generateTLSConfig() : false,
           headers: {
-              'Content-Security-Policy': `default-src 'self' 'unsafe-eval' 'unsafe-inline' analytics.tugraz.at ${keyCloakServer} ${entryPointURL} httpbin.org www.handy-signatur.at ${pdfAsQualifiedlySigningServer} ; img-src * blob: data:`
+              'Content-Security-Policy': `default-src 'self' 'unsafe-eval' 'unsafe-inline' analytics.tugraz.at ${keyCloakServer} ${entryPointURL} httpbin.org ${nextcloudBaseURL} www.handy-signatur.at ${pdfAsQualifiedlySigningServer} ; img-src * blob: data:`
           },
         }) : false
     ]
