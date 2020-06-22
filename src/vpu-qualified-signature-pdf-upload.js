@@ -912,6 +912,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
     }
 
     render() {
+        const placeholderUrl = commonUtils.getAssetURL('local/vpu-signature/official-signature-placeholder.png');
+
         return html`
             <div class="${classMap({hidden: !this.isLoggedIn() || !this.hasSignaturePermissions() || this.isLoading()})}">
                 <div class="field ${classMap({"is-disabled": this.isUserInterfaceDisabled()})}">
@@ -1034,6 +1036,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                                     @click="${this.hidePDF}"><vpu-icon name="close"></vpu-icon></button>
                             </div>
                             <vpu-pdf-preview lang="${this.lang}"
+                                             signature-placeholder-image-src="${placeholderUrl}"
                                              signature-width="80"
                                              signature-height="29"
                                              @vpu-pdf-preview-accept="${this.storePDFData}"

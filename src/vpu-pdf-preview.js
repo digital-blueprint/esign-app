@@ -30,7 +30,7 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
         this.fabricCanvas = null;
         this.canvasToPdfScale = 1.0;
         this.currentPageOriginalHeight = 0;
-        this.placeholder = 'signature-placeholder.png';
+        this.placeholder = '';
         this.signature_width = 42;
         this.signature_height = 42;
         this.border_width = 2;
@@ -56,7 +56,7 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
             isPageRenderingInProgress: { type: Boolean, attribute: false },
             isPageLoaded: { type: Boolean, attribute: false },
             isShowPlacement: { type: Boolean, attribute: false },
-            placeholder: { type: String, attribute: 'signature-placeholder-image' },
+            placeholder: { type: String, attribute: 'signature-placeholder-image-src' },
             signature_width: { type: Number, attribute: 'signature-width' },
             signature_height: { type: Number, attribute: 'signature-height' },
         };
@@ -107,7 +107,7 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
             });
 
             // add signature image
-            fabric.Image.fromURL(commonUtils.getAssetURL('local/vpu-signature/' + this.placeholder), function(image) {
+            fabric.Image.fromURL(this.placeholder, function(image) {
                 // add a red border around the signature placeholder
                 image.set({stroke: "#e4154b", strokeWidth: that.border_width, strokeUniform: true});
 
