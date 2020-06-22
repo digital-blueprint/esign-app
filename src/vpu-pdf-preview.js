@@ -109,7 +109,7 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
             // add signature image
             fabric.Image.fromURL(this.placeholder, function(image) {
                 // add a red border around the signature placeholder
-                image.set({stroke: "#e4154b", strokeWidth: that.border_width, strokeUniform: true});
+                image.set({stroke: "#e4154b", strokeWidth: that.border_width, strokeUniform: true, centeredRotation: true});
 
                 // disable controls, we currently don't want resizing and do rotation with a button
                 image.hasControls = false;
@@ -400,13 +400,8 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
      */
     async rotateSignature() {
         let signature = this.getSignatureRect();
-        let angel = signature.get("angle") + 90;
-
-        if (angel >= 360) {
-            angel = 0;
-        }
-
-        signature.set({ angle: angel });
+        let angle = (signature.get("angle") + 90) % 360;
+        signature.rotate(angle);
         signature.setCoords();
         this.enforceCanvasBoundaries(signature);
 
