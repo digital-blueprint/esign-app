@@ -355,8 +355,6 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
         const item = this.getSignatureRect();
         const data = {
             "currentPage": this.currentPage,
-            "scaleX": item.get("scaleX") / this.canvasToPdfScale,
-            "scaleY": item.get("scaleY") / this.canvasToPdfScale,
             "width": item.get("width") * item.get("scaleX") / this.canvasToPdfScale,
             "height": item.get("height") * item.get("scaleY") / this.canvasToPdfScale,
             "left": item.get("left") / this.canvasToPdfScale,
