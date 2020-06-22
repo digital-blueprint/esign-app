@@ -31,8 +31,9 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
         this.canvasToPdfScale = 1.0;
         this.currentPageOriginalHeight = 0;
         this.placeholder = 'signature-placeholder.png';
-        this.signature_width = 80;
-        this.signature_height = 29;
+        this.signature_width = 42;
+        this.signature_height = 42;
+        this.border_width = 2;
 
         this._onWindowResize = this._onWindowResize.bind(this);
     }
@@ -108,7 +109,7 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
             // add signature image
             fabric.Image.fromURL(commonUtils.getAssetURL('local/vpu-signature/' + this.placeholder), function(image) {
                 // add a red border around the signature placeholder
-                image.set({stroke: "#e4154b", strokeWidth: 8});
+                image.set({stroke: "#e4154b", strokeWidth: that.border_width, strokeUniform: true});
 
                 // disable controls, we currently don't want resizing and do rotation with a button
                 image.hasControls = false;
@@ -353,13 +354,34 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
 
     sendAcceptEvent() {
         const item = this.getSignatureRect();
+        let left = item.get("left");
+        let top = item.get("top");
+        const angle = item.get("angle");
+
+        // fabricjs includes the stroke in the image position
+        // and we have to remove it
+        const border_offset = (this.border_width / 2);
+        if (angle === 0) {
+            left += border_offset;
+            top += border_offset;
+        } else if (angle === 90) {
+            left -= border_offset;
+            top += border_offset;
+        } else if (angle === 180) {
+            left -= border_offset;
+            top -= border_offset;
+        } else if (angle === 270) {
+            left += border_offset;
+            top -= border_offset;
+        }
+
         const data = {
             "currentPage": this.currentPage,
             "width": item.get("width") * item.get("scaleX") / this.canvasToPdfScale,
             "height": item.get("height") * item.get("scaleY") / this.canvasToPdfScale,
-            "left": item.get("left") / this.canvasToPdfScale,
-            "top": item.get("top") / this.canvasToPdfScale,
-            "bottom": this.currentPageOriginalHeight - (item.get("top") / this.canvasToPdfScale),
+            "left": left / this.canvasToPdfScale,
+            "top": top / this.canvasToPdfScale,
+            "bottom": this.currentPageOriginalHeight - (top / this.canvasToPdfScale),
             "angle": item.get("angle")
         };
         const event = new CustomEvent("vpu-pdf-preview-accept",

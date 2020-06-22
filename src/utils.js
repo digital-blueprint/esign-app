@@ -55,3 +55,28 @@ export const baseName = (str) =>
 
     return base;
 };
+
+
+export const fabricjs2pdfasPosition = (data) => {
+    let angle = -(data.angle - 360) % 360;
+    let bottom = data.bottom;
+    let left = data.left;
+
+    if (data.angle === 90) {
+        bottom += data.height;
+        left -= data.height;
+    } else if (data.angle === 180) {
+        bottom += data.height * 2;
+    } else if (data.angle === 270) {
+        bottom += data.height;
+        left += data.height;
+    }
+
+    return {
+        y: Math.round(bottom),
+        x: Math.round(left),
+        r: angle,
+        w: Math.round(data.width), // only width, no "height" allowed in PDF-AS
+        p: data.currentPage
+    };
+}

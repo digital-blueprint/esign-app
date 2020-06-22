@@ -156,42 +156,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         // prepare parameters to tell PDF-AS where and how the signature should be placed
         if (this.queuedFilesPlacementModes[key] === "manual") {
             const data = this.queuedFilesSignaturePlacements[key];
-
             if (data !== undefined) {
-                let angle = data.angle;
-                let bottom = data.bottom;
-                let left = data.left;
-
-                if (angle !== 0) {
-                    // attempt to adapt positioning in the rotated states to fit PDF-AS
-                    switch (angle) {
-                        case 90:
-                            // 321 / 118;
-                            bottom += data.width / 2.72034;
-                            left -= data.width / 2.72034;
-                            break;
-                        case 180:
-                            // 321 / 237;
-                            bottom += data.width / 1.3544;
-                            break;
-                        case 270:
-                            left += data.height;
-                            bottom += data.height;
-                            break;
-                    }
-
-                    // adapt rotation to fit PDF-AS
-                    const rotations = {0: 0, 90: 270, 180: 180, 270: 90};
-                    angle = rotations[data.angle];
-                }
-
-                params = {
-                    y: Math.round(bottom),
-                    x: Math.round(left),
-                    r: angle,
-                    w: Math.round(data.width), // only width, no "height" allowed in PDF-AS
-                    p: data.currentPage
-                };
+                params = utils.fabricjs2pdfasPosition(data);
             }
         }
 
@@ -1068,6 +1034,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                                     @click="${this.hidePDF}"><vpu-icon name="close"></vpu-icon></button>
                             </div>
                             <vpu-pdf-preview lang="${this.lang}"
+                                             signature-width="80"
+                                             signature-height="29"
                                              @vpu-pdf-preview-accept="${this.storePDFData}"
                                              @vpu-pdf-preview-cancel="${this.hidePDF}"></vpu-pdf-preview>
                         </div>
