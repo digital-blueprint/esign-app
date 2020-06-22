@@ -4,6 +4,7 @@ import {ScopedElementsMixin} from '@open-wc/scoped-elements';
 import VPULitElement from 'vpu-common/vpu-lit-element';
 import {MiniSpinner} from 'vpu-common';
 import * as commonStyles from 'vpu-common/styles';
+import { createClient } from "webdav/web";
 
 const i18n = createI18nInstance();
 
@@ -69,7 +70,7 @@ export class FilePicker extends ScopedElementsMixin(VPULitElement) {
             "width=400,height=400,menubar=no,scrollbars=no,status=no,titlebar=no,toolbar=no");
     }
 
-    onReceiveWindowMessage(event) {
+    async onReceiveWindowMessage(event) {
         const data = event.data;
         console.log("data", data);
 
@@ -78,6 +79,20 @@ export class FilePicker extends ScopedElementsMixin(VPULitElement) {
             // alert("Login name: " + data.loginName + "\nApp password: " + data.token);
 
             const apiUrl = this.webDavUrl + "/" + data.loginName;
+
+            const client = createClient(
+                apiUrl,
+                {
+                    username: data.loginName,
+                    password: data.token
+                }
+            );
+
+            const directoryItems = await client.getDirectoryContents("/");
+
+            console.log("directoryItems", directoryItems);
+
+            return;
 
             fetch(apiUrl, {
                 method: 'PROPFIND',
