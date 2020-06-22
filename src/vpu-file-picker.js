@@ -1,13 +1,9 @@
 import {createI18nInstance} from './i18n.js';
 import {css, html} from 'lit-element';
-import {classMap} from 'lit-html/directives/class-map.js';
-import {live} from 'lit-html/directives/live.js';
 import {ScopedElementsMixin} from '@open-wc/scoped-elements';
 import VPULitElement from 'vpu-common/vpu-lit-element';
 import {MiniSpinner} from 'vpu-common';
-import * as commonUtils from "vpu-common/utils";
 import * as commonStyles from 'vpu-common/styles';
-import pdfjs from 'pdfjs-dist';
 
 const i18n = createI18nInstance();
 
@@ -18,7 +14,8 @@ export class FilePicker extends ScopedElementsMixin(VPULitElement) {
     constructor() {
         super();
         this.lang = 'de';
-        this.baseUrl = '';
+        this.authUrl = '';
+        this.webDavUrl = '';
         this.loginWindow = null;
 
         this._onReceiveWindowMessage = this.onReceiveWindowMessage.bind(this);
@@ -36,7 +33,8 @@ export class FilePicker extends ScopedElementsMixin(VPULitElement) {
     static get properties() {
         return {
             lang: { type: String },
-            baseUrl: { type: String, attribute: "base-url" },
+            authUrl: { type: String, attribute: "auth-url" },
+            webDavUrl: { type: String, attribute: "web-dav-url" },
         };
     }
 
@@ -67,7 +65,7 @@ export class FilePicker extends ScopedElementsMixin(VPULitElement) {
     }
 
     openFilePicker() {
-        this.loginWindow = window.open(this.baseUrl + "/apps/webapppassword/#", "Nextcloud Login",
+        this.loginWindow = window.open(this.authUrl, "Nextcloud Login",
             "width=400,height=400,menubar=no,scrollbars=no,status=no,titlebar=no,toolbar=no");
     }
 
@@ -77,7 +75,34 @@ export class FilePicker extends ScopedElementsMixin(VPULitElement) {
 
         if (data.type === "webapppassword") {
             this.loginWindow.close();
-            alert("Login name: " + data.loginName + "\nApp password: " + data.token);
+            // alert("Login name: " + data.loginName + "\nApp password: " + data.token);
+
+            const apiUrl = this.webDavUrl + "/" + data.loginName;
+
+            fetch(apiUrl, {
+                method: 'PROPFIND',
+                headers: {
+                    'Content-Type': 'text/xml',
+                    'Authorization': 'Basic ' + btoa(data.loginName + ":" + data.token),
+                },
+                data: "<?xml version=\"1.0\"?>" +
+                "<a:propfind xmlns:a=\"DAV:\">" +
+                "<a:prop><a:resourcetype />" +
+                "</a:prop>" +
+                "</a:propfind>"
+            })
+                .then(result => {
+                    console.log("result", result);
+
+                    if (!result.ok) throw result;
+
+                    return result.text();
+                })
+                .then((xml) => {
+                    console.log("xml", xml);
+                }).catch(error => {
+                    console.error("error", error);
+                });
         }
     }
 

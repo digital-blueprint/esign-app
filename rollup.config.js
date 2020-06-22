@@ -34,6 +34,8 @@ console.log("build: " + build);
 let basePath = '';
 let entryPointURL = '';
 let nextcloudBaseURL = 'https://cloud.tugraz.at';
+let nextcloudWebAppPasswordURL = nextcloudBaseURL + '/apps/webapppassword';
+let nextcloudWebDavURL = nextcloudBaseURL + '/remote.php/dav/files';
 let keyCloakServer = '';
 let keyCloakBaseURL = '';
 let keyCloakClientId = '';
@@ -47,7 +49,9 @@ switch (build) {
   case 'local':
     basePath = '/dist/';
     entryPointURL = 'http://127.0.0.1:8000';
-    nextcloudBaseURL = 'http://localhost:8081/index.php';
+    nextcloudBaseURL = 'http://localhost:8081';
+    nextcloudWebAppPasswordURL = nextcloudBaseURL + '/index.php/apps/webapppassword';
+    nextcloudWebDavURL = nextcloudBaseURL + '/remote.php/dav/files';
     keyCloakServer = 'auth-dev.tugraz.at';
     keyCloakBaseURL = 'https://' + keyCloakServer + '/auth';
     keyCloakClientId = 'auth-dev-mw-frontend-local';
@@ -82,6 +86,7 @@ switch (build) {
     basePath = '/apps/signature/';
     entryPointURL = '';
     nextcloudBaseURL = '';
+    nextcloudWebAppPasswordURL = '';
     keyCloakServer = '';
     keyCloakBaseURL = '';
     keyCloakClientId = '';
@@ -178,7 +183,8 @@ export default {
         consts({
           environment: build,
           buildinfo: getBuildInfo(),
-          nextcloudBaseURL: nextcloudBaseURL,
+          nextcloudWebAppPasswordURL: nextcloudWebAppPasswordURL,
+          nextcloudWebDavURL: nextcloudWebDavURL,
         }),
         emitEJS({
           src: 'assets',

@@ -14,7 +14,8 @@ import {FileUpload} from 'vpu-file-upload';
 import JSONLD from "vpu-common/jsonld";
 import {TextSwitch} from './textswitch.js';
 import {FilePicker} from "./vpu-file-picker";
-import nextcloudBaseURL from 'consts:nextcloudBaseURL';
+import nextcloudWebAppPasswordURL from 'consts:nextcloudWebAppPasswordURL';
+import nextcloudWebDavURL from 'consts:nextcloudWebDavURL';
 
 const i18n = createI18nInstance();
 
@@ -1105,7 +1106,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                 <vpu-mini-spinner></vpu-mini-spinner>
             </div>
             <!-- File picker test --> 
-<!--            <vpu-file-picker base-url="${nextcloudBaseURL}"></vpu-file-picker>-->
+<!--            <vpu-file-picker lang="${this.lang}" auth-url="${nextcloudWebAppPasswordURL}" web-dav-url="${nextcloudWebDavURL}"></vpu-file-picker>-->
         `;
     }
 }
