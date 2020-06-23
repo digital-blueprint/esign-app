@@ -24,8 +24,8 @@ export class NextcloudFilePicker extends ScopedElementsMixin(VPULitElement) {
         this.loginWindow = null;
         this.isPickerActive = false;
         this.statusText = "";
+        this.lastDirectoryPath = "/";
         this.directoryPath = "/";
-        this.directoryContents = [];
         this.webDavClient = null;
         this.tabulatorTable = null;
 
@@ -49,7 +49,6 @@ export class NextcloudFilePicker extends ScopedElementsMixin(VPULitElement) {
             isPickerActive: { type: Boolean, attribute: false },
             statusText: { type: String, attribute: false },
             directoryPath: { type: String, attribute: false },
-            directoryContents: { type: Array, attribute: false },
         };
     }
 
@@ -73,16 +72,43 @@ export class NextcloudFilePicker extends ScopedElementsMixin(VPULitElement) {
     connectedCallback() {
         super.connectedCallback();
 
-        this.updateComplete.then(()=>{
+        this.updateComplete.then(() => {
             // see: https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage
             window.addEventListener('message', this._onReceiveWindowMessage);
 
             // http://tabulator.info/docs/4.7
-            this.tabulatorTable = new Tabulator(this._("#directory-content-table"), {});
+            // TODO: format size and lastmod
+            // TODO: translation of column headers
+            // TODO: mime type icon
+            this.tabulatorTable = new Tabulator(this._("#directory-content-table"), {
+                layout: "fitDataStretch",
+                selectable: true,
+                columns: [
+                    {title: "Filename", field: "basename"},
+                    {title: "Size", field: "size", formatter: (cell, formatterParams, onRendered) => {
+                            return cell.getRow().getData().type === "directory" ? "" : humanFileSize(cell.getValue());}},
+                    {title: "Type", field: "type"},
+                    {title: "Mime", field: "mime"},
+                    {title: "Last modified", field: "lastmod", sorter: "date"},
+                ],
+                rowClick: (e, row) => {
+                    const data = row.getData();
+
+                    switch(data.type) {
+                        case "directory":
+                            this.directoryClicked(e, data);
+                            break;
+                        case "file":
+                            console.log("file selected", data);
+                            break;
+                    }
+                },
+            });
         });
     }
 
     openFilePicker() {
+        // TODO: translation
         this.statusText = "Auth in progress";
         this.loginWindow = window.open(this.authUrl, "Nextcloud Login",
             "width=400,height=400,menubar=no,scrollbars=no,status=no,titlebar=no,toolbar=no");
@@ -107,7 +133,7 @@ export class NextcloudFilePicker extends ScopedElementsMixin(VPULitElement) {
                 }
             );
 
-            this.loadDirectory("");
+            this.loadDirectory("/");
         }
     }
 
@@ -117,26 +143,61 @@ export class NextcloudFilePicker extends ScopedElementsMixin(VPULitElement) {
      * @param path
      */
     loadDirectory(path) {
+        // TODO: translation
         this.statusText = "Loading directory from Nextcloud: " + path;
+        this.lastDirectoryPath = this.directoryPath;
         this.directoryPath = path;
-        this.directoryContents = [];
 
         // https://github.com/perry-mitchell/webdav-client#getdirectorycontents
         this.webDavClient
-            .getDirectoryContents(path)
+            .getDirectoryContents(path, {details: true})
             .then(contents => {
                 console.log("contents", contents);
                 this.statusText = "";
-                this.directoryContents = contents;
-
-                this.tabulatorTable.setData(contents);
-
+                this.tabulatorTable.setData(contents.data);
                 this.isPickerActive = true;
             }).catch(error => {
             console.error(error.message);
             this.statusText = error.message;
             this.isPickerActive = false;
         });
+    }
+
+    directoryClicked(event, file) {
+        this.loadDirectory(file.filename);
+        event.preventDefault();
+    }
+
+    downloadFiles(files) {
+        files.forEach((file) => this.downloadFile(file));
+    }
+
+    downloadFile(file) {
+        this.statusText = "Loading " + file.filename + "...";
+
+        // https://github.com/perry-mitchell/webdav-client#getfilecontents
+        this.webDavClient
+            .getFileContents(file.filename)
+            .then(contents => {
+                console.log("contents", contents);
+                // TODO: Generate file and send event
+                this.statusText = "";
+            }).catch(error => {
+            console.error(error.message);
+            this.statusText = error.message;
+        });
+    }
+
+    /**
+     * Returns the parent directory path
+     *
+     * @returns {string} parent directory path
+     */
+    getParentDirectoryPath() {
+        let path = this.directoryPath.replace(/\/$/, "");
+        path = path.replace(path.split("/").pop(), "").replace(/\/$/, "");
+
+        return (path === "") ? "/" : path;
     }
 
     static get styles() {
@@ -149,31 +210,6 @@ export class NextcloudFilePicker extends ScopedElementsMixin(VPULitElement) {
                 margin-bottom: 10px;
             }
         `;
-    }
-
-    /**
-     * Returns the list of files in a directory
-     *
-     * @returns {*[]}
-     */
-    getDirectoryContentsHtml() {
-        let results = [];
-
-        // this.directoryContents.forEach((content) => {
-        //     results.push(html`
-        //         <tr>
-        //             <td><a href="#" @click="${(e) => { this.fileClicked(content, e); }}">${content.filename}</a></td>
-        //             <td>${content.size}</td>
-        //         </tr>
-        //     `);
-        // });
-
-        return results;
-    }
-
-    fileClicked(file, event) {
-        this.loadDirectory(this.directoryPath + file.filename);
-        event.preventDefault();
     }
 
     render() {
@@ -194,13 +230,16 @@ export class NextcloudFilePicker extends ScopedElementsMixin(VPULitElement) {
             </div>
             <div class="block ${classMap({hidden: !this.isPickerActive})}">
                 <h2>${this.directoryPath}</h2>
-                <table id="directory-content-table">
-                    <thead>
-                        <th>Filename</th>
-                        <th>Size</th>
-                    </thead>
-                    <tbody>${this.getDirectoryContentsHtml()}</tbody>
-                </table>
+                <button class="button is-small"
+                        title="${i18n.t('nextcloud-file-picker.folder-last')}"
+                        @click="${() => { this.loadDirectory(this.lastDirectoryPath); }}">&#8678;</button>
+                <button class="button is-small"
+                        title="${i18n.t('nextcloud-file-picker.folder-up')}"
+                        @click="${() => { this.loadDirectory(this.getParentDirectoryPath()); }}">&#8679;</button>
+                <table id="directory-content-table"></table>
+                <button class="button"
+                        title="${i18n.t('nextcloud-file-picker.folder-up')}"
+                        @click="${() => { this.downloadFiles(this.tabulatorTable.getSelectedData()); }}">${i18n.t('nextcloud-file-picker.select-files')}</button>
             </div>
         `;
     }
