@@ -16,6 +16,7 @@ import {TextSwitch} from './textswitch.js';
 import {NextcloudFilePicker} from "./vpu-nextcloud-file-picker";
 import nextcloudWebAppPasswordURL from 'consts:nextcloudWebAppPasswordURL';
 import nextcloudWebDavURL from 'consts:nextcloudWebDavURL';
+import buildinfo from 'consts:buildinfo';
 
 const i18n = createI18nInstance();
 
@@ -913,6 +914,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
 
     render() {
         const placeholderUrl = commonUtils.getAssetURL('local/vpu-signature/official-signature-placeholder.png');
+        const showTestNextcloudFilePicker = buildinfo.env === 'local';
 
         return html`
             <div class="${classMap({hidden: !this.isLoggedIn() || !this.hasSignaturePermissions() || this.isLoading()})}">
@@ -1076,8 +1078,14 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
             <div class="${classMap({hidden: !this.isLoading()})}">
                 <vpu-mini-spinner></vpu-mini-spinner>
             </div>
-            <!-- File picker test --> 
-<!--            <vpu-nextcloud-file-picker lang="${this.lang}" auth-url="${nextcloudWebAppPasswordURL}" web-dav-url="${nextcloudWebDavURL}"></vpu-nextcloud-file-picker>-->
+            <!-- File picker test -->
+            <vpu-nextcloud-file-picker class="${classMap({hidden: !showTestNextcloudFilePicker})}"
+                                       lang="${this.lang}"
+                                       auth-url="${nextcloudWebAppPasswordURL}"
+                                       web-dav-url="${nextcloudWebDavURL}"
+                                       @vpu-nextcloud-file-picker-file-downloaded="${(event) => {
+                                           this._("#file-upload").queueFile(event.detail.file);
+                                       }}"></vpu-nextcloud-file-picker>
         `;
     }
 }
