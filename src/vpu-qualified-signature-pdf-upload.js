@@ -13,7 +13,7 @@ import {classMap} from 'lit-html/directives/class-map.js';
 import {FileUpload} from 'vpu-file-upload';
 import JSONLD from "vpu-common/jsonld";
 import {TextSwitch} from './textswitch.js';
-import {FilePicker} from "./vpu-file-picker";
+import {NextcloudFilePicker} from "./vpu-nextcloud-file-picker";
 import nextcloudWebAppPasswordURL from 'consts:nextcloudWebAppPasswordURL';
 import nextcloudWebDavURL from 'consts:nextcloudWebDavURL';
 
@@ -64,7 +64,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
           'vpu-mini-spinner': MiniSpinner,
           'vpu-button': Button,
           'vpu-textswitch': TextSwitch,
-          'vpu-file-picker': FilePicker,
+          'vpu-nextcloud-file-picker': NextcloudFilePicker,
         };
     }
 
@@ -1077,7 +1077,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                 <vpu-mini-spinner></vpu-mini-spinner>
             </div>
             <!-- File picker test --> 
-<!--            <vpu-file-picker lang="${this.lang}" auth-url="${nextcloudWebAppPasswordURL}" web-dav-url="${nextcloudWebDavURL}"></vpu-file-picker>-->
+<!--            <vpu-nextcloud-file-picker lang="${this.lang}" auth-url="${nextcloudWebAppPasswordURL}" web-dav-url="${nextcloudWebDavURL}"></vpu-nextcloud-file-picker>-->
         `;
     }
 }

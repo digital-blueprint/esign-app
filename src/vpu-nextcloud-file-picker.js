@@ -13,9 +13,9 @@ import Tabulator from 'tabulator-tables';
 const i18n = createI18nInstance();
 
 /**
- * FilePicker web component
+ * NextcloudFilePicker web component
  */
-export class FilePicker extends ScopedElementsMixin(VPULitElement) {
+export class NextcloudFilePicker extends ScopedElementsMixin(VPULitElement) {
     constructor() {
         super();
         this.lang = 'de';
@@ -77,6 +77,7 @@ export class FilePicker extends ScopedElementsMixin(VPULitElement) {
             // see: https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage
             window.addEventListener('message', this._onReceiveWindowMessage);
 
+            // http://tabulator.info/docs/4.7
             this.tabulatorTable = new Tabulator(this._("#directory-content-table"), {});
         });
     }
@@ -184,8 +185,8 @@ export class FilePicker extends ScopedElementsMixin(VPULitElement) {
             <link rel="stylesheet" href="${tabulatorCss}">
             <div class="block">
                 <button class="button"
-                        title="${i18n.t('file-picker.open-file-picker')}"
-                        @click="${async () => { this.openFilePicker(); } }">${i18n.t('file-picker.open')}</button>
+                        title="${i18n.t('nextcloud-file-picker.open-nextcloud-file-picker')}"
+                        @click="${async () => { this.openFilePicker(); } }">${i18n.t('nextcloud-file-picker.open')}</button>
             </div>
             <div class="block ${classMap({hidden: this.statusText === ""})}">
                 <vpu-mini-spinner style="font-size: 0.7em"></vpu-mini-spinner>
