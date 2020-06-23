@@ -50,6 +50,7 @@
     "lit-html": "^1.2.1",
     "pdfjs-dist": "^2.4.456",
     "source-sans-pro": "^2.45.0",
+    "tabulator-tables": "^4.7.0",
     "universal-router": "^9.0.1",
     "vpu-app-shell": "file:./vendor/app-shell",
     "vpu-auth": "file:./vendor/auth",
