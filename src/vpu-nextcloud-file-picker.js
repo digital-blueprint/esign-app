@@ -169,23 +169,31 @@ export class NextcloudFilePicker extends ScopedElementsMixin(VPULitElement) {
     }
 
     downloadFiles(files) {
-        files.forEach((file) => this.downloadFile(file));
+        files.forEach((fileData) => this.downloadFile(fileData));
     }
 
-    downloadFile(file) {
-        this.statusText = "Loading " + file.filename + "...";
+    downloadFile(fileData) {
+        this.statusText = "Loading " + fileData.filename + "...";
 
         // https://github.com/perry-mitchell/webdav-client#getfilecontents
         this.webDavClient
-            .getFileContents(file.filename)
+            .getFileContents(fileData.filename)
             .then(contents => {
-                console.log("contents", contents);
-                // TODO: Generate file and send event
+                // create file to send via event
+                const file = new File([contents], fileData.basename, { type: fileData.mime });
+                console.log("binaryFile", file);
+
+                // send event
+                const data = {"file": file, "data": fileData};
+                const event = new CustomEvent("vpu-nextcloud-file-picker-file-downloaded",
+                    { "detail": data, bubbles: true, composed: true });
+                this.dispatchEvent(event);
+
                 this.statusText = "";
             }).catch(error => {
-            console.error(error.message);
-            this.statusText = error.message;
-        });
+                console.error(error.message);
+                this.statusText = error.message;
+            });
     }
 
     /**
@@ -215,7 +223,6 @@ export class NextcloudFilePicker extends ScopedElementsMixin(VPULitElement) {
     render() {
         commonUtils.initAssetBaseURL('vpu-tabulator-table');
         const tabulatorCss = commonUtils.getAssetURL('local/vpu-signature/tabulator-tables/css/tabulator.min.css');
-        console.log("tabulatorCss", tabulatorCss);
 
         return html`
             <link rel="stylesheet" href="${tabulatorCss}">
