@@ -13,7 +13,6 @@ import {classMap} from 'lit-html/directives/class-map.js';
 import {FileUpload} from 'vpu-file-upload';
 import JSONLD from "vpu-common/jsonld";
 import {TextSwitch} from './textswitch.js';
-import {NextcloudFilePicker} from "./vpu-nextcloud-file-picker";
 import nextcloudWebAppPasswordURL from 'consts:nextcloudWebAppPasswordURL';
 import nextcloudWebDavURL from 'consts:nextcloudWebDavURL';
 import buildinfo from 'consts:buildinfo';
@@ -65,7 +64,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
           'vpu-mini-spinner': MiniSpinner,
           'vpu-button': Button,
           'vpu-textswitch': TextSwitch,
-          'vpu-nextcloud-file-picker': NextcloudFilePicker,
         };
     }
 
@@ -923,6 +921,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                     <div class="control">
                         <vpu-fileupload id="file-upload"
                             allowed-mime-types="application/pdf"
+                            nextcloud-auth-url="${showTestNextcloudFilePicker ? nextcloudWebAppPasswordURL : ""}"
+                            nextcloud-web-dav-url="${nextcloudWebDavURL}"
                             decompress-zip
                             always-send-file
                             deferred
@@ -1078,14 +1078,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
             <div class="${classMap({hidden: !this.isLoading()})}">
                 <vpu-mini-spinner></vpu-mini-spinner>
             </div>
-            <!-- File picker test -->
-            <vpu-nextcloud-file-picker class="${classMap({hidden: !showTestNextcloudFilePicker})}"
-                                       lang="${this.lang}"
-                                       auth-url="${nextcloudWebAppPasswordURL}"
-                                       web-dav-url="${nextcloudWebDavURL}"
-                                       @vpu-nextcloud-file-picker-file-downloaded="${(event) => {
-                                           this._("#file-upload").queueFile(event.detail.file);
-                                       }}"></vpu-nextcloud-file-picker>
         `;
     }
 }
