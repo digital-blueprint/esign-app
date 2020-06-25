@@ -4,7 +4,7 @@ import {classMap} from 'lit-html/directives/class-map.js';
 import {live} from 'lit-html/directives/live.js';
 import {ScopedElementsMixin} from '@open-wc/scoped-elements';
 import VPULitElement from 'vpu-common/vpu-lit-element';
-import {MiniSpinner} from 'vpu-common';
+import {MiniSpinner, Icon} from 'vpu-common';
 import * as commonUtils from "vpu-common/utils";
 import * as commonStyles from 'vpu-common/styles';
 import pdfjs from 'pdfjs-dist';
@@ -41,6 +41,7 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
     static get scopedElements() {
         return {
             'vpu-mini-spinner': MiniSpinner,
+            'vpu-icon': Icon,
         };
     }
 
@@ -497,11 +498,15 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
                             <button class="button"
                                     title="${i18n.t('pdf-preview.first-page')}"
                                     @click="${async () => { await this.showPage(1); } }"
-                                    ?disabled="${this.isPageRenderingInProgress || this.currentPage === 1}">${i18n.t('pdf-preview.first')}</button>
+                                    ?disabled="${this.isPageRenderingInProgress || this.currentPage === 1}">
+                                        <vpu-icon name="angle-double-left"></vpu-icon>
+                                    </button>
                             <button class="button"
                                     title="${i18n.t('pdf-preview.previous-page')}"
                                     @click="${async () => { if (this.currentPage > 1) await this.showPage(--this.currentPage); } }"
-                                    ?disabled="${this.isPageRenderingInProgress || this.currentPage === 1}">${i18n.t('pdf-preview.previous')}</button>
+                                    ?disabled="${this.isPageRenderingInProgress || this.currentPage === 1}">
+                                        <vpu-icon name="chevron-left"></vpu-icon>
+                                    </button>
                             <input type="number"
                                    min="1"
                                    max="${this.totalPages}"
@@ -511,11 +516,15 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
                             <button class="button"
                                     title="${i18n.t('pdf-preview.next-page')}"
                                     @click="${async () => { if (this.currentPage < this.totalPages) await this.showPage(++this.currentPage); } }"
-                                    ?disabled="${this.isPageRenderingInProgress || this.currentPage === this.totalPages}">${i18n.t('pdf-preview.next')}</button>
+                                    ?disabled="${this.isPageRenderingInProgress || this.currentPage === this.totalPages}">
+                                        <vpu-icon name="chevron-right"></vpu-icon>
+                                    </button>
                             <button class="button"
                                     title="${i18n.t('pdf-preview.last-page')}"
                                     @click="${async () => { await this.showPage(this.totalPages); } }"
-                                    ?disabled="${this.isPageRenderingInProgress || this.currentPage === this.totalPages}">${i18n.t('pdf-preview.last')}</button>
+                                    ?disabled="${this.isPageRenderingInProgress || this.currentPage === this.totalPages}">
+                                        <vpu-icon name="angle-double-right"></vpu-icon>
+                                    </button>
                             <button class="button ${classMap({hidden: !this.isShowPlacement || isRotationHidden})}"
                                     title="${i18n.t('pdf-preview.rotate-signature')}"
                                     @click="${() => { this.rotateSignature(); } }"
