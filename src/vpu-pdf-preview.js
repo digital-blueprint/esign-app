@@ -450,13 +450,22 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
                 flex-wrap: wrap;
                 width: 100%;
                 justify-content: center;
+                align-items: center;
+            }
+
+            .nav-buttons {
+                display: flex;
+                justify-content: center;
+                flex-grow: 1;
+                flex-wrap: wrap;
             }
 
             .buttons .page-info {
                 align-self: center;
+                white-space: nowrap;
             }
 
-            .buttons > * {
+            .nav-buttons > * {
                 margin: 2px;
             }
 
@@ -495,40 +504,42 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
                 <div class="${classMap({hidden: !this.isPageLoaded})}">
                     <div id="pdf-meta">
                         <div class="buttons ${classMap({hidden: !this.isPageLoaded})}">
-                            <button class="button"
-                                    title="${i18n.t('pdf-preview.first-page')}"
-                                    @click="${async () => { await this.showPage(1); } }"
-                                    ?disabled="${this.isPageRenderingInProgress || this.currentPage === 1}">
-                                        <vpu-icon name="angle-double-left"></vpu-icon>
-                                    </button>
-                            <button class="button"
-                                    title="${i18n.t('pdf-preview.previous-page')}"
-                                    @click="${async () => { if (this.currentPage > 1) await this.showPage(--this.currentPage); } }"
-                                    ?disabled="${this.isPageRenderingInProgress || this.currentPage === 1}">
-                                        <vpu-icon name="chevron-left"></vpu-icon>
-                                    </button>
-                            <input type="number"
-                                   min="1"
-                                   max="${this.totalPages}"
-                                   @input="${this.onPageNumberChanged}"
-                                   .value="${live(this.currentPage)}">
-                            <div class="page-info">${i18n.t('pdf-preview.page-count', {totalPages: this.totalPages, })}</div>
-                            <button class="button"
-                                    title="${i18n.t('pdf-preview.next-page')}"
-                                    @click="${async () => { if (this.currentPage < this.totalPages) await this.showPage(++this.currentPage); } }"
-                                    ?disabled="${this.isPageRenderingInProgress || this.currentPage === this.totalPages}">
-                                        <vpu-icon name="chevron-right"></vpu-icon>
-                                    </button>
-                            <button class="button"
-                                    title="${i18n.t('pdf-preview.last-page')}"
-                                    @click="${async () => { await this.showPage(this.totalPages); } }"
-                                    ?disabled="${this.isPageRenderingInProgress || this.currentPage === this.totalPages}">
-                                        <vpu-icon name="angle-double-right"></vpu-icon>
-                                    </button>
                             <button class="button ${classMap({hidden: !this.isShowPlacement || isRotationHidden})}"
                                     title="${i18n.t('pdf-preview.rotate-signature')}"
                                     @click="${() => { this.rotateSignature(); } }"
                                     ?disabled="${this.isPageRenderingInProgress}">&#10227; ${i18n.t('pdf-preview.rotate')}</button>
+                            <div class="nav-buttons">
+                                <button class="button"
+                                        title="${i18n.t('pdf-preview.first-page')}"
+                                        @click="${async () => { await this.showPage(1); } }"
+                                        ?disabled="${this.isPageRenderingInProgress || this.currentPage === 1}">
+                                    <vpu-icon name="angle-double-left"></vpu-icon>
+                                </button>
+                                <button class="button"
+                                        title="${i18n.t('pdf-preview.previous-page')}"
+                                        @click="${async () => { if (this.currentPage > 1) await this.showPage(--this.currentPage); } }"
+                                        ?disabled="${this.isPageRenderingInProgress || this.currentPage === 1}">
+                                    <vpu-icon name="chevron-left"></vpu-icon>
+                                </button>
+                                <input type="number"
+                                    min="1"
+                                    max="${this.totalPages}"
+                                    @input="${this.onPageNumberChanged}"
+                                    .value="${live(this.currentPage)}">
+                                <div class="page-info">${i18n.t('pdf-preview.page-count', {totalPages: this.totalPages, })}</div>
+                                <button class="button"
+                                        title="${i18n.t('pdf-preview.next-page')}"
+                                        @click="${async () => { if (this.currentPage < this.totalPages) await this.showPage(++this.currentPage); } }"
+                                        ?disabled="${this.isPageRenderingInProgress || this.currentPage === this.totalPages}">
+                                    <vpu-icon name="chevron-right"></vpu-icon>
+                                </button>
+                                <button class="button"
+                                        title="${i18n.t('pdf-preview.last-page')}"
+                                        @click="${async () => { await this.showPage(this.totalPages); } }"
+                                        ?disabled="${this.isPageRenderingInProgress || this.currentPage === this.totalPages}">
+                                    <vpu-icon name="angle-double-right"></vpu-icon>
+                                </button>
+                            </div>
                             <button class="button is-primary ${classMap({hidden: !this.isShowPlacement})}"
                                     @click="${() => { this.sendAcceptEvent(); } }">${i18n.t('pdf-preview.continue')}</button>
                         </div>
