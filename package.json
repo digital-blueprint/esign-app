@@ -55,7 +55,7 @@
     "vpu-app-shell": "file:./vendor/app-shell",
     "vpu-auth": "file:./vendor/auth",
     "vpu-common": "file:./vendor/common",
-    "vpu-file-upload": "file:./vendor/file-upload",
+    "vpu-file-handling": "file:./vendor/file-handling",
     "vpu-language-select": "file:./vendor/language-select",
     "vpu-notification": "file:./vendor/notification",
     "vpu-person-profile": "file:./vendor/person-profile",

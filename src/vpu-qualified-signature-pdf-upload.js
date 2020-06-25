@@ -10,7 +10,7 @@ import {Icon, MiniSpinner, Button} from 'vpu-common';
 import FileSaver from 'file-saver';
 import * as commonStyles from 'vpu-common/styles';
 import {classMap} from 'lit-html/directives/class-map.js';
-import {FileUpload} from 'vpu-file-upload';
+import {FileUpload} from 'vpu-file-handling';
 import JSONLD from "vpu-common/jsonld";
 import {TextSwitch} from './textswitch.js';
 import nextcloudWebAppPasswordURL from 'consts:nextcloudWebAppPasswordURL';

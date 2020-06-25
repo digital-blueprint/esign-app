@@ -8,7 +8,7 @@ import * as commonUtils from 'vpu-common/utils';
 import {Icon, MiniSpinner, Button} from 'vpu-common';
 import * as commonStyles from 'vpu-common/styles';
 import {classMap} from 'lit-html/directives/class-map.js';
-import {FileUpload} from 'vpu-file-upload';
+import {FileUpload} from 'vpu-file-handling';
 import JSONLD from "vpu-common/jsonld";
 
 const i18n = createI18nInstance();
