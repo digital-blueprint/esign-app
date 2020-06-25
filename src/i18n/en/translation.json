@@ -112,7 +112,7 @@
     "last-page": "Last page",
     "page-count": "of {{totalPages}}",
     "rotate-signature": "Rotate signature clockwise",
-    "rotate": "Rotate",
+    "rotate": "Rotate signature",
     "continue": "Confirm placement"
   },
   "error-summary": "An error occurred",
