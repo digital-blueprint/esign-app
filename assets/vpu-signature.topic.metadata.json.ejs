@@ -14,7 +14,7 @@
   "routing_name": "signature",
   "activities": [
     {"path": "vpu-official-signature-pdf-upload.metadata.json",
-     "visible": <%= environment == "local" || environment == "development" %>},
+     "visible": <%= environment == "local" || environment == "development" || environment == "demo" %>},
     {"path": "vpu-qualified-signature-pdf-upload.metadata.json"},
     {"path": "vpu-signature-verification.metadata.json",
      "visible": <%= environment == "local" || environment == "development" %>}
