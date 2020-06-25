@@ -782,7 +782,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
     /**
      * Returns the list of queued files
      *
-     * @returns {*[]}
+     * @returns {*[]} Array of html templates
      */
     getQueuedFilesHtml() {
         const ids = Object.keys(this.queuedFiles);
@@ -826,7 +826,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
     /**
      * Returns the list of successfully signed files
      *
-     * @returns {*[]}
+     * @returns {*[]} Array of html templates
      */
     getSignedFilesHtml() {
         const ids = Object.keys(this.signedFiles);
@@ -854,7 +854,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
     /**
      * Returns the list of files of failed signature processes
      *
-     * @returns {*[]}
+     * @returns {*[]} Array of html templates
      */
     getErrorFilesHtml() {
         const ids = Object.keys(this.errorFiles);
