@@ -492,7 +492,7 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
     }
 
     render() {
-        const isRotationHidden = buildinfo.env === 'production' || buildinfo.env === 'demo';
+        const isRotationHidden = (buildinfo.env === 'production');
 
         return html`
 
