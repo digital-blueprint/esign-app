@@ -6,11 +6,11 @@ import VPUSignatureLitElement from "./vpu-signature-lit-element";
 import {PdfPreview} from "./vpu-pdf-preview";
 import * as commonUtils from 'vpu-common/utils';
 import * as utils from './utils';
-import {Icon, MiniSpinner, Button} from 'vpu-common';
+import {Button, Icon, MiniSpinner} from 'vpu-common';
 import FileSaver from 'file-saver';
 import * as commonStyles from 'vpu-common/styles';
 import {classMap} from 'lit-html/directives/class-map.js';
-import {FileUpload} from 'vpu-file-handling';
+import {FileSource} from 'vpu-file-handling';
 import JSONLD from "vpu-common/jsonld";
 import {TextSwitch} from './textswitch.js';
 import nextcloudWebAppPasswordURL from 'consts:nextcloudWebAppPasswordURL';
@@ -29,17 +29,12 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         this.signedFilesCount = 0;
         this.errorFiles = [];
         this.errorFilesCount = 0;
-        this.uploadInProgress = false;
-        this.queueingInProgress = false;
         this.uploadStatusFileName = "";
         this.uploadStatusText = "";
         this.currentFile = {};
         this.currentFileName = "";
         this.currentFilePlacementMode = "";
         this.currentFileSignaturePlacement = {};
-        this.queueBlockEnabled = false;
-        this.queuedFiles = [];
-        this.queuedFilesCount = 0;
         this.signingProcessEnabled = false;
         this.signingProcessActive = false;
         this.signaturePlacementInProgress = false;
@@ -48,10 +43,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         this.queuedFilesPlacementModes = [];
         this.currentPreviewQueueKey = '';
 
-        // will be set in function update
-        this.signingRequestUrl = "";
-        this.signingUrl = "";
-
         this._onReceiveIframeMessage = this.onReceiveIframeMessage.bind(this);
         this._onReceiveBeforeUnload = this.onReceiveBeforeUnload.bind(this);
     }
@@ -59,7 +50,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
     static get scopedElements() {
         return {
           'vpu-icon': Icon,
-          'vpu-fileupload': FileUpload,
+          'vpu-file-source': FileSource,
           'vpu-pdf-preview': PdfPreview,
           'vpu-mini-spinner': MiniSpinner,
           'vpu-button': Button,
@@ -77,7 +68,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
             errorFiles: { type: Array, attribute: false },
             errorFilesCount: { type: Number, attribute: false },
             uploadInProgress: { type: Boolean, attribute: false },
-            queueingInProgress: { type: Boolean, attribute: false },
             uploadStatusFileName: { type: String, attribute: false },
             uploadStatusText: { type: String, attribute: false },
             externalAuthInProgress: { type: Boolean, attribute: false },
@@ -112,14 +102,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         window.removeEventListener('beforeunload', this._onReceiveBeforeUnload);
 
         super.disconnectedCallback();
-    }
-
-    onQueuedFilesChanged(ev) {
-        const detail = ev.detail;
-        if (!this.queueBlockEnabled && detail.queuedFilesCount)
-            this.queueBlockEnabled = true;
-        this.queuedFiles = detail.queuedFiles;
-        this.queuedFilesCount = detail.queuedFilesCount;
     }
 
     /**
@@ -160,14 +142,17 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
             }
         }
 
-        await this._("#file-upload").uploadFile(file, params);
+        this.uploadStatusText = i18n.t('qualified-pdf-upload.upload-status-file-text', {
+            fileName: file.name,
+            fileSize: humanFileSize(file.size, false),
+        });
+
+        await this.uploadFile(file, params);
         this.uploadInProgress = false;
     }
 
     storePDFData(event) {
-        const data = event.detail;
-
-        this.queuedFilesSignaturePlacements[this.currentPreviewQueueKey] = data;
+        this.queuedFilesSignaturePlacements[this.currentPreviewQueueKey] = event.detail;
         this.signaturePlacementInProgress = false;
     }
 
@@ -313,28 +298,9 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
     /**
      * @param ev
      */
-    onAllUploadStarted(ev) {
-        console.log("Start queuing process!");
-        this.queueingInProgress = true;
-    }
-
-    /**
-     * @param ev
-     */
-    onAllUploadFinished(ev) {
-        console.log("Finished queuing process!");
-        this.queueingInProgress = false;
-    }
-
-    /**
-     * @param ev
-     */
-    onFileUploadStarted(ev) {
-        this.uploadStatusFileName = ev.detail.fileName;
-        this.uploadStatusText = i18n.t('qualified-pdf-upload.upload-status-file-text', {
-            fileName: ev.detail.fileName,
-            fileSize: humanFileSize(ev.detail.fileSize, false),
-        });
+    onFileSelected(ev) {
+        console.log("File was selected: ev", ev);
+        this.queueFile(ev.detail.file);
     }
 
     addToErrorFiles(file) {
@@ -351,14 +317,13 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
     }
 
     /**
-     * @param ev
+     * @param data
      */
-    onFileUploadFinished(ev) {
-        if (ev.detail.status !== 201) {
-            this.addToErrorFiles(ev.detail);
-        } else if (ev.detail.json["@type"] === "http://schema.org/EntryPoint" ) {
+    onFileUploadFinished(data) {
+        if (data.status !== 201) {
+            this.addToErrorFiles(data);
+        } else if (data.json["@type"] === "http://schema.org/EntryPoint" ) {
             // after the "real" upload we immediately start with the 2FA process
-            const data = ev.detail;
 
             // show the iframe and lock processing
             this.externalAuthInProgress = true;
@@ -384,8 +349,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                 case "entryPointUrl":
                     JSONLD.initialize(this.entryPointUrl, (jsonld) => {
                         const apiUrlBase = jsonld.getApiUrlForEntityName("QualifiedSigningRequest");
-                        this.signingRequestUrl = apiUrlBase + "/create";
-                        this.signingUrl = apiUrlBase + "/sign";
+                        this.fileSourceUrl = apiUrlBase + "/create";
                     });
                     break;
             }
@@ -467,7 +431,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
     async fileQueueingClickHandler(file, id) {
         this.takeFailedFileFromQueue(id);
 
-        return this._("#file-upload").queueFile(file);
+        return this.queueFile(file);
     }
 
     /**
@@ -481,7 +445,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
             return;
         }
 
-        const file = this._("#file-upload").getQueuedFile(key);
+        const file = this.getQueuedFile(key);
         this.currentFile = file;
         this.currentPreviewQueueKey = key;
         console.log(file);
@@ -494,15 +458,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
             file,
             withSigBlock, //this.queuedFilesPlacementModes[key] === "manual",
             this.queuedFilesSignaturePlacements[key]);
-    }
-
-    /**
-     * Takes a file off of the queue
-     *
-     * @param key
-     */
-    takeFileFromQueue(key) {
-        return this._("#file-upload").takeFileFromQueue(key);
     }
 
     /**
@@ -520,7 +475,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
     clearQueuedFiles() {
         this.queuedFilesSignaturePlacements = [];
         this.queuedFilesPlacementModes = [];
-        this._("#file-upload").clearQueuedFiles();
+        super.clearQueuedFiles();
     }
 
     clearSignedFiles() {
@@ -902,7 +857,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         this.signingProcessActive = false;
 
         if (this.currentFile.file !== undefined) {
-            const key = await this._("#file-upload").queueFile(this.currentFile.file);
+            const key = await this.queueFile(this.currentFile.file);
 
             // set placement mode and parameters so they are restore when canceled
             this.queuedFilesPlacementModes[key] = this.currentFilePlacementMode;
@@ -919,7 +874,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                 <div class="field ${classMap({"is-disabled": this.isUserInterfaceDisabled()})}">
                     <h2>${i18n.t('qualified-pdf-upload.upload-field-label')}</h2>
                     <div class="control">
-                        <vpu-fileupload id="file-upload"
+                        <vpu-file-source id="file-upload"
                             allowed-mime-types="application/pdf"
                             nextcloud-auth-url="${showTestNextcloudFilePicker ? nextcloudWebAppPasswordURL : ""}"
                             nextcloud-web-dav-url="${nextcloudWebDavURL}"
@@ -927,16 +882,12 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                             always-send-file
                             deferred
                             lang="${this.lang}"
-                            url="${this.signingRequestUrl}"
+                            url="${this.fileSourceUrl}"
                             ?disabled="${this.signingProcessActive}"
                             text="${i18n.t('qualified-pdf-upload.upload-area-text')}"
                             button-label="${i18n.t('qualified-pdf-upload.upload-button-label')}"
-                            @vpu-fileupload-all-start="${this.onAllUploadStarted}"
-                            @vpu-fileupload-file-start="${this.onFileUploadStarted}"
-                            @vpu-fileupload-file-finished="${this.onFileUploadFinished}"
-                            @vpu-fileupload-all-finished="${this.onAllUploadFinished}"
-                            @vpu-fileupload-queued-files-changed="${this.onQueuedFilesChanged}"
-                            ></vpu-fileupload>
+                            @vpu-file-source-file-selected="${this.onFileSelected}"
+                            ></vpu-file-source>
                     </div>
                 </div>
                 <div id="grid-container">
@@ -945,9 +896,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                             <!-- Queued files headline and queueing spinner -->
                             <h2 class="${classMap({"is-disabled": this.isUserInterfaceDisabled()})}">
                                 ${i18n.t('qualified-pdf-upload.queued-files-label')}
-                                <vpu-mini-spinner id="queueing-in-progress-spinner"
-                                                  style="font-size: 0.7em"
-                                                  class="${classMap({hidden: !this.queueingInProgress})}"></vpu-mini-spinner>
                             </h2>
                             <!-- Buttons to start/stop signing process and clear queue -->
                             <div class="control field">
