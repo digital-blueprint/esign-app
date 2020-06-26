@@ -879,10 +879,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                             nextcloud-auth-url="${showTestNextcloudFilePicker ? nextcloudWebAppPasswordURL : ""}"
                             nextcloud-web-dav-url="${nextcloudWebDavURL}"
                             decompress-zip
-                            always-send-file
-                            deferred
                             lang="${this.lang}"
-                            url="${this.fileSourceUrl}"
                             ?disabled="${this.signingProcessActive}"
                             text="${i18n.t('qualified-pdf-upload.upload-area-text')}"
                             button-label="${i18n.t('qualified-pdf-upload.upload-button-label')}"

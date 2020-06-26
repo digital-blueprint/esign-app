@@ -229,7 +229,7 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
         this.errorFilesCount = 0;
 
         commonUtils.asyncObjectForEach(errorFilesCopy, async (file, id) => {
-            await this.fileUploadClickHandler(file.file, id);
+            await this.fileQueueingClickHandler(file.file, id);
         });
 
         that._("#re-upload-all-button").stop();
@@ -672,10 +672,7 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
                         <vpu-file-source
                             allowed-mime-types="application/pdf"
                             decompress-zip
-                            always-send-file
-                            deferred
                             lang="${this.lang}"
-                            url="${this.fileSourceUrl}"
                             ?disabled="${this.verificationProcessActive}"
                             text="${i18n.t('signature-verification.upload-area-text')}"
                             button-label="${i18n.t('signature-verification.upload-button-label')}"

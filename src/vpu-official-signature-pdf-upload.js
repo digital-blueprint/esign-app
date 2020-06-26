@@ -293,7 +293,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitElem
         this.errorFilesCount = 0;
 
         commonUtils.asyncObjectForEach(errorFilesCopy, async (file, id) => {
-            await this.fileUploadClickHandler(file.file, id);
+            await this.fileQueueingClickHandler(file.file, id);
         });
 
         that._("#re-upload-all-button").stop();
@@ -729,10 +729,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitElem
                         <vpu-file-source
                             allowed-mime-types="application/pdf"
                             decompress-zip
-                            always-send-file
-                            deferred
                             lang="${this.lang}"
-                            url="${this.fileSourceUrl}"
                             ?disabled="${this.signingProcessActive}"
                             text="${i18n.t('official-pdf-upload.upload-area-text')}"
                             button-label="${i18n.t('official-pdf-upload.upload-button-label')}"
@@ -740,7 +737,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitElem
                             ></vpu-file-source>
                     </div>
                 </div>
-                           <div id="grid-container">
+                <div id="grid-container">
                     <div class="left-container">
                         <div class="files-block field ${classMap({hidden: !this.queueBlockEnabled})}">
                             <!-- Queued files headline and queueing spinner -->

@@ -9,7 +9,6 @@ export default class VPUSignatureLitElement extends LitElement {
         this.uploadInProgress = false;
         this.queueBlockEnabled = false;
         this._queueKey = 0;
-        this.fileSourceUrl = "";
 
         // will be set in function update
         this.fileSourceUrl = "";
@@ -24,11 +23,6 @@ export default class VPUSignatureLitElement extends LitElement {
         const key = this._queueKey;
         this.queuedFiles[key] = file;
         this.updateQueuedFilesCount();
-        console.log("file", file);
-
-        const data = {"file": file};
-        const event = new CustomEvent("vpu-fileupload-file-queued", { "detail": data, bubbles: true, composed: true });
-        this.dispatchEvent(event);
 
         return key;
     }
@@ -133,8 +127,6 @@ export default class VPUSignatureLitElement extends LitElement {
 
         data.file = file;
 
-        // const event = new CustomEvent("vpu-fileupload-file-finished", { "detail": data, bubbles: true, composed: true });
-        // this.dispatchEvent(event);
         this.onFileUploadFinished(data);
     }
 

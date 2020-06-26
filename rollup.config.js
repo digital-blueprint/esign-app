@@ -272,7 +272,7 @@ Dependencies:
                 {src: 'assets/manifest.json', dest: 'dist', rename: pkg.name + '.manifest.json'},
                 {src: 'assets/*.metadata.json', dest: 'dist'},
                 {src: 'node_modules/vpu-common/assets/icons/*.svg', dest: 'dist/local/vpu-common/icons'},
-                {src: 'node_modules/tabulator-tables/dist/css', dest: 'dist/local/vpu-fileupload/tabulator-tables'},
+                {src: 'node_modules/tabulator-tables/dist/css', dest: 'dist/local/vpu-file-source/tabulator-tables'},
             ],
         }),
         useBabel && babel({
