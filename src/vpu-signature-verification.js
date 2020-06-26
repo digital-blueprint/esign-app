@@ -8,7 +8,7 @@ import * as commonUtils from 'vpu-common/utils';
 import {Icon, MiniSpinner, Button} from 'vpu-common';
 import * as commonStyles from 'vpu-common/styles';
 import {classMap} from 'lit-html/directives/class-map.js';
-import {FileUpload} from 'vpu-file-handling';
+import {FileSource} from 'vpu-file-handling';
 import JSONLD from "vpu-common/jsonld";
 
 const i18n = createI18nInstance();
@@ -22,17 +22,12 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
         this.verifiedFilesCount = 0;
         this.errorFiles = [];
         this.errorFilesCount = 0;
-        this.uploadInProgress = false;
-        this.queueingInProgress = false;
         this.uploadStatusFileName = "";
         this.uploadStatusText = "";
         this.currentFile = {};
         this.currentFileName = "";
         this.currentFilePlacementMode = "";
         this.currentFileSignaturePlacement = {};
-        this.queueBlockEnabled = false;
-        this.queuedFiles = [];
-        this.queuedFilesCount = 0;
         this.verificationProcessEnabled = false;
         this.verificationProcessActive = false;
         this.previewInProgress = false;
@@ -45,7 +40,7 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
     static get scopedElements() {
         return {
             'vpu-icon': Icon,
-            'vpu-fileupload': FileUpload,
+            'vpu-file-source': FileSource,
             'vpu-pdf-preview': PdfPreview,
             'vpu-mini-spinner': MiniSpinner,
             'vpu-button': Button,
@@ -62,7 +57,6 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
             errorFiles: { type: Array, attribute: false },
             errorFilesCount: { type: Number, attribute: false },
             uploadInProgress: { type: Boolean, attribute: false },
-            queueingInProgress: { type: Boolean, attribute: false },
             uploadStatusFileName: { type: String, attribute: false },
             uploadStatusText: { type: String, attribute: false },
             verificationProcessEnabled: { type: Boolean, attribute: false },
@@ -79,14 +73,6 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
         super.connectedCallback();
         // needs to be called in a function to get the variable scope of "this"
         setInterval(() => { this.handleQueuedFiles(); }, 1000);
-    }
-
-    onQueuedFilesChanged(ev) {
-        const detail = ev.detail;
-        if (!this.queueBlockEnabled && detail.queuedFilesCount)
-            this.queueBlockEnabled = true;
-        this.queuedFiles = detail.queuedFiles;
-        this.queuedFilesCount = detail.queuedFilesCount;
     }
 
     /**
@@ -115,7 +101,12 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
         this.uploadInProgress = true;
         let params = {};
 
-        await this._("#file-upload").uploadFile(file, params);
+        this.uploadStatusText = i18n.t('signature-verification.upload-status-file-text', {
+            fileName: file.name,
+            fileSize: humanFileSize(file.size, false),
+        });
+
+        await this.uploadFile(file, params);
         this.uploadInProgress = false;
     }
 
@@ -167,28 +158,9 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
     /**
      * @param ev
      */
-    onAllUploadStarted(ev) {
-        console.log("Start queuing process!");
-        this.queueingInProgress = true;
-    }
-
-    /**
-     * @param ev
-     */
-    onAllUploadFinished(ev) {
-        console.log("Finished queuing process!");
-        this.queueingInProgress = false;
-    }
-
-    /**
-     * @param ev
-     */
-    onFileUploadStarted(ev) {
-        this.uploadStatusFileName = ev.detail.fileName;
-        this.uploadStatusText = i18n.t('signature-verification.upload-status-file-text', {
-            fileName: ev.detail.fileName,
-            fileSize: humanFileSize(ev.detail.fileSize, false),
-        });
+    onFileSelected(ev) {
+        console.log("File was selected: ev", ev);
+        this.queueFile(ev.detail.file);
     }
 
     addToErrorFiles(file) {
@@ -205,17 +177,17 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
     }
 
     /**
-     * @param ev
+     * @param data
      */
-    onFileUploadFinished(ev) {
-        if (ev.detail.status !== 201) {
-            this.addToErrorFiles(ev.detail);
-        } else if (ev.detail.json["@type"] === "https://schema.tugraz.at/ElectronicSignatureVerificationReport" ) {
+    onFileUploadFinished(data) {
+        if (data.status !== 201) {
+            this.addToErrorFiles(data);
+        } else if (data.json["@type"] === "https://schema.tugraz.at/ElectronicSignatureVerificationReport" ) {
             // this doesn't seem to trigger an update() execution
-            this.verifiedFiles.push(ev.detail.json);
+            this.verifiedFiles.push(data.json);
             // this triggers the correct update() execution
             this.verifiedFilesCount++;
-            const entryPoint = ev.detail.json;
+            const entryPoint = data.json;
             this.currentFileName = entryPoint.name;
             this.endVerificationProcessIfQueueEmpty();
         }
@@ -230,7 +202,7 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
                 case "entryPointUrl":
                     JSONLD.initialize(this.entryPointUrl, (jsonld) => {
                         const apiUrlBase = jsonld.getApiUrlForEntityName("ElectronicSignatureVerificationReport");
-                        this.verificationUrl = apiUrlBase + "/create";
+                        this.fileSourceUrl = apiUrlBase + "/create";
                     });
                     break;
             }
@@ -271,7 +243,7 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
      */
     async fileQueueingClickHandler(file, id) {
         this.takeFailedFileFromQueue(id);
-        return this._("#file-upload").queueFile(file);
+        return this.queueFile(file);
     }
 
     /**
@@ -284,7 +256,7 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
             return;
         }
 
-        const file = this._("#file-upload").getQueuedFile(key);
+        const file = this.getQueuedFile(key);
         this.currentFile = file;
         this.currentPreviewQueueKey = key;
         console.log(file);
@@ -292,15 +264,6 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
         this.previewInProgress = true;
         const previewTag = this.constructor.getScopedTagName("vpu-pdf-preview");
         await this._(previewTag).showPDF(file);
-    }
-
-    /**
-     * Takes a file off of the queue
-     *
-     * @param key
-     */
-    takeFileFromQueue(key) {
-        return this._("#file-upload").takeFileFromQueue(key);
     }
 
     /**
@@ -312,10 +275,6 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
         const file = this.errorFiles.splice(key, 1);
         this.errorFilesCount = Object.keys(this.errorFiles).length;
         return file;
-    }
-
-    clearQueuedFiles() {
-        this._("#file-upload").clearQueuedFiles();
     }
 
     clearVerifiedFiles() {
@@ -710,22 +669,18 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
                 <div class="field">
                     <h2>${i18n.t('signature-verification.upload-field-label')}</h2>
                     <div class="control">
-                        <vpu-fileupload id="file-upload"
+                        <vpu-file-source
                             allowed-mime-types="application/pdf"
                             decompress-zip
                             always-send-file
                             deferred
                             lang="${this.lang}"
-                            url="${this.verificationUrl}"
+                            url="${this.fileSourceUrl}"
                             ?disabled="${this.verificationProcessActive}"
                             text="${i18n.t('signature-verification.upload-area-text')}"
                             button-label="${i18n.t('signature-verification.upload-button-label')}"
-                            @vpu-fileupload-all-start="${this.onAllUploadStarted}"
-                            @vpu-fileupload-file-start="${this.onFileUploadStarted}"
-                            @vpu-fileupload-file-finished="${this.onFileUploadFinished}"
-                            @vpu-fileupload-all-finished="${this.onAllUploadFinished}"
-                            @vpu-fileupload-queued-files-changed="${this.onQueuedFilesChanged}"
-                            ></vpu-fileupload>
+                            @vpu-file-source-file-selected="${this.onFileSelected}"
+                            ></vpu-file-source>
                     </div>
                 </div>
                 <div id="grid-container">
@@ -734,9 +689,6 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
                             <!-- Queued files headline and queueing spinner -->
                             <h2 class="${classMap({"is-disabled": this.isUserInterfaceDisabled()})}">
                                 ${i18n.t('signature-verification.queued-files-label')}
-                                <vpu-mini-spinner id="queueing-in-progress-spinner"
-                                                  style="font-size: 0.7em"
-                                                  class="${classMap({hidden: !this.queueingInProgress})}"></vpu-mini-spinner>
                             </h2>
                             <!-- Buttons to start/stop verification process and clear queue -->
                             <div class="control field">
