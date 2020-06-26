@@ -866,7 +866,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
     }
 
     render() {
-        const placeholderUrl = commonUtils.getAssetURL('local/vpu-signature/official-signature-placeholder.png');
+        const placeholderUrl = commonUtils.getAssetURL('local/vpu-signature/qualified-signature-placeholder.png');
         const showTestNextcloudFilePicker = buildinfo.env === 'local';
 
         return html`
