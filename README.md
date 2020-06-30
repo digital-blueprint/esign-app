@@ -25,6 +25,10 @@ npm test
 
 Jump to <http://localhost:8001> and you should get a Single Sign On login page.
 
+To use the Nextcloud functionality you need a running Nextcloud server with the
+[webapppassword](https://gitlab.tugraz.at/VPU/Middleware/Nextcloud/webapppassword) Nextcloud app like this
+[Nextcloud Development Environment](https://gitlab.tugraz.at/VPU/Middleware/Nextcloud/webapppassword/-/tree/master/docker). 
+
 ## Browser versions
 
 These browser versions should work with the application.
