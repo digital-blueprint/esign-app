@@ -7,7 +7,6 @@ import {PdfPreview} from "./vpu-pdf-preview";
 import * as commonUtils from 'vpu-common/utils';
 import * as utils from './utils';
 import {Button, Icon, MiniSpinner} from 'vpu-common';
-import FileSaver from 'file-saver';
 import * as commonStyles from 'vpu-common/styles';
 import {classMap} from 'lit-html/directives/class-map.js';
 import {FileSource} from 'vpu-file-handling';
@@ -15,7 +14,7 @@ import JSONLD from "vpu-common/jsonld";
 import {TextSwitch} from './textswitch.js';
 import nextcloudWebAppPasswordURL from 'consts:nextcloudWebAppPasswordURL';
 import nextcloudWebDavURL from 'consts:nextcloudWebDavURL';
-import buildinfo from 'consts:buildinfo';
+import {FileSink} from "../vendor/file-handling/src/file-sink";
 
 const i18n = createI18nInstance();
 
@@ -51,6 +50,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         return {
           'vpu-icon': Icon,
           'vpu-file-source': FileSource,
+          'vpu-file-sink': FileSink,
           'vpu-pdf-preview': PdfPreview,
           'vpu-mini-spinner': MiniSpinner,
           'vpu-button': Button,
@@ -362,34 +362,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
 
     onLanguageChanged(e) {
         this.lang = e.detail.lang;
-    }
-
-    /**
-     * Download signed pdf-files as zip
-     */
-    async zipDownloadClickHandler() {
-        // see: https://stuk.github.io/jszip/
-        let JSZip = (await import('jszip/dist/jszip.js')).default;
-        let zip = new JSZip();
-        const that = this;
-        let fileNames = [];
-
-        // add all signed pdf-files
-        this.signedFiles.forEach((file) => {
-            let fileName = file.signedFilename; // file.name;
-
-            // add pseudo-random string on duplicate file name
-            if (fileNames.indexOf(fileName) !== -1) {
-                fileName = utils.baseName(fileName) + "-" + Math.random().toString(36).substring(7) + ".pdf";
-            }
-
-            fileNames.push(fileName);
-            zip.file(fileName, utils.getPDFFileBase64Content(file), {base64: true});
-        });
-
-        let content = await zip.generateAsync({type:"blob"});
-        FileSaver.saveAs(content, "signed-documents.zip");
-        that._("#zip-download-button").stop();
     }
 
     /**
@@ -1022,6 +994,11 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
             <div class="${classMap({hidden: !this.isLoading()})}">
                 <vpu-mini-spinner></vpu-mini-spinner>
             </div>
+            <vpu-file-sink id="file-sink"
+                nextcloud-auth-url="${this.showTestNextcloudFilePicker ? nextcloudWebAppPasswordURL : ""}"
+                nextcloud-web-dav-url="${nextcloudWebDavURL}"
+                lang="${this.lang}"
+                ></vpu-file-sink>
         `;
     }
 }
