@@ -703,6 +703,8 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitElem
                     <div class="control">
                         <vpu-file-source
                             allowed-mime-types="application/pdf"
+                            nextcloud-auth-url="${this.showTestNextcloudFilePicker ? nextcloudWebAppPasswordURL : ""}"
+                            nextcloud-web-dav-url="${nextcloudWebDavURL}"
                             decompress-zip
                             lang="${this.lang}"
                             ?disabled="${this.signingProcessActive}"

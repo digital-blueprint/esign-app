@@ -10,6 +10,8 @@ import * as commonStyles from 'vpu-common/styles';
 import {classMap} from 'lit-html/directives/class-map.js';
 import {FileSource} from 'vpu-file-handling';
 import JSONLD from "vpu-common/jsonld";
+import nextcloudWebAppPasswordURL from 'consts:nextcloudWebAppPasswordURL';
+import nextcloudWebDavURL from 'consts:nextcloudWebDavURL';
 
 const i18n = createI18nInstance();
 
@@ -671,6 +673,8 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
                     <div class="control">
                         <vpu-file-source
                             allowed-mime-types="application/pdf"
+                            nextcloud-auth-url="${this.showTestNextcloudFilePicker ? nextcloudWebAppPasswordURL : ""}"
+                            nextcloud-web-dav-url="${nextcloudWebDavURL}"
                             decompress-zip
                             lang="${this.lang}"
                             ?disabled="${this.verificationProcessActive}"
