@@ -867,7 +867,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
 
     render() {
         const placeholderUrl = commonUtils.getAssetURL('local/vpu-signature/qualified-signature-placeholder.png');
-        const showTestNextcloudFilePicker = buildinfo.env === 'local';
 
         return html`
             <div class="${classMap({hidden: !this.isLoggedIn() || !this.hasSignaturePermissions() || this.isLoading()})}">
@@ -876,7 +875,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                     <div class="control">
                         <vpu-file-source
                             allowed-mime-types="application/pdf"
-                            nextcloud-auth-url="${showTestNextcloudFilePicker ? nextcloudWebAppPasswordURL : ""}"
+                            nextcloud-auth-url="${this.showTestNextcloudFilePicker ? nextcloudWebAppPasswordURL : ""}"
                             nextcloud-web-dav-url="${nextcloudWebDavURL}"
                             decompress-zip
                             lang="${this.lang}"
