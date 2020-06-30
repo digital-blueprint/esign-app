@@ -1,5 +1,7 @@
 import {LitElement} from "lit-element";
 import {EventBus} from 'vpu-common';
+import buildinfo from 'consts:buildinfo';
+import * as utils from "./utils";
 
 export default class VPUSignatureLitElement extends LitElement {
     constructor() {
@@ -12,6 +14,8 @@ export default class VPUSignatureLitElement extends LitElement {
 
         // will be set in function update
         this.fileSourceUrl = "";
+
+        this.showTestNextcloudFilePicker = buildinfo.env === 'local';
     }
 
     /**
@@ -199,5 +203,24 @@ export default class VPUSignatureLitElement extends LitElement {
         const organization = this.getOrganization();
 
         return organization !== null ? organization.alternateName : "";
+    }
+
+    /**
+     * Download signed pdf-files as zip
+     */
+    async zipDownloadClickHandler() {
+        let files = [];
+
+        // add all signed pdf-files
+        this.signedFiles.forEach((file) => {
+            const arr = utils.convertDataURIToBinary(file.contentUrl);
+            const binaryFile = new File([arr], file.name, { type: utils.getDataURIContentType(file.contentUrl) });
+            files.push(binaryFile);
+        });
+
+        const detail = { "files": files, "filename": "signed-documents.zip" };
+        const event = new CustomEvent("vpu-file-sink-download-compressed-files", { "detail": detail });
+        this._("#file-sink").dispatchEvent(event);
+        this._("#zip-download-button").stop();
     }
 }
