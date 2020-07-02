@@ -29,7 +29,8 @@ const USE_HTTPS = false;
 const pkg = require('./package.json');
 const build = (typeof process.env.BUILD !== 'undefined') ? process.env.BUILD : 'local';
 const watch = process.env.ROLLUP_WATCH === 'true';
-const watchFull = process.env.WATCH_FULL !== undefined;
+const buildFull = (!watch && build !== 'test') || (process.env.FORCE_FULL !== undefined);
+
 console.log("build: " + build);
 let basePath = '';
 let entryPointURL = '';
@@ -41,9 +42,9 @@ let keyCloakBaseURL = '';
 let keyCloakClientId = '';
 let pdfAsQualifiedlySigningServer = '';
 let matomoSiteId = 131;
-let useTerser = !watch || watchFull;
-let useBabel = !watch || watchFull;
-let checkLicenses = !watch || watchFull;
+let useTerser = buildFull;
+let useBabel = buildFull;
+let checkLicenses = buildFull;
 
 switch (build) {
   case 'local':
