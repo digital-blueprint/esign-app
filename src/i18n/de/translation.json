@@ -97,5 +97,7 @@
     "continue": "Platzierung bestätigen"
   },
   "error-permission-message": "Sie müssen das Recht auf Amtssignaturen besitzen um diese Funktion nutzen zu können!",
-  "error-login-message": "Sie müssen eingeloggt sein um diese Funktion nutzen zu können!"
+  "error-login-message": "Sie müssen eingeloggt sein um diese Funktion nutzen zu können!",
+  "error-cancel-message": "Der Signaturprozess wurde manuell abgebrochen.",
+  "error-rights-message": "Abbruch auf Grund mangelnder Rechte Ihres Accounts."
 }

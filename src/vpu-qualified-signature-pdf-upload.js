@@ -212,6 +212,32 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         event.returnValue = '';
     }
 
+    /**
+     * Parse error message for user friendly output
+     *
+     * @param error
+     */
+    parseError(error) {
+        let errorParsed = error;
+        // Common Error Messages fpr pdf-as: https://www.buergerkarte.at/konzept/securitylayer/spezifikation/20140114/errorcodes/errorcodes.html
+        // SecurityLayer Error: [6000] Unklassifizierter Abbruch durch den Bürger.
+        if(error.includes('SecurityLayer Error: [6001]'))
+        {
+            errorParsed = i18n.t('error-cancel-message');
+        }
+        // SecurityLayer Error: [6001] Abbruch durch den Bürger über die Benutzerschnittstelle.
+        else if(error.includes('SecurityLayer Error: [6000]'))
+        {
+            errorParsed = i18n.t('error-cancel-message');
+        }
+        // SecurityLayer Error: [6002] Abbruch auf Grund mangelnder Rechte zur Befehlsausführung.
+        else if(error.includes('SecurityLayer Error: [6002]'))
+        {
+            errorParsed = i18n.t('error-rights-message');
+        }
+        return errorParsed;
+    }
+
     onReceiveIframeMessage(event) {
         const data = event.data;
 
@@ -222,7 +248,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
             if (data.cause) {
                 error = `${error}: ${data.cause}`;
             }
-            file.json = {"hydra:description" : error};
+            file.json = {"hydra:description" : this.parseError(error)};
             this.addToErrorFiles(file);
             this._("#iframe").src = "about:blank";
             this.externalAuthInProgress = false;
