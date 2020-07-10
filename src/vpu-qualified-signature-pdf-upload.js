@@ -872,7 +872,17 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                 <div class="field ${classMap({"is-disabled": this.isUserInterfaceDisabled()})}">
                     <h2>${i18n.t('qualified-pdf-upload.upload-field-label')}</h2>
                     <div class="control">
+                        <p>
+                            ${i18n.t('qualified-pdf-upload.upload-text')}
+                        </p>
+                        <button @click="${() => { this._("#file-source").setAttribute("dialog-open", ""); }}"
+                                ?disabled="${this.signingProcessActive}"
+                                class="button is-primary">
+                            ${i18n.t('qualified-pdf-upload.upload-button-label')}
+                        </button>
+
                         <vpu-file-source
+                            id="file-source"
                             allowed-mime-types="application/pdf"
                             nextcloud-auth-url="${this.showTestNextcloudFilePicker ? nextcloudWebAppPasswordURL : ""}"
                             nextcloud-web-dav-url="${nextcloudWebDavURL}"

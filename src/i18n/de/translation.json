@@ -1,6 +1,7 @@
 {
   "official-pdf-upload": {
     "upload-field-label": "PDF-Dokumente zum Signieren hochladen",
+    "upload-text": "Sie können in diesem Bereich PDF-Dokumente mit einer Maximalgröße von bis zu 32MB pro Dokument hochladen. Die PDF-Dokumente dürfen sich auch in ZIP-Dateien befinden.",
     "upload-area-text": "Sie können in diesem Bereich PDF-Dokumente mit einer Maximalgröße von bis zu 32MB pro Dokument per Drag & Drop oder per Direktauswahl hochladen. Die PDF-Dokumente dürfen sich auch in ZIP-Dateien befinden.",
     "queued-files-label": "Dokumente in der Warteschlange",
     "queued-files-empty1": "Kein Dokument in der Warteschlange",
@@ -30,6 +31,7 @@
   },
   "qualified-pdf-upload": {
     "upload-field-label": "PDF-Dokumente zum Signieren hochladen",
+    "upload-text": "Sie können in diesem Bereich PDF-Dokumente mit einer Maximalgröße von bis zu 32MB pro Dokument hochladen. Die PDF-Dokumente dürfen sich auch in ZIP-Dateien befinden.",
     "upload-area-text": "Sie können in diesem Bereich PDF-Dokumente mit einer Maximalgröße von bis zu 32MB pro Dokument per Drag & Drop oder per Direktauswahl hochladen. Die PDF-Dokumente dürfen sich auch in ZIP-Dateien befinden.",
     "current-signing-process-label": "Aktueller Signaturprozess",
     "queued-files-label": "Dokumente in der Warteschlange",
@@ -60,6 +62,7 @@
   },
   "signature-verification": {
     "upload-field-label": "PDF-Dokumente zum Überprüfen der Signaturen hochladen",
+    "upload-text": "Sie können in diesem Bereich PDF-Dokumente mit einer Maximalgröße von bis zu 32MB pro Dokument hochladen. Die PDF-Dokumente dürfen sich auch in ZIP-Dateien befinden.",
     "upload-area-text": "Sie können in diesem Bereich PDF-Dokumente mit einer Maximalgröße von bis zu 32MB pro Dokument per Drag & Drop oder per Direktauswahl hochladen. Die PDF-Dokumente dürfen sich auch in ZIP-Dateien befinden.",
     "queued-files-label": "Dokumente in der Warteschlange",
     "queued-files-empty1": "Kein Dokument in der Warteschlange",

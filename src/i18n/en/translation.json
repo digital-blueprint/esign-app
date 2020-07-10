@@ -1,6 +1,7 @@
 {
   "official-pdf-upload": {
     "upload-field-label": "Upload PDF-documents to sign",
+    "upload-text": "In this area you can upload PDF-documents up to a size of 32MB. The PDF-documents can also be located in a ZIP-file.",
     "upload-area-text": "In this area you can upload PDF-documents up to a size of 32MB via Drag & Drop or by selecting them directly. The PDF-documents can also be located in a ZIP-file.",
     "queued-files-label": "Queued documents",
     "queued-files-empty1": "No queued documents",
@@ -30,6 +31,7 @@
   },
   "qualified-pdf-upload": {
     "upload-field-label": "Upload PDF-documents to sign",
+    "upload-text": "In this area you can upload PDF-documents up to a size of 32MB. The PDF-documents can also be located in a ZIP-file.",
     "upload-area-text": "In this area you can upload PDF-documents up to a size of 32MB via Drag & Drop or by selecting them directly. The PDF-documents can also be located in a ZIP-file.",
     "current-signing-process-label": "Current signing process",
     "queued-files-label": "Queued documents",
@@ -60,6 +62,7 @@
   },
   "signature-verification": {
     "upload-field-label": "Upload PDF-documents to verify",
+    "upload-text": "In this area you can upload PDF-documents up to a size of 32MB. The PDF-documents can also be located in a ZIP-file.",
     "upload-area-text": "In this area you can upload PDF-documents up to a size of 32MB via Drag & Drop or by selecting them directly. The PDF-documents can also be located in a ZIP-file.",
     "queued-files-label": "Queued documents",
     "queued-files-empty1": "No queued documents",
