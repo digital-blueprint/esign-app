@@ -98,6 +98,8 @@ switch (build) {
     process.exit(1);
 }
 
+let nextcloudFileURL = nextcloudBaseURL + '/apps/files/?dir=';
+
 /**
  * Creates a server certificate and caches it in the .cert directory
  */
@@ -186,6 +188,8 @@ export default {
           buildinfo: getBuildInfo(),
           nextcloudWebAppPasswordURL: nextcloudWebAppPasswordURL,
           nextcloudWebDavURL: nextcloudWebDavURL,
+          nextcloudBaseURL: nextcloudBaseURL,
+          nextcloudFileURL: nextcloudFileURL,
         }),
         emitEJS({
           src: 'assets',
