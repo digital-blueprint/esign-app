@@ -218,9 +218,7 @@ export default class VPUSignatureLitElement extends LitElement {
             files.push(binaryFile);
         });
 
-        const detail = { "files": files, "filename": "signed-documents.zip" };
-        const event = new CustomEvent("vpu-file-sink-download-compressed-files", { "detail": detail });
-        this._("#file-sink").dispatchEvent(event);
+        this._("#file-sink").files = files;
         this._("#zip-download-button").stop();
     }
 }

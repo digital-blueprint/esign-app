@@ -850,7 +850,9 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitElem
                 <vpu-mini-spinner></vpu-mini-spinner>
             </div>
             <vpu-file-sink id="file-sink"
-                nextcloud-auth-url="${this.showTestNextcloudFilePicker ? nextcloudWebAppPasswordURL : ""}"
+                filename="signed-documents.zip"
+                enabled-destinations="local${this.showTestNextcloudFilePicker ? ",nextcloud" : ""}"
+                nextcloud-auth-url="${nextcloudWebAppPasswordURL}"
                 nextcloud-web-dav-url="${nextcloudWebDavURL}"
                 lang="${this.lang}"
                 ></vpu-file-sink>
