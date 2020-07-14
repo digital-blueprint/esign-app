@@ -37,6 +37,7 @@ let entryPointURL = '';
 let nextcloudBaseURL = 'https://cloud.tugraz.at';
 let nextcloudWebAppPasswordURL = nextcloudBaseURL + '/apps/webapppassword';
 let nextcloudWebDavURL = nextcloudBaseURL + '/remote.php/dav/files';
+let nextcloudName = 'TU Graz cloud';
 let keyCloakServer = '';
 let keyCloakBaseURL = '';
 let keyCloakClientId = '';
@@ -190,6 +191,7 @@ export default {
           nextcloudWebDavURL: nextcloudWebDavURL,
           nextcloudBaseURL: nextcloudBaseURL,
           nextcloudFileURL: nextcloudFileURL,
+          nextcloudName: nextcloudName,
         }),
         emitEJS({
           src: 'assets',
