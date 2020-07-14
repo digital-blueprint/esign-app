@@ -67,7 +67,7 @@
     "build-demo": "rollup -c --environment BUILD:demo",
     "i18next": "i18next-scanner",
     "watch": "rollup -c --watch",
-    "watch-local": "npm run watch",
+    "watch-local": "yarn run watch",
     "watch-full": "rollup -c --watch --environment FORCE_FULL",
     "test": "rollup -c --environment BUILD:test && karma start --singleRun",
     "test-full": "rollup -c --environment FORCE_FULL,BUILD:test && karma start --singleRun",

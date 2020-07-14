@@ -44,20 +44,20 @@ host('production')
 
 // Demo build task
 task('build-demo', function () {
-    runLocally("npm install");
-    runLocally("npm run build-demo");
+    runLocally("yarn install");
+    runLocally("yarn run build-demo");
 })->onStage('demo');
 
 // Demo dev task
 task('build-development', function () {
-    runLocally("npm install");
-    runLocally("npm run build-dev");
+    runLocally("yarn install");
+    runLocally("yarn run build-dev");
 })->onStage('development');
 
 //Production task
 task('build-production', function () {
-    runLocally("npm install");
-    runLocally("npm run build-prod");
+    runLocally("yarn install");
+    runLocally("yarn run build-prod");
 })->onStage('production');
 
 // Deploy task

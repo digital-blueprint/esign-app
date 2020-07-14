@@ -10,17 +10,17 @@ git clone git@gitlab.tugraz.at:dbp/apps/Signature.git
 cd Signature
 git submodule update --init
 
-# install dependencies (make sure you have npm version 4+ installed, so symlinks to the git submodules are created automatically)
-npm install
+# install dependencies
+yarn install
 
 # constantly build dist/bundle.js and run a local web-server on port 8001 
-npm run watch
+yarn run watch
 
 # same as watch, but with babel, terser, etc active -> very slow
-npm run watch-full
+yarn run watch-full
 
 # run tests
-npm test
+yarn test
 ```
 
 Jump to <http://localhost:8001> and you should get a Single Sign On login page.
