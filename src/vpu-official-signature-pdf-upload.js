@@ -14,7 +14,7 @@ import JSONLD from "vpu-common/jsonld";
 import {TextSwitch} from './textswitch.js';
 import nextcloudWebAppPasswordURL from 'consts:nextcloudWebAppPasswordURL';
 import nextcloudWebDavURL from 'consts:nextcloudWebDavURL';
-import {FileSink} from "../vendor/file-handling/src/file-sink";
+import {FileSink} from "vpu-file-handling";
 import FileSaver from 'file-saver';
 
 const i18n = createI18nInstance();
