@@ -1,9 +1,9 @@
 import {LitElement} from "lit-element";
-import {EventBus} from 'vpu-common';
+import {EventBus} from 'dbp-common';
 import buildinfo from 'consts:buildinfo';
 import * as utils from "./utils";
 
-export default class VPUSignatureLitElement extends LitElement {
+export default class DBPSignatureLitElement extends LitElement {
     constructor() {
         super();
         this.queuedFiles = [];
@@ -94,7 +94,7 @@ export default class VPUSignatureLitElement extends LitElement {
         await fetch(url, {
             method: 'POST',
             headers: {
-                'Authorization': 'Bearer ' + window.VPUAuthToken,
+                'Authorization': 'Bearer ' + window.DBPAuthToken,
             },
             body: formData
         })
@@ -146,7 +146,7 @@ export default class VPUSignatureLitElement extends LitElement {
     }
 
     _hasSignaturePermissions(roleName) {
-        return (window.VPUPerson && Array.isArray(window.VPUPerson.roles) && window.VPUPerson.roles.indexOf(roleName) !== -1);
+        return (window.DBPPerson && Array.isArray(window.DBPPerson.roles) && window.DBPPerson.roles.indexOf(roleName) !== -1);
     }
 
     _updateAuth(e) {
@@ -176,17 +176,17 @@ export default class VPUSignatureLitElement extends LitElement {
     }
 
     isLoggedIn() {
-        return (window.VPUPerson !== undefined && window.VPUPerson !== null);
+        return (window.DBPPerson !== undefined && window.DBPPerson !== null);
     }
 
     isLoading() {
         if (this._loginStatus === "logged-out")
             return false;
-        return (!this.isLoggedIn() && window.VPUAuthToken !== undefined);
+        return (!this.isLoggedIn() && window.DBPAuthToken !== undefined);
     }
 
     getOrganization() {
-        const organizationSelect = this._("vpu-knowledge-base-organization-select");
+        const organizationSelect = this._("dbp-knowledge-base-organization-select");
 
         if (organizationSelect) {
             const objectText = organizationSelect.getAttribute("data-object");

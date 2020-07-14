@@ -1,6 +1,6 @@
 {
-  "element": "vpu-official-signature-pdf-upload",
-  "module_src": "vpu-official-signature-pdf-upload.js",
+  "element": "dbp-official-signature-pdf-upload",
+  "module_src": "dbp-official-signature-pdf-upload.js",
   "routing_name": "official-pdf-upload",
   "name": {
     "de": "Dokumente amtssignieren",

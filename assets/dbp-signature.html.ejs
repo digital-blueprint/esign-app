@@ -21,7 +21,7 @@
     <!-- Loading spinner -->
     <script type="module">
         import {Spinner} from '<%= getPrivateUrl('spinner.js') %>';
-        customElements.define('vpu-loading-spinner', Spinner);
+        customElements.define('dbp-loading-spinner', Spinner);
     </script>
 
     <!-- App bundles-->
@@ -112,13 +112,13 @@
 
         /* TU-Graz style override */
         html {
-            --vpu-override-primary-bg-color: #245b78;
-            --vpu-override-primary-button-border: solid 1px #245b78;
-            --vpu-override-info-bg-color: #245b78;
-            --vpu-override-danger-bg-color: #e4154b;
-            --vpu-override-warning-bg-color: #ffe183;
-            --vpu-override-warning-text-color: black;
-            --vpu-override-success-bg-color: #259207;
+            --dbp-override-primary-bg-color: #245b78;
+            --dbp-override-primary-button-border: solid 1px #245b78;
+            --dbp-override-info-bg-color: #245b78;
+            --dbp-override-danger-bg-color: #e4154b;
+            --dbp-override-warning-bg-color: #ffe183;
+            --dbp-override-warning-text-color: black;
+            --dbp-override-success-bg-color: #259207;
         }
     </style>
 
@@ -134,7 +134,7 @@
     entry-point-url="<%= entryPointURL %>"
     base-path="<%= getUrl('') %>"
     keycloak-config='{"url": "<%= keyCloakBaseURL %>", "realm": "tugraz", "clientId": "<%= keyCloakClientId %>", "silentCheckSsoRedirectUri": "<%= getUrl('silent-check-sso.html') %>"}'
-><vpu-loading-spinner></vpu-loading-spinner></<%= name %>>
+><dbp-loading-spinner></dbp-loading-spinner></<%= name %>>
 
 <!-- Error handling for too old browsers -->
 <script src="<%= getPrivateUrl('browser-check.js') %>" defer></script>

@@ -3,10 +3,10 @@ import {css, html} from 'lit-element';
 import {classMap} from 'lit-html/directives/class-map.js';
 import {live} from 'lit-html/directives/live.js';
 import {ScopedElementsMixin} from '@open-wc/scoped-elements';
-import VPULitElement from 'vpu-common/vpu-lit-element';
-import {MiniSpinner, Icon} from 'vpu-common';
-import * as commonUtils from "vpu-common/utils";
-import * as commonStyles from 'vpu-common/styles';
+import DBPLitElement from 'dbp-common/dbp-lit-element';
+import {MiniSpinner, Icon} from 'dbp-common';
+import * as commonUtils from "dbp-common/utils";
+import * as commonStyles from 'dbp-common/styles';
 import pdfjs from 'pdfjs-dist';
 import buildinfo from 'consts:buildinfo';
 
@@ -15,7 +15,7 @@ const i18n = createI18nInstance();
 /**
  * PdfPreview web component
  */
-export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
+export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
     constructor() {
         super();
         this.lang = 'de';
@@ -40,8 +40,8 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
 
     static get scopedElements() {
         return {
-            'vpu-mini-spinner': MiniSpinner,
-            'vpu-icon': Icon,
+            'dbp-mini-spinner': MiniSpinner,
+            'dbp-icon': Icon,
         };
     }
 
@@ -87,7 +87,7 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
     connectedCallback() {
         super.connectedCallback();
         const that = this;
-        pdfjs.GlobalWorkerOptions.workerSrc = commonUtils.getAssetURL('local/vpu-signature/pdfjs/pdf.worker.min.js');
+        pdfjs.GlobalWorkerOptions.workerSrc = commonUtils.getAssetURL('local/dbp-signature/pdfjs/pdf.worker.min.js');
 
         window.addEventListener('resize', this._onWindowResize);
 
@@ -387,13 +387,13 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
             "bottom": this.currentPageOriginalHeight - (top / this.canvasToPdfScale),
             "angle": item.get("angle")
         };
-        const event = new CustomEvent("vpu-pdf-preview-accept",
+        const event = new CustomEvent("dbp-pdf-preview-accept",
             { "detail": data, bubbles: true, composed: true });
         this.dispatchEvent(event);
     }
 
     sendCancelEvent() {
-        const event = new CustomEvent("vpu-pdf-preview-cancel",
+        const event = new CustomEvent("dbp-pdf-preview-cancel",
             { "detail": {}, bubbles: true, composed: true });
         this.dispatchEvent(event);
     }
@@ -502,7 +502,7 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
             </form>
 -->
             <div id="pdf-main-container" class="${classMap({hidden: !this.isShowPage})}">
-                <vpu-mini-spinner class="${classMap({hidden: this.isPageLoaded})}"></vpu-mini-spinner>
+                <dbp-mini-spinner class="${classMap({hidden: this.isPageLoaded})}"></dbp-mini-spinner>
                 <div class="${classMap({hidden: !this.isPageLoaded})}">
                     <div id="pdf-meta">
                         <div class="buttons ${classMap({hidden: !this.isPageLoaded})}">
@@ -515,13 +515,13 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
                                         title="${i18n.t('pdf-preview.first-page')}"
                                         @click="${async () => { await this.showPage(1); } }"
                                         ?disabled="${this.isPageRenderingInProgress || this.currentPage === 1}">
-                                    <vpu-icon name="angle-double-left"></vpu-icon>
+                                    <dbp-icon name="angle-double-left"></dbp-icon>
                                 </button>
                                 <button class="button"
                                         title="${i18n.t('pdf-preview.previous-page')}"
                                         @click="${async () => { if (this.currentPage > 1) await this.showPage(--this.currentPage); } }"
                                         ?disabled="${this.isPageRenderingInProgress || this.currentPage === 1}">
-                                    <vpu-icon name="chevron-left"></vpu-icon>
+                                    <dbp-icon name="chevron-left"></dbp-icon>
                                 </button>
                                 <input type="number"
                                     min="1"
@@ -533,13 +533,13 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
                                         title="${i18n.t('pdf-preview.next-page')}"
                                         @click="${async () => { if (this.currentPage < this.totalPages) await this.showPage(++this.currentPage); } }"
                                         ?disabled="${this.isPageRenderingInProgress || this.currentPage === this.totalPages}">
-                                    <vpu-icon name="chevron-right"></vpu-icon>
+                                    <dbp-icon name="chevron-right"></dbp-icon>
                                 </button>
                                 <button class="button"
                                         title="${i18n.t('pdf-preview.last-page')}"
                                         @click="${async () => { await this.showPage(this.totalPages); } }"
                                         ?disabled="${this.isPageRenderingInProgress || this.currentPage === this.totalPages}">
-                                    <vpu-icon name="angle-double-right"></vpu-icon>
+                                    <dbp-icon name="angle-double-right"></dbp-icon>
                                 </button>
                             </div>
                             <button class="button is-primary ${classMap({hidden: !this.isShowPlacement})}"
@@ -550,7 +550,7 @@ export class PdfPreview extends ScopedElementsMixin(VPULitElement) {
                         <canvas id="pdf-canvas"></canvas>
                         <canvas id="fabric-canvas" class="${classMap({hidden: !this.isShowPlacement})}"></canvas>
                     </div>
-                    <div class="${classMap({hidden: !this.isPageRenderingInProgress})}"><vpu-mini-spinner id="page-loader"></vpu-mini-spinner></div>
+                    <div class="${classMap({hidden: !this.isPageRenderingInProgress})}"><dbp-mini-spinner id="page-loader"></dbp-mini-spinner></div>
                 </div>
             </div>
         `;

@@ -1,27 +1,31 @@
 import {createI18nInstance} from './i18n.js';
-import {humanFileSize} from 'vpu-common/i18next.js';
+import {humanFileSize} from 'dbp-common/i18next.js';
 import {css, html} from 'lit-element';
 import {ScopedElementsMixin} from '@open-wc/scoped-elements';
-import VPUSignatureLitElement from "./vpu-signature-lit-element";
-import {PdfPreview} from "./vpu-pdf-preview";
-import * as commonUtils from 'vpu-common/utils';
-import {Icon, MiniSpinner, Button} from 'vpu-common';
-import * as commonStyles from 'vpu-common/styles';
+import DBPSignatureLitElement from "./dbp-signature-lit-element";
+import {PdfPreview} from "./dbp-pdf-preview";
+import * as commonUtils from 'dbp-common/utils';
+import * as utils from './utils';
+import {Button, Icon, MiniSpinner} from 'dbp-common';
+import * as commonStyles from 'dbp-common/styles';
 import {classMap} from 'lit-html/directives/class-map.js';
-import {FileSource} from 'vpu-file-handling';
-import JSONLD from "vpu-common/jsonld";
+import {FileSource} from 'dbp-file-handling';
+import JSONLD from "dbp-common/jsonld";
+import {TextSwitch} from './textswitch.js';
 import nextcloudWebAppPasswordURL from 'consts:nextcloudWebAppPasswordURL';
 import nextcloudWebDavURL from 'consts:nextcloudWebDavURL';
+import {FileSink} from "dbp-file-handling";
+import FileSaver from 'file-saver';
 
 const i18n = createI18nInstance();
 
-class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) {
+class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElement) {
     constructor() {
         super();
         this.lang = i18n.language;
         this.entryPointUrl = commonUtils.getAPiUrl();
-        this.verifiedFiles = [];
-        this.verifiedFilesCount = 0;
+        this.signedFiles = [];
+        this.signedFilesCount = 0;
         this.errorFiles = [];
         this.errorFilesCount = 0;
         this.uploadStatusFileName = "";
@@ -30,22 +34,24 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
         this.currentFileName = "";
         this.currentFilePlacementMode = "";
         this.currentFileSignaturePlacement = {};
-        this.verificationProcessEnabled = false;
-        this.verificationProcessActive = false;
-        this.previewInProgress = false;
+        this.signingProcessEnabled = false;
+        this.signingProcessActive = false;
+        this.signaturePlacementInProgress = false;
+        this.withSigBlock = false;
+        this.queuedFilesSignaturePlacements = [];
+        this.queuedFilesPlacementModes = [];
         this.currentPreviewQueueKey = '';
-
-        // will be set in function update
-        this.verificationUrl = "";
     }
 
     static get scopedElements() {
         return {
-            'vpu-icon': Icon,
-            'vpu-file-source': FileSource,
-            'vpu-pdf-preview': PdfPreview,
-            'vpu-mini-spinner': MiniSpinner,
-            'vpu-button': Button,
+          'dbp-icon': Icon,
+          'dbp-file-source': FileSource,
+          'dbp-file-sink': FileSink,
+          'dbp-pdf-preview': PdfPreview,
+          'dbp-mini-spinner': MiniSpinner,
+          'dbp-button': Button,
+          'dbp-textswitch': TextSwitch,
         };
     }
 
@@ -53,20 +59,21 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
         return {
             lang: { type: String },
             entryPointUrl: { type: String, attribute: 'entry-point-url' },
-            verifiedFiles: { type: Array, attribute: false },
-            verifiedFilesCount: { type: Number, attribute: false },
+            signedFiles: { type: Array, attribute: false },
+            signedFilesCount: { type: Number, attribute: false },
             queuedFilesCount: { type: Number, attribute: false },
             errorFiles: { type: Array, attribute: false },
             errorFilesCount: { type: Number, attribute: false },
             uploadInProgress: { type: Boolean, attribute: false },
             uploadStatusFileName: { type: String, attribute: false },
             uploadStatusText: { type: String, attribute: false },
-            verificationProcessEnabled: { type: Boolean, attribute: false },
-            verificationProcessActive: { type: Boolean, attribute: false },
+            signingProcessEnabled: { type: Boolean, attribute: false },
+            signingProcessActive: { type: Boolean, attribute: false },
             queueBlockEnabled: { type: Boolean, attribute: false },
             currentFile: { type: Object, attribute: false },
             currentFileName: { type: String, attribute: false },
-            previewInProgress: { type: Boolean, attribute: false },
+            signaturePlacementInProgress: { type: Boolean, attribute: false },
+            withSigBlock: { type: Boolean, attribute: false },
             isSignaturePlacement: { type: Boolean, attribute: false },
         };
     }
@@ -81,18 +88,18 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
      * Processes queued files
      */
     async handleQueuedFiles() {
-        this.endVerificationProcessIfQueueEmpty();
+        this.endSigningProcessIfQueueEmpty();
         if (this.queuedFilesCount === 0) {
-            // reset verificationProcessEnabled button
-            this.verificationProcessEnabled = false;
+            // reset signingProcessEnabled button
+            this.signingProcessEnabled = false;
             return;
         }
 
-        if (!this.verificationProcessEnabled || this.uploadInProgress) {
+        if (!this.signingProcessEnabled || this.uploadInProgress) {
             return;
         }
 
-        this.previewInProgress = false;
+        this.signaturePlacementInProgress = false;
 
         const key = Object.keys(this.queuedFiles)[0];
 
@@ -100,10 +107,21 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
         let file = this.takeFileFromQueue(key);
         this.currentFile = file;
 
+        // set placement mode and parameters to restore them when canceled
+        this.currentFilePlacementMode = this.queuedFilesPlacementModes[key];
+        this.currentFileSignaturePlacement = this.queuedFilesSignaturePlacements[key];
         this.uploadInProgress = true;
         let params = {};
 
-        this.uploadStatusText = i18n.t('signature-verification.upload-status-file-text', {
+        // prepare parameters to tell PDF-AS where and how the signature should be placed
+        if (this.queuedFilesPlacementModes[key] === "manual") {
+            const data = this.queuedFilesSignaturePlacements[key];
+            if (data !== undefined) {
+                params = utils.fabricjs2pdfasPosition(data);
+            }
+        }
+
+        this.uploadStatusText = i18n.t('official-pdf-upload.upload-status-file-text', {
             fileName: file.name,
             fileSize: humanFileSize(file.size, false),
         });
@@ -112,13 +130,33 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
         this.uploadInProgress = false;
     }
 
+    storePDFData(event) {
+        this.queuedFilesSignaturePlacements[this.currentPreviewQueueKey] = event.detail;
+        this.signaturePlacementInProgress = false;
+    }
+
     /**
      * Called when preview is "canceled"
      *
      * @param event
      */
     hidePDF(event) {
-        this.previewInProgress = false;
+        // reset placement mode to "auto" if no placement was confirmed previously
+        if (this.queuedFilesSignaturePlacements[this.currentPreviewQueueKey] === undefined) {
+            this.queuedFilesPlacementModes[this.currentPreviewQueueKey] = "auto";
+        }
+        this.signaturePlacementInProgress = false;
+    }
+
+    queuePlacementSwitch(key, name) {
+        this.queuedFilesPlacementModes[key] = name;
+        console.log(name);
+
+        if (name === "manual") {
+            this.showPreview(key, true);
+        } else if (this.currentPreviewQueueKey === key) {
+            this.signaturePlacementInProgress = false;
+        }
     }
 
     /**
@@ -128,7 +166,7 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
      */
     onReceiveBeforeUnload(event) {
         // we don't need to stop if there are no signed files
-        if (this.verifiedFilesCount === 0) {
+        if (this.signedFilesCount === 0) {
             return;
         }
 
@@ -136,7 +174,7 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
         if (!event.isTrusted) {
             // note that this only works with custom event since calls of "confirm" are ignored
             // in the non-custom event, see https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeunload_event
-            const result = confirm(i18n.t('signature-verification.confirm-page-leave'));
+            const result = confirm(i18n.t('official-pdf-upload.confirm-page-leave'));
 
             // don't stop the page leave if the user wants to leave
             if (result) {
@@ -151,9 +189,9 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
         event.returnValue = '';
     }
 
-    endVerificationProcessIfQueueEmpty() {
-        if (this.queuedFilesCount === 0 && this.verificationProcessActive) {
-            this.verificationProcessActive = false;
+    endSigningProcessIfQueueEmpty() {
+        if (this.queuedFilesCount === 0 && this.signingProcessActive) {
+            this.signingProcessActive = false;
         }
     }
 
@@ -166,7 +204,7 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
     }
 
     addToErrorFiles(file) {
-        this.endVerificationProcessIfQueueEmpty();
+        this.endSigningProcessIfQueueEmpty();
 
         // this doesn't seem to trigger an update() execution
         this.errorFiles[Math.floor(Math.random() * 1000000)] = file;
@@ -174,7 +212,7 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
         this.errorFilesCount++;
 
         if (window._paq !== undefined) {
-            window._paq.push(['trackEvent', 'officiallyVerification', 'VerificationFailed', file.json["hydra:description"]]);
+            window._paq.push(['trackEvent', 'officiallySigning', 'SigningFailed', file.json["hydra:description"]]);
         }
     }
 
@@ -184,14 +222,14 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
     onFileUploadFinished(data) {
         if (data.status !== 201) {
             this.addToErrorFiles(data);
-        } else if (data.json["@type"] === "https://schema.tugraz.at/ElectronicSignatureVerificationReport" ) {
+        } else if (data.json["@type"] === "http://schema.org/MediaObject" ) {
             // this doesn't seem to trigger an update() execution
-            this.verifiedFiles.push(data.json);
+            this.signedFiles.push(data.json);
             // this triggers the correct update() execution
-            this.verifiedFilesCount++;
+            this.signedFilesCount++;
             const entryPoint = data.json;
             this.currentFileName = entryPoint.name;
-            this.endVerificationProcessIfQueueEmpty();
+            this.endSigningProcessIfQueueEmpty();
         }
     }
 
@@ -203,8 +241,8 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
                     break;
                 case "entryPointUrl":
                     JSONLD.initialize(this.entryPointUrl, (jsonld) => {
-                        const apiUrlBase = jsonld.getApiUrlForEntityName("ElectronicSignatureVerificationReport");
-                        this.fileSourceUrl = apiUrlBase + "/create";
+                        const apiUrlBase = jsonld.getApiUrlForEntityName("OfficiallySignedDocument");
+                        this.fileSourceUrl = apiUrlBase + "/sign";
                     });
                     break;
             }
@@ -238,6 +276,18 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
     }
 
     /**
+     * Download one signed pdf-file
+     *
+     * @param file
+     */
+    fileDownloadClickHandler(file) {
+        const arr = utils.convertDataURIToBinary(file.contentUrl);
+        const blob = new Blob([arr], { type: utils.getDataURIContentType(file.contentUrl) });
+
+        FileSaver.saveAs(blob, file.name);
+    }
+
+    /**
      * Queues a failed pdf-file again
      *
      * @param file
@@ -252,9 +302,10 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
      * Shows the preview
      *
      * @param key
+     * @param withSigBlock
      */
-    async showPreview(key) {
-        if (this.verificationProcessEnabled) {
+    async showPreview(key, withSigBlock=false) {
+        if (this.signingProcessEnabled) {
             return;
         }
 
@@ -263,9 +314,13 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
         this.currentPreviewQueueKey = key;
         console.log(file);
         // start signature placement process
-        this.previewInProgress = true;
-        const previewTag = this.constructor.getScopedTagName("vpu-pdf-preview");
-        await this._(previewTag).showPDF(file);
+        this.signaturePlacementInProgress = true;
+        this.withSigBlock = withSigBlock;
+        const previewTag = this.constructor.getScopedTagName("dbp-pdf-preview");
+        await this._(previewTag).showPDF(
+            file,
+            withSigBlock, //this.queuedFilesPlacementModes[key] === "manual",
+            this.queuedFilesSignaturePlacements[key]);
     }
 
     /**
@@ -279,9 +334,15 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
         return file;
     }
 
-    clearVerifiedFiles() {
-        this.verifiedFiles = [];
-        this.verifiedFilesCount = 0;
+    clearQueuedFiles() {
+        this.queuedFilesSignaturePlacements = [];
+        this.queuedFilesPlacementModes = [];
+        super.clearQueuedFiles();
+    }
+
+    clearSignedFiles() {
+        this.signedFiles = [];
+        this.signedFilesCount = 0;
     }
 
     clearErrorFiles() {
@@ -290,7 +351,7 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
     }
 
     isUserInterfaceDisabled() {
-        return this.previewInProgress || this.externalAuthInProgress || this.uploadInProgress;
+        return this.signaturePlacementInProgress || this.externalAuthInProgress || this.uploadInProgress;
     }
 
     static get styles() {
@@ -354,21 +415,21 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
                 font-weight: 600;
             }
 
-            .notification vpu-mini-spinner {
+            .notification dbp-mini-spinner {
                 position: relative;
                 top: 2px;
                 margin-right: 5px;
             }
 
-            .error, #cancel-verification-process {
+            .error, #cancel-signing-process {
                 color: #e4154b;
             }
             
-            #cancel-verification-process:hover {
+            #cancel-signing-process:hover {
                 color: white;
             }
 
-            /* using vpu-icon doesn't work */
+            /* using dbp-icon doesn't work */
             button > [name=close], a > [name=close] {
                 font-size: 0.8em;
             }
@@ -487,18 +548,6 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
                 margin-right: 0.5em;
             }
 
-            table.signatures {
-                margin-top: 10px;
-            }
-
-            .verified-files .file-block {
-                max-width: inherit;
-            }
-
-            .verification-ok {
-                background-color: #a4ffa4;
-            }
-
             /* Handling for small displays (like mobile devices) */
             @media (max-width: 680px) {
                 /* Modal preview, upload and external auth */
@@ -550,16 +599,25 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
                     <div class="header">
                         <span class="filename"><strong>${file.name}</strong> (${humanFileSize(file.size)})</span>
                         <button class="button close"
-                            ?disabled="${this.verificationProcessEnabled}"
-                            title="${i18n.t('signature-verification.remove-queued-file-button-title')}"
+                            ?disabled="${this.signingProcessEnabled}"
+                            title="${i18n.t('official-pdf-upload.remove-queued-file-button-title')}"
                             @click="${() => { this.takeFileFromQueue(id); }}">
-                            <vpu-icon name="trash"></vpu-icon></button>
+                            <dbp-icon name="trash"></dbp-icon></button>
                     </div>
                     <div class="bottom-line">
                         <div></div>
                         <button class="button"
-                            ?disabled="${this.verificationProcessEnabled}"
-                            @click="${() => { this.showPreview(id); }}">${i18n.t('signature-verification.show-preview')}</button>
+                            ?disabled="${this.signingProcessEnabled}"
+                            @click="${() => { this.showPreview(id); }}">${i18n.t('official-pdf-upload.show-preview')}</button>
+                        <span class="headline">${i18n.t('official-pdf-upload.positioning')}:</span>
+                        <dbp-textswitch name1="auto"
+                            name2="manual"
+                            name="${this.queuedFilesPlacementModes[id] || "auto"}"
+                            class="switch"
+                            value1="${i18n.t('official-pdf-upload.positioning-automatic')}"
+                            value2="${i18n.t('official-pdf-upload.positioning-manual')}"
+                            ?disabled="${this.signingProcessEnabled}"
+                            @change=${ (e) => this.queuePlacementSwitch(id, e.target.name) }></dbp-textswitch>
                     </div>
                 </div>
             `);
@@ -573,48 +631,21 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
      *
      * @returns {*[]} Array of html templates
      */
-    getVerifiedFilesHtml() {
-        const ids = Object.keys(this.verifiedFiles);
+    getSignedFilesHtml() {
+        const ids = Object.keys(this.signedFiles);
         let results = [];
 
         ids.forEach((id) => {
-            const report = this.verifiedFiles[id];
-            console.log("report", report);
-            let signatures = [];
-
-            report.signatures.forEach((signature) => {
-                console.log("signature", signature);
-
-                signatures.push(html`
-                    <tr>
-                        <td>${signature.givenName}</td>
-                        <td>${signature.familyName}</td>
-                        <td>${signature.nationality}</td>
-                        <td>${signature.serialNumber}</td>
-                        <td class="${classMap({"verification-ok": signature.valueMessage === "OK"})}">${signature.valueMessage}</td>
-                    </tr>
-                `);
-            });
+            const file = this.signedFiles[id];
 
             results.push(html`
                 <div class="file-block">
                     <div class="header">
-                        <span class="filename"><strong>${report.name}</strong></span>
-                    </div>
-                    <table class="signatures ${classMap({hidden: signatures.length === 0})}">
-                        <thead>
-                            <th>${i18n.t('signature-verification.given-name')}</th>
-                            <th>${i18n.t('signature-verification.last-name')}</th>
-                            <th>${i18n.t('signature-verification.nationality')}</th>
-                            <th>${i18n.t('signature-verification.serial-number')}</th>
-                            <th>${i18n.t('signature-verification.value-message')}</th>
-                        </thead>
-                        <tbody>
-                            ${signatures}
-                        </tbody>
-                    </table>
-                    <div class="${classMap({hidden: signatures.length !== 0})}">
-                        ${i18n.t('signature-verification.no-signatures-found')}
+                        <span class="filename"><strong>${file.name}</strong> (${humanFileSize(file.contentSize)})</span>
+                        <button class="button close"
+                            title="${i18n.t('official-pdf-upload.download-file-button-title')}"
+                            @click="${() => { this.fileDownloadClickHandler(file); }}">
+                            <dbp-icon name="download"></dbp-icon></button>
                     </div>
                 </div>
             `);
@@ -641,12 +672,12 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
                         <span class="filename"><strong>${data.file.name}</strong> (${humanFileSize(data.file.size)})</span>
                         <div class="buttons">
                             <button class="button"
-                                    title="${i18n.t('signature-verification.re-upload-file-button-title')}"
-                                    @click="${() => {this.fileQueueingClickHandler(data.file, id);}}"><vpu-icon name="reload"></vpu-icon></button>
+                                    title="${i18n.t('official-pdf-upload.re-upload-file-button-title')}"
+                                    @click="${() => {this.fileQueueingClickHandler(data.file, id);}}"><dbp-icon name="reload"></dbp-icon></button>
                             <button class="button"
-                                title="${i18n.t('signature-verification.remove-failed-file-button-title')}"
+                                title="${i18n.t('official-pdf-upload.remove-failed-file-button-title')}"
                                 @click="${() => { this.takeFailedFileFromQueue(id); }}">
-                                <vpu-icon name="trash"></vpu-icon></button>
+                                <dbp-icon name="trash"></dbp-icon></button>
                         </div>
                     </div>
                     <div class="bottom-line">
@@ -664,12 +695,12 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
     }
 
     render() {
-        const placeholderUrl = commonUtils.getAssetURL('local/vpu-signature/official-signature-placeholder.png');
+        const placeholderUrl = commonUtils.getAssetURL('local/dbp-signature/official-signature-placeholder.png');
 
         return html`
             <div class="${classMap({hidden: !this.isLoggedIn() || !this.hasSignaturePermissions() || this.isLoading()})}">
                 <div class="field">
-                    <h2>${i18n.t('signature-verification.upload-field-label')}</h2>
+                    <h2>${i18n.t('official-pdf-upload.upload-field-label')}</h2>
                     <div class="control">
                         <p>
                             ${i18n.t('qualified-pdf-upload.upload-text')}
@@ -679,7 +710,7 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
                                 class="button is-primary">
                             ${i18n.t('qualified-pdf-upload.upload-button-label')}
                         </button>
-                        <vpu-file-source
+                        <dbp-file-source
                             id="file-source"
                             allowed-mime-types="application/pdf"
                             enabled-sources="local${this.showTestNextcloudFilePicker ? ",nextcloud" : ""}"
@@ -687,11 +718,11 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
                             nextcloud-web-dav-url="${nextcloudWebDavURL}"
                             decompress-zip
                             lang="${this.lang}"
-                            ?disabled="${this.verificationProcessActive}"
-                            text="${i18n.t('signature-verification.upload-area-text')}"
-                            button-label="${i18n.t('signature-verification.upload-button-label')}"
-                            @vpu-file-source-file-selected="${this.onFileSelected}"
-                            ></vpu-file-source>
+                            ?disabled="${this.signingProcessActive}"
+                            text="${i18n.t('official-pdf-upload.upload-area-text')}"
+                            button-label="${i18n.t('official-pdf-upload.upload-button-label')}"
+                            @dbp-file-source-file-selected="${this.onFileSelected}"
+                            ></dbp-file-source>
                     </div>
                 </div>
                 <div id="grid-container">
@@ -699,30 +730,30 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
                         <div class="files-block field ${classMap({hidden: !this.queueBlockEnabled})}">
                             <!-- Queued files headline and queueing spinner -->
                             <h2 class="${classMap({"is-disabled": this.isUserInterfaceDisabled()})}">
-                                ${i18n.t('signature-verification.queued-files-label')}
+                                ${i18n.t('official-pdf-upload.queued-files-label')}
                             </h2>
-                            <!-- Buttons to start/stop verification process and clear queue -->
+                            <!-- Buttons to start/stop signing process and clear queue -->
                             <div class="control field">
                                 <button @click="${this.clearQueuedFiles}"
-                                        ?disabled="${this.queuedFilesCount === 0 || this.verificationProcessActive || this.isUserInterfaceDisabled()}"
+                                        ?disabled="${this.queuedFilesCount === 0 || this.signingProcessActive || this.isUserInterfaceDisabled()}"
                                         class="button ${classMap({"is-disabled": this.isUserInterfaceDisabled()})}">
-                                    ${i18n.t('signature-verification.clear-all')}
+                                    ${i18n.t('official-pdf-upload.clear-all')}
                                 </button>
-                                <button @click="${() => { this.verificationProcessEnabled = true; this.verificationProcessActive = true; }}"
+                                <button @click="${() => { this.signingProcessEnabled = true; this.signingProcessActive = true; }}"
                                         ?disabled="${this.queuedFilesCount === 0}"
                                         class="button is-right is-primary ${classMap(
                                             {
                                                 "is-disabled": this.isUserInterfaceDisabled(),
-                                                hidden: this.verificationProcessActive
+                                                hidden: this.signingProcessActive
                                             })}">
-                                    ${i18n.t('signature-verification.start-verification-process-button')}
+                                    ${i18n.t('official-pdf-upload.start-signing-process-button')}
                                 </button>
                                 <!-- -->
-                                <button @click="${this.stopVerificationProcess}"
+                                <button @click="${this.stopSigningProcess}"
                                         ?disabled="${this.uploadInProgress}"
-                                        id="cancel-verification-process"
-                                        class="button is-right ${classMap({hidden: !this.verificationProcessActive})}">
-                                    ${i18n.t('signature-verification.stop-verification-process-button')}
+                                        id="cancel-signing-process"
+                                        class="button is-right ${classMap({hidden: !this.signingProcessActive})}">
+                                    ${i18n.t('official-pdf-upload.stop-signing-process-button')}
                                 </button>
                                 <!-- -->
                             </div>
@@ -732,27 +763,49 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
                             </div>
                             <!-- Text "queue empty" -->
                             <div class="empty-queue control ${classMap({hidden: this.queuedFilesCount !== 0, "is-disabled": this.isUserInterfaceDisabled()})}">
-                                ${i18n.t('signature-verification.queued-files-empty1')}<br />
-                                ${i18n.t('signature-verification.queued-files-empty2')}
+                                ${i18n.t('official-pdf-upload.queued-files-empty1')}<br />
+                                ${i18n.t('official-pdf-upload.queued-files-empty2')}
+                            </div>
+                        </div>
+                        <!-- List of signed PDFs -->
+                        <div class="files-block field ${classMap({hidden: this.signedFilesCount === 0, "is-disabled": this.isUserInterfaceDisabled()})}">
+                            <h2>${i18n.t('official-pdf-upload.signed-files-label')}</h2>
+                            <!-- Button to download all signed PDFs -->
+                            <div class="field ${classMap({hidden: this.signedFilesCount === 0})}">
+                                <div class="control">
+                                    <button @click="${this.clearSignedFiles}"
+                                            class="button">
+                                        ${i18n.t('official-pdf-upload.clear-all')}
+                                    </button>
+                                    <dbp-button id="zip-download-button"
+                                                value="${i18n.t('official-pdf-upload.download-zip-button')}"
+                                                title="${i18n.t('official-pdf-upload.download-zip-button-tooltip')}"
+                                                class="is-right"
+                                                @click="${this.zipDownloadClickHandler}"
+                                                type="is-primary"></dbp-button>
+                                </div>
+                            </div>
+                            <div class="control">
+                                ${this.getSignedFilesHtml()}
                             </div>
                         </div>
                         <!-- List of errored files -->
                         <div class="files-block error-files field ${classMap({hidden: this.errorFilesCount === 0, "is-disabled": this.isUserInterfaceDisabled()})}">
-                            <h2>${i18n.t('signature-verification.error-files-label')}</h2>
+                            <h2>${i18n.t('official-pdf-upload.error-files-label')}</h2>
                             <!-- Button to upload errored files again -->
                             <div class="field ${classMap({hidden: this.errorFilesCount === 0})}">
                                 <div class="control">
                                     <button @click="${this.clearErrorFiles}"
                                             class="button">
-                                        ${i18n.t('signature-verification.clear-all')}
+                                        ${i18n.t('official-pdf-upload.clear-all')}
                                     </button>
-                                    <vpu-button id="re-upload-all-button"
+                                    <dbp-button id="re-upload-all-button"
                                                 ?disabled="${this.uploadInProgress}"
-                                                value="${i18n.t('signature-verification.re-upload-all-button')}"
-                                                title="${i18n.t('signature-verification.re-upload-all-button-title')}"
+                                                value="${i18n.t('official-pdf-upload.re-upload-all-button')}"
+                                                title="${i18n.t('official-pdf-upload.re-upload-all-button-title')}"
                                                 class="is-right"
                                                 @click="${this.reUploadAllClickHandler}"
-                                                type="is-primary"></vpu-button>
+                                                type="is-primary"></dbp-button>
                                 </div>
                             </div>
                             <div class="control">
@@ -762,43 +815,28 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
                     </div>
                     <div class="right-container">
                         <!-- PDF preview -->
-                        <div id="pdf-preview" class="field ${classMap({hidden: !this.previewInProgress})}">
-                            <h2>${i18n.t('signature-verification.preview-label')}</h2>
+                        <div id="pdf-preview" class="field ${classMap({hidden: !this.signaturePlacementInProgress})}">
+                            <h2>${this.withSigBlock ? i18n.t('official-pdf-upload.signature-placement-label') : i18n.t('official-pdf-upload.preview-label')}</h2>
                             <div class="box-header">
                                 <div class="filename">
                                     <strong>${this.currentFile.name}</strong> (${humanFileSize(this.currentFile !== undefined ? this.currentFile.size : 0)})
                                 </div>
                                 <button class="button is-cancel"
-                                    @click="${this.hidePDF}"><vpu-icon name="close"></vpu-icon></button>
+                                    @click="${this.hidePDF}"><dbp-icon name="close"></dbp-icon></button>
                             </div>
-                            <vpu-pdf-preview lang="${this.lang}"
+                            <dbp-pdf-preview lang="${this.lang}"
                                              signature-placeholder-image-src="${placeholderUrl}"
-                                             signature-width="146"
-                                             signature-height="42"
-                                             @vpu-pdf-preview-cancel="${this.hidePDF}"></vpu-pdf-preview>
+                                             signature-width="145"
+                                             signature-height="45"
+                                             @dbp-pdf-preview-accept="${this.storePDFData}"
+                                             @dbp-pdf-preview-cancel="${this.hidePDF}"></dbp-pdf-preview>
                         </div>
                         <!-- File upload progress -->
                         <div id="upload-progress" class="field notification is-info ${classMap({hidden: !this.uploadInProgress})}">
-                            <vpu-mini-spinner></vpu-mini-spinner>
+                            <dbp-mini-spinner></dbp-mini-spinner>
                             <strong>${this.uploadStatusFileName}</strong>
                             ${this.uploadStatusText}
                         </div>
-                    </div>
-                </div>
-                <!-- List of verified PDFs -->
-                <div class="verified-files files-block field ${classMap({hidden: this.verifiedFilesCount === 0, "is-disabled": this.isUserInterfaceDisabled()})}">
-                    <h2>${i18n.t('signature-verification.verified-files-label')}</h2>
-                    <!-- Button to clear verified PDFs -->
-                    <div class="field ${classMap({hidden: this.verifiedFilesCount === 0})}">
-                        <div class="control">
-                            <button @click="${this.clearVerifiedFiles}"
-                                    class="button">
-                                ${i18n.t('signature-verification.clear-all')}
-                            </button>
-                        </div>
-                    </div>
-                    <div class="control">
-                        ${this.getVerifiedFilesHtml()}
                     </div>
                 </div>
             </div>
@@ -809,10 +847,17 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
                 ${i18n.t('error-permission-message')}
             </div>
             <div class="${classMap({hidden: !this.isLoading()})}">
-                <vpu-mini-spinner></vpu-mini-spinner>
+                <dbp-mini-spinner></dbp-mini-spinner>
             </div>
+            <dbp-file-sink id="file-sink"
+                filename="signed-documents.zip"
+                enabled-destinations="local${this.showTestNextcloudFilePicker ? ",nextcloud" : ""}"
+                nextcloud-auth-url="${nextcloudWebAppPasswordURL}"
+                nextcloud-web-dav-url="${nextcloudWebDavURL}"
+                lang="${this.lang}"
+                ></dbp-file-sink>
         `;
     }
 }
 
-commonUtils.defineCustomElement('vpu-signature-verification', SignatureVerification);
+commonUtils.defineCustomElement('dbp-official-signature-pdf-upload', OfficialSignaturePdfUpload);

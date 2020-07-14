@@ -1,6 +1,6 @@
 {
-  "element": "vpu-signature-verification",
-  "module_src": "vpu-signature-verification.js",
+  "element": "dbp-signature-verification",
+  "module_src": "dbp-signature-verification.js",
   "routing_name": "signature-verification",
   "name": {
     "de": "Signierte Dokumente verifizieren",

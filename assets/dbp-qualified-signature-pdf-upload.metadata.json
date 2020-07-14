@@ -1,6 +1,6 @@
 {
-  "element": "vpu-qualified-signature-pdf-upload",
-  "module_src": "vpu-qualified-signature-pdf-upload.js",
+  "element": "dbp-qualified-signature-pdf-upload",
+  "module_src": "dbp-qualified-signature-pdf-upload.js",
   "routing_name": "qualified-pdf-upload",
   "name": {
     "de": "Dokument persönlich signieren",

@@ -1,25 +1,25 @@
 import {createI18nInstance} from './i18n.js';
-import {humanFileSize} from 'vpu-common/i18next.js';
+import {humanFileSize} from 'dbp-common/i18next.js';
 import {css, html} from 'lit-element';
 import {ScopedElementsMixin} from '@open-wc/scoped-elements';
-import VPUSignatureLitElement from "./vpu-signature-lit-element";
-import {PdfPreview} from "./vpu-pdf-preview";
-import * as commonUtils from 'vpu-common/utils';
+import DBPSignatureLitElement from "./dbp-signature-lit-element";
+import {PdfPreview} from "./dbp-pdf-preview";
+import * as commonUtils from 'dbp-common/utils';
 import * as utils from './utils';
-import {Button, Icon, MiniSpinner} from 'vpu-common';
-import * as commonStyles from 'vpu-common/styles';
+import {Button, Icon, MiniSpinner} from 'dbp-common';
+import * as commonStyles from 'dbp-common/styles';
 import {classMap} from 'lit-html/directives/class-map.js';
-import {FileSource} from 'vpu-file-handling';
-import JSONLD from "vpu-common/jsonld";
+import {FileSource} from 'dbp-file-handling';
+import JSONLD from "dbp-common/jsonld";
 import {TextSwitch} from './textswitch.js';
 import nextcloudWebAppPasswordURL from 'consts:nextcloudWebAppPasswordURL';
 import nextcloudWebDavURL from 'consts:nextcloudWebDavURL';
-import {FileSink} from "vpu-file-handling";
+import {FileSink} from "dbp-file-handling";
 import FileSaver from 'file-saver';
 
 const i18n = createI18nInstance();
 
-class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitElement) {
+class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElement) {
     constructor() {
         super();
         this.lang = i18n.language;
@@ -49,13 +49,13 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
 
     static get scopedElements() {
         return {
-          'vpu-icon': Icon,
-          'vpu-file-source': FileSource,
-          'vpu-file-sink': FileSink,
-          'vpu-pdf-preview': PdfPreview,
-          'vpu-mini-spinner': MiniSpinner,
-          'vpu-button': Button,
-          'vpu-textswitch': TextSwitch,
+          'dbp-icon': Icon,
+          'dbp-file-source': FileSource,
+          'dbp-file-sink': FileSink,
+          'dbp-pdf-preview': PdfPreview,
+          'dbp-mini-spinner': MiniSpinner,
+          'dbp-button': Button,
+          'dbp-textswitch': TextSwitch,
         };
     }
 
@@ -281,7 +281,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
             fetch(apiUrl, {
                 headers: {
                     'Content-Type': 'application/ld+json',
-                    'Authorization': 'Bearer ' + window.VPUAuthToken,
+                    'Authorization': 'Bearer ' + window.DBPAuthToken,
                 },
             })
                 .then(result => {
@@ -452,7 +452,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
         this.signaturePlacementInProgress = true;
         this.withSigBlock = withSigBlock;
 
-        const previewTag = this.constructor.getScopedTagName("vpu-pdf-preview");
+        const previewTag = this.constructor.getScopedTagName("dbp-pdf-preview");
         await this._(previewTag).showPDF(
             file,
             withSigBlock, //this.queuedFilesPlacementModes[key] === "manual",
@@ -562,7 +562,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                 font-weight: 600;
             }
 
-            .notification vpu-mini-spinner {
+            .notification dbp-mini-spinner {
                 position: relative;
                 top: 2px;
                 margin-right: 5px;
@@ -576,7 +576,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                 color: white;
             }
 
-            /* using vpu-icon doesn't work */
+            /* using dbp-icon doesn't work */
             button > [name=close], a > [name=close] {
                 font-size: 0.8em;
             }
@@ -753,7 +753,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                             ?disabled="${this.signingProcessEnabled}"
                             title="${i18n.t('qualified-pdf-upload.remove-queued-file-button-title')}"
                             @click="${() => { this.takeFileFromQueue(id); }}">
-                            <vpu-icon name="trash"></vpu-icon></button>
+                            <dbp-icon name="trash"></dbp-icon></button>
                     </div>
                     <div class="bottom-line">
                         <div></div>
@@ -761,14 +761,14 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                             ?disabled="${this.signingProcessEnabled}"
                             @click="${() => { this.showPreview(id); }}">${i18n.t('qualified-pdf-upload.show-preview')}</button>
                         <span class="headline">${i18n.t('qualified-pdf-upload.positioning')}:</span>
-                        <vpu-textswitch name1="auto"
+                        <dbp-textswitch name1="auto"
                             name2="manual"
                             name="${this.queuedFilesPlacementModes[id] || "auto"}"
                             class="switch"
                             value1="${i18n.t('qualified-pdf-upload.positioning-automatic')}"
                             value2="${i18n.t('qualified-pdf-upload.positioning-manual')}"
                             ?disabled="${this.signingProcessEnabled}"
-                            @change=${ (e) => this.queuePlacementSwitch(id, e.target.name) }></vpu-textswitch>
+                            @change=${ (e) => this.queuePlacementSwitch(id, e.target.name) }></dbp-textswitch>
                     </div>
                 </div>
             `);
@@ -796,7 +796,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                         <button class="button close"
                             title="${i18n.t('qualified-pdf-upload.download-file-button-title')}"
                             @click="${() => { this.fileDownloadClickHandler(file); }}">
-                            <vpu-icon name="download"></vpu-icon></button>
+                            <dbp-icon name="download"></dbp-icon></button>
                     </div>
                 </div>
             `);
@@ -824,11 +824,11 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                         <div class="buttons">
                             <button class="button"
                                     title="${i18n.t('qualified-pdf-upload.re-upload-file-button-title')}"
-                                    @click="${() => {this.fileQueueingClickHandler(data.file, id);}}"><vpu-icon name="reload"></vpu-icon></button>
+                                    @click="${() => {this.fileQueueingClickHandler(data.file, id);}}"><dbp-icon name="reload"></dbp-icon></button>
                             <button class="button"
                                 title="${i18n.t('qualified-pdf-upload.remove-failed-file-button-title')}"
                                 @click="${() => { this.takeFailedFileFromQueue(id); }}">
-                                <vpu-icon name="trash"></vpu-icon></button>
+                                <dbp-icon name="trash"></dbp-icon></button>
                         </div>
                     </div>
                     <div class="bottom-line">
@@ -865,7 +865,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
     }
 
     render() {
-        const placeholderUrl = commonUtils.getAssetURL('local/vpu-signature/qualified-signature-placeholder.png');
+        const placeholderUrl = commonUtils.getAssetURL('local/dbp-signature/qualified-signature-placeholder.png');
 
         return html`
             <div class="${classMap({hidden: !this.isLoggedIn() || !this.hasSignaturePermissions() || this.isLoading()})}">
@@ -881,7 +881,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                             ${i18n.t('qualified-pdf-upload.upload-button-label')}
                         </button>
 
-                        <vpu-file-source
+                        <dbp-file-source
                             id="file-source"
                             allowed-mime-types="application/pdf"
                             enabled-sources="local${this.showTestNextcloudFilePicker ? ",nextcloud" : ""}"
@@ -892,8 +892,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                             ?disabled="${this.signingProcessActive}"
                             text="${i18n.t('qualified-pdf-upload.upload-area-text')}"
                             button-label="${i18n.t('qualified-pdf-upload.upload-button-label')}"
-                            @vpu-file-source-file-selected="${this.onFileSelected}"
-                            ></vpu-file-source>
+                            @dbp-file-source-file-selected="${this.onFileSelected}"
+                            ></dbp-file-source>
                     </div>
                 </div>
                 <div id="grid-container">
@@ -944,12 +944,12 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                                             class="button">
                                         ${i18n.t('qualified-pdf-upload.clear-all')}
                                     </button>
-                                    <vpu-button id="zip-download-button"
+                                    <dbp-button id="zip-download-button"
                                                 value="${i18n.t('qualified-pdf-upload.download-zip-button')}"
                                                 title="${i18n.t('qualified-pdf-upload.download-zip-button-tooltip')}"
                                                 class="is-right"
                                                 @click="${this.zipDownloadClickHandler}"
-                                                type="is-primary"></vpu-button>
+                                                type="is-primary"></dbp-button>
                                 </div>
                             </div>
                             <div class="control">
@@ -966,13 +966,13 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                                             class="button">
                                         ${i18n.t('qualified-pdf-upload.clear-all')}
                                     </button>
-                                    <vpu-button id="re-upload-all-button"
+                                    <dbp-button id="re-upload-all-button"
                                                 ?disabled="${this.uploadInProgress}"
                                                 value="${i18n.t('qualified-pdf-upload.re-upload-all-button')}"
                                                 title="${i18n.t('qualified-pdf-upload.re-upload-all-button-title')}"
                                                 class="is-right"
                                                 @click="${this.reUploadAllClickHandler}"
-                                                type="is-primary"></vpu-button>
+                                                type="is-primary"></dbp-button>
                                 </div>
                             </div>
                             <div class="control">
@@ -989,18 +989,18 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                                     <strong>${this.currentFile.name}</strong> (${humanFileSize(this.currentFile !== undefined ? this.currentFile.size : 0)})
                                 </div>
                                 <button class="button is-cancel"
-                                    @click="${this.hidePDF}"><vpu-icon name="close"></vpu-icon></button>
+                                    @click="${this.hidePDF}"><dbp-icon name="close"></dbp-icon></button>
                             </div>
-                            <vpu-pdf-preview lang="${this.lang}"
+                            <dbp-pdf-preview lang="${this.lang}"
                                              signature-placeholder-image-src="${placeholderUrl}"
                                              signature-width="80"
                                              signature-height="29"
-                                             @vpu-pdf-preview-accept="${this.storePDFData}"
-                                             @vpu-pdf-preview-cancel="${this.hidePDF}"></vpu-pdf-preview>
+                                             @dbp-pdf-preview-accept="${this.storePDFData}"
+                                             @dbp-pdf-preview-cancel="${this.hidePDF}"></dbp-pdf-preview>
                         </div>
                         <!-- File upload progress -->
                         <div id="upload-progress" class="field notification is-info ${classMap({hidden: !this.uploadInProgress})}">
-                            <vpu-mini-spinner></vpu-mini-spinner>
+                            <dbp-mini-spinner></dbp-mini-spinner>
                             <strong>${this.uploadStatusFileName}</strong>
                             ${this.uploadStatusText}
                         </div>
@@ -1014,7 +1014,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                                     </div>
                                     <button class="button is-cancel"
                                             title="${i18n.t('qualified-pdf-upload.stop-signing-process-button')}"
-                                            @click="${this.stopSigningProcess}"><vpu-icon name="close"></vpu-icon></button>
+                                            @click="${this.stopSigningProcess}"><dbp-icon name="close"></dbp-icon></button>
                                 </div>
                                 <!-- "scrolling" is deprecated, but still seem to help -->
                                 <iframe id="iframe" scrolling="no"></iframe>
@@ -1030,17 +1030,17 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(VPUSignatureLitEle
                 ${i18n.t('error-permission-message')}
             </div>
             <div class="${classMap({hidden: !this.isLoading()})}">
-                <vpu-mini-spinner></vpu-mini-spinner>
+                <dbp-mini-spinner></dbp-mini-spinner>
             </div>
-            <vpu-file-sink id="file-sink"
+            <dbp-file-sink id="file-sink"
                 filename="signed-documents.zip"
                 enabled-destinations="local${this.showTestNextcloudFilePicker ? ",nextcloud" : ""}"
                 nextcloud-auth-url="${nextcloudWebAppPasswordURL}"
                 nextcloud-web-dav-url="${nextcloudWebDavURL}"
                 lang="${this.lang}"
-                ></vpu-file-sink>
+                ></dbp-file-sink>
         `;
     }
 }
 
-commonUtils.defineCustomElement('vpu-qualified-signature-pdf-upload', QualifiedSignaturePdfUpload);
+commonUtils.defineCustomElement('dbp-qualified-signature-pdf-upload', QualifiedSignaturePdfUpload);

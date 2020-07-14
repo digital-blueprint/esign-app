@@ -1,12 +1,12 @@
 # Digital Signing Application
 
-[GitLab Repository](https://gitlab.tugraz.at/VPU/Apps/Signature)
+[GitLab Repository](https://gitlab.tugraz.at/dbp/apps/Signature)
 
 ## Local development
 
 ```bash
 # get the source
-git clone git@gitlab.tugraz.at:VPU/Apps/Signature.git
+git clone git@gitlab.tugraz.at:dbp/apps/Signature.git
 cd Signature
 git submodule update --init
 
@@ -26,8 +26,8 @@ npm test
 Jump to <http://localhost:8001> and you should get a Single Sign On login page.
 
 To use the Nextcloud functionality you need a running Nextcloud server with the
-[webapppassword](https://gitlab.tugraz.at/VPU/Middleware/Nextcloud/webapppassword) Nextcloud app like this
-[Nextcloud Development Environment](https://gitlab.tugraz.at/VPU/Middleware/Nextcloud/webapppassword/-/tree/master/docker). 
+[webapppassword](https://gitlab.tugraz.at/DBP/Middleware/Nextcloud/webapppassword) Nextcloud app like this
+[Nextcloud Development Environment](https://gitlab.tugraz.at/DBP/Middleware/Nextcloud/webapppassword/-/tree/master/docker). 
 
 ## Browser versions
 

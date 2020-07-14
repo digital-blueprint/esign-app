@@ -1,7 +1,7 @@
 {
-  "name": "vpu-signature",
+  "name": "dbp-signature",
   "version": "1.0.0",
-  "main": "src/vpu-signature.js",
+  "main": "src/dbp-signature.js",
   "license": "LGPL-2.1-or-later",
   "devDependencies": {
     "@babel/core": "^7.10.3",
@@ -52,13 +52,13 @@
     "source-sans-pro": "^2.45.0",
     "tabulator-tables": "^4.7.0",
     "universal-router": "^9.0.1",
-    "vpu-app-shell": "file:./vendor/toolkit/packages/app-shell",
-    "vpu-auth": "file:./vendor/toolkit/packages/auth",
-    "vpu-common": "file:./vendor/toolkit/packages/common",
-    "vpu-file-handling": "file:./vendor/toolkit/packages/file-handling",
-    "vpu-language-select": "file:./vendor/toolkit/packages/language-select",
-    "vpu-notification": "file:./vendor/toolkit/packages/notification",
-    "vpu-person-profile": "file:./vendor/toolkit/packages/person-profile",
+    "dbp-app-shell": "file:./vendor/toolkit/packages/app-shell",
+    "dbp-auth": "file:./vendor/toolkit/packages/auth",
+    "dbp-common": "file:./vendor/toolkit/packages/common",
+    "dbp-file-handling": "file:./vendor/toolkit/packages/file-handling",
+    "dbp-language-select": "file:./vendor/toolkit/packages/language-select",
+    "dbp-notification": "file:./vendor/toolkit/packages/notification",
+    "dbp-person-profile": "file:./vendor/toolkit/packages/person-profile",
     "webdav": "^3.3.0"
   },
   "scripts": {

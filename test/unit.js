@@ -1,13 +1,13 @@
 import {assert} from 'chai';
 
-import '../src/vpu-official-signature-pdf-upload';
-import '../src/vpu-signature.js';
+import '../src/dbp-official-signature-pdf-upload';
+import '../src/dbp-signature.js';
 
-suite('vpu-official-signature-pdf-upload basics', () => {
+suite('dbp-official-signature-pdf-upload basics', () => {
   let node;
 
   suiteSetup(async () => {
-    node = document.createElement('vpu-official-signature-pdf-upload');
+    node = document.createElement('dbp-official-signature-pdf-upload');
     document.body.appendChild(node);
     await node.updateComplete;
   });
@@ -21,11 +21,11 @@ suite('vpu-official-signature-pdf-upload basics', () => {
   });
 });
 
-suite('vpu-signature-app basics', () => {
+suite('dbp-signature-app basics', () => {
   let node;
 
   suiteSetup(async () => {
-    node = document.createElement('vpu-app');
+    node = document.createElement('dbp-app');
     document.body.appendChild(node);
     await node.updateComplete;
   });

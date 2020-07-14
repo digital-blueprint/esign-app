@@ -1,5 +1,5 @@
 import {html, LitElement, css} from 'lit-element';
-import * as commonStyles from 'vpu-common/styles';
+import * as commonStyles from 'dbp-common/styles';
 
 const BUTTON1 = "button1";
 const BUTTON2 = "button2";
@@ -58,7 +58,7 @@ export class TextSwitch extends LitElement {
 
             .active {
                 background-color: black !important;
-                color: var(--vpu-primary-text-color) !important;
+                color: var(--dbp-primary-text-color) !important;
             }
 
             .button {
@@ -66,7 +66,7 @@ export class TextSwitch extends LitElement {
             }
 
             .button:hover {
-                background-color: var(--vpu-secondary-bg-color) !important;
+                background-color: var(--dbp-secondary-bg-color) !important;
             }
         `;
     }
