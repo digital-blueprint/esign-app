@@ -682,7 +682,8 @@ class SignatureVerification extends ScopedElementsMixin(VPUSignatureLitElement) 
                         <vpu-file-source
                             id="file-source"
                             allowed-mime-types="application/pdf"
-                            nextcloud-auth-url="${this.showTestNextcloudFilePicker ? nextcloudWebAppPasswordURL : ""}"
+                            enabled-sources="local${this.showTestNextcloudFilePicker ? ",nextcloud" : ""}"
+                            nextcloud-auth-url="${nextcloudWebAppPasswordURL}"
                             nextcloud-web-dav-url="${nextcloudWebDavURL}"
                             decompress-zip
                             lang="${this.lang}"
