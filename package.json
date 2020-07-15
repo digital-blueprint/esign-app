@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "main": "src/dbp-signature.js",
   "license": "LGPL-2.1-or-later",
+  "private": true,
+  "workspaces": [
+    "vendor/toolkit/packages/*"
+  ],
   "devDependencies": {
     "@babel/core": "^7.10.3",
     "@babel/plugin-syntax-dynamic-import": "^7.8.3",
@@ -52,13 +56,13 @@
     "source-sans-pro": "^2.45.0",
     "tabulator-tables": "^4.7.0",
     "universal-router": "^9.0.1",
-    "dbp-app-shell": "file:./vendor/toolkit/packages/app-shell",
-    "dbp-auth": "file:./vendor/toolkit/packages/auth",
-    "dbp-common": "file:./vendor/toolkit/packages/common",
-    "dbp-file-handling": "file:./vendor/toolkit/packages/file-handling",
-    "dbp-language-select": "file:./vendor/toolkit/packages/language-select",
-    "dbp-notification": "file:./vendor/toolkit/packages/notification",
-    "dbp-person-profile": "file:./vendor/toolkit/packages/person-profile",
+    "dbp-app-shell": "^1.0.0",
+    "dbp-auth": "^1.0.0",
+    "dbp-common": "^1.0.0",
+    "dbp-file-handling": "^1.0.0",
+    "dbp-language-select": "^1.0.0",
+    "dbp-notification": "^1.0.0",
+    "dbp-person-profile": "^1.0.0",
     "webdav": "^3.3.0"
   },
   "scripts": {
