@@ -14,6 +14,7 @@ import JSONLD from "dbp-common/jsonld";
 import {TextSwitch} from './textswitch.js';
 import nextcloudWebAppPasswordURL from 'consts:nextcloudWebAppPasswordURL';
 import nextcloudWebDavURL from 'consts:nextcloudWebDavURL';
+import nextcloudName from 'consts:nextcloudName';
 import {FileSink} from "dbp-file-handling";
 import FileSaver from 'file-saver';
 
@@ -716,6 +717,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                             enabled-sources="local${this.showTestNextcloudFilePicker ? ",nextcloud" : ""}"
                             nextcloud-auth-url="${nextcloudWebAppPasswordURL}"
                             nextcloud-web-dav-url="${nextcloudWebDavURL}"
+                            nextcloud-name="${nextcloudName}"
                             decompress-zip
                             lang="${this.lang}"
                             ?disabled="${this.signingProcessActive}"
