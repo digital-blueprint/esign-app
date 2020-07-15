@@ -222,17 +222,17 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         let errorParsed = error;
         // Common Error Messages fpr pdf-as: https://www.buergerkarte.at/konzept/securitylayer/spezifikation/20140114/errorcodes/errorcodes.html
         // SecurityLayer Error: [6000] Unklassifizierter Abbruch durch den Bürger.
-        if(error.includes('SecurityLayer Error: [6001]'))
+        if (error.includes('SecurityLayer Error: [6001]'))
         {
             errorParsed = i18n.t('error-cancel-message');
         }
         // SecurityLayer Error: [6001] Abbruch durch den Bürger über die Benutzerschnittstelle.
-        else if(error.includes('SecurityLayer Error: [6000]'))
+        else if (error.includes('SecurityLayer Error: [6000]'))
         {
             errorParsed = i18n.t('error-cancel-message');
         }
         // SecurityLayer Error: [6002] Abbruch auf Grund mangelnder Rechte zur Befehlsausführung.
-        else if(error.includes('SecurityLayer Error: [6002]'))
+        else if (error.includes('SecurityLayer Error: [6002]'))
         {
             errorParsed = i18n.t('error-rights-message');
         }
