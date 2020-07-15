@@ -699,6 +699,12 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                 text-overflow: ellipsis;
                 margin-right: 0.5em;
             }
+            
+            .field{
+                margin-bottom: 2rem;
+                border-bottom: 1px solid black;
+                padding-bottom: 2rem;
+            }
 
             /* Handling for small displays (like mobile devices) */
             @media (max-width: 680px) {
@@ -884,6 +890,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
 
                         <dbp-file-source
                             id="file-source"
+                            context="${i18n.t('qualified-pdf-upload.upload-field-label')}"
                             allowed-mime-types="application/pdf"
                             enabled-sources="local${this.showTestNextcloudFilePicker ? ",nextcloud" : ""}"
                             nextcloud-auth-url="${nextcloudWebAppPasswordURL}"

@@ -498,6 +498,12 @@ class SignatureVerification extends ScopedElementsMixin(DBPSignatureLitElement) 
             .verification-ok {
                 background-color: #a4ffa4;
             }
+            
+            .field{
+                margin-bottom: 2rem;
+                border-bottom: 1px solid black;
+                padding-bottom: 2rem;
+            }
 
             /* Handling for small displays (like mobile devices) */
             @media (max-width: 680px) {
