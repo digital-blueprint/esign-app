@@ -35,6 +35,8 @@ linting:
     # Deploy
     - dep deploy "${CI_ENVIRONMENT_NAME}"
     - echo "Deployed to ${CI_ENVIRONMENT_URL}"
+    # Simple health check
+    - curl --max-time 10 --retry 3 --output /dev/null --silent --show-error --fail --location "${CI_ENVIRONMENT_URL}"
 
 deploy_demo:
   only:
@@ -42,7 +44,7 @@ deploy_demo:
       - demo
   environment:
     name: demo
-    url: https://frontend-demo.tugraz.at
+    url: https://frontend-demo.tugraz.at/apps/signature
   variables:
     DEPLOY_HOST: mw01-dev.tugraz.at
     DEPLOY_KEY: "$DEPLOY_SSH_KEY"
@@ -54,7 +56,7 @@ deploy_development:
       - master
   environment:
     name: development
-    url: https://mw-frontend-dev.tugraz.at
+    url: https://mw-frontend-dev.tugraz.at/apps/signature
   variables:
     DEPLOY_HOST: mw01-dev.tugraz.at
     DEPLOY_KEY: "$DEPLOY_SSH_KEY"
