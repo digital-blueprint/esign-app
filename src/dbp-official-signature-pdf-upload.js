@@ -549,10 +549,10 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                 margin-right: 0.5em;
             }
             
-            .field{
-                margin-bottom: 2rem;
-                border-bottom: 1px solid black;
-                padding-bottom: 2rem;
+            #grid-container{
+                margin-top: 2rem;
+                border-top: 1px solid black;
+                padding-top: 2rem;
             }
 
             /* Handling for small displays (like mobile devices) */
