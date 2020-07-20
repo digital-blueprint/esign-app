@@ -863,6 +863,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                 enabled-destinations="local${this.showTestNextcloudFilePicker ? ",nextcloud" : ""}"
                 nextcloud-auth-url="${nextcloudWebAppPasswordURL}"
                 nextcloud-web-dav-url="${nextcloudWebDavURL}"
+                nextcloud-name="${nextcloudName}"
                 lang="${this.lang}"
                 ></dbp-file-sink>
         `;

@@ -12,6 +12,7 @@ import {FileSource} from 'dbp-file-handling';
 import JSONLD from "dbp-common/jsonld";
 import nextcloudWebAppPasswordURL from 'consts:nextcloudWebAppPasswordURL';
 import nextcloudWebDavURL from 'consts:nextcloudWebDavURL';
+import nextcloudName from 'consts:nextcloudName';
 
 const i18n = createI18nInstance();
 
@@ -691,6 +692,7 @@ class SignatureVerification extends ScopedElementsMixin(DBPSignatureLitElement) 
                             enabled-sources="local${this.showTestNextcloudFilePicker ? ",nextcloud" : ""}"
                             nextcloud-auth-url="${nextcloudWebAppPasswordURL}"
                             nextcloud-web-dav-url="${nextcloudWebDavURL}"
+                            nextcloud-name="${nextcloudName}"
                             decompress-zip
                             lang="${this.lang}"
                             ?disabled="${this.verificationProcessActive}"
