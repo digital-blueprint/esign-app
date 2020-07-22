@@ -864,6 +864,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                 <dbp-mini-spinner></dbp-mini-spinner>
             </div>
             <dbp-file-sink id="file-sink"
+                context="${i18n.t('qualified-pdf-upload.save-field-label', {count: this.signedFilesCount})}"
                 filename="signed-documents.zip"
                 enabled-destinations="local${this.showTestNextcloudFilePicker ? ",nextcloud" : ""}"
                 nextcloud-auth-url="${nextcloudWebAppPasswordURL}"

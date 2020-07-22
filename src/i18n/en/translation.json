@@ -1,6 +1,8 @@
 {
   "official-pdf-upload": {
     "upload-field-label": "Upload PDF-documents to sign",
+    "save-field-label": "Save {{count}} file",
+    "save-field-label_plural": "Save {{count}} files",
     "upload-text": "In this area you can upload PDF-documents up to a size of 32MB. The PDF-documents can also be located in a ZIP-file.",
     "upload-area-text": "In this area you can upload PDF-documents up to a size of 32MB via Drag & Drop or by selecting them directly. The PDF-documents can also be located in a ZIP-file.",
     "queued-files-label": "Queued documents",
@@ -31,6 +33,8 @@
   },
   "qualified-pdf-upload": {
     "upload-field-label": "Upload PDF-documents to sign",
+    "save-field-label": "Save {{count}} file",
+    "save-field-label_plural": "Save {{count}} files",
     "upload-text": "In this area you can upload PDF-documents up to a size of 32MB. The PDF-documents can also be located in a ZIP-file.",
     "upload-area-text": "In this area you can upload PDF-documents up to a size of 32MB via Drag & Drop or by selecting them directly. The PDF-documents can also be located in a ZIP-file.",
     "current-signing-process-label": "Current signing process",
@@ -62,6 +66,8 @@
   },
   "signature-verification": {
     "upload-field-label": "Upload PDF-documents to verify",
+    "save-field-label": "Save {{count}} file",
+    "save-field-label_plural": "Save {{count}} files",
     "upload-text": "In this area you can upload PDF-documents up to a size of 32MB. The PDF-documents can also be located in a ZIP-file.",
     "upload-area-text": "In this area you can upload PDF-documents up to a size of 32MB via Drag & Drop or by selecting them directly. The PDF-documents can also be located in a ZIP-file.",
     "queued-files-label": "Queued documents",
