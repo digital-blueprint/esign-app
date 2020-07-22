@@ -502,8 +502,11 @@ class SignatureVerification extends ScopedElementsMixin(DBPSignatureLitElement) 
             
             #grid-container{
                 margin-top: 2rem;
-                border-top: 1px solid black;
                 padding-top: 2rem;
+            }
+            
+            .border{
+                border-top: 1px solid black;
             }
 
             /* Handling for small displays (like mobile devices) */
@@ -702,7 +705,7 @@ class SignatureVerification extends ScopedElementsMixin(DBPSignatureLitElement) 
                             ></dbp-file-source>
                     </div>
                 </div>
-                <div id="grid-container">
+                <div id="grid-container" class="${classMap({"border": this.queueBlockEnabled})}">
                     <div class="left-container">
                         <div class="files-block field ${classMap({hidden: !this.queueBlockEnabled})}">
                             <!-- Queued files headline and queueing spinner -->
