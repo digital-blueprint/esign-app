@@ -1,9 +1,16 @@
 image: registry.gitlab.tugraz.at/dbp/apps/signature/main:v3
 
+cache:
+  key: ${CI_PROJECT_PATH}
+  paths:
+    - _yarn_cache
+
 before_script:
   - "sed -i 's|git@gitlab.tugraz.at:dbp|../..|g' .gitmodules"
   - git submodule sync
   - git submodule update --init
+  - yarn config set cache-folder "$CI_PROJECT_DIR/_yarn_cache"
+
 stages:
   - test
   - deploy
