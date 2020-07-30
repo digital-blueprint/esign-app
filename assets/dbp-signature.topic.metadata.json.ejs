@@ -17,6 +17,8 @@
      "visible": <%= environment == "local" || environment == "development" || environment == "demo" %>},
     {"path": "dbp-qualified-signature-pdf-upload.metadata.json"},
     {"path": "dbp-signature-verification.metadata.json",
+     "visible": <%= environment == "local" || environment == "development" %>},
+    {"path": "dbp-signature-verification-full.metadata.json",
      "visible": <%= environment == "local" || environment == "development" %>}
   ],
   "attributes": []

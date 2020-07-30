@@ -1,0 +1,17 @@
+{
+  "element": "dbp-signature-verification-full",
+  "module_src": "dbp-signature-verification-full.js",
+  "routing_name": "signature-verification-full",
+  "name": {
+    "de": "Signierte Dokumente verifizieren",
+    "en": "Verify signed documents"
+  },
+  "short_name": {
+    "de": "Signierte Dokumente verifizieren",
+    "en": "Verify signed documents"
+  },
+  "description": {
+    "de": "Erlaubt das Verifizieren von signierten PDF-Dokumenten",
+    "en": "Allows verification of signed PDF-documents"
+  }
+}

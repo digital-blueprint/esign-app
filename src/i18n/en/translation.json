@@ -95,6 +95,11 @@
     "no-signatures-found": "No signatures were found.",
     "confirm-page-leave": "Are you sure you want to leave this page? There are still signed documents ready to be downloaded."
   },
+  "signature-verification-extern": {
+    "headline": "Verify signed Documents",
+    "description-text": "To check a PDF signature for validity, please use the verification service of the Rundfunk und Telekom Regulierungs-GmbH. With this verification service you can check that the document has not been modified, which part of the PDF has been signed and by whom.",
+    "link-label": "Switch to the RTR verification service"
+  },
   "pdf-preview": {
     "first-page": "First page",
     "previous-page": "Previous page",
