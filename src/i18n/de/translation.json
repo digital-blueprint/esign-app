@@ -77,7 +77,7 @@
     "remove-failed-file-button-title": "Fehlgeschlagenes Dokument entfernen",
     "remove-queued-file-button-title": "Dokument aus der Warteschlange entfernen",
     "clear-all": "Alle entfernen",
-    "start-verification-process-button": "Verifikations starten",
+    "start-verification-process-button": "Verifikation starten",
     "stop-verification-process-button": "Verifikation unterbrechen",
     "show-preview": "Dokument anzeigen",
     "preview-label": "Dokumentenansicht",
@@ -87,7 +87,7 @@
     "re-upload-file-button-title": "Erneut in die Warteschlange stellen",
     "upload-status-file-text": "({{fileSize}}) wird hochgeladen und verifiziert...",
     "re-upload-all-button": "Alle wiederholen",
-    "re-upload-all-button-title": "Alle fehlgeschlagen Verifikationsprozesse erneut in die Warteschlange stellen",
+    "re-upload-all-button-title": "Alle fehlgeschlagenen Verifikationsprozesse erneut in die Warteschlange stellen",
     "given-name": "Vorname",
     "last-name": "Nachname",
     "nationality": "Nationalität",
@@ -95,6 +95,11 @@
     "value-message": "Überprüfung",
     "no-signatures-found": "Es wurden keine Signaturen gefunden.",
     "confirm-page-leave": "Sind Sie sicher, dass Sie die Seite verlassen wollen? Es stehen signierte Dokumente zum Download bereit."
+  },
+  "signature-verification-extern": {
+    "headline": "Signierte Dokumente verifizieren",
+    "description-text": "Um eine PDF-Signatur auf ihre Gültigkeit zu überprüfen, benutzen Sie bitte das Verifikationsservice der Rundfunk und Telekom Regulierungs-GmbH. Mit diesem Verifikationsservice können Sie überprüfen, dass das Dokument nicht verändert wurde, welcher Teil des PDFs signiert wurde und von wem.",
+    "link-label": "Zum RTR Verifikationsservice wechseln"
   },
   "pdf-preview": {
     "first-page": "Erste Seite",

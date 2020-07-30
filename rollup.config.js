@@ -150,6 +150,7 @@ export default {
       'src/dbp-official-signature-pdf-upload.js',
       'src/dbp-qualified-signature-pdf-upload.js',
       'src/dbp-signature-verification.js',
+      'src/dbp-signature-verification-full.js',
     ] : glob.sync('test/**/*.js'),
     output: {
       dir: 'dist',
