@@ -15,7 +15,7 @@ export default class DBPSignatureLitElement extends LitElement {
         // will be set in function update
         this.fileSourceUrl = "";
 
-        this.showTestNextcloudFilePicker = buildinfo.env === 'local';
+        this.showTestNextcloudFilePicker = buildinfo.env !== 'production';
     }
 
     /**
