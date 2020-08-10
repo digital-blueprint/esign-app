@@ -28,6 +28,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         this.externalAuthInProgress = false;
         this.signedFiles = [];
         this.signedFilesCount = 0;
+        this.signedFilesToDownload = 0;
         this.errorFiles = [];
         this.errorFilesCount = 0;
         this.uploadStatusFileName = "";
@@ -66,6 +67,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             entryPointUrl: { type: String, attribute: 'entry-point-url' },
             signedFiles: { type: Array, attribute: false },
             signedFilesCount: { type: Number, attribute: false },
+            signedFilesToDownload: { type: Number, attribute: false },
             queuedFilesCount: { type: Number, attribute: false },
             errorFiles: { type: Array, attribute: false },
             errorFilesCount: { type: Number, attribute: false },
@@ -408,18 +410,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         });
 
         that._("#re-upload-all-button").stop();
-    }
-
-    /**
-     * Download one signed pdf-file
-     *
-     * @param file
-     */
-    fileDownloadClickHandler(file) {
-        const arr = utils.convertDataURIToBinary(file.contentUrl);
-        const blob = new Blob([arr], { type: utils.getDataURIContentType(file.contentUrl) });
-
-        FileSaver.saveAs(blob, file.signedFilename); // file.name);
     }
 
     /**
@@ -805,7 +795,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                         <span class="filename"><strong>${file.signedFilename}</strong> (${humanFileSize(file.contentSize)})</span>
                         <button class="button close"
                             title="${i18n.t('qualified-pdf-upload.download-file-button-title')}"
-                            @click="${() => { this.fileDownloadClickHandler(file); }}">
+                            @click="${() => { this.downloadFileClickHandler(file); }}">
                             <dbp-icon name="download"></dbp-icon></button>
                     </div>
                 </div>
@@ -1045,6 +1035,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                 <dbp-mini-spinner></dbp-mini-spinner>
             </div>
             <dbp-file-sink id="file-sink"
+                context="${i18n.t('qualified-pdf-upload.save-field-label', {count: this.signedFilesToDownload})}"
                 filename="signed-documents.zip"
                 enabled-destinations="local${this.showTestNextcloudFilePicker ? ",nextcloud" : ""}"
                 nextcloud-auth-url="${nextcloudWebAppPasswordURL}"
