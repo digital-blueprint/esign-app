@@ -206,7 +206,7 @@ export default class DBPSignatureLitElement extends LitElement {
     }
 
     /**
-     * Download signed pdf-files as zip
+     * Open Filesink for multiple files
      */
     async zipDownloadClickHandler() {
         let files = [];
@@ -217,8 +217,20 @@ export default class DBPSignatureLitElement extends LitElement {
             const binaryFile = new File([arr], file.name, { type: utils.getDataURIContentType(file.contentUrl) });
             files.push(binaryFile);
         });
-
+        this.signedFilesToDownload = files.length;
         this._("#file-sink").files = files;
         this._("#zip-download-button").stop();
+    }
+
+    /**
+     * Open Filesink for a single File
+     */
+    async downloadFileClickHandler(file) {
+        let files = [];
+        const arr = utils.convertDataURIToBinary(file.contentUrl);
+        const binaryFile = new File([arr], file.name, { type: utils.getDataURIContentType(file.contentUrl) });
+        files.push(binaryFile);
+        this.signedFilesToDownload = files.length;
+        this._("#file-sink").files = files;
     }
 }
