@@ -69,7 +69,9 @@
 
         // track errors
         window.addEventListener('error', function(e) {
-            _paq.push(['trackEvent', 'Error', e.error.message + '\n' + e.error.stack]);
+            if(typeof e.error !== "undefined" && e.error) {
+                _paq.push(['trackEvent', 'Error', e.error.message + '\n' + e.error.stack]);
+            }
         });
     </script>
     <!-- End Matomo Code -->
