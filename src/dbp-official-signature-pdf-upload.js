@@ -114,7 +114,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         this.currentFilePlacementMode = this.queuedFilesPlacementModes[key];
         this.currentFileSignaturePlacement = this.queuedFilesSignaturePlacements[key];
         this.uploadInProgress = true;
-        let params = {};
+        let params = {'profile': 'official'};
 
         // prepare parameters to tell PDF-AS where and how the signature should be placed
         if (this.queuedFilesPlacementModes[key] === "manual") {
