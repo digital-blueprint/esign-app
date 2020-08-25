@@ -249,7 +249,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                             // Old name, remove eventually
                             apiUrlBase = jsonld.getApiUrlForEntityName("OfficiallySignedDocument");
                         } catch(error) {
-                            apiUrlBase = jsonld.getApiUrlForEntityName("AdvancedSignedDocument");
+                            apiUrlBase = jsonld.getApiUrlForEntityName("AdvancedlySignedDocument");
                         }
                         this.fileSourceUrl = apiUrlBase + "/sign";
                     });
