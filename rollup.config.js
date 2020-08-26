@@ -104,6 +104,17 @@ switch (build) {
     keyCloakClientId = '';
     pdfAsQualifiedlySigningServer = '';
     break;
+  case 'bs':
+    basePath = '/dist/';
+    entryPointURL = 'http://bs-local.com:8000';
+    nextcloudBaseURL = 'http://bs-local.com:8081';
+    nextcloudWebAppPasswordURL = nextcloudBaseURL + '/index.php/apps/webapppassword';
+    nextcloudWebDavURL = nextcloudBaseURL + '/remote.php/dav/files';
+    keyCloakServer = 'auth-dev.tugraz.at';
+    keyCloakBaseURL = 'https://' + keyCloakServer + '/auth';
+    keyCloakClientId = 'auth-dev-mw-frontend-local';
+    pdfAsQualifiedlySigningServer = 'sig-dev.tugraz.at';
+    break;
   default:
     console.error('Unknown build environment: ' + build);
     process.exit(1);

@@ -14,10 +14,10 @@
   "routing_name": "signature",
   "activities": [
     {"path": "dbp-official-signature-pdf-upload.metadata.json",
-     "visible": <%= environment == "local" || environment == "development" || environment == "demo" %>},
+     "visible": <%= environment == "local" || environment == "development" || environment == "demo" || environment == "bs" %>},
     {"path": "dbp-qualified-signature-pdf-upload.metadata.json"},
     {"path": "dbp-signature-verification.metadata.json",
-     "visible": <%= environment == "local" || environment == "development" %>},
+     "visible": <%= environment == "local" || environment == "development" || environment == "bs" %>},
     {"path": "dbp-signature-verification-full.metadata.json",
      "visible": <%= environment == "local" || environment == "development" %>}
   ],

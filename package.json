@@ -73,6 +73,7 @@
     "watch": "rollup -c --watch",
     "watch-local": "yarn run watch",
     "watch-full": "rollup -c --watch --environment FORCE_FULL",
+    "watch-bs": "rollup -c --watch --environment BUILD:bs",
     "test": "rollup -c --environment BUILD:test && karma start --singleRun",
     "test-full": "rollup -c --environment FORCE_FULL,BUILD:test && karma start --singleRun",
     "lint": "eslint ."
