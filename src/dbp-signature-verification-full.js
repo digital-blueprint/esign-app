@@ -205,7 +205,7 @@ class SignatureVerificationFull extends ScopedElementsMixin(DBPSignatureLitEleme
                 case "entryPointUrl":
                     JSONLD.initialize(this.entryPointUrl, (jsonld) => {
                         const apiUrlBase = jsonld.getApiUrlForEntityName("ElectronicSignatureVerificationReport");
-                        this.fileSourceUrl = apiUrlBase + "/create";
+                        this.fileSourceUrl = apiUrlBase;
                     });
                     break;
             }

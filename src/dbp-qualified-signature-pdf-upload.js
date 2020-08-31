@@ -379,7 +379,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                 case "entryPointUrl":
                     JSONLD.initialize(this.entryPointUrl, (jsonld) => {
                         const apiUrlBase = jsonld.getApiUrlForEntityName("QualifiedSigningRequest");
-                        this.fileSourceUrl = apiUrlBase + "/create";
+                        this.fileSourceUrl = apiUrlBase ;
                     });
                     break;
             }
