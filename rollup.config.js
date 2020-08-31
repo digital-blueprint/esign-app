@@ -88,6 +88,9 @@ switch (build) {
   case 'production':
     basePath = '/';
     entryPointURL = 'https://api.tugraz.at';
+    nextcloudBaseURL = '';
+    nextcloudWebAppPasswordURL = nextcloudBaseURL + '';
+    nextcloudWebDavURL = nextcloudBaseURL + '';
     keyCloakServer = 'auth.tugraz.at';
     keyCloakBaseURL = 'https://' + keyCloakServer + '/auth';
     keyCloakClientId = 'esig_tugraz_at';
