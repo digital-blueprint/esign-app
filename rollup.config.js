@@ -76,10 +76,10 @@ switch (build) {
     basePath = '/apps/signature/';
     entryPointURL = 'https://api-demo.tugraz.at';
     // "/pers" can't go here because it's not allowed in the "Content-Security-Policy"
-    nextcloudBaseURL = 'https://nc-dev.tugraz.at';
+    nextcloudBaseURL = 'https://dms-test.tugraz.a';
     // "/index.php" is needed to don't get a "This origin is not allowed!" because the "target-origin" get parameter can't be read
-    nextcloudWebAppPasswordURL = nextcloudBaseURL + '/pers/index.php/apps/webapppassword';
-    nextcloudWebDavURL = nextcloudBaseURL + '/pers/remote.php/dav/files';
+    nextcloudWebAppPasswordURL = nextcloudBaseURL + '/index.php/apps/webapppassword';
+    nextcloudWebDavURL = nextcloudBaseURL + '/remote.php/dav/files';
     keyCloakServer = 'auth-test.tugraz.at';
     keyCloakBaseURL = 'https://' + keyCloakServer + '/auth';
     keyCloakClientId = 'esig-demo_tugraz_at-ESIG';
