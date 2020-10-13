@@ -86,9 +86,15 @@ export default class DBPSignatureLitElement extends LitElement {
         this.uploadInProgress = true;
         this.uploadStatusFileName = file.name;
         let url = new URL(this.fileSourceUrl);
-        url.search = new URLSearchParams(params).toString();
         let formData = new FormData();
         formData.append('file', file);
+        for (let key in params) {
+            formData.append(key, params[key]);
+        }
+
+        // FIXME: We now send the parameters via the body and keep this to
+        // support older backends. Remove once the backend is deployed.
+        url.search = new URLSearchParams(params).toString();
 
         // I got a 60s timeout in Google Chrome and found no way to increase that
         await fetch(url, {
