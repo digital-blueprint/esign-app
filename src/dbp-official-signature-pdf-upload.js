@@ -114,7 +114,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         this.currentFilePlacementMode = this.queuedFilesPlacementModes[key];
         this.currentFileSignaturePlacement = this.queuedFilesSignaturePlacements[key];
         this.uploadInProgress = true;
-        let params = {'profile': 'official'};
+        let params = {};
 
         // prepare parameters to tell PDF-AS where and how the signature should be placed
         if (this.queuedFilesPlacementModes[key] === "manual") {
@@ -123,6 +123,8 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                 params = utils.fabricjs2pdfasPosition(data);
             }
         }
+
+        params['profile'] = 'official';
 
         this.uploadStatusText = i18n.t('official-pdf-upload.upload-status-file-text', {
             fileName: file.name,
