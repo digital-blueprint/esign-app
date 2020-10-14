@@ -133,7 +133,9 @@ export default class DBPSignatureLitElement extends LitElement {
             await response.json().then((json) => {
                 data.json = json;
             });
-        } catch (e) {}
+        } catch (e) {
+            console.error(e);
+        }
 
         data.file = file;
 
@@ -230,6 +232,8 @@ export default class DBPSignatureLitElement extends LitElement {
 
     /**
      * Open Filesink for a single File
+     *
+     * @param file
      */
     async downloadFileClickHandler(file) {
         let files = [];

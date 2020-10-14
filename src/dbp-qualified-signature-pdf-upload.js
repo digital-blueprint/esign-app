@@ -16,7 +16,6 @@ import nextcloudWebAppPasswordURL from 'consts:nextcloudWebAppPasswordURL';
 import nextcloudWebDavURL from 'consts:nextcloudWebDavURL';
 import nextcloudName from 'consts:nextcloudName';
 import {FileSink} from "dbp-file-handling";
-import FileSaver from 'file-saver';
 
 const i18n = createI18nInstance();
 
