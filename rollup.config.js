@@ -290,10 +290,10 @@ Dependencies:
                 {src: 'assets/*.ico', dest: 'dist/local/' + pkg.name},
                 {src: 'assets/*.svg', dest: 'dist/local/' + pkg.name},
                 {
-                    src: 'node_modules/pdfjs-dist/build/pdf.worker.min.js',
+                    src: 'node_modules/pdfjs-dist/es5/build/pdf.worker.js',
                     dest: 'dist/local/' + pkg.name + '/pdfjs',
                     // enable signatures in pdf preview
-                    transform: (contents) => contents.toString().replace('if("Sig"===a.fieldType){a.fieldValue=null;this.setFlags(r.AnnotationFlag.HIDDEN)}', '')
+                    transform: (contents) => contents.toString().replace('"Sig"', '"Sig-patched-show-anyway"')
                 },
                 {src: 'node_modules/pdfjs-dist/cmaps/*', dest: 'dist/local/' + pkg.name + '/pdfjs'}, // do we want all map files?
                 {src: 'node_modules/source-sans-pro/WOFF2/OTF/*', dest: 'dist/local/' + pkg.name + '/fonts'},

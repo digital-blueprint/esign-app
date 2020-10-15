@@ -7,7 +7,7 @@ import DBPLitElement from 'dbp-common/dbp-lit-element';
 import {MiniSpinner, Icon} from 'dbp-common';
 import * as commonUtils from "dbp-common/utils";
 import * as commonStyles from 'dbp-common/styles';
-import pdfjs from 'pdfjs-dist';
+import pdfjs from 'pdfjs-dist/es5/build/pdf.js';
 import buildinfo from 'consts:buildinfo';
 
 const i18n = createI18nInstance();
@@ -87,7 +87,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
     connectedCallback() {
         super.connectedCallback();
         const that = this;
-        pdfjs.GlobalWorkerOptions.workerSrc = commonUtils.getAssetURL('local/dbp-signature/pdfjs/pdf.worker.min.js');
+        pdfjs.GlobalWorkerOptions.workerSrc = commonUtils.getAssetURL('local/dbp-signature/pdfjs/pdf.worker.js');
 
         window.addEventListener('resize', this._onWindowResize);
 
