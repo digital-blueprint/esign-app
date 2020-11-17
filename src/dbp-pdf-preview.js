@@ -3,12 +3,13 @@ import {css, html} from 'lit-element';
 import {classMap} from 'lit-html/directives/class-map.js';
 import {live} from 'lit-html/directives/live.js';
 import {ScopedElementsMixin} from '@open-wc/scoped-elements';
-import DBPLitElement from 'dbp-common/dbp-lit-element';
-import {MiniSpinner, Icon} from 'dbp-common';
-import * as commonUtils from "dbp-common/utils";
-import * as commonStyles from 'dbp-common/styles';
+import DBPLitElement from '@dbp-toolkit/common/dbp-lit-element';
+import {MiniSpinner, Icon} from '@dbp-toolkit/common';
+import * as commonUtils from "@dbp-toolkit/common/utils";
+import * as commonStyles from '@dbp-toolkit/common/styles';
 import pdfjs from 'pdfjs-dist/es5/build/pdf.js';
 import buildinfo from 'consts:buildinfo';
+import {name as pkgName} from './../package.json';
 
 const i18n = createI18nInstance();
 
@@ -87,7 +88,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
     connectedCallback() {
         super.connectedCallback();
         const that = this;
-        pdfjs.GlobalWorkerOptions.workerSrc = commonUtils.getAssetURL('local/dbp-signature/pdfjs/pdf.worker.js');
+        pdfjs.GlobalWorkerOptions.workerSrc = commonUtils.getAssetURL(pkgName, 'pdfjs/pdf.worker.js');
 
         window.addEventListener('resize', this._onWindowResize);
 

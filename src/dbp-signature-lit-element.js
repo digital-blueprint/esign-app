@@ -1,5 +1,5 @@
 import {LitElement} from "lit-element";
-import {EventBus} from 'dbp-common';
+import {EventBus} from '@dbp-toolkit/common';
 import buildinfo from 'consts:buildinfo';
 import * as utils from "./utils";
 

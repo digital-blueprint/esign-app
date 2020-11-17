@@ -1,18 +1,19 @@
 import {createI18nInstance} from './i18n.js';
-import {humanFileSize} from 'dbp-common/i18next.js';
+import {humanFileSize} from '@dbp-toolkit/common/i18next.js';
 import {css, html} from 'lit-element';
 import {ScopedElementsMixin} from '@open-wc/scoped-elements';
 import DBPSignatureLitElement from "./dbp-signature-lit-element";
 import {PdfPreview} from "./dbp-pdf-preview";
-import * as commonUtils from 'dbp-common/utils';
-import {Icon, MiniSpinner, Button} from 'dbp-common';
-import * as commonStyles from 'dbp-common/styles';
+import * as commonUtils from '@dbp-toolkit/common/utils';
+import {Icon, MiniSpinner, Button} from '@dbp-toolkit/common';
+import * as commonStyles from '@dbp-toolkit/common/styles';
 import {classMap} from 'lit-html/directives/class-map.js';
-import {FileSource} from 'dbp-file-handling';
-import JSONLD from "dbp-common/jsonld";
+import {FileSource} from '@dbp-toolkit/file-handling';
+import JSONLD from "@dbp-toolkit/common/jsonld";
 import nextcloudWebAppPasswordURL from 'consts:nextcloudWebAppPasswordURL';
 import nextcloudWebDavURL from 'consts:nextcloudWebDavURL';
 import nextcloudName from 'consts:nextcloudName';
+import {name as pkgName} from './../package.json';
 
 const i18n = createI18nInstance();
 
@@ -674,7 +675,7 @@ class SignatureVerificationFull extends ScopedElementsMixin(DBPSignatureLitEleme
     }
 
     render() {
-        const placeholderUrl = commonUtils.getAssetURL('local/dbp-signature/official-signature-placeholder.png');
+        const placeholderUrl = commonUtils.getAssetURL(pkgName, 'official-signature-placeholder.png');
 
         return html`
             <div class="${classMap({hidden: !this.isLoggedIn() || !this.hasSignaturePermissions() || this.isLoading()})}">

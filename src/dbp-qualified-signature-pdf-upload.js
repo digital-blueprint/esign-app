@@ -1,21 +1,22 @@
 import {createI18nInstance} from './i18n.js';
-import {humanFileSize} from 'dbp-common/i18next.js';
+import {humanFileSize} from '@dbp-toolkit/common/i18next.js';
 import {css, html} from 'lit-element';
 import {ScopedElementsMixin} from '@open-wc/scoped-elements';
 import DBPSignatureLitElement from "./dbp-signature-lit-element";
 import {PdfPreview} from "./dbp-pdf-preview";
-import * as commonUtils from 'dbp-common/utils';
+import * as commonUtils from '@dbp-toolkit/common/utils';
 import * as utils from './utils';
-import {Button, Icon, MiniSpinner} from 'dbp-common';
-import * as commonStyles from 'dbp-common/styles';
+import {Button, Icon, MiniSpinner} from '@dbp-toolkit/common';
+import * as commonStyles from '@dbp-toolkit/common/styles';
 import {classMap} from 'lit-html/directives/class-map.js';
-import {FileSource} from 'dbp-file-handling';
-import JSONLD from "dbp-common/jsonld";
+import {FileSource} from '@dbp-toolkit/file-handling';
+import JSONLD from "@dbp-toolkit/common/jsonld";
 import {TextSwitch} from './textswitch.js';
 import nextcloudWebAppPasswordURL from 'consts:nextcloudWebAppPasswordURL';
 import nextcloudWebDavURL from 'consts:nextcloudWebDavURL';
 import nextcloudName from 'consts:nextcloudName';
-import {FileSink} from "dbp-file-handling";
+import {FileSink} from "@dbp-toolkit/file-handling";
+import {name as pkgName} from './../package.json';
 
 const i18n = createI18nInstance();
 
@@ -864,7 +865,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
     }
 
     render() {
-        const placeholderUrl = commonUtils.getAssetURL('local/dbp-signature/qualified-signature-placeholder.png');
+        const placeholderUrl = commonUtils.getAssetURL(pkgName, 'qualified-signature-placeholder.png');
 
         return html`
             <div class="${classMap({hidden: !this.isLoggedIn() || !this.hasSignaturePermissions() || this.isLoading()})}">

@@ -1,5 +1,5 @@
 import {html, LitElement, css} from 'lit-element';
-import * as commonStyles from 'dbp-common/styles';
+import * as commonStyles from '@dbp-toolkit/common/styles';
 
 const BUTTON1 = "button1";
 const BUTTON2 = "button2";
