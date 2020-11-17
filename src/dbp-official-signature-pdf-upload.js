@@ -563,6 +563,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                 /* Modal preview, upload and external auth */
                 div.right-container > * {
                     position: fixed;
+                    z-index: 1000;
                     padding: 10px;
                     top: 0;
                     left: 0;
