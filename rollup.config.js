@@ -14,7 +14,7 @@ import consts from 'rollup-plugin-consts';
 import license from 'rollup-plugin-license';
 import del from 'rollup-plugin-delete';
 import emitEJS from 'rollup-plugin-emit-ejs'
-import babel from '@rollup/plugin-babel'
+import {getBabelOutputPlugin} from '@rollup/plugin-babel';
 import selfsigned from 'selfsigned';
 
 // -------------------------------
@@ -281,7 +281,6 @@ Dependencies:
         replace({
             "process.env.BUILD": '"' + build + '"',
         }),
-        useTerser ? terser() : false,
         copy({
             targets: [
                 {src: 'assets/silent-check-sso.html', dest:'dist'},
@@ -307,14 +306,7 @@ Dependencies:
                 {src: 'node_modules/tabulator-tables/dist/css', dest: 'dist/local/@dbp-toolkit/file-handling/tabulator-tables'},
             ],
         }),
-        useBabel && babel({
-          include: [
-              'src/**',
-              'vendor/**',
-              'node_modules/pdfjs-dist/**', // uses Promise.allSettled
-          ],
-          babelHelpers: 'runtime',
-          babelrc: false,
+        useBabel && getBabelOutputPlugin({
           presets: [[
             '@babel/preset-env', {
               loose: true,
@@ -325,15 +317,8 @@ Dependencies:
               }
             }
           ]],
-          plugins: [[
-            '@babel/plugin-transform-runtime', {
-              corejs: 3,
-              useESModules: true
-            }
-          ],
-          '@babel/plugin-syntax-dynamic-import',
-          '@babel/plugin-syntax-import-meta']
         }),
+        useTerser ? terser() : false,
         watch ? serve({
           contentBase: '.',
           host: '127.0.0.1',
