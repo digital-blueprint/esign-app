@@ -307,11 +307,13 @@ Dependencies:
             ],
         }),
         useBabel && getBabelOutputPlugin({
+          compact: false,
           presets: [[
             '@babel/preset-env', {
               loose: true,
               shippedProposals: true,
               bugfixes: true,
+              modules: false,
               targets: {
                 esmodules: true
               }
