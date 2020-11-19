@@ -69,7 +69,7 @@ switch (build) {
     nextcloudWebDavURL = nextcloudBaseURL + '/pers/remote.php/dav/files';
     keyCloakServer = 'auth-dev.tugraz.at';
     keyCloakBaseURL = 'https://' + keyCloakServer + '/auth';
-    keyCloakClientId = 'auth-dev-mw-frontend';
+    keyCloakClientId = 'esign-dev_tugraz_at-ESIGN';
     pdfAsQualifiedlySigningServer = 'sig-dev.tugraz.at';
     break;
   case 'demo':
