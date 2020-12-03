@@ -90,7 +90,6 @@ deploy_production:
 # https://github.com/cypress-io/cypress-docker-images/tree/master/browsers#cypressbrowsers
 
 .e2e_test_defaults: &e2e_test_defaults
-  when: always
   only:
     refs:
       - master
