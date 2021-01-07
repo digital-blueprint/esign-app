@@ -17,6 +17,8 @@ import nextcloudWebDavURL from 'consts:nextcloudWebDavURL';
 import nextcloudName from 'consts:nextcloudName';
 import {FileSink} from "@dbp-toolkit/file-handling";
 import {name as pkgName} from './../package.json';
+import {getPDFSignatureCount} from './utils.js';
+import {send as notify} from '@dbp-toolkit/common/notification';
 
 const i18n = createI18nInstance();
 
@@ -43,6 +45,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         this.withSigBlock = false;
         this.queuedFilesSignaturePlacements = [];
         this.queuedFilesPlacementModes = [];
+        this.queuedFilesMissingPlacement = new Map();
         this.currentPreviewQueueKey = '';
 
         this._onReceiveIframeMessage = this.onReceiveIframeMessage.bind(this);
@@ -108,33 +111,58 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         super.disconnectedCallback();
     }
 
+    async _updateMissingPlacementStatus(id) {
+        let file = this.queuedFiles[id];
+        let isManual = this.queuedFilesPlacementModes[id] === 'manual';
+        this.queuedFilesMissingPlacement.delete(id);
+        if (!isManual) {
+            let sigCount = await getPDFSignatureCount(file);
+            if (sigCount > 0)
+                this.queuedFilesMissingPlacement.set(id, true);
+        }
+    }
+
     /**
      * Processes queued files
      */
     async handleQueuedFiles() {
+        this.endSigningProcessIfQueueEmpty();
         if (this.queuedFilesCount === 0) {
             // reset signingProcessEnabled button
             this.signingProcessEnabled = false;
-
             return;
         }
 
         if (!this.signingProcessEnabled || this.externalAuthInProgress || this.uploadInProgress) {
             return;
         }
-
         this.signaturePlacementInProgress = false;
 
-        const key = Object.keys(this.queuedFiles)[0];
+        // Validate that all PDFs with a signature have manual placement
+        this.queuedFilesMissingPlacement.clear();
+        for (const key of Object.keys(this.queuedFiles)) {
+            await this._updateMissingPlacementStatus(key);
+        }
+
+        // Some have a signature but are not "manual", stop everything
+        if (this.queuedFilesMissingPlacement.size) {
+            notify({
+                "body": i18n.t('error-manual-positioning-missing'),
+                "type": "danger",
+            });
+            this.signingProcessEnabled = false;
+            this.signingProcessActive = false;
+            return;
+        }
 
         // take the file off the queue
+        const key = Object.keys(this.queuedFiles)[0];
         const file = this.takeFileFromQueue(key);
         this.currentFile = file;
 
         // set placement mode and parameters to restore them when canceled
         this.currentFilePlacementMode = this.queuedFilesPlacementModes[key];
         this.currentFileSignaturePlacement = this.queuedFilesSignaturePlacements[key];
-
         this.uploadInProgress = true;
         let params = {};
 
@@ -156,7 +184,13 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
     }
 
     storePDFData(event) {
-        this.queuedFilesSignaturePlacements[this.currentPreviewQueueKey] = event.detail;
+        let placement = event.detail;
+        let placementMode = 'manual';
+
+        let key = this.currentPreviewQueueKey;
+        this.queuedFilesSignaturePlacements[key] = placement;
+        this.queuedFilesPlacementModes[key] = placementMode;
+        this.queuedFilesMissingPlacement.delete(key);
         this.signaturePlacementInProgress = false;
     }
 
@@ -170,7 +204,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         if (this.queuedFilesSignaturePlacements[this.currentPreviewQueueKey] === undefined) {
             this.queuedFilesPlacementModes[this.currentPreviewQueueKey] = "auto";
         }
-
         this.signaturePlacementInProgress = false;
     }
 
@@ -333,6 +366,13 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         this.queueFile(ev.detail.file);
     }
 
+    async queueFile(file) {
+        let id = await super.queueFile(file);
+        await this._updateMissingPlacementStatus(id);
+        this.requestUpdate();
+        return id;
+    }
+
     addToErrorFiles(file) {
         this.endSigningProcessIfQueueEmpty();
 
@@ -420,7 +460,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
      */
     async fileQueueingClickHandler(file, id) {
         this.takeFailedFileFromQueue(id);
-
         return this.queueFile(file);
     }
 
@@ -442,7 +481,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         // start signature placement process
         this.signaturePlacementInProgress = true;
         this.withSigBlock = withSigBlock;
-
         const previewTag = this.constructor.getScopedTagName("dbp-pdf-preview");
         await this._(previewTag).showPDF(
             file,
@@ -458,13 +496,13 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
     takeFailedFileFromQueue(key) {
         const file = this.errorFiles.splice(key, 1);
         this.errorFilesCount = Object.keys(this.errorFiles).length;
-
         return file;
     }
 
     clearQueuedFiles() {
         this.queuedFilesSignaturePlacements = [];
         this.queuedFilesPlacementModes = [];
+        this.queuedFilesMissingPlacement.clear();
         super.clearQueuedFiles();
     }
 
@@ -514,16 +552,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
 
             .hidden {
                 display: none;
-            }
-
-            #iframe {
-                width: 100%;
-                height: 240px;
-                /* "overflow" should not be supported by browsers, but some seem to use it */
-                overflow: hidden;
-                border-width: 0;
-                /* keeps the A-Trust webpage aligned left */
-                max-width: 575px;
             }
 
             .files-block.field:not(:last-child) {
@@ -629,9 +657,14 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             .file-block div.bottom-line {
                 display: grid;
                 align-items: center;
-                grid-template-columns: auto 190px;
-                grid-gap: 10px;
-                margin-top: 10px;
+                grid-template-columns: auto auto;
+                grid-gap: 6px;
+                margin-top: 6px;
+            }
+
+            .file-block .error-line {
+                margin-top: 6px;
+                color: var(--dbp-override-danger-bg-color);
             }
 
             .file-block.error div.bottom-line {
@@ -651,12 +684,26 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                 white-space: nowrap;
             }
 
-            #pdf-preview .button.is-cancel, #external-auth .button.is-cancel {
+            #pdf-preview .button.is-cancel {
                 color: #e4154b;
             }
 
             #external-auth iframe {
                 margin-top: 0.5em;
+            }
+
+            #external-auth .button.is-cancel {
+                color: #e4154b;
+            }
+
+            #iframe {
+                width: 100%;
+                height: 240px;
+                /* "overflow" should not be supported by browsers, but some seem to use it */
+                overflow: hidden;
+                border-width: 0;
+                /* keeps the A-Trust webpage aligned left */
+                max-width: 575px;
             }
 
             .is-right {
@@ -697,6 +744,10 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             
             .border{
                 border-top: 1px solid black;            
+            }
+
+            .placement-missing {
+                border: solid 2px var(--dbp-override-danger-bg-color);
             }
 
             /* Handling for small displays (like mobile devices) */
@@ -745,6 +796,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
 
         ids.forEach((id) => {
             const file = this.queuedFiles[id];
+            const placementMissing = this.queuedFilesMissingPlacement.get(id);
 
             results.push(html`
                 <div class="file-block">
@@ -765,11 +817,16 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                         <dbp-textswitch name1="auto"
                             name2="manual"
                             name="${this.queuedFilesPlacementModes[id] || "auto"}"
-                            class="switch"
+                            class="${classMap({'placement-missing': placementMissing, 'switch': true})}"
                             value1="${i18n.t('qualified-pdf-upload.positioning-automatic')}"
                             value2="${i18n.t('qualified-pdf-upload.positioning-manual')}"
                             ?disabled="${this.signingProcessEnabled}"
                             @change=${ (e) => this.queuePlacementSwitch(id, e.target.name) }></dbp-textswitch>
+                    </div>
+                    <div class="error-line">
+                        ${ placementMissing ? html`
+                            ${i18n.t('label-manual-positioning-missing')}
+                        ` : '' }
                     </div>
                 </div>
             `);
@@ -881,7 +938,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                 class="button is-primary">
                             ${i18n.t('qualified-pdf-upload.upload-button-label')}
                         </button>
-
                         <dbp-file-source
                             id="file-source"
                             context="${i18n.t('qualified-pdf-upload.upload-field-label')}"
