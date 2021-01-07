@@ -3,7 +3,58 @@ import {EventBus} from '@dbp-toolkit/common';
 import buildinfo from 'consts:buildinfo';
 import * as utils from "./utils";
 
-export default class DBPSignatureLitElement extends LitElement {
+export class DBPSignatureBaseLitElement extends LitElement {
+    constructor() {
+        super();
+    }
+
+    _(selector) {
+        return this.shadowRoot === null ? this.querySelector(selector) : this.shadowRoot.querySelector(selector);
+    }
+
+    _hasSignaturePermissions(roleName) {
+        return (window.DBPPerson && Array.isArray(window.DBPPerson.roles) && window.DBPPerson.roles.indexOf(roleName) !== -1);
+    }
+
+    _updateAuth(e) {
+        this._loginStatus = e.status;
+        // Every time isLoggedIn()/isLoading() return something different we request a re-render
+        let newLoginState = [this.isLoggedIn(), this.isLoading()];
+        if (this._loginState.toString() !== newLoginState.toString()) {
+            this.requestUpdate();
+        }
+        this._loginState = newLoginState;
+    }
+
+    connectedCallback() {
+        super.connectedCallback();
+
+        this._loginStatus = '';
+        this._loginState = [];
+        this._bus = new EventBus();
+        this._updateAuth = this._updateAuth.bind(this);
+        this._bus.subscribe('auth-update', this._updateAuth);
+    }
+
+    disconnectedCallback() {
+        this._bus.close();
+
+        super.disconnectedCallback();
+    }
+
+    isLoggedIn() {
+        return (window.DBPPerson !== undefined && window.DBPPerson !== null);
+    }
+
+    isLoading() {
+        if (this._loginStatus === "logged-out")
+            return false;
+        return (!this.isLoggedIn() && window.DBPAuthToken !== undefined);
+    }
+}
+
+export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
+
     constructor() {
         super();
         this.queuedFiles = [];
@@ -143,57 +194,6 @@ export default class DBPSignatureLitElement extends LitElement {
     }
 
     /**
-     * @param data
-     */
-    onFileUploadFinished(data) {
-        console.log("Override me");
-    }
-
-    _(selector) {
-        return this.shadowRoot === null ? this.querySelector(selector) : this.shadowRoot.querySelector(selector);
-    }
-
-    _hasSignaturePermissions(roleName) {
-        return (window.DBPPerson && Array.isArray(window.DBPPerson.roles) && window.DBPPerson.roles.indexOf(roleName) !== -1);
-    }
-
-    _updateAuth(e) {
-        this._loginStatus = e.status;
-        // Every time isLoggedIn()/isLoading() return something different we request a re-render
-        let newLoginState = [this.isLoggedIn(), this.isLoading()];
-        if (this._loginState.toString() !== newLoginState.toString()) {
-            this.requestUpdate();
-        }
-        this._loginState = newLoginState;
-    }
-
-    connectedCallback() {
-        super.connectedCallback();
-
-        this._loginStatus = '';
-        this._loginState = [];
-        this._bus = new EventBus();
-        this._updateAuth = this._updateAuth.bind(this);
-        this._bus.subscribe('auth-update', this._updateAuth);
-    }
-
-    disconnectedCallback() {
-        this._bus.close();
-
-        super.disconnectedCallback();
-    }
-
-    isLoggedIn() {
-        return (window.DBPPerson !== undefined && window.DBPPerson !== null);
-    }
-
-    isLoading() {
-        if (this._loginStatus === "logged-out")
-            return false;
-        return (!this.isLoggedIn() && window.DBPAuthToken !== undefined);
-    }
-
-    /**
      * Open Filesink for multiple files
      */
     async zipDownloadClickHandler() {
@@ -208,6 +208,13 @@ export default class DBPSignatureLitElement extends LitElement {
         this.signedFilesToDownload = files.length;
         this._("#file-sink").files = files;
         this._("#zip-download-button").stop();
+    }
+
+    /**
+     * @param data
+     */
+    onFileUploadFinished(data) {
+        console.log("Override me");
     }
 
     /**
