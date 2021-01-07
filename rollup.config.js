@@ -168,7 +168,22 @@ function getBuildInfo() {
     }
 }
 
-export default {
+export async function getPackagePath(packageName, assetPath) {
+    const r = resolve();
+    const resolved = await r.resolveId(packageName);
+    let packageRoot;
+    if (resolved !== null) {
+        const id = (await r.resolveId(packageName)).id;
+        const packageInfo = r.getPackageInfoForId(id);
+        packageRoot = packageInfo.root;
+    } else {
+        // Non JS packages
+        packageRoot = path.dirname(require.resolve(packageName + '/package.json'));
+    }
+    return path.relative(process.cwd(), path.join(packageRoot, assetPath));
+}
+
+export default (async () => {return {
     input: (build != 'test') ? [
       'src/' + pkg.name + '.js',
       'src/dbp-official-signature-pdf-upload.js',
@@ -290,7 +305,7 @@ Dependencies:
                     transform: (contents) => contents.toString().replace('"Sig"', '"Sig-patched-show-anyway"')
                 },
                 {src: 'node_modules/pdfjs-dist/cmaps/*', dest: 'dist/local/' + pkg.name + '/pdfjs'}, // do we want all map files?
-                {src: 'node_modules/source-sans-pro/WOFF2/OTF/*', dest: 'dist/local/' + pkg.name + '/fonts'},
+                {src: await getPackagePath('@dbp-toolkit/font-source-sans-pro', 'files/*'), dest: 'dist/local/' + pkg.name + '/fonts/source-sans-pro'},
                 {src: 'node_modules/@dbp-toolkit/common/src/spinner.js', dest: 'dist/local/' + pkg.name, rename: 'spinner.js'},
                 {src: 'node_modules/@dbp-toolkit/common/misc/browser-check.js', dest: 'dist/local/' + pkg.name, rename: 'browser-check.js'},
                 {src: 'assets/icon-*.png', dest: 'dist/local/' + pkg.name},
@@ -327,4 +342,4 @@ Dependencies:
           },
         }) : false
     ]
-};
+};})();
