@@ -10,7 +10,7 @@ import * as commonStyles from '@dbp-toolkit/common/styles';
 import pdfjs from 'pdfjs-dist/es5/build/pdf.js';
 import buildinfo from 'consts:buildinfo';
 import {name as pkgName} from './../package.json';
-import {getPDFSignatureCount} from './utils.js';
+import {getPDFSignatureCount, readBinaryFileContent} from './utils.js';
 
 const i18n = createI18nInstance();
 
@@ -209,36 +209,29 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
 
         this.isShowPlacement = isShowPlacement;
         this.isShowPage = true;
-        let reader = new FileReader();
 
-        reader.onload = async () => {
-            //this.isPageLoaded = false;
-            const data = reader.result;
+        const data = await readBinaryFileContent(file);
 
-            // get handle of pdf document
-            try {
-                this.pdfDoc = await pdfjs.getDocument({data: data}).promise;
-            } catch (error) {
-                console.error(error);
+        // get handle of pdf document
+        try {
+            this.pdfDoc = await pdfjs.getDocument({data: data}).promise;
+        } catch (error) {
+            console.error(error);
+            return;
+        }
 
-                return;
-            }
+        // total pages in pdf
+        this.totalPages = this.pdfDoc.numPages;
+        const page = placementData.currentPage || 1;
 
-            // total pages in pdf
-            this.totalPages = this.pdfDoc.numPages;
-            const page = placementData.currentPage || 1;
+        // show the first page
+        // if the placementData has no values we want to initialize the signature position
+        await this.showPage(page, placementData["scaleX"] === undefined);
 
-            // show the first page
-            // if the placementData has no values we want to initialize the signature position
-            await this.showPage(page, placementData["scaleX"] === undefined);
+        this.isPageLoaded = true;
 
-            this.isPageLoaded = true;
-
-            // fix width adaption after "this.isPageLoaded = true"
-            await this.showPage(page);
-        };
-
-        reader.readAsBinaryString(file);
+        // fix width adaption after "this.isPageLoaded = true"
+        await this.showPage(page);
 
         console.log(`Signature count: ${await getPDFSignatureCount(file)}`);
     }
