@@ -1,0 +1,8 @@
+{
+  "extends": [
+    "config:base",
+    "group:allNonMajor"
+  ],
+  "ignorePresets": [":prHourlyLimit2"],
+  "rangeStrategy": "update-lockfile"
+}
