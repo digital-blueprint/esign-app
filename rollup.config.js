@@ -251,10 +251,8 @@ export default (async () => {return {
           }
         }),
         resolve({
-          customResolveOptions: {
-            // ignore node_modules from vendored packages
-            moduleDirectory: path.join(process.cwd(), 'node_modules')
-          },
+          // ignore node_modules from vendored packages
+          moduleDirectories: [path.join(process.cwd(), 'node_modules')],
           browser: true,
           preferBuiltins: true
         }),
