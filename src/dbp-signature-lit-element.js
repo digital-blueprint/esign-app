@@ -193,26 +193,6 @@ export default class DBPSignatureLitElement extends LitElement {
         return (!this.isLoggedIn() && window.DBPAuthToken !== undefined);
     }
 
-    getOrganization() {
-        const organizationSelect = this._("dbp-knowledge-base-organization-select");
-
-        if (organizationSelect) {
-            const objectText = organizationSelect.getAttribute("data-object");
-
-            if (objectText !== null) {
-                return JSON.parse(objectText);
-            }
-        }
-
-        return null;
-    }
-
-    getOrganizationCode() {
-        const organization = this.getOrganization();
-
-        return organization !== null ? organization.alternateName : "";
-    }
-
     /**
      * Open Filesink for multiple files
      */
