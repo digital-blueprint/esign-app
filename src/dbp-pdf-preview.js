@@ -10,6 +10,7 @@ import * as commonStyles from '@dbp-toolkit/common/styles';
 import pdfjs from 'pdfjs-dist/es5/build/pdf.js';
 import buildinfo from 'consts:buildinfo';
 import {name as pkgName} from './../package.json';
+import {getPDFSignatureCount} from './utils.js';
 
 const i18n = createI18nInstance();
 
@@ -238,6 +239,8 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
         };
 
         reader.readAsBinaryString(file);
+
+        console.log(`Signature count: ${await getPDFSignatureCount(file)}`);
     }
 
     getSignatureRect() {
