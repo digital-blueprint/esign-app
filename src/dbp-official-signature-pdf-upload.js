@@ -44,7 +44,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         this.withSigBlock = false;
         this.queuedFilesSignaturePlacements = [];
         this.queuedFilesPlacementModes = [];
-        this.queuedFilesMissingPlacement = new Map();
+        this.queuedFilesNeedsPlacement = new Map();
         this.currentPreviewQueueKey = '';
     }
 
@@ -90,15 +90,12 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         setInterval(() => { this.handleQueuedFiles(); }, 1000);
     }
 
-    async _updateMissingPlacementStatus(id) {
+    async _updateNeedsPlacementStatus(id) {
         let file = this.queuedFiles[id];
-        let isManual = this.queuedFilesPlacementModes[id] === 'manual';
-        this.queuedFilesMissingPlacement.delete(id);
-        if (!isManual) {
-            let sigCount = await getPDFSignatureCount(file);
-            if (sigCount > 0)
-                this.queuedFilesMissingPlacement.set(id, true);
-        }
+        let sigCount = await getPDFSignatureCount(file);
+        this.queuedFilesNeedsPlacement.delete(id);
+        if (sigCount > 0)
+            this.queuedFilesNeedsPlacement.set(id, true);
     }
 
     /**
@@ -118,20 +115,18 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         this.signaturePlacementInProgress = false;
 
         // Validate that all PDFs with a signature have manual placement
-        this.queuedFilesMissingPlacement.clear();
         for (const key of Object.keys(this.queuedFiles)) {
-            await this._updateMissingPlacementStatus(key);
-        }
-
-        // Some have a signature but are not "manual", stop everything
-        if (this.queuedFilesMissingPlacement.size) {
-            notify({
-                "body": i18n.t('error-manual-positioning-missing'),
-                "type": "danger",
-            });
-            this.signingProcessEnabled = false;
-            this.signingProcessActive = false;
-            return;
+            const isManual = this.queuedFilesPlacementModes[key] === 'manual';
+            if (this.queuedFilesNeedsPlacement.get(key) && !isManual) {
+                // Some have a signature but are not "manual", stop everything
+                notify({
+                    "body": i18n.t('error-manual-positioning-missing'),
+                    "type": "danger",
+                });
+                this.signingProcessEnabled = false;
+                this.signingProcessActive = false;
+                return;
+            }
         }
 
         // take the file off the queue
@@ -171,7 +166,6 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         let key = this.currentPreviewQueueKey;
         this.queuedFilesSignaturePlacements[key] = placement;
         this.queuedFilesPlacementModes[key] = placementMode;
-        this.queuedFilesMissingPlacement.delete(key);
         this.signaturePlacementInProgress = false;
     }
 
@@ -197,6 +191,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         } else if (this.currentPreviewQueueKey === key) {
             this.signaturePlacementInProgress = false;
         }
+        this.requestUpdate();
     }
 
     /**
@@ -245,7 +240,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
 
     async queueFile(file) {
         let id = await super.queueFile(file);
-        await this._updateMissingPlacementStatus(id);
+        await this._updateNeedsPlacementStatus(id);
         this.requestUpdate();
         return id;
     }
@@ -378,7 +373,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
     clearQueuedFiles() {
         this.queuedFilesSignaturePlacements = [];
         this.queuedFilesPlacementModes = [];
-        this.queuedFilesMissingPlacement.clear();
+        this.queuedFilesNeedsPlacement.clear();
         super.clearQueuedFiles();
     }
 
@@ -654,7 +649,8 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
 
         ids.forEach((id) => {
             const file = this.queuedFiles[id];
-            const placementMissing = this.queuedFilesMissingPlacement.get(id);
+            const isManual = this.queuedFilesPlacementModes[id] === 'manual';
+            const placementMissing = this.queuedFilesNeedsPlacement.get(id) && !isManual;
 
             results.push(html`
                 <div class="file-block">
