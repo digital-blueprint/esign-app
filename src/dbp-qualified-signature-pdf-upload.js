@@ -311,8 +311,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
 
         // fetch pdf from api gateway with sessionId
         JSONLD.initialize(this.entryPointUrl, (jsonld) => {
-            const apiUrl = jsonld.getApiUrlForEntityName("QualifiedlySignedDocument") + '/' + sessionId + '?fileName=' +
-                encodeURI(fileName);
+            const apiUrl = jsonld.getApiUrlForEntityName("QualifiedlySignedDocument") + '/' + encodeURIComponent(sessionId) + '?fileName=' +
+                encodeURIComponent(fileName);
 
             fetch(apiUrl, {
                 headers: {
@@ -331,8 +331,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                     return result.json();
                 })
                 .then((document) => {
-                    // PDF-AS garbles some filenames (e.g. containing a '#')
-                    document.signedFilename = this.currentFileName.replace(/\.pdf$/i, '.sig.pdf');
                     // this doesn't seem to trigger an update() execution
                     that.signedFiles.push(document);
                     // this triggers the correct update() execution
@@ -850,7 +848,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             results.push(html`
                 <div class="file-block">
                     <div class="header">
-                        <span class="filename"><strong>${file.signedFilename}</strong> (${humanFileSize(file.contentSize)})</span>
+                        <span class="filename"><strong>${file.name}</strong> (${humanFileSize(file.contentSize)})</span>
                         <button class="button close"
                             title="${i18n.t('qualified-pdf-upload.download-file-button-title')}"
                             @click="${() => { this.downloadFileClickHandler(file); }}">
