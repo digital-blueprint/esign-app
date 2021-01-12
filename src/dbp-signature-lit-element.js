@@ -71,15 +71,14 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
 
     /**
      * @param file
-     * @returns {Promise<number>} key of the queued item
+     * @returns {Promise<string>} key of the queued item
      */
     async queueFile(file) {
         this._queueKey++;
         const key = this._queueKey;
         this.queuedFiles[key] = file;
         this.updateQueuedFilesCount();
-
-        return key;
+        return String(key);
     }
 
     /**
