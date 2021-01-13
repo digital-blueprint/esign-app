@@ -12,9 +12,6 @@ import {classMap} from 'lit-html/directives/class-map.js';
 import {FileSource} from '@dbp-toolkit/file-handling';
 import JSONLD from "@dbp-toolkit/common/jsonld";
 import {TextSwitch} from './textswitch.js';
-import nextcloudWebAppPasswordURL from 'consts:nextcloudWebAppPasswordURL';
-import nextcloudWebDavURL from 'consts:nextcloudWebDavURL';
-import nextcloudName from 'consts:nextcloudName';
 import {FileSink} from "@dbp-toolkit/file-handling";
 import {name as pkgName} from './../package.json';
 import {getPDFSignatureCount} from './utils.js';
@@ -27,6 +24,10 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         super();
         this.lang = i18n.language;
         this.entryPointUrl = commonUtils.getAPiUrl();
+        this.nextcloudWebAppPasswordURL = "";
+        this.nextcloudWebDavURL = "";
+        this.nextcloudName = "";
+        this.nextcloudFileURL = "";
         this.signedFiles = [];
         this.signedFilesCount = 0;
         this.signedFilesToDownload = 0;
@@ -64,6 +65,10 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         return this.getProperties({
             lang: { type: String },
             entryPointUrl: { type: String, attribute: 'entry-point-url' },
+            nextcloudWebAppPasswordURL: { type: String, attribute: 'nextcloud-web-app-password-url' },
+            nextcloudWebDavURL: { type: String, attribute: 'nextcloud-webdav-url' },
+            nextcloudName: { type: String, attribute: 'nextcloud-name' },
+            nextcloudFileURL: { type: String, attribute: 'nextcloud-file-url' },
             signedFiles: { type: Array, attribute: false },
             signedFilesCount: { type: Number, attribute: false },
             signedFilesToDownload: { type: Number, attribute: false },
@@ -778,9 +783,10 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                             context="${i18n.t('qualified-pdf-upload.upload-field-label')}"
                             allowed-mime-types="application/pdf"
                             enabled-sources="local${this.showTestNextcloudFilePicker ? ",nextcloud" : ""}"
-                            nextcloud-auth-url="${nextcloudWebAppPasswordURL}"
-                            nextcloud-web-dav-url="${nextcloudWebDavURL}"
-                            nextcloud-name="${nextcloudName}"
+                            nextcloud-auth-url="${this.nextcloudWebAppPasswordURL}"
+                            nextcloud-web-dav-url="${this.nextcloudWebDavURL}"
+                            nextcloud-name="${this.nextcloudName}"
+                            nextcloud-file-url="${this.nextcloudFileURL}"
                             decompress-zip
                             lang="${this.lang}"
                             ?disabled="${this.signingProcessActive}"
@@ -918,9 +924,10 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                 context="${i18n.t('qualified-pdf-upload.save-field-label', {count: this.signedFilesToDownload})}"
                 filename="signed-documents.zip"
                 enabled-destinations="local${this.showTestNextcloudFilePicker ? ",nextcloud" : ""}"
-                nextcloud-auth-url="${nextcloudWebAppPasswordURL}"
-                nextcloud-web-dav-url="${nextcloudWebDavURL}"
-                nextcloud-name="${nextcloudName}"
+                nextcloud-auth-url="${this.nextcloudWebAppPasswordURL}"
+                nextcloud-web-dav-url="${this.nextcloudWebDavURL}"
+                nextcloud-name="${this.nextcloudName}"
+                nextcloud-file-url="${this.nextcloudFileURL}"
                 lang="${this.lang}"
                 ></dbp-file-sink>
         `;

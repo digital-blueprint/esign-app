@@ -55,7 +55,7 @@
 
 <body>
 <dbp-provider id="root"
-              init="lang=de,global-entry-point-url=<%= entryPointURL %>">
+              init="lang=de,global-entry-point-url=<%= entryPointURL %>,nextcloud-web-app-password-url=<%= nextcloudWebAppPasswordURL %>,nextcloud-webdav-url=<%= nextcloudWebDavURL %>,nextcloud-name=<%= nextcloudName %>,nextcloud-file-url=<%= nextcloudFileURL %>">
     <<%= name %>
         subscribe="lang:lang,entry-point-url:global-entry-point-url"
         src="<%= getUrl(name + '.topic.metadata.json') %>"

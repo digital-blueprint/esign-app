@@ -223,11 +223,7 @@ export default (async () => {return {
         consts({
           environment: build,
           buildinfo: getBuildInfo(),
-          nextcloudWebAppPasswordURL: nextcloudWebAppPasswordURL,
-          nextcloudWebDavURL: nextcloudWebDavURL,
           nextcloudBaseURL: nextcloudBaseURL,
-          nextcloudFileURL: nextcloudFileURL,
-          nextcloudName: nextcloudName,
         }),
         emitEJS({
           src: 'assets',
@@ -241,7 +237,11 @@ export default (async () => {return {
             },
             name: pkg.name,
             entryPointURL: entryPointURL,
+            nextcloudWebAppPasswordURL: nextcloudWebAppPasswordURL,
+            nextcloudWebDavURL: nextcloudWebDavURL,
             nextcloudBaseURL: nextcloudBaseURL,
+            nextcloudFileURL: nextcloudFileURL,
+            nextcloudName: nextcloudName,
             keyCloakServer: keyCloakServer,
             keyCloakBaseURL: keyCloakBaseURL,
             keyCloakClientId: keyCloakClientId,
