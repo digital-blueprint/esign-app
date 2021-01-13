@@ -186,6 +186,7 @@ export async function getPackagePath(packageName, assetPath) {
 export default (async () => {return {
     input: (build != 'test') ? [
       'src/' + pkg.name + '.js',
+      'vendor/toolkit/packages/provider/src/dbp-provider.js',
       'src/dbp-official-signature-pdf-upload.js',
       'src/dbp-qualified-signature-pdf-upload.js',
       'src/dbp-signature-verification.js',

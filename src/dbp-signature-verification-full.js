@@ -52,7 +52,7 @@ class SignatureVerificationFull extends ScopedElementsMixin(DBPSignatureLitEleme
     }
 
     static get properties() {
-        return {
+        return this.getProperties({
             lang: { type: String },
             entryPointUrl: { type: String, attribute: 'entry-point-url' },
             verifiedFiles: { type: Array, attribute: false },
@@ -70,7 +70,7 @@ class SignatureVerificationFull extends ScopedElementsMixin(DBPSignatureLitEleme
             currentFileName: { type: String, attribute: false },
             previewInProgress: { type: Boolean, attribute: false },
             isSignaturePlacement: { type: Boolean, attribute: false },
-        };
+        });
     }
 
     connectedCallback() {

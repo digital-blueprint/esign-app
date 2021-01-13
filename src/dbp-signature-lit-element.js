@@ -1,9 +1,9 @@
-import {LitElement} from "lit-element";
 import {EventBus} from '@dbp-toolkit/common';
 import buildinfo from 'consts:buildinfo';
 import * as utils from "./utils";
+import {AdapterLitElement} from "@dbp-toolkit/provider/src/adapter-lit-element";
 
-export class DBPSignatureBaseLitElement extends LitElement {
+export class DBPSignatureBaseLitElement extends AdapterLitElement {
     constructor() {
         super();
     }

@@ -13,5 +13,6 @@
   "description": {
     "de": "Erlaubt das Verifizieren von signierten PDF-Dokumenten",
     "en": "Allows verification of signed PDF-documents"
-  }
+  },
+  "subscribe": "lang:lang,entry-point-url:global-entry-point-url"
 }

@@ -13,5 +13,6 @@
   "description": {
     "de": "Erlaubt das Hochladen von PDF-Dokumenten, um sie mit einer persönlichen elektronischen Signatur zu versehen",
     "en": "Allows upload of PDF-documents to personally sign them"
-  }
+  },
+  "subscribe": "lang:lang,entry-point-url:global-entry-point-url"
 }

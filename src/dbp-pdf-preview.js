@@ -51,7 +51,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
      * See: https://lit-element.polymer-project.org/guide/properties#initialize
      */
     static get properties() {
-        return {
+        return this.getProperties({
             lang: { type: String },
             currentPage: { type: Number, attribute: false },
             totalPages: { type: Number, attribute: false },
@@ -62,7 +62,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
             placeholder: { type: String, attribute: 'signature-placeholder-image-src' },
             signature_width: { type: Number, attribute: 'signature-width' },
             signature_height: { type: Number, attribute: 'signature-height' },
-        };
+        });
     }
 
     update(changedProperties) {
