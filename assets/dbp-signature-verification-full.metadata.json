@@ -14,5 +14,5 @@
     "de": "Erlaubt das Verifizieren von signierten PDF-Dokumenten",
     "en": "Allows verification of signed PDF-documents"
   },
-  "subscribe": "lang:lang,entry-point-url:global-entry-point-url,nextcloud-web-app-password-url:nextcloud-web-app-password-url,nextcloud-webdav-url:nextcloud-webdav-url,nextcloud-name:nextcloud-name,nextcloud-file-url:nextcloud-file-url"
+  "subscribe": "lang:lang,entry-point-url:entry-point-url,nextcloud-web-app-password-url:nextcloud-web-app-password-url,nextcloud-webdav-url:nextcloud-webdav-url,nextcloud-name:nextcloud-name,nextcloud-file-url:nextcloud-file-url"
 }
