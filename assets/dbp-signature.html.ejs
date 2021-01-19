@@ -65,7 +65,7 @@
         src="<%= getUrl(name + '.topic.metadata.json') %>"
         base-path="<%= getUrl('') %>"
         keycloak-config='{"url": "<%= keyCloakBaseURL %>", "realm": "tugraz", "clientId": "<%= keyCloakClientId %>", "silentCheckSsoRedirectUri": "<%= getUrl('silent-check-sso.html') %>"}'
-        matomo-url='https://analytics.tugraz.at/'
+        matomo-url='<%= matomoUrl %>'
         matomo-site-id='<%= matomoSiteId %>'
     ><dbp-loading-spinner></dbp-loading-spinner></<%= name %>>
 </dbp-provider>

@@ -24,7 +24,7 @@ test:
   stage: test
   script:
     - yarn install
-    - yarn run build-dev
+    - APP_ENV=development yarn run build
     - yarn run test-full
 
 linting:

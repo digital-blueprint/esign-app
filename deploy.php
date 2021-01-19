@@ -42,30 +42,16 @@ host('production')
     ->hostname('mw@mw01-prod.tugraz.at')
     ->set('deploy_path', '/home/mw/prod_esig/deploy');
 
-// Demo build task
-task('build-demo', function () {
+task('build', function () {
+    $stage = get('stage');
     runLocally("yarn install");
-    runLocally("yarn run build-demo");
-})->onStage('demo');
-
-// Demo dev task
-task('build-development', function () {
-    runLocally("yarn install");
-    runLocally("yarn run build-dev");
-})->onStage('development');
-
-//Production task
-task('build-production', function () {
-    runLocally("yarn install");
-    runLocally("yarn run build-prod");
-})->onStage('production');
+    runLocally("APP_ENV=$stage yarn run build");
+});
 
 // Deploy task
 task('deploy', [
     'deploy:info',
-    'build-demo',
-    'build-development',
-    'build-production',
+    'build',
     'deploy:prepare',
     'deploy:lock',
     'deploy:release',

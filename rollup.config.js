@@ -7,7 +7,6 @@ import commonjs from '@rollup/plugin-commonjs';
 import copy from 'rollup-plugin-copy';
 import {terser} from "rollup-plugin-terser";
 import json from '@rollup/plugin-json';
-import replace from "@rollup/plugin-replace";
 import serve from 'rollup-plugin-serve';
 import urlPlugin from "@rollup/plugin-url";
 import consts from 'rollup-plugin-consts';
@@ -16,6 +15,7 @@ import del from 'rollup-plugin-delete';
 import emitEJS from 'rollup-plugin-emit-ejs'
 import {getBabelOutputPlugin} from '@rollup/plugin-babel';
 import selfsigned from 'selfsigned';
+import appConfig from './app.config.js';
 
 // -------------------------------
 
@@ -27,103 +27,48 @@ const USE_HTTPS = false;
 // -------------------------------
 
 const pkg = require('./package.json');
-const build = (typeof process.env.BUILD !== 'undefined') ? process.env.BUILD : 'local';
+const appEnv = (typeof process.env.APP_ENV !== 'undefined') ? process.env.APP_ENV : 'local';
 const watch = process.env.ROLLUP_WATCH === 'true';
-const buildFull = (!watch && build !== 'test') || (process.env.FORCE_FULL !== undefined);
-
-console.log("build: " + build);
-let basePath = '';
-let entryPointURL = '';
-let nextcloudBaseURL = 'https://cloud.tugraz.at';
-let nextcloudWebAppPasswordURL = nextcloudBaseURL + '/apps/webapppassword';
-let nextcloudWebDavURL = nextcloudBaseURL + '/remote.php/dav/files';
-let nextcloudName = 'TU Graz cloud';
-let keyCloakServer = '';
-let keyCloakBaseURL = '';
-let keyCloakClientId = '';
-let pdfAsQualifiedlySigningServer = '';
-let matomoSiteId = 131;
+const buildFull = (!watch && appEnv !== 'test') || (process.env.FORCE_FULL !== undefined);
 let useTerser = buildFull;
 let useBabel = buildFull;
 let checkLicenses = buildFull;
 
-switch (build) {
-  case 'local':
-    basePath = '/dist/';
-    entryPointURL = 'http://127.0.0.1:8000';
-    nextcloudBaseURL = 'http://localhost:8081';
-    nextcloudWebAppPasswordURL = nextcloudBaseURL + '/index.php/apps/webapppassword';
-    nextcloudWebDavURL = nextcloudBaseURL + '/remote.php/dav/files';
-    keyCloakServer = 'auth-dev.tugraz.at';
-    keyCloakBaseURL = 'https://' + keyCloakServer + '/auth';
-    keyCloakClientId = 'auth-dev-mw-frontend-local';
-    pdfAsQualifiedlySigningServer = 'sig-dev.tugraz.at';
-    break;
-  case 'development':
-    basePath = '/apps/signature/';
-    entryPointURL = 'https://mw-dev.tugraz.at';
-    // "/pers" can't go here because it's not allowed in the "Content-Security-Policy"
-    nextcloudBaseURL = 'https://nc-dev.tugraz.at';
-    // "/index.php" is needed to don't get a "This origin is not allowed!" because the "target-origin" get parameter can't be read
-    nextcloudWebAppPasswordURL = nextcloudBaseURL + '/pers/index.php/apps/webapppassword';
-    nextcloudWebDavURL = nextcloudBaseURL + '/pers/remote.php/dav/files';
-    keyCloakServer = 'auth-dev.tugraz.at';
-    keyCloakBaseURL = 'https://' + keyCloakServer + '/auth';
-    keyCloakClientId = 'esign-dev_tugraz_at-ESIGN';
-    pdfAsQualifiedlySigningServer = 'sig-dev.tugraz.at';
-    break;
-  case 'demo':
-    basePath = '/apps/signature/';
-    entryPointURL = 'https://api-demo.tugraz.at';
-    // "/pers" can't go here because it's not allowed in the "Content-Security-Policy"
-    nextcloudBaseURL = 'https://cloud.tugraz.at';
-    // "/index.php" is needed to don't get a "This origin is not allowed!" because the "target-origin" get parameter can't be read
-    nextcloudWebAppPasswordURL = nextcloudBaseURL + '/index.php/apps/webapppassword';
-    nextcloudWebDavURL = nextcloudBaseURL + '/remote.php/dav/files';
-    keyCloakServer = 'auth-test.tugraz.at';
-    keyCloakBaseURL = 'https://' + keyCloakServer + '/auth';
-    keyCloakClientId = 'esig-demo_tugraz_at-ESIG';
-    pdfAsQualifiedlySigningServer = 'sig-test.tugraz.at';
-    break;
-  case 'production':
-    basePath = '/';
-    entryPointURL = 'https://api.tugraz.at';
-    nextcloudBaseURL = '';
-    nextcloudWebAppPasswordURL = nextcloudBaseURL + '';
-    nextcloudWebDavURL = nextcloudBaseURL + '';
-    keyCloakServer = 'auth.tugraz.at';
-    keyCloakBaseURL = 'https://' + keyCloakServer + '/auth';
-    keyCloakClientId = 'esig_tugraz_at';
-    pdfAsQualifiedlySigningServer = 'sig.tugraz.at';
-    matomoSiteId = 137;
-    break;
-  case 'test':
-    basePath = '/apps/signature/';
-    entryPointURL = '';
-    nextcloudBaseURL = '';
-    nextcloudWebAppPasswordURL = '';
-    keyCloakServer = '';
-    keyCloakBaseURL = '';
-    keyCloakClientId = '';
-    pdfAsQualifiedlySigningServer = '';
-    break;
-  case 'bs':
-    basePath = '/dist/';
-    entryPointURL = 'http://bs-local.com:8000';
-    nextcloudBaseURL = 'http://bs-local.com:8081';
-    nextcloudWebAppPasswordURL = nextcloudBaseURL + '/index.php/apps/webapppassword';
-    nextcloudWebDavURL = nextcloudBaseURL + '/remote.php/dav/files';
-    keyCloakServer = 'auth-dev.tugraz.at';
-    keyCloakBaseURL = 'https://' + keyCloakServer + '/auth';
-    keyCloakClientId = 'auth-dev-mw-frontend-local';
-    pdfAsQualifiedlySigningServer = 'sig-dev.tugraz.at';
-    break;
-  default:
-    console.error('Unknown build environment: ' + build);
+console.log("APP_ENV: " + appEnv);
+
+let config;
+if (appEnv in appConfig) {
+    config = appConfig[appEnv];
+} else if (appEnv === 'test') {
+    config = {
+        basePath: '/',
+        entryPointURL: 'https://test',
+        keyCloakBaseURL: 'https://test',
+        keyCloakClientId: '',
+        matomoUrl: '',
+        matomoSiteId: -1,
+        nextcloudBaseURL: 'https://test',
+        pdfAsQualifiedlySigningServer: 'https://test'
+    };
+} else {
+    console.error(`Unknown build environment: '${appEnv}', use one of '${Object.keys(appConfig)}'`);
     process.exit(1);
 }
 
-let nextcloudFileURL = nextcloudBaseURL + '/apps/files/?dir=';
+config.keyCloakServer = new URL(config.keyCloakBaseURL).origin;
+config.nextcloudName = 'TU Graz cloud';
+
+if (config.nextcloudBaseURL) {
+    config.nextcloudFileURL = config.nextcloudBaseURL + '/index.php/apps/files/?dir=';
+    config.nextcloudOrigin = new URL(config.nextcloudBaseURL).origin;
+    config.nextcloudWebAppPasswordURL = config.nextcloudBaseURL + '/index.php/apps/webapppassword';
+    config.nextcloudWebDavURL = config.nextcloudBaseURL + '/remote.php/dav/files';
+} else {
+    config.nextcloudFileURL = '';
+    config.nextcloudOrigin = '';
+    config.nextcloudWebAppPasswordURL = '';
+    config.nextcloudWebDavURL = '';
+}
 
 /**
  * Creates a server certificate and caches it in the .cert directory
@@ -164,7 +109,7 @@ function getBuildInfo() {
         info: commit,
         url: newUrl,
         time: new Date().toISOString(),
-        env: build
+        env: appEnv
     }
 }
 
@@ -184,7 +129,7 @@ export async function getPackagePath(packageName, assetPath) {
 }
 
 export default (async () => {return {
-    input: (build != 'test') ? [
+    input: (appEnv != 'test') ? [
       'src/' + pkg.name + '.js',
       'vendor/toolkit/packages/provider/src/dbp-provider.js',
       'src/dbp-official-signature-pdf-upload.js',
@@ -221,33 +166,34 @@ export default (async () => {return {
           targets: 'dist/*'
         }),
         consts({
-          environment: build,
+          environment: appEnv,
           buildinfo: getBuildInfo(),
-          nextcloudBaseURL: nextcloudBaseURL,
+          nextcloudBaseURL: config.nextcloudBaseURL,
         }),
         emitEJS({
           src: 'assets',
           include: ['**/*.ejs', '**/.*.ejs'],
           data: {
             getUrl: (p) => {
-              return url.resolve(basePath, p);
+              return url.resolve(config.basePath, p);
             },
             getPrivateUrl: (p) => {
-                return url.resolve(`${basePath}local/${pkg.name}/`, p);
+                return url.resolve(`${config.basePath}local/${pkg.name}/`, p);
             },
             name: pkg.name,
-            entryPointURL: entryPointURL,
-            nextcloudWebAppPasswordURL: nextcloudWebAppPasswordURL,
-            nextcloudWebDavURL: nextcloudWebDavURL,
-            nextcloudBaseURL: nextcloudBaseURL,
-            nextcloudFileURL: nextcloudFileURL,
-            nextcloudName: nextcloudName,
-            keyCloakServer: keyCloakServer,
-            keyCloakBaseURL: keyCloakBaseURL,
-            keyCloakClientId: keyCloakClientId,
-            pdfAsQualifiedlySigningServer: pdfAsQualifiedlySigningServer,
-            environment: build,
-            matomoSiteId: matomoSiteId,
+            entryPointURL: config.entryPointURL,
+            nextcloudWebAppPasswordURL: config.nextcloudWebAppPasswordURL,
+            nextcloudWebDavURL: config.nextcloudWebDavURL,
+            nextcloudBaseURL: config.nextcloudBaseURL,
+            nextcloudFileURL: config.nextcloudFileURL,
+            nextcloudName: config.nextcloudName,
+            keyCloakServer: config.keyCloakServer,
+            keyCloakBaseURL: config.keyCloakBaseURL,
+            keyCloakClientId: config.keyCloakClientId,
+            pdfAsQualifiedlySigningServer: config.pdfAsQualifiedlySigningServer,
+            environment: appEnv,
+            matomoUrl: config.matomoUrl,
+            matomoSiteId: config.matomoSiteId,
             buildInfo: getBuildInfo()
           }
         }),
@@ -286,9 +232,6 @@ Dependencies:
           ],
           emitFiles: true,
           fileName: 'shared/[name].[hash][extname]'
-        }),
-        replace({
-            "process.env.BUILD": '"' + build + '"',
         }),
         copy({
             targets: [
@@ -334,10 +277,10 @@ Dependencies:
           contentBase: '.',
           host: '127.0.0.1',
           port: 8001,
-          historyApiFallback: basePath + pkg.name + '.html',
+          historyApiFallback: config.basePath + pkg.name + '.html',
           https: USE_HTTPS ? generateTLSConfig() : false,
           headers: {
-              'Content-Security-Policy': `default-src 'self' 'unsafe-eval' 'unsafe-inline' analytics.tugraz.at ${keyCloakServer} ${entryPointURL} httpbin.org ${nextcloudBaseURL} www.handy-signatur.at ${pdfAsQualifiedlySigningServer} ; img-src * blob: data:`
+              'Content-Security-Policy': `default-src 'self' 'unsafe-eval' 'unsafe-inline' ${config.matomoUrl} ${config.keyCloakServer} ${config.entryPointURL} httpbin.org ${config.nextcloudOrigin} www.handy-signatur.at ${config.pdfAsQualifiedlySigningServer} ; img-src * blob: data:`
           },
         }) : false
     ]
