@@ -17,15 +17,6 @@ import appConfig from './app.config.js';
 import {getPackagePath, getBuildInfo} from './vendor/toolkit/rollup.utils.js';
 import {generateTLSConfig} from './rollup.utils.js';
 
-// -------------------------------
-
-// Some new web APIs are only available when HTTPS is active.
-// Note that this only works with a Non-HTTPS API endpoint with Chrome,
-// Firefox will emit CORS errors, see https://bugzilla.mozilla.org/show_bug.cgi?id=1488740
-const USE_HTTPS = false;
-
-// -------------------------------
-
 const pkg = require('./package.json');
 const appEnv = (typeof process.env.APP_ENV !== 'undefined') ? process.env.APP_ENV : 'local';
 const watch = process.env.ROLLUP_WATCH === 'true';
@@ -33,6 +24,7 @@ const buildFull = (!watch && appEnv !== 'test') || (process.env.FORCE_FULL !== u
 let useTerser = buildFull;
 let useBabel = buildFull;
 let checkLicenses = buildFull;
+let useHTTPS = false;
 
 console.log("APP_ENV: " + appEnv);
 
@@ -48,6 +40,7 @@ if (appEnv in appConfig) {
         matomoUrl: '',
         matomoSiteId: -1,
         nextcloudBaseURL: 'https://test',
+        nextcloudName: '',
         pdfAsQualifiedlySigningServer: 'https://test'
     };
 } else {
@@ -55,20 +48,28 @@ if (appEnv in appConfig) {
     process.exit(1);
 }
 
-config.keyCloakServer = new URL(config.keyCloakBaseURL).origin;
-config.nextcloudName = 'TU Graz cloud';
-
 if (config.nextcloudBaseURL) {
     config.nextcloudFileURL = config.nextcloudBaseURL + '/index.php/apps/files/?dir=';
-    config.nextcloudOrigin = new URL(config.nextcloudBaseURL).origin;
     config.nextcloudWebAppPasswordURL = config.nextcloudBaseURL + '/index.php/apps/webapppassword';
     config.nextcloudWebDavURL = config.nextcloudBaseURL + '/remote.php/dav/files';
 } else {
     config.nextcloudFileURL = '';
-    config.nextcloudOrigin = '';
     config.nextcloudWebAppPasswordURL = '';
     config.nextcloudWebDavURL = '';
 }
+
+function getOrigin(url) {
+    if (url)
+        return new URL(url).origin;
+    return '';
+}
+
+config.CSP = `default-src 'self' 'unsafe-eval' 'unsafe-inline' \
+${getOrigin(config.matomoUrl)} ${getOrigin(config.keyCloakBaseURL)} ${getOrigin(config.entryPointURL)} \
+httpbin.org ${getOrigin(config.nextcloudBaseURL)} www.handy-signatur.at \
+${getOrigin(config.pdfAsQualifiedlySigningServer)}; \
+img-src * blob: data:`;
+
 
 export default (async () => {return {
     input: (appEnv != 'test') ? [
@@ -129,11 +130,10 @@ export default (async () => {return {
             nextcloudBaseURL: config.nextcloudBaseURL,
             nextcloudFileURL: config.nextcloudFileURL,
             nextcloudName: config.nextcloudName,
-            keyCloakServer: config.keyCloakServer,
             keyCloakBaseURL: config.keyCloakBaseURL,
             keyCloakClientId: config.keyCloakClientId,
-            pdfAsQualifiedlySigningServer: config.pdfAsQualifiedlySigningServer,
             environment: appEnv,
+            CSP: config.CSP,
             matomoUrl: config.matomoUrl,
             matomoSiteId: config.matomoSiteId,
             buildInfo: getBuildInfo(appEnv)
@@ -220,9 +220,9 @@ Dependencies:
           host: '127.0.0.1',
           port: 8001,
           historyApiFallback: config.basePath + pkg.name + '.html',
-          https: USE_HTTPS ? generateTLSConfig() : false,
+          https: useHTTPS ? generateTLSConfig() : false,
           headers: {
-              'Content-Security-Policy': `default-src 'self' 'unsafe-eval' 'unsafe-inline' ${config.matomoUrl} ${config.keyCloakServer} ${config.entryPointURL} httpbin.org ${config.nextcloudOrigin} www.handy-signatur.at ${config.pdfAsQualifiedlySigningServer} ; img-src * blob: data:`
+              'Content-Security-Policy': config.CSP
           },
         }) : false
     ]

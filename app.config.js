@@ -7,6 +7,7 @@ export default {
         matomoUrl: 'https://analytics.tugraz.at/',
         matomoSiteId: 131,
         nextcloudBaseURL: 'http://localhost:8081',
+        nextcloudName: 'TU Graz cloud',
         pdfAsQualifiedlySigningServer: 'https://sig-dev.tugraz.at',
     },
     bs: {
@@ -17,6 +18,7 @@ export default {
         matomoUrl: 'https://analytics.tugraz.at/',
         matomoSiteId: 131,
         nextcloudBaseURL: 'http://bs-local.com:8081',
+        nextcloudName: 'TU Graz cloud',
         pdfAsQualifiedlySigningServer: 'https://sig-dev.tugraz.at',
     },
     development: {
@@ -27,6 +29,7 @@ export default {
         matomoUrl: 'https://analytics.tugraz.at/',
         matomoSiteId: 131,
         nextcloudBaseURL: 'https://nc-dev.tugraz.at/pers',
+        nextcloudName: 'TU Graz cloud',
         pdfAsQualifiedlySigningServer: 'https://sig-dev.tugraz.at',
     },
     demo: {
@@ -37,6 +40,7 @@ export default {
         matomoUrl: 'https://analytics.tugraz.at/',
         matomoSiteId: 131,
         nextcloudBaseURL: 'https://cloud.tugraz.at',
+        nextcloudName: 'TU Graz cloud',
         pdfAsQualifiedlySigningServer: 'https://sig-test.tugraz.at',
     },
     production: {
@@ -47,6 +51,7 @@ export default {
         matomoUrl: 'https://analytics.tugraz.at/',
         matomoSiteId: 137,
         nextcloudBaseURL: '',
+        nextcloudName: '',
         pdfAsQualifiedlySigningServer: 'https://sig.tugraz.at',
     },
 };
