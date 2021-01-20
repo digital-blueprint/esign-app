@@ -40,7 +40,8 @@ if (appEnv in appConfig) {
         matomoSiteId: -1,
         nextcloudBaseURL: 'https://test',
         nextcloudName: '',
-        pdfAsQualifiedlySigningServer: 'https://test'
+        pdfAsQualifiedlySigningServer: 'https://test',
+        hiddenActivities: [],
     };
 } else {
     console.error(`Unknown build environment: '${appEnv}', use one of '${Object.keys(appConfig)}'`);
@@ -121,6 +122,9 @@ export default (async () => {return {
             getPrivateUrl: (p) => {
                 return url.resolve(`${config.basePath}local/${pkg.name}/`, p);
             },
+            isVisible: (name) => {
+                return !config.hiddenActivities.includes(name);
+            },
             name: pkg.name,
             entryPointURL: config.entryPointURL,
             nextcloudWebAppPasswordURL: config.nextcloudWebAppPasswordURL,
@@ -130,7 +134,6 @@ export default (async () => {return {
             nextcloudName: config.nextcloudName,
             keyCloakBaseURL: config.keyCloakBaseURL,
             keyCloakClientId: config.keyCloakClientId,
-            environment: appEnv,
             CSP: config.CSP,
             matomoUrl: config.matomoUrl,
             matomoSiteId: config.matomoSiteId,
