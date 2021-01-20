@@ -73,7 +73,6 @@ img-src * blob: data:`;
 export default (async () => {return {
     input: (appEnv != 'test') ? [
       'src/' + pkg.name + '.js',
-      'vendor/toolkit/packages/provider/src/dbp-provider.js',
       'src/dbp-official-signature-pdf-upload.js',
       'src/dbp-qualified-signature-pdf-upload.js',
       'src/dbp-signature-verification.js',
