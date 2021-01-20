@@ -14,8 +14,7 @@ import del from 'rollup-plugin-delete';
 import emitEJS from 'rollup-plugin-emit-ejs'
 import {getBabelOutputPlugin} from '@rollup/plugin-babel';
 import appConfig from './app.config.js';
-import {getPackagePath, getBuildInfo} from './vendor/toolkit/rollup.utils.js';
-import {generateTLSConfig} from './rollup.utils.js';
+import {getPackagePath, getBuildInfo, generateTLSConfig} from './vendor/toolkit/rollup.utils.js';
 
 const pkg = require('./package.json');
 const appEnv = (typeof process.env.APP_ENV !== 'undefined') ? process.env.APP_ENV : 'local';
@@ -220,7 +219,7 @@ Dependencies:
           host: '127.0.0.1',
           port: 8001,
           historyApiFallback: config.basePath + pkg.name + '.html',
-          https: useHTTPS ? generateTLSConfig() : false,
+          https: useHTTPS ? await generateTLSConfig() : false,
           headers: {
               'Content-Security-Policy': config.CSP
           },
