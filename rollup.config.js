@@ -14,7 +14,7 @@ import del from 'rollup-plugin-delete';
 import emitEJS from 'rollup-plugin-emit-ejs'
 import {getBabelOutputPlugin} from '@rollup/plugin-babel';
 import appConfig from './app.config.js';
-import {getPackagePath, getBuildInfo, generateTLSConfig} from './vendor/toolkit/rollup.utils.js';
+import {getPackagePath, getBuildInfo, generateTLSConfig, getDistPath} from './vendor/toolkit/rollup.utils.js';
 
 const pkg = require('./package.json');
 const appEnv = (typeof process.env.APP_ENV !== 'undefined') ? process.env.APP_ENV : 'local';
@@ -71,7 +71,9 @@ ${getOrigin(config.pdfAsQualifiedlySigningServer)}; \
 img-src * blob: data:`;
 
 
-export default (async () => {return {
+export default (async () => {
+    let privatePath = await getDistPath(pkg.name)
+    return {
     input: (appEnv != 'test') ? [
       'src/' + pkg.name + '.js',
       'src/dbp-official-signature-pdf-upload.js',
@@ -120,7 +122,7 @@ export default (async () => {return {
               return url.resolve(config.basePath, p);
             },
             getPrivateUrl: (p) => {
-                return url.resolve(`${config.basePath}local/${pkg.name}/`, p);
+                return url.resolve(`${config.basePath}${privatePath}/`, p);
             },
             isVisible: (name) => {
                 return !config.hiddenActivities.includes(name);
@@ -170,35 +172,34 @@ Dependencies:
         urlPlugin({
           limit: 0,
           include: [
-            "node_modules/suggestions/**/*.css",
-            "node_modules/select2/**/*.css",
+            await getPackagePath('select2', '**/*.css'),
           ],
           emitFiles: true,
           fileName: 'shared/[name].[hash][extname]'
         }),
         copy({
             targets: [
-                {src: 'assets/silent-check-sso.html', dest:'dist'},
+                {src: 'assets/*-placeholder.png', dest: 'dist/' + await getDistPath(pkg.name)},
+                {src: 'assets/*.css', dest: 'dist/' + await getDistPath(pkg.name)},
+                {src: 'assets/*.ico', dest: 'dist/' + await getDistPath(pkg.name)},
+                {src: 'assets/*.metadata.json', dest: 'dist'},
+                {src: 'assets/*.svg', dest: 'dist/' + await getDistPath(pkg.name)},
                 {src: 'assets/htaccess-shared', dest: 'dist/shared/', rename: '.htaccess'},
-                {src: 'assets/*.css', dest: 'dist/local/' + pkg.name},
-                {src: 'assets/*.ico', dest: 'dist/local/' + pkg.name},
-                {src: 'assets/*.svg', dest: 'dist/local/' + pkg.name},
+                {src: 'assets/icon-*.png', dest: 'dist/' + await getDistPath(pkg.name)},
+                {src: 'assets/manifest.json', dest: 'dist', rename: pkg.name + '.manifest.json'},
+                {src: 'assets/silent-check-sso.html', dest:'dist'},
                 {
-                    src: 'node_modules/pdfjs-dist/es5/build/pdf.worker.js',
-                    dest: 'dist/local/' + pkg.name + '/pdfjs',
+                    src: await getPackagePath('pdfjs-dist', 'es5/build/pdf.worker.js'),
+                    dest: 'dist/' + await getDistPath(pkg.name, 'pdfjs'),
                     // enable signatures in pdf preview
                     transform: (contents) => contents.toString().replace('"Sig"', '"Sig-patched-show-anyway"')
                 },
-                {src: 'node_modules/pdfjs-dist/cmaps/*', dest: 'dist/local/' + pkg.name + '/pdfjs'}, // do we want all map files?
-                {src: await getPackagePath('@dbp-toolkit/font-source-sans-pro', 'files/*'), dest: 'dist/local/' + pkg.name + '/fonts/source-sans-pro'},
-                {src: 'node_modules/@dbp-toolkit/common/src/spinner.js', dest: 'dist/local/' + pkg.name, rename: 'spinner.js'},
-                {src: 'node_modules/@dbp-toolkit/common/misc/browser-check.js', dest: 'dist/local/' + pkg.name, rename: 'browser-check.js'},
-                {src: 'assets/icon-*.png', dest: 'dist/local/' + pkg.name},
-                {src: 'assets/*-placeholder.png', dest: 'dist/local/' + pkg.name},
-                {src: 'assets/manifest.json', dest: 'dist', rename: pkg.name + '.manifest.json'},
-                {src: 'assets/*.metadata.json', dest: 'dist'},
-                {src: 'node_modules/@dbp-toolkit/common/assets/icons/*.svg', dest: 'dist/local/@dbp-toolkit/common/icons'},
-                {src: 'node_modules/tabulator-tables/dist/css', dest: 'dist/local/@dbp-toolkit/file-handling/tabulator-tables'},
+                {src: await getPackagePath('pdfjs-dist', 'cmaps/*'), dest: 'dist/' + await getDistPath(pkg.name, 'pdfjs')}, // do we want all map files?
+                {src: await getPackagePath('@dbp-toolkit/font-source-sans-pro', 'files/*'), dest: 'dist/' + await getDistPath(pkg.name, 'fonts/source-sans-pro')},
+                {src: await getPackagePath('@dbp-toolkit/common', 'src/spinner.js'), dest: 'dist/' + await getDistPath(pkg.name)},
+                {src: await getPackagePath('@dbp-toolkit/common', 'misc/browser-check.js'), dest: 'dist/' + await getDistPath(pkg.name)},
+                {src: await getPackagePath('@dbp-toolkit/common', 'assets/icons/*.svg'), dest: 'dist/' + await getDistPath('@dbp-toolkit/common', 'icons')},
+                {src: await getPackagePath('tabulator-tables', 'dist/css'), dest: 'dist/' + await getDistPath('@dbp-toolkit/file-handling', 'tabulator-tables')},
             ],
         }),
         useBabel && getBabelOutputPlugin({
