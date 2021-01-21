@@ -58,6 +58,10 @@ if (config.nextcloudBaseURL) {
     config.nextcloudWebDavURL = '';
 }
 
+if (watch) {
+    config.basePath = '/dist/';
+}
+
 function getOrigin(url) {
     if (url)
         return new URL(url).origin;
