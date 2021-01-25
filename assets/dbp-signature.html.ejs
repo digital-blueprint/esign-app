@@ -55,6 +55,7 @@
 <body>
 <dbp-provider id="root"
               lang="de" entry-point-url="<%= entryPointURL %>"
+              <%= buildInfo.env !== 'production' ? 'show-nextcloud-file-picker' : '' %>
               nextcloud-web-app-password-url="<%= nextcloudWebAppPasswordURL %>"
               nextcloud-webdav-url="<%= nextcloudWebDavURL %>"
               nextcloud-name="<%= nextcloudName %>"
@@ -66,6 +67,10 @@
         keycloak-config='{"url": "<%= keyCloakBaseURL %>", "realm": "tugraz", "clientId": "<%= keyCloakClientId %>", "silentCheckSsoRedirectUri": "<%= getUrl('silent-check-sso.html') %>"}'
         matomo-url='<%= matomoUrl %>'
         matomo-site-id='<%= matomoSiteId %>'
+        git-info='<%= buildInfo.info %>'
+        build-url='<%= buildInfo.url %>'
+        build-time='<%= buildInfo.time %>'
+        env='<%= buildInfo.env %>'
     ><dbp-loading-spinner></dbp-loading-spinner></<%= name %>>
 </dbp-provider>
 

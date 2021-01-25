@@ -699,7 +699,7 @@ class SignatureVerificationFull extends ScopedElementsMixin(DBPSignatureLitEleme
                         <dbp-file-source
                             id="file-source"
                             allowed-mime-types="application/pdf"
-                            enabled-sources="local${this.showTestNextcloudFilePicker ? ",nextcloud" : ""}"
+                            enabled-sources="local${this.showNextcloudFilePicker ? ",nextcloud" : ""}"
                             nextcloud-auth-url="${this.nextcloudWebAppPasswordURL}"
                             nextcloud-web-dav-url="${this.nextcloudWebDavURL}"
                             nextcloud-name="${this.nextcloudName}"

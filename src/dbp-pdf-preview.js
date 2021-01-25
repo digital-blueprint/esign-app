@@ -8,7 +8,6 @@ import {MiniSpinner, Icon} from '@dbp-toolkit/common';
 import * as commonUtils from "@dbp-toolkit/common/utils";
 import * as commonStyles from '@dbp-toolkit/common/styles';
 import pdfjs from 'pdfjs-dist/es5/build/pdf.js';
-import buildinfo from 'consts:buildinfo';
 import {name as pkgName} from './../package.json';
 import {readBinaryFileContent} from './utils.js';
 
@@ -36,6 +35,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
         this.signature_width = 42;
         this.signature_height = 42;
         this.border_width = 2;
+        this.allowSignatureRotation = false;
 
         this._onWindowResize = this._onWindowResize.bind(this);
     }
@@ -62,6 +62,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
             placeholder: { type: String, attribute: 'signature-placeholder-image-src' },
             signature_width: { type: Number, attribute: 'signature-width' },
             signature_height: { type: Number, attribute: 'signature-height' },
+            allowSignatureRotation: { type: Boolean, attribute: 'allow-signature-rotation' },
         });
     }
 
@@ -487,7 +488,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
     }
 
     render() {
-        const isRotationHidden = (buildinfo.env === 'production');
+        const isRotationHidden = !this.allowSignatureRotation;
 
         return html`
 

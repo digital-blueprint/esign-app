@@ -1,5 +1,4 @@
 import {EventBus} from '@dbp-toolkit/common';
-import buildinfo from 'consts:buildinfo';
 import * as utils from "./utils";
 import {AdapterLitElement} from "@dbp-toolkit/provider/src/adapter-lit-element";
 
@@ -54,7 +53,6 @@ export class DBPSignatureBaseLitElement extends AdapterLitElement {
 }
 
 export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
-
     constructor() {
         super();
         this.queuedFiles = [];
@@ -62,11 +60,16 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
         this.uploadInProgress = false;
         this.queueBlockEnabled = false;
         this._queueKey = 0;
+        this.showNextcloudFilePicker = false;
 
         // will be set in function update
         this.fileSourceUrl = "";
+    }
 
-        this.showTestNextcloudFilePicker = buildinfo.env !== 'production';
+    static get properties() {
+        return this.getProperties({
+            showNextcloudFilePicker: { type: Boolean, attribute: 'show-nextcloud-file-picker' },
+        });
     }
 
     /**
