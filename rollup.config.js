@@ -1,5 +1,4 @@
 import path from 'path';
-import fs from 'fs';
 import url from 'url';
 import glob from 'glob';
 import resolve from '@rollup/plugin-node-resolve';
@@ -7,169 +6,80 @@ import commonjs from '@rollup/plugin-commonjs';
 import copy from 'rollup-plugin-copy';
 import {terser} from "rollup-plugin-terser";
 import json from '@rollup/plugin-json';
-import replace from "@rollup/plugin-replace";
 import serve from 'rollup-plugin-serve';
 import urlPlugin from "@rollup/plugin-url";
+// TODO: remove consts if "environment" isn't needed any more for "getAPiUrl"
 import consts from 'rollup-plugin-consts';
 import license from 'rollup-plugin-license';
 import del from 'rollup-plugin-delete';
 import emitEJS from 'rollup-plugin-emit-ejs'
 import {getBabelOutputPlugin} from '@rollup/plugin-babel';
-import selfsigned from 'selfsigned';
-
-// -------------------------------
-
-// Some new web APIs are only available when HTTPS is active.
-// Note that this only works with a Non-HTTPS API endpoint with Chrome,
-// Firefox will emit CORS errors, see https://bugzilla.mozilla.org/show_bug.cgi?id=1488740
-const USE_HTTPS = false;
-
-// -------------------------------
+import appConfig from './app.config.js';
+import {getPackagePath, getBuildInfo, generateTLSConfig, getDistPath} from './vendor/toolkit/rollup.utils.js';
 
 const pkg = require('./package.json');
-const build = (typeof process.env.BUILD !== 'undefined') ? process.env.BUILD : 'local';
+const appEnv = (typeof process.env.APP_ENV !== 'undefined') ? process.env.APP_ENV : 'local';
 const watch = process.env.ROLLUP_WATCH === 'true';
-const buildFull = (!watch && build !== 'test') || (process.env.FORCE_FULL !== undefined);
-
-console.log("build: " + build);
-let basePath = '';
-let entryPointURL = '';
-let nextcloudBaseURL = 'https://cloud.tugraz.at';
-let nextcloudWebAppPasswordURL = nextcloudBaseURL + '/apps/webapppassword';
-let nextcloudWebDavURL = nextcloudBaseURL + '/remote.php/dav/files';
-let nextcloudName = 'TU Graz cloud';
-let keyCloakServer = '';
-let keyCloakBaseURL = '';
-let keyCloakClientId = '';
-let pdfAsQualifiedlySigningServer = '';
-let matomoSiteId = 131;
+const buildFull = (!watch && appEnv !== 'test') || (process.env.FORCE_FULL !== undefined);
 let useTerser = buildFull;
 let useBabel = buildFull;
 let checkLicenses = buildFull;
+let useHTTPS = false;
 
-switch (build) {
-  case 'local':
-    basePath = '/dist/';
-    entryPointURL = 'http://127.0.0.1:8000';
-    nextcloudBaseURL = 'http://localhost:8081';
-    nextcloudWebAppPasswordURL = nextcloudBaseURL + '/index.php/apps/webapppassword';
-    nextcloudWebDavURL = nextcloudBaseURL + '/remote.php/dav/files';
-    keyCloakServer = 'auth-dev.tugraz.at';
-    keyCloakBaseURL = 'https://' + keyCloakServer + '/auth';
-    keyCloakClientId = 'auth-dev-mw-frontend-local';
-    pdfAsQualifiedlySigningServer = 'sig-dev.tugraz.at';
-    break;
-  case 'development':
-    basePath = '/apps/signature/';
-    entryPointURL = 'https://mw-dev.tugraz.at';
-    // "/pers" can't go here because it's not allowed in the "Content-Security-Policy"
-    nextcloudBaseURL = 'https://nc-dev.tugraz.at';
-    // "/index.php" is needed to don't get a "This origin is not allowed!" because the "target-origin" get parameter can't be read
-    nextcloudWebAppPasswordURL = nextcloudBaseURL + '/pers/index.php/apps/webapppassword';
-    nextcloudWebDavURL = nextcloudBaseURL + '/pers/remote.php/dav/files';
-    keyCloakServer = 'auth-dev.tugraz.at';
-    keyCloakBaseURL = 'https://' + keyCloakServer + '/auth';
-    keyCloakClientId = 'esign-dev_tugraz_at-ESIGN';
-    pdfAsQualifiedlySigningServer = 'sig-dev.tugraz.at';
-    break;
-  case 'demo':
-    basePath = '/apps/signature/';
-    entryPointURL = 'https://api-demo.tugraz.at';
-    // "/pers" can't go here because it's not allowed in the "Content-Security-Policy"
-    nextcloudBaseURL = 'https://cloud.tugraz.at';
-    // "/index.php" is needed to don't get a "This origin is not allowed!" because the "target-origin" get parameter can't be read
-    nextcloudWebAppPasswordURL = nextcloudBaseURL + '/index.php/apps/webapppassword';
-    nextcloudWebDavURL = nextcloudBaseURL + '/remote.php/dav/files';
-    keyCloakServer = 'auth-test.tugraz.at';
-    keyCloakBaseURL = 'https://' + keyCloakServer + '/auth';
-    keyCloakClientId = 'esig-demo_tugraz_at-ESIG';
-    pdfAsQualifiedlySigningServer = 'sig-test.tugraz.at';
-    break;
-  case 'production':
-    basePath = '/';
-    entryPointURL = 'https://api.tugraz.at';
-    nextcloudBaseURL = '';
-    nextcloudWebAppPasswordURL = nextcloudBaseURL + '';
-    nextcloudWebDavURL = nextcloudBaseURL + '';
-    keyCloakServer = 'auth.tugraz.at';
-    keyCloakBaseURL = 'https://' + keyCloakServer + '/auth';
-    keyCloakClientId = 'esig_tugraz_at';
-    pdfAsQualifiedlySigningServer = 'sig.tugraz.at';
-    matomoSiteId = 137;
-    break;
-  case 'test':
-    basePath = '/apps/signature/';
-    entryPointURL = '';
-    nextcloudBaseURL = '';
-    nextcloudWebAppPasswordURL = '';
-    keyCloakServer = '';
-    keyCloakBaseURL = '';
-    keyCloakClientId = '';
-    pdfAsQualifiedlySigningServer = '';
-    break;
-  case 'bs':
-    basePath = '/dist/';
-    entryPointURL = 'http://bs-local.com:8000';
-    nextcloudBaseURL = 'http://bs-local.com:8081';
-    nextcloudWebAppPasswordURL = nextcloudBaseURL + '/index.php/apps/webapppassword';
-    nextcloudWebDavURL = nextcloudBaseURL + '/remote.php/dav/files';
-    keyCloakServer = 'auth-dev.tugraz.at';
-    keyCloakBaseURL = 'https://' + keyCloakServer + '/auth';
-    keyCloakClientId = 'auth-dev-mw-frontend-local';
-    pdfAsQualifiedlySigningServer = 'sig-dev.tugraz.at';
-    break;
-  default:
-    console.error('Unknown build environment: ' + build);
+console.log("APP_ENV: " + appEnv);
+
+let config;
+if (appEnv in appConfig) {
+    config = appConfig[appEnv];
+} else if (appEnv === 'test') {
+    config = {
+        basePath: '/',
+        entryPointURL: 'https://test',
+        keyCloakBaseURL: 'https://test',
+        keyCloakClientId: '',
+        matomoUrl: '',
+        matomoSiteId: -1,
+        nextcloudBaseURL: 'https://test',
+        nextcloudName: '',
+        pdfAsQualifiedlySigningServer: 'https://test',
+        hiddenActivities: [],
+    };
+} else {
+    console.error(`Unknown build environment: '${appEnv}', use one of '${Object.keys(appConfig)}'`);
     process.exit(1);
 }
 
-let nextcloudFileURL = nextcloudBaseURL + '/apps/files/?dir=';
-
-/**
- * Creates a server certificate and caches it in the .cert directory
- */
-function generateTLSConfig() {
-  fs.mkdirSync('.cert', {recursive: true});
-
-  if (!fs.existsSync('.cert/server.key') || !fs.existsSync('.cert/server.cert')) {
-    const attrs = [{name: 'commonName', value: 'dbp-dev.localhost'}];
-    const pems = selfsigned.generate(attrs, {algorithm: 'sha256', days: 9999});
-    fs.writeFileSync('.cert/server.key', pems.private);
-    fs.writeFileSync('.cert/server.cert', pems.cert);
-  }
-
-  return {
-    key: fs.readFileSync('.cert/server.key'),
-    cert: fs.readFileSync('.cert/server.cert')
-  }
+if (config.nextcloudBaseURL) {
+    config.nextcloudFileURL = config.nextcloudBaseURL + '/index.php/apps/files/?dir=';
+    config.nextcloudWebAppPasswordURL = config.nextcloudBaseURL + '/index.php/apps/webapppassword';
+    config.nextcloudWebDavURL = config.nextcloudBaseURL + '/remote.php/dav/files';
+} else {
+    config.nextcloudFileURL = '';
+    config.nextcloudWebAppPasswordURL = '';
+    config.nextcloudWebDavURL = '';
 }
 
-function getBuildInfo() {
-    const child_process = require('child_process');
-    const url = require('url');
+if (watch) {
+    config.basePath = '/dist/';
+}
 
-    let remote = child_process.execSync('git config --get remote.origin.url').toString().trim();
-    let commit = child_process.execSync('git rev-parse --short HEAD').toString().trim();
+function getOrigin(url) {
+    if (url)
+        return new URL(url).origin;
+    return '';
+}
 
-    let parsed = url.parse(remote);
-    // convert git urls
-    if (parsed.protocol === null) {
-        parsed = url.parse('git://' + remote.replace(":", "/"));
-        parsed.protocol = 'https:';
-    }
-    let newPath = parsed.path.slice(0, parsed.path.lastIndexOf('.'));
-    let newUrl = parsed.protocol + '//' + parsed.host + newPath + '/commit/' + commit;
+config.CSP = `default-src 'self' 'unsafe-eval' 'unsafe-inline' \
+${getOrigin(config.matomoUrl)} ${getOrigin(config.keyCloakBaseURL)} ${getOrigin(config.entryPointURL)} \
+httpbin.org ${getOrigin(config.nextcloudBaseURL)} www.handy-signatur.at \
+${getOrigin(config.pdfAsQualifiedlySigningServer)}; \
+img-src * blob: data:`;
 
+
+export default (async () => {
+    let privatePath = await getDistPath(pkg.name)
     return {
-        info: commit,
-        url: newUrl,
-        time: new Date().toISOString(),
-        env: build
-    }
-}
-
-export default {
-    input: (build != 'test') ? [
+    input: (appEnv != 'test') ? [
       'src/' + pkg.name + '.js',
       'src/dbp-official-signature-pdf-upload.js',
       'src/dbp-qualified-signature-pdf-upload.js',
@@ -200,51 +110,45 @@ export default {
         }
         warn(warning);
     },
-    watch: {
-      chokidar: {
-        usePolling: true
-      }
-    },
     plugins: [
         del({
           targets: 'dist/*'
         }),
+        // TODO: remove consts if "environment" isn't needed any more for "getAPiUrl"
         consts({
-          environment: build,
-          buildinfo: getBuildInfo(),
-          nextcloudWebAppPasswordURL: nextcloudWebAppPasswordURL,
-          nextcloudWebDavURL: nextcloudWebDavURL,
-          nextcloudBaseURL: nextcloudBaseURL,
-          nextcloudFileURL: nextcloudFileURL,
-          nextcloudName: nextcloudName,
+          environment: appEnv,
         }),
         emitEJS({
           src: 'assets',
           include: ['**/*.ejs', '**/.*.ejs'],
           data: {
             getUrl: (p) => {
-              return url.resolve(basePath, p);
+              return url.resolve(config.basePath, p);
             },
             getPrivateUrl: (p) => {
-                return url.resolve(`${basePath}local/${pkg.name}/`, p);
+                return url.resolve(`${config.basePath}${privatePath}/`, p);
+            },
+            isVisible: (name) => {
+                return !config.hiddenActivities.includes(name);
             },
             name: pkg.name,
-            entryPointURL: entryPointURL,
-            nextcloudBaseURL: nextcloudBaseURL,
-            keyCloakServer: keyCloakServer,
-            keyCloakBaseURL: keyCloakBaseURL,
-            keyCloakClientId: keyCloakClientId,
-            pdfAsQualifiedlySigningServer: pdfAsQualifiedlySigningServer,
-            environment: build,
-            matomoSiteId: matomoSiteId,
-            buildInfo: getBuildInfo()
+            entryPointURL: config.entryPointURL,
+            nextcloudWebAppPasswordURL: config.nextcloudWebAppPasswordURL,
+            nextcloudWebDavURL: config.nextcloudWebDavURL,
+            nextcloudBaseURL: config.nextcloudBaseURL,
+            nextcloudFileURL: config.nextcloudFileURL,
+            nextcloudName: config.nextcloudName,
+            keyCloakBaseURL: config.keyCloakBaseURL,
+            keyCloakClientId: config.keyCloakClientId,
+            CSP: config.CSP,
+            matomoUrl: config.matomoUrl,
+            matomoSiteId: config.matomoSiteId,
+            buildInfo: getBuildInfo(appEnv)
           }
         }),
         resolve({
-          customResolveOptions: {
-            // ignore node_modules from vendored packages
-            moduleDirectory: path.join(process.cwd(), 'node_modules')
-          },
+          // ignore node_modules from vendored packages
+          moduleDirectories: [path.join(process.cwd(), 'node_modules')],
           browser: true,
           preferBuiltins: true
         }),
@@ -272,38 +176,34 @@ Dependencies:
         urlPlugin({
           limit: 0,
           include: [
-            "node_modules/suggestions/**/*.css",
-            "node_modules/select2/**/*.css",
+            await getPackagePath('select2', '**/*.css'),
           ],
           emitFiles: true,
           fileName: 'shared/[name].[hash][extname]'
         }),
-        replace({
-            "process.env.BUILD": '"' + build + '"',
-        }),
         copy({
             targets: [
-                {src: 'assets/silent-check-sso.html', dest:'dist'},
+                {src: 'assets/*-placeholder.png', dest: 'dist/' + await getDistPath(pkg.name)},
+                {src: 'assets/*.css', dest: 'dist/' + await getDistPath(pkg.name)},
+                {src: 'assets/*.ico', dest: 'dist/' + await getDistPath(pkg.name)},
+                {src: 'assets/*.metadata.json', dest: 'dist'},
+                {src: 'assets/*.svg', dest: 'dist/' + await getDistPath(pkg.name)},
                 {src: 'assets/htaccess-shared', dest: 'dist/shared/', rename: '.htaccess'},
-                {src: 'assets/*.css', dest: 'dist/local/' + pkg.name},
-                {src: 'assets/*.ico', dest: 'dist/local/' + pkg.name},
-                {src: 'assets/*.svg', dest: 'dist/local/' + pkg.name},
+                {src: 'assets/icon-*.png', dest: 'dist/' + await getDistPath(pkg.name)},
+                {src: 'assets/manifest.json', dest: 'dist', rename: pkg.name + '.manifest.json'},
+                {src: 'assets/silent-check-sso.html', dest:'dist'},
                 {
-                    src: 'node_modules/pdfjs-dist/es5/build/pdf.worker.js',
-                    dest: 'dist/local/' + pkg.name + '/pdfjs',
+                    src: await getPackagePath('pdfjs-dist', 'es5/build/pdf.worker.js'),
+                    dest: 'dist/' + await getDistPath(pkg.name, 'pdfjs'),
                     // enable signatures in pdf preview
                     transform: (contents) => contents.toString().replace('"Sig"', '"Sig-patched-show-anyway"')
                 },
-                {src: 'node_modules/pdfjs-dist/cmaps/*', dest: 'dist/local/' + pkg.name + '/pdfjs'}, // do we want all map files?
-                {src: 'node_modules/source-sans-pro/WOFF2/OTF/*', dest: 'dist/local/' + pkg.name + '/fonts'},
-                {src: 'node_modules/@dbp-toolkit/common/src/spinner.js', dest: 'dist/local/' + pkg.name, rename: 'spinner.js'},
-                {src: 'node_modules/@dbp-toolkit/common/misc/browser-check.js', dest: 'dist/local/' + pkg.name, rename: 'browser-check.js'},
-                {src: 'assets/icon-*.png', dest: 'dist/local/' + pkg.name},
-                {src: 'assets/*-placeholder.png', dest: 'dist/local/' + pkg.name},
-                {src: 'assets/manifest.json', dest: 'dist', rename: pkg.name + '.manifest.json'},
-                {src: 'assets/*.metadata.json', dest: 'dist'},
-                {src: 'node_modules/@dbp-toolkit/common/assets/icons/*.svg', dest: 'dist/local/@dbp-toolkit/common/icons'},
-                {src: 'node_modules/tabulator-tables/dist/css', dest: 'dist/local/@dbp-toolkit/file-handling/tabulator-tables'},
+                {src: await getPackagePath('pdfjs-dist', 'cmaps/*'), dest: 'dist/' + await getDistPath(pkg.name, 'pdfjs')}, // do we want all map files?
+                {src: await getPackagePath('@dbp-toolkit/font-source-sans-pro', 'files/*'), dest: 'dist/' + await getDistPath(pkg.name, 'fonts/source-sans-pro')},
+                {src: await getPackagePath('@dbp-toolkit/common', 'src/spinner.js'), dest: 'dist/' + await getDistPath(pkg.name)},
+                {src: await getPackagePath('@dbp-toolkit/common', 'misc/browser-check.js'), dest: 'dist/' + await getDistPath(pkg.name)},
+                {src: await getPackagePath('@dbp-toolkit/common', 'assets/icons/*.svg'), dest: 'dist/' + await getDistPath('@dbp-toolkit/common', 'icons')},
+                {src: await getPackagePath('tabulator-tables', 'dist/css'), dest: 'dist/' + await getDistPath('@dbp-toolkit/file-handling', 'tabulator-tables')},
             ],
         }),
         useBabel && getBabelOutputPlugin({
@@ -325,11 +225,11 @@ Dependencies:
           contentBase: '.',
           host: '127.0.0.1',
           port: 8001,
-          historyApiFallback: basePath + pkg.name + '.html',
-          https: USE_HTTPS ? generateTLSConfig() : false,
+          historyApiFallback: config.basePath + pkg.name + '.html',
+          https: useHTTPS ? await generateTLSConfig() : false,
           headers: {
-              'Content-Security-Policy': `default-src 'self' 'unsafe-eval' 'unsafe-inline' analytics.tugraz.at ${keyCloakServer} ${entryPointURL} httpbin.org ${nextcloudBaseURL} www.handy-signatur.at ${pdfAsQualifiedlySigningServer} ; img-src * blob: data:`
+              'Content-Security-Policy': config.CSP
           },
         }) : false
     ]
-};
+};})();

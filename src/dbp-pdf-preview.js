@@ -8,8 +8,8 @@ import {MiniSpinner, Icon} from '@dbp-toolkit/common';
 import * as commonUtils from "@dbp-toolkit/common/utils";
 import * as commonStyles from '@dbp-toolkit/common/styles';
 import pdfjs from 'pdfjs-dist/es5/build/pdf.js';
-import buildinfo from 'consts:buildinfo';
 import {name as pkgName} from './../package.json';
+import {readBinaryFileContent} from './utils.js';
 
 const i18n = createI18nInstance();
 
@@ -35,6 +35,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
         this.signature_width = 42;
         this.signature_height = 42;
         this.border_width = 2;
+        this.allowSignatureRotation = false;
 
         this._onWindowResize = this._onWindowResize.bind(this);
     }
@@ -50,7 +51,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
      * See: https://lit-element.polymer-project.org/guide/properties#initialize
      */
     static get properties() {
-        return {
+        return this.getProperties({
             lang: { type: String },
             currentPage: { type: Number, attribute: false },
             totalPages: { type: Number, attribute: false },
@@ -61,7 +62,8 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
             placeholder: { type: String, attribute: 'signature-placeholder-image-src' },
             signature_width: { type: Number, attribute: 'signature-width' },
             signature_height: { type: Number, attribute: 'signature-height' },
-        };
+            allowSignatureRotation: { type: Boolean, attribute: 'allow-signature-rotation' },
+        });
     }
 
     update(changedProperties) {
@@ -208,36 +210,29 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
 
         this.isShowPlacement = isShowPlacement;
         this.isShowPage = true;
-        let reader = new FileReader();
 
-        reader.onload = async () => {
-            //this.isPageLoaded = false;
-            const data = reader.result;
+        const data = await readBinaryFileContent(file);
 
-            // get handle of pdf document
-            try {
-                this.pdfDoc = await pdfjs.getDocument({data: data}).promise;
-            } catch (error) {
-                console.error(error);
+        // get handle of pdf document
+        try {
+            this.pdfDoc = await pdfjs.getDocument({data: data}).promise;
+        } catch (error) {
+            console.error(error);
+            return;
+        }
 
-                return;
-            }
+        // total pages in pdf
+        this.totalPages = this.pdfDoc.numPages;
+        const page = placementData.currentPage || 1;
 
-            // total pages in pdf
-            this.totalPages = this.pdfDoc.numPages;
-            const page = placementData.currentPage || 1;
+        // show the first page
+        // if the placementData has no values we want to initialize the signature position
+        await this.showPage(page, placementData["scaleX"] === undefined);
 
-            // show the first page
-            // if the placementData has no values we want to initialize the signature position
-            await this.showPage(page, placementData["scaleX"] === undefined);
+        this.isPageLoaded = true;
 
-            this.isPageLoaded = true;
-
-            // fix width adaption after "this.isPageLoaded = true"
-            await this.showPage(page);
-        };
-
-        reader.readAsBinaryString(file);
+        // fix width adaption after "this.isPageLoaded = true"
+        await this.showPage(page);
     }
 
     getSignatureRect() {
@@ -493,7 +488,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
     }
 
     render() {
-        const isRotationHidden = (buildinfo.env === 'production');
+        const isRotationHidden = !this.allowSignatureRotation;
 
         return html`
 

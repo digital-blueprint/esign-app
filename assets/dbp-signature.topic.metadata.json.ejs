@@ -14,12 +14,13 @@
   "routing_name": "signature",
   "activities": [
     {"path": "dbp-official-signature-pdf-upload.metadata.json",
-     "visible": <%= environment == "local" || environment == "development" || environment == "demo" || environment == "bs" %>},
-    {"path": "dbp-qualified-signature-pdf-upload.metadata.json"},
+     "visible": <%= isVisible("dbp-official-signature-pdf-upload") %>},
+    {"path": "dbp-qualified-signature-pdf-upload.metadata.json",
+     "visible": <%= isVisible("dbp-qualified-signature-pdf-upload") %>},
     {"path": "dbp-signature-verification.metadata.json",
-     "visible": <%= environment == "local" || environment == "development" || environment == "bs" %>},
+     "visible": <%= isVisible("dbp-signature-verification") %>},
     {"path": "dbp-signature-verification-full.metadata.json",
-     "visible": <%= environment == "local" || environment == "development" %>}
+     "visible": <%= isVisible("dbp-signature-verification-full") %>}
   ],
   "attributes": []
 }

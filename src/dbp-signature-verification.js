@@ -18,9 +18,9 @@ class SignatureVerification extends ScopedElementsMixin(DBPSignatureLitElement) 
     }
 
     static get properties() {
-        return {
+        return this.getProperties({
             lang: { type: String },
-        };
+        });
     }
 
     update(changedProperties) {

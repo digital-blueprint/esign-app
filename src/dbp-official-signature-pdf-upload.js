@@ -12,11 +12,10 @@ import {classMap} from 'lit-html/directives/class-map.js';
 import {FileSource} from '@dbp-toolkit/file-handling';
 import JSONLD from "@dbp-toolkit/common/jsonld";
 import {TextSwitch} from './textswitch.js';
-import nextcloudWebAppPasswordURL from 'consts:nextcloudWebAppPasswordURL';
-import nextcloudWebDavURL from 'consts:nextcloudWebDavURL';
-import nextcloudName from 'consts:nextcloudName';
 import {FileSink} from "@dbp-toolkit/file-handling";
 import {name as pkgName} from './../package.json';
+import {getPDFSignatureCount} from './utils.js';
+import {send as notify} from '@dbp-toolkit/common/notification';
 
 const i18n = createI18nInstance();
 
@@ -25,6 +24,10 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         super();
         this.lang = i18n.language;
         this.entryPointUrl = commonUtils.getAPiUrl();
+        this.nextcloudWebAppPasswordURL = "";
+        this.nextcloudWebDavURL = "";
+        this.nextcloudName = "";
+        this.nextcloudFileURL = "";
         this.signedFiles = [];
         this.signedFilesCount = 0;
         this.signedFilesToDownload = 0;
@@ -42,6 +45,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         this.withSigBlock = false;
         this.queuedFilesSignaturePlacements = [];
         this.queuedFilesPlacementModes = [];
+        this.queuedFilesNeedsPlacement = new Map();
         this.currentPreviewQueueKey = '';
 
 
@@ -60,9 +64,13 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
     }
 
     static get properties() {
-        return {
+        return this.getProperties({
             lang: { type: String },
             entryPointUrl: { type: String, attribute: 'entry-point-url' },
+            nextcloudWebAppPasswordURL: { type: String, attribute: 'nextcloud-web-app-password-url' },
+            nextcloudWebDavURL: { type: String, attribute: 'nextcloud-webdav-url' },
+            nextcloudName: { type: String, attribute: 'nextcloud-name' },
+            nextcloudFileURL: { type: String, attribute: 'nextcloud-file-url' },
             signedFiles: { type: Array, attribute: false },
             signedFilesCount: { type: Number, attribute: false },
             signedFilesToDownload: { type: Number, attribute: false },
@@ -80,14 +88,21 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             signaturePlacementInProgress: { type: Boolean, attribute: false },
             withSigBlock: { type: Boolean, attribute: false },
             isSignaturePlacement: { type: Boolean, attribute: false },
-
-        };
+        });
     }
 
     connectedCallback() {
         super.connectedCallback();
         // needs to be called in a function to get the variable scope of "this"
         setInterval(() => { this.handleQueuedFiles(); }, 1000);
+    }
+
+    async _updateNeedsPlacementStatus(id) {
+        let file = this.queuedFiles[id];
+        let sigCount = await getPDFSignatureCount(file);
+        this.queuedFilesNeedsPlacement.delete(id);
+        if (sigCount > 0)
+            this.queuedFilesNeedsPlacement.set(id, true);
     }
 
     /**
@@ -104,13 +119,26 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         if (!this.signingProcessEnabled || this.uploadInProgress) {
             return;
         }
-
         this.signaturePlacementInProgress = false;
 
-        const key = Object.keys(this.queuedFiles)[0];
+        // Validate that all PDFs with a signature have manual placement
+        for (const key of Object.keys(this.queuedFiles)) {
+            const isManual = this.queuedFilesPlacementModes[key] === 'manual';
+            if (this.queuedFilesNeedsPlacement.get(key) && !isManual) {
+                // Some have a signature but are not "manual", stop everything
+                notify({
+                    "body": i18n.t('error-manual-positioning-missing'),
+                    "type": "danger",
+                });
+                this.signingProcessEnabled = false;
+                this.signingProcessActive = false;
+                return;
+            }
+        }
 
         // take the file off the queue
-        let file = this.takeFileFromQueue(key);
+        const key = Object.keys(this.queuedFiles)[0];
+        const file = this.takeFileFromQueue(key);
         this.currentFile = file;
 
         // set placement mode and parameters to restore them when canceled
@@ -139,7 +167,12 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
     }
 
     storePDFData(event) {
-        this.queuedFilesSignaturePlacements[this.currentPreviewQueueKey] = event.detail;
+        let placement = event.detail;
+        let placementMode = 'manual';
+
+        let key = this.currentPreviewQueueKey;
+        this.queuedFilesSignaturePlacements[key] = placement;
+        this.queuedFilesPlacementModes[key] = placementMode;
         this.signaturePlacementInProgress = false;
     }
 
@@ -165,6 +198,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         } else if (this.currentPreviewQueueKey === key) {
             this.signaturePlacementInProgress = false;
         }
+        this.requestUpdate();
     }
 
     /**
@@ -210,6 +244,13 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         this.queueFile(ev.detail.file);
     }
 
+    async queueFile(file) {
+        let id = await super.queueFile(file);
+        await this._updateNeedsPlacementStatus(id);
+        this.requestUpdate();
+        return id;
+    }
+
     addToErrorFiles(file) {
         this.endSigningProcessIfQueueEmpty();
 
@@ -248,13 +289,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                     break;
                 case "entryPointUrl":
                     JSONLD.initialize(this.entryPointUrl, (jsonld) => {
-                        let apiUrlBase;
-                        try {
-                            // Old name, remove eventually
-                            apiUrlBase = jsonld.getApiUrlForEntityName("OfficiallySignedDocument");
-                        } catch(error) {
-                            apiUrlBase = jsonld.getApiUrlForEntityName("AdvancedlySignedDocument");
-                        }
+                        let apiUrlBase = jsonld.getApiUrlForEntityName("AdvancedlySignedDocument");
                         this.fileSourceUrl = apiUrlBase;
                     });
                     break;
@@ -284,8 +319,6 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
 
         that._("#re-upload-all-button").stop();
     }
-
-
 
     /**
      * Queues a failed pdf-file again
@@ -337,6 +370,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
     clearQueuedFiles() {
         this.queuedFilesSignaturePlacements = [];
         this.queuedFilesPlacementModes = [];
+        this.queuedFilesNeedsPlacement.clear();
         super.clearQueuedFiles();
     }
 
@@ -424,7 +458,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             .error, #cancel-signing-process {
                 color: #e4154b;
             }
-            
+
             #cancel-signing-process:hover {
                 color: white;
             }
@@ -491,9 +525,14 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             .file-block div.bottom-line {
                 display: grid;
                 align-items: center;
-                grid-template-columns: auto 190px;
-                grid-gap: 10px;
-                margin-top: 10px;
+                grid-template-columns: auto auto;
+                grid-gap: 6px;
+                margin-top: 6px;
+            }
+
+            .file-block .error-line {
+                margin-top: 6px;
+                color: var(--dbp-override-danger-bg-color);
             }
 
             .file-block.error div.bottom-line {
@@ -557,6 +596,10 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                 border-top: 1px solid black;            
             }
 
+            .placement-missing {
+                border: solid 2px var(--dbp-override-danger-bg-color);
+            }
+
             /* Handling for small displays (like mobile devices) */
             @media (max-width: 680px) {
                 /* Modal preview, upload and external auth */
@@ -589,7 +632,6 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                     max-width: inherit;
                 }
             }
-           
         `;
     }
 
@@ -605,6 +647,8 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
 
         ids.forEach((id) => {
             const file = this.queuedFiles[id];
+            const isManual = this.queuedFilesPlacementModes[id] === 'manual';
+            const placementMissing = this.queuedFilesNeedsPlacement.get(id) && !isManual;
 
             results.push(html`
                 <div class="file-block">
@@ -625,11 +669,16 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                         <dbp-textswitch name1="auto"
                             name2="manual"
                             name="${this.queuedFilesPlacementModes[id] || "auto"}"
-                            class="switch"
+                            class="${classMap({'placement-missing': placementMissing, 'switch': true})}"
                             value1="${i18n.t('official-pdf-upload.positioning-automatic')}"
                             value2="${i18n.t('official-pdf-upload.positioning-manual')}"
                             ?disabled="${this.signingProcessEnabled}"
                             @change=${ (e) => this.queuePlacementSwitch(id, e.target.name) }></dbp-textswitch>
+                    </div>
+                    <div class="error-line">
+                        ${ placementMissing ? html`
+                            ${i18n.t('label-manual-positioning-missing')}
+                        ` : '' }
                     </div>
                 </div>
             `);
@@ -726,10 +775,11 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                             id="file-source"
                             context="${i18n.t('qualified-pdf-upload.upload-field-label')}"
                             allowed-mime-types="application/pdf"
-                            enabled-sources="local${this.showTestNextcloudFilePicker ? ",nextcloud" : ""}"
-                            nextcloud-auth-url="${nextcloudWebAppPasswordURL}"
-                            nextcloud-web-dav-url="${nextcloudWebDavURL}"
-                            nextcloud-name="${nextcloudName}"
+                            enabled-sources="local${this.showNextcloudFilePicker ? ",nextcloud" : ""}"
+                            nextcloud-auth-url="${this.nextcloudWebAppPasswordURL}"
+                            nextcloud-web-dav-url="${this.nextcloudWebDavURL}"
+                            nextcloud-name="${this.nextcloudName}"
+                            nextcloud-file-url="${this.nextcloudFileURL}"
                             decompress-zip
                             lang="${this.lang}"
                             ?disabled="${this.signingProcessActive}"
@@ -867,12 +917,13 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             <dbp-file-sink id="file-sink"
                 context="${i18n.t('qualified-pdf-upload.save-field-label', {count: this.signedFilesToDownload})}"
                 filename="signed-documents.zip"
-                enabled-destinations="local${this.showTestNextcloudFilePicker ? ",nextcloud" : ""}"
-                nextcloud-auth-url="${nextcloudWebAppPasswordURL}"
-                nextcloud-web-dav-url="${nextcloudWebDavURL}"
-                nextcloud-name="${nextcloudName}"
                 nextcloud-default="${this.nextcloudDefaultDir}"
                 default-sink="${this.fileSource}"
+                enabled-destinations="local${this.showNextcloudFilePicker ? ",nextcloud" : ""}"
+                nextcloud-auth-url="${this.nextcloudWebAppPasswordURL}"
+                nextcloud-web-dav-url="${this.nextcloudWebDavURL}"
+                nextcloud-name="${this.nextcloudName}"
+                nextcloud-file-url="${this.nextcloudFileURL}"
                 lang="${this.lang}"
                 ></dbp-file-sink>
         `;

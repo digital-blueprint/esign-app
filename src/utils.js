@@ -80,3 +80,43 @@ export const fabricjs2pdfasPosition = (data) => {
         p: data.currentPage
     };
 };
+
+/**
+ * Returns the content of the file
+ *
+ * @param {File} file The file to read
+ * @returns {string} The content
+ */
+export const readBinaryFileContent = async (file) => {
+    return new Promise((resolve, reject) => {
+        let reader = new FileReader();
+        reader.onload = () => {
+            resolve(reader.result);
+        };
+        reader.onerror = () => {
+            reject(reader.error);
+        };
+        reader.readAsBinaryString(file);
+    });
+};
+
+/**
+ * Given a PDF file returns the amount of signatures found in it.
+ *
+ * Note that this uses an heuristic, so the result can be wrong
+ * (improvements welcome).
+ *
+ * @param {File} file The PDF file object
+ * @returns {number} The amount of signatures found
+ */
+export const getPDFSignatureCount = async (file) => {
+    const sigRegex = new RegExp(
+        "/Type\\s*/Sig\\s*/Filter\\s*/Adobe.PPKLite\\s*/SubFilter\\s*(/ETSI\\.CAdES\\.detached|/adbe\\.pkcs7\\.detached)",
+        "g");
+    const content = await readBinaryFileContent(file);
+    let matches = 0;
+    while (sigRegex.exec(content) !== null) {
+        matches++;
+    }
+    return matches;
+};

@@ -7,7 +7,7 @@ cache:
     - _cypress_cache
 
 before_script:
-  - "sed -i 's|git@gitlab.tugraz.at:dbp|../..|g' .gitmodules"
+  - 'git config --global url."https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.tugraz.at/".insteadOf "git@gitlab.tugraz.at:"'
   - git submodule sync
   - git submodule update --init
   - yarn config set cache-folder "$CI_PROJECT_DIR/_yarn_cache"
@@ -24,7 +24,7 @@ test:
   stage: test
   script:
     - yarn install
-    - yarn run build-dev
+    - APP_ENV=development yarn run build
     - yarn run test-full
 
 linting:
@@ -98,7 +98,7 @@ deploy_production:
   script:
     - git clone https://gitlab.tugraz.at/dbp/middleware/e2e-tests.git --depth 1
     - cd e2e-tests
-    - npm install
+    - yarn install
     - ./node_modules/.bin/cypress run --browser "$BROWSER" --spec "cypress/integration/signature/*.spec.js"
   artifacts:
     paths:
