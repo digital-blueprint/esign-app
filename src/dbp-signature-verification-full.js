@@ -18,7 +18,7 @@ class SignatureVerificationFull extends ScopedElementsMixin(DBPSignatureLitEleme
     constructor() {
         super();
         this.lang = i18n.language;
-        this.entryPointUrl = commonUtils.getAPiUrl();
+        this.entryPointUrl = '';
         this.nextcloudWebAppPasswordURL = "";
         this.nextcloudWebDavURL = "";
         this.nextcloudName = "";
