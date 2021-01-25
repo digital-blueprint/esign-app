@@ -16,6 +16,9 @@ export default class DBPSignatureLitElement extends LitElement {
         this.fileSourceUrl = "";
 
         this.showTestNextcloudFilePicker = buildinfo.env !== 'production';
+
+        this.fileSource = '';
+        this.nextcloudDefaultDir = '';
     }
 
     /**
@@ -140,6 +143,17 @@ export default class DBPSignatureLitElement extends LitElement {
         data.file = file;
 
         this.onFileUploadFinished(data);
+    }
+
+    onFileSourceSwitch(event)
+    {
+        if (event.detail.source) {
+            this.fileSource = event.detail.source;
+        }
+        if (event.detail.nextcloud) {
+            this.nextcloudDefaultDir = event.detail.nextcloud;
+        }
+        event.preventDefault();
     }
 
     /**

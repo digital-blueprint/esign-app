@@ -152,7 +152,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         });
 
         await this.uploadFile(file, params);
-        this.uploadInProgress = false;
+        this.uploadInProgr666666666666666ess = false;
     }
 
     storePDFData(event) {
@@ -896,6 +896,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                             text="${i18n.t('qualified-pdf-upload.upload-area-text')}"
                             button-label="${i18n.t('qualified-pdf-upload.upload-button-label')}"
                             @dbp-file-source-file-selected="${this.onFileSelected}"
+                            @dbp-file-source-switched="${this.onFileSourceSwitch}"
                             ></dbp-file-source>
                     </div>
                 </div>
@@ -1042,6 +1043,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                 nextcloud-auth-url="${nextcloudWebAppPasswordURL}"
                 nextcloud-web-dav-url="${nextcloudWebDavURL}"
                 nextcloud-name="${nextcloudName}"
+                nextcloud-default="${this.nextcloudDefaultDir}"
+                default-sink="${this.fileSource}"
                 lang="${this.lang}"
                 ></dbp-file-sink>
         `;

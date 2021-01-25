@@ -43,6 +43,8 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         this.queuedFilesSignaturePlacements = [];
         this.queuedFilesPlacementModes = [];
         this.currentPreviewQueueKey = '';
+
+
     }
 
     static get scopedElements() {
@@ -78,6 +80,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             signaturePlacementInProgress: { type: Boolean, attribute: false },
             withSigBlock: { type: Boolean, attribute: false },
             isSignaturePlacement: { type: Boolean, attribute: false },
+
         };
     }
 
@@ -204,7 +207,6 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
      * @param ev
      */
     onFileSelected(ev) {
-        console.log("File was selected: ev", ev);
         this.queueFile(ev.detail.file);
     }
 
@@ -257,10 +259,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                     });
                     break;
             }
-
-            // console.log(propName, oldValue);
         });
-
         super.update(changedProperties);
     }
 
@@ -600,6 +599,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
      * @returns {*[]} Array of html templates
      */
     getQueuedFilesHtml() {
+
         const ids = Object.keys(this.queuedFiles);
         let results = [];
 
@@ -736,6 +736,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                             text="${i18n.t('official-pdf-upload.upload-area-text')}"
                             button-label="${i18n.t('official-pdf-upload.upload-button-label')}"
                             @dbp-file-source-file-selected="${this.onFileSelected}"
+                            @dbp-file-source-switched="${this.onFileSourceSwitch}"
                             ></dbp-file-source>
                     </div>
                 </div>
@@ -870,6 +871,8 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                 nextcloud-auth-url="${nextcloudWebAppPasswordURL}"
                 nextcloud-web-dav-url="${nextcloudWebDavURL}"
                 nextcloud-name="${nextcloudName}"
+                nextcloud-default="${this.nextcloudDefaultDir}"
+                default-sink="${this.fileSource}"
                 lang="${this.lang}"
                 ></dbp-file-sink>
         `;
