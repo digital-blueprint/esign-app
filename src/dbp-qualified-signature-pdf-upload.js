@@ -940,7 +940,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                         <dbp-file-source
                             id="file-source"
                             context="${i18n.t('qualified-pdf-upload.upload-field-label')}"
-                            allowed-mime-types="application/pdf"
+                            allowed-mime-types="application/pdf,application/zip"
                             enabled-sources="local${this.showTestNextcloudFilePicker ? ",nextcloud" : ""}"
                             nextcloud-auth-url="${this.nextcloudWebAppPasswordURL}"
                             nextcloud-web-dav-url="${this.nextcloudWebDavURL}"
