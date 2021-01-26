@@ -890,6 +890,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                     @click="${this.hidePDF}"><dbp-icon name="close"></dbp-icon></button>
                             </div>
                             <dbp-pdf-preview lang="${this.lang}"
+                                             subscribe="allow-signature-rotation:allow-signature-rotation"
                                              signature-placeholder-image-src="${placeholderUrl}"
                                              signature-width="145"
                                              signature-height="45"
