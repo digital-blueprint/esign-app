@@ -8,8 +8,6 @@ import {terser} from "rollup-plugin-terser";
 import json from '@rollup/plugin-json';
 import serve from 'rollup-plugin-serve';
 import urlPlugin from "@rollup/plugin-url";
-// TODO: remove consts if "environment" isn't needed because "getAPiUrl" is removed
-import consts from 'rollup-plugin-consts';
 import license from 'rollup-plugin-license';
 import del from 'rollup-plugin-delete';
 import emitEJS from 'rollup-plugin-emit-ejs'
@@ -113,10 +111,6 @@ export default (async () => {
     plugins: [
         del({
           targets: 'dist/*'
-        }),
-        // TODO: remove consts if "environment" isn't needed any more because "getAPiUrl" is removed
-        consts({
-          environment: appEnv,
         }),
         emitEJS({
           src: 'assets',
