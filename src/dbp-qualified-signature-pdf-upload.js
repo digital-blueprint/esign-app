@@ -66,7 +66,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
     }
 
     static get properties() {
-        return this.getProperties({
+        return {
+            ...super.properties,
             lang: { type: String },
             entryPointUrl: { type: String, attribute: 'entry-point-url' },
             nextcloudWebAppPasswordURL: { type: String, attribute: 'nextcloud-web-app-password-url' },
@@ -91,7 +92,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             signaturePlacementInProgress: { type: Boolean, attribute: false },
             withSigBlock: { type: Boolean, attribute: false },
             isSignaturePlacement: { type: Boolean, attribute: false },
-        });
+        };
     }
 
     connectedCallback() {

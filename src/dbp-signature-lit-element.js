@@ -70,9 +70,10 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
     }
 
     static get properties() {
-        return this.getProperties({
+        return {
+            ...super.properties,
             showNextcloudFilePicker: { type: Boolean, attribute: 'show-nextcloud-file-picker' },
-        });
+        };
     }
 
     /**
