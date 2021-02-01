@@ -111,8 +111,8 @@ export const readBinaryFileContent = async (file) => {
  */
 export const getPDFSignatureCount = async (file) => {
     const sigRegex = new RegExp(
-        "/Type\\s*/Sig\\s*/Filter\\s*/Adobe.PPKLite\\s*/SubFilter\\s*(/ETSI\\.CAdES\\.detached|/adbe\\.pkcs7\\.detached)",
-        "g");
+        "/Type\\s*/Sig.*?/SubFilter\\s*(/ETSI\\.CAdES\\.detached|/adbe\\.pkcs7\\.detached)",
+        "gs");
     const content = await readBinaryFileContent(file);
     let matches = 0;
     while (sigRegex.exec(content) !== null) {

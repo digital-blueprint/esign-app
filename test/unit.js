@@ -47,11 +47,15 @@ suite('pdf signature detection', () => {
     }
 
     test('getPDFSignatureCount', async () => {
+        // Produced via pdf-as-web
         let sig1 = "/Type\n/Sig\n/Filter\n/Adobe.PPKLite\n/SubFilter\n/ETSI.CAdES.detached";
         let sig2 = "/Type\n/Sig\n/Filter\n/Adobe.PPKLite\n/SubFilter\n/adbe.pkcs7.detached";
+        // Produced via https://www.handy-signatur.at
+        let sig3 = "/Type /Sig\n/Name (Max Meier)\n/Location ()\n/Reason ()\n/M (D:20210201154123+01'00')\n/Filter /asign.ECDSA\n/SubFilter /ETSI.CAdES.detached";
 
         assert(await getPDFSignatureCount(getPDFFile(sig1)) === 1);
         assert(await getPDFSignatureCount(getPDFFile(sig2)) === 1);
+        assert(await getPDFSignatureCount(getPDFFile(sig3)) === 1);
         assert(await getPDFSignatureCount(getPDFFile(sig1 + sig2)) === 2);
         assert(await getPDFSignatureCount(getPDFFile("foo" + sig1 + "bar" + sig2 + "quux")) === 2);
         assert(await getPDFSignatureCount(getPDFFile("\nfoo" + sig1 + "bar\n")) === 1);
