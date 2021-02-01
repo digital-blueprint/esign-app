@@ -98,7 +98,9 @@
   "signature-verification-extern": {
     "headline": "Verify signed Documents",
     "description-text": "To check a PDF signature for validity, please use the verification service of the Rundfunk und Telekom Regulierungs-GmbH. With this verification service you can check that the document has not been modified, which part of the PDF has been signed and by whom.",
-    "link-label": "Switch to the RTR verification service"
+    "link-label": "Switch to the RTR verification service",
+    "adobe-reader-text": "Furthermore, it is also possible to verify the signature locally with the Adobe Reader.",
+    "adobe-link-label": "More information about verification with Adobe Reader"
   },
   "pdf-preview": {
     "first-page": "First page",
