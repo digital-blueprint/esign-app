@@ -20,7 +20,7 @@ export class DBPSignatureBaseLitElement extends AdapterLitElement {
     }
 
     _hasSignaturePermissions(roleName) {
-        return (window.DBPPerson && Array.isArray(window.DBPPerson.roles) && window.DBPPerson.roles.indexOf(roleName) !== -1);
+        return (this.auth.person && Array.isArray(this.auth.person.roles) && this.auth.person.roles.indexOf(roleName) !== -1);
     }
 
     _updateAuth(e) {
@@ -50,7 +50,7 @@ export class DBPSignatureBaseLitElement extends AdapterLitElement {
     }
 
     isLoggedIn() {
-        return (window.DBPPerson !== undefined && window.DBPPerson !== null);
+        return (this.auth.person !== undefined && this.auth.person !== null);
     }
 
     isLoading() {
