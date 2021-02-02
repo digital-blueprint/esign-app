@@ -5,6 +5,14 @@ import {AdapterLitElement} from "@dbp-toolkit/provider/src/adapter-lit-element";
 export class DBPSignatureBaseLitElement extends AdapterLitElement {
     constructor() {
         super();
+        this.auth = {};
+    }
+
+    static get properties() {
+        return {
+            ...super.properties,
+            auth: { type: Object },
+        };
     }
 
     _(selector) {
@@ -48,7 +56,7 @@ export class DBPSignatureBaseLitElement extends AdapterLitElement {
     isLoading() {
         if (this._loginStatus === "logged-out")
             return false;
-        return (!this.isLoggedIn() && window.DBPAuthToken !== undefined);
+        return (!this.isLoggedIn() && this.auth.token !== undefined);
     }
 }
 
@@ -157,7 +165,7 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
         await fetch(url, {
             method: 'POST',
             headers: {
-                'Authorization': 'Bearer ' + window.DBPAuthToken,
+                'Authorization': 'Bearer ' + this.auth.token,
             },
             body: formData
         })
