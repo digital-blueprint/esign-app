@@ -99,7 +99,8 @@ deploy_production:
     - git clone https://gitlab.tugraz.at/dbp/middleware/e2e-tests.git --depth 1
     - cd e2e-tests
     - yarn install
-    - ./node_modules/.bin/cypress run --browser "$BROWSER" --spec "cypress/integration/signature/*.spec.js"
+#    - ./node_modules/.bin/cypress run --browser "$BROWSER" --spec "cypress/integration/signature/*.spec.js"
+    - xvfb-run ./node_modules/.bin/cypress run --browser "$BROWSER" --headed --spec "cypress/integration/signature/*.spec.js"
   artifacts:
     paths:
       - e2e-tests/cypress/videos/*
