@@ -1,6 +1,6 @@
-import {EventBus} from '@dbp-toolkit/common';
 import * as utils from "./utils";
 import {AdapterLitElement} from "@dbp-toolkit/provider/src/adapter-lit-element";
+import JSONLD from "@dbp-toolkit/common/jsonld";
 
 export class DBPSignatureBaseLitElement extends AdapterLitElement {
     constructor() {
@@ -23,8 +23,8 @@ export class DBPSignatureBaseLitElement extends AdapterLitElement {
         return (this.auth.person && Array.isArray(this.auth.person.roles) && this.auth.person.roles.indexOf(roleName) !== -1);
     }
 
-    _updateAuth(e) {
-        this._loginStatus = e.status;
+    _updateAuth() {
+        this._loginStatus = this.auth['login-status'];
         // Every time isLoggedIn()/isLoading() return something different we request a re-render
         let newLoginState = [this.isLoggedIn(), this.isLoading()];
         if (this._loginState.toString() !== newLoginState.toString()) {
@@ -33,20 +33,24 @@ export class DBPSignatureBaseLitElement extends AdapterLitElement {
         this._loginState = newLoginState;
     }
 
+    update(changedProperties) {
+        changedProperties.forEach((oldValue, propName) => {
+            switch (propName) {
+                case "auth":
+                    JSONLD.doInitializationOnce(this.entryPointUrl, this.auth.token);
+                    this._updateAuth();
+                    break;
+            }
+        });
+
+        super.update(changedProperties);
+    }
+
     connectedCallback() {
         super.connectedCallback();
 
         this._loginStatus = '';
         this._loginState = [];
-        this._bus = new EventBus();
-        this._updateAuth = this._updateAuth.bind(this);
-        this._bus.subscribe('auth-update', this._updateAuth);
-    }
-
-    disconnectedCallback() {
-        this._bus.close();
-
-        super.disconnectedCallback();
     }
 
     isLoggedIn() {
