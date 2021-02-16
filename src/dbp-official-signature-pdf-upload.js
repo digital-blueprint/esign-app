@@ -260,9 +260,8 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         // this triggers the correct update() execution
         this.errorFilesCount++;
 
-        if (window._paq !== undefined) {
-            window._paq.push(['trackEvent', 'officiallySigning', 'SigningFailed', file.json["hydra:description"]]);
-        }
+        this.sendSetPropertyEvent('analytics-event', {
+            'category': 'officiallySigning', 'action': 'SigningFailed', 'name': file.json["hydra:description"]});
     }
 
     /**
