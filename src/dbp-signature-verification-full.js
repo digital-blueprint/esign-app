@@ -427,7 +427,7 @@ class SignatureVerificationFull extends ScopedElementsMixin(DBPSignatureLitEleme
             }
 
             .file-block.error .header {
-                grid-template-columns: auto 80px;
+                grid-template-columns: auto 90px;
             }
 
             .file-block.error .header .buttons {
