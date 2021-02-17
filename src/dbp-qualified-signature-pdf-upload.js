@@ -337,9 +337,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                     // this triggers the correct update() execution
                     that.signedFilesCount++;
 
-                    if (window._paq !== undefined) {
-                        window._paq.push(['trackEvent', 'QualifiedlySigning', 'DocumentSigned', document.contentSize]);
-                    }
+                    this.sendSetPropertyEvent('analytics-event', {
+                        'category': 'QualifiedlySigning', 'action': 'DocumentSigned', 'name': document.contentSize});
                 }).catch(error => {
                     let file = this.currentFile;
                     // let's override the json to inject an error message
@@ -380,9 +379,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         // this triggers the correct update() execution
         this.errorFilesCount++;
 
-        if (window._paq !== undefined) {
-            window._paq.push(['trackEvent', 'QualifiedlySigning', 'SigningFailed', file.json["hydra:description"]]);
-        }
+        this.sendSetPropertyEvent('analytics-event', {
+            'category': 'QualifiedlySigning', 'action': 'SigningFailed', 'name': file.json["hydra:description"]});
     }
 
     /**

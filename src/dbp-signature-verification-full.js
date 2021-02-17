@@ -181,9 +181,8 @@ class SignatureVerificationFull extends ScopedElementsMixin(DBPSignatureLitEleme
         // this triggers the correct update() execution
         this.errorFilesCount++;
 
-        if (window._paq !== undefined) {
-            window._paq.push(['trackEvent', 'officiallyVerification', 'VerificationFailed', file.json["hydra:description"]]);
-        }
+        this.sendSetPropertyEvent('analytics-event', {
+            'category': 'officiallyVerification', 'action': 'VerificationFailed', 'name': file.json["hydra:description"]});
     }
 
     /**
