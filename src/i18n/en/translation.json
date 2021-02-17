@@ -1,6 +1,7 @@
 {
   "official-pdf-upload": {
-    "upload-field-label": "Upload PDF-documents to sign",
+    "upload-field-label": "Officially sign",
+    "sub-headline": "Allows upload of PDF-documents to officially sign them",
     "save-field-label": "Save {{count}} file",
     "save-field-label_plural": "Save {{count}} files",
     "upload-text": "In this area you can upload PDF-documents up to a size of 32MB. The PDF-documents can also be located in a ZIP-file.",
@@ -29,10 +30,12 @@
     "re-upload-all-button-title": "Queue all failed documents again",
     "signature-placement-label": "Place signature",
     "positioning": "Positioning",
-    "confirm-page-leave": "Are you sure you want to leave this page? There are still signed documents ready to be downloaded."
+    "confirm-page-leave": "Are you sure you want to leave this page? There are still signed documents ready to be downloaded.",
+    "file-picker-context": "Upload PDF-documents to sign"
   },
   "qualified-pdf-upload": {
-    "upload-field-label": "Upload PDF-documents to sign",
+    "upload-field-label": "Personally Sign Document",
+    "sub-headline": "Allows upload of PDF-documents to personally sign them",
     "save-field-label": "Save {{count}} file",
     "save-field-label_plural": "Save {{count}} files",
     "upload-text": "In this area you can upload PDF-documents up to a size of 32MB. The PDF-documents can also be located in a ZIP-file.",
@@ -62,10 +65,12 @@
     "re-upload-all-button-title": "Queue all failed documents again",
     "signature-placement-label": "Place signature",
     "positioning": "Positioning",
-    "confirm-page-leave": "Are you sure you want to leave this page? There are still signed documents ready to be downloaded."
+    "confirm-page-leave": "Are you sure you want to leave this page? There are still signed documents ready to be downloaded.",
+    "file-picker-context": "Upload PDF-documents to sign"
   },
   "signature-verification": {
-    "upload-field-label": "Upload PDF-documents to verify",
+    "upload-field-label": "Verify signed documents",
+    "sub-headline": "Allows verification of signed PDF-documents",
     "save-field-label": "Save {{count}} file",
     "save-field-label_plural": "Save {{count}} files",
     "upload-text": "In this area you can upload PDF-documents up to a size of 32MB. The PDF-documents can also be located in a ZIP-file.",
@@ -93,7 +98,8 @@
     "serial-number": "Serial number",
     "value-message": "Verification",
     "no-signatures-found": "No signatures were found.",
-    "confirm-page-leave": "Are you sure you want to leave this page? There are still signed documents ready to be downloaded."
+    "confirm-page-leave": "Are you sure you want to leave this page? There are still signed documents ready to be downloaded.",
+    "file-picker-context": "Upload PDF-documents to verify"
   },
   "signature-verification-extern": {
     "headline": "Verify signed Documents",

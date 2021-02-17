@@ -31,7 +31,8 @@
     "re-upload-all-button-title": "Alle fehlgeschlagen Signaturvorgänge erneut in die Warteschlange stellen",
     "signature-placement-label": "Signatur platzieren",
     "positioning": "Positionierung",
-    "confirm-page-leave": "Sind Sie sicher, dass Sie die Seite verlassen wollen? Es stehen signierte Dokumente zum Download bereit."
+    "confirm-page-leave": "Sind Sie sicher, dass Sie die Seite verlassen wollen? Es stehen signierte Dokumente zum Download bereit.",
+    "file-picker-context": "PDF-Dokumente zum Signieren auswählen"
   },
   "qualified-pdf-upload": {
     "upload-field-label": "Dokument persönlich signieren",
@@ -65,10 +66,12 @@
     "re-upload-all-button-title": "Alle fehlgeschlagen Signaturvorgänge erneut in die Warteschlange stellen",
     "signature-placement-label": "Signatur platzieren",
     "positioning": "Positionierung",
-    "confirm-page-leave": "Sind Sie sicher, dass Sie die Seite verlassen wollen? Es stehen signierte Dokumente zum Download bereit."
+    "confirm-page-leave": "Sind Sie sicher, dass Sie die Seite verlassen wollen? Es stehen signierte Dokumente zum Download bereit.",
+    "file-picker-context": "PDF-Dokumente zum Signieren auswählen"
   },
   "signature-verification": {
     "upload-field-label": "PDF-Dokumente zum Überprüfen der Signaturen hochladen",
+    "sub-headline": "Erlaubt das Verifizieren von signierten PDF-Dokumenten",
     "save-field-label": "{{count}} Datei speichern",
     "save-field-label_plural": "{{count}} Dateien speichern",
     "upload-text": "Sie können in diesem Bereich PDF-Dokumente mit einer Maximalgröße von bis zu 32MB pro Dokument hochladen. Die PDF-Dokumente dürfen sich auch in ZIP-Dateien befinden.",

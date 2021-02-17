@@ -589,11 +589,13 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             
             #grid-container{
                 margin-top: 2rem;
-                padding-top: 2rem;
+                /*padding-top: 2rem;*/
             }
             
             .border{
-                border-top: 1px solid black;            
+                border-top: 1px solid black;
+                margin-top: 2rem;
+                padding-top: 2rem;
             }
 
             .placement-missing {
@@ -764,16 +766,19 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                     <h2>${i18n.t('official-pdf-upload.upload-field-label')}</h2>
                     <div class="control">
                         <p>
-                            ${i18n.t('qualified-pdf-upload.upload-text')}
+                            ${i18n.t('official-pdf-upload.sub-headline')}
+                        </p>
+                        <p class="border">
+                            ${i18n.t('official-pdf-upload.upload-text')}
                         </p>
                         <button @click="${() => { this._("#file-source").setAttribute("dialog-open", ""); }}"
                                 ?disabled="${this.signingProcessActive}"
                                 class="button is-primary">
-                            ${i18n.t('qualified-pdf-upload.upload-button-label')}
+                            ${i18n.t('official-pdf-upload.upload-button-label')}
                         </button>
                         <dbp-file-source
                             id="file-source"
-                            context="${i18n.t('qualified-pdf-upload.upload-field-label')}"
+                            context="${i18n.t('official-pdf-upload.file-picker-context')}"
                             allowed-mime-types="application/pdf"
                             enabled-targets="local${this.showNextcloudFilePicker ? ",nextcloud" : ""}"
                             nextcloud-auth-url="${this.nextcloudWebAppPasswordURL}"
@@ -790,7 +795,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                             ></dbp-file-source>
                     </div>
                 </div>
-                <div id="grid-container" class="${classMap({"border": this.queueBlockEnabled})}">
+                <div id="grid-container"öä--.>
                     <div class="left-container">
                         <div class="files-block field ${classMap({hidden: !this.queueBlockEnabled})}">
                             <!-- Queued files headline and queueing spinner -->

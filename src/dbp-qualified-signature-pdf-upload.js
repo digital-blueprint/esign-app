@@ -736,11 +736,13 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             
             #grid-container{
                 margin-top: 2rem;
-                padding-top: 2rem;
+                /* padding-top: 2rem; */
             }
             
             .border{
                 border-top: 1px solid black;
+                margin-top: 2rem;
+                padding-top: 2rem;
             }
 
             .placement-missing {
@@ -944,7 +946,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                        
                         <dbp-file-source
                             id="file-source"
-                            context="${i18n.t('qualified-pdf-upload.upload-field-label')}"
+                            context="${i18n.t('qualified-pdf-upload.file-picker-context')}"
                             allowed-mime-types="application/pdf"
                             enabled-targets="local${this.showNextcloudFilePicker ? ",nextcloud" : ""}"
                             nextcloud-auth-url="${this.nextcloudWebAppPasswordURL}"

@@ -508,11 +508,13 @@ class SignatureVerificationFull extends ScopedElementsMixin(DBPSignatureLitEleme
             
             #grid-container{
                 margin-top: 2rem;
-                padding-top: 2rem;
+                /*padding-top: 2rem;*/
             }
             
             .border{
                 border-top: 1px solid black;
+                margin-top: 2rem;
+                padding-top: 2rem;
             }
 
             /* Handling for small displays (like mobile devices) */
@@ -689,6 +691,9 @@ class SignatureVerificationFull extends ScopedElementsMixin(DBPSignatureLitEleme
                     <h2>${i18n.t('signature-verification.upload-field-label')}</h2>
                     <div class="control">
                         <p>
+                            ${i18n.t('signature-verification.sub-headline')}
+                        </p>
+                        <p class="border">
                             ${i18n.t('signature-verification.upload-text')}
                         </p>
                         <button @click="${() => { this._("#file-source").setAttribute("dialog-open", ""); }}"
@@ -707,6 +712,7 @@ class SignatureVerificationFull extends ScopedElementsMixin(DBPSignatureLitEleme
                             decompress-zip
                             lang="${this.lang}"
                             ?disabled="${this.verificationProcessActive}"
+                            context="${i18n.t('signature-verification.file-picker-context')}"
                             text="${i18n.t('signature-verification.upload-area-text')}"
                             button-label="${i18n.t('signature-verification.upload-button-label')}"
                             @dbp-file-source-file-selected="${this.onFileSelected}"
