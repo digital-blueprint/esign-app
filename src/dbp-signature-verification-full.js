@@ -690,12 +690,12 @@ class SignatureVerificationFull extends ScopedElementsMixin(DBPSignatureLitEleme
                     <h2>${i18n.t('signature-verification.upload-field-label')}</h2>
                     <div class="control">
                         <p>
-                            ${i18n.t('qualified-pdf-upload.upload-text')}
+                            ${i18n.t('signature-verification.upload-text')}
                         </p>
                         <button @click="${() => { this._("#file-source").setAttribute("dialog-open", ""); }}"
                                 ?disabled="${this.signingProcessActive}"
                                 class="button is-primary">
-                            ${i18n.t('qualified-pdf-upload.upload-button-label')}
+                            ${i18n.t('signature-verification.upload-button-label')}
                         </button>
                         <dbp-file-source
                             id="file-source"

@@ -742,12 +742,14 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             }
             
             .border{
-                border-top: 1px solid black;            
+                border-top: 1px solid black;
             }
 
             .placement-missing {
                 border: solid 2px var(--dbp-override-danger-bg-color);
             }
+            
+            
 
             /* Handling for small displays (like mobile devices) */
             @media (max-width: 680px) {
@@ -931,13 +933,17 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                     <h2>${i18n.t('qualified-pdf-upload.upload-field-label')}</h2>
                     <div class="control">
                         <p>
-                            ${i18n.t('qualified-pdf-upload.upload-text')}
+                            ${i18n.t('qualified-pdf-upload.sub-headline')}
                         </p>
-                        <button @click="${() => { this._("#file-source").setAttribute("dialog-open", ""); }}"
-                                ?disabled="${this.signingProcessActive}"
-                                class="button is-primary">
-                            ${i18n.t('qualified-pdf-upload.upload-button-label')}
-                        </button>
+                        <p class="border">
+                                ${i18n.t('qualified-pdf-upload.upload-text')}
+                            </p>
+                            <button @click="${() => { this._("#file-source").setAttribute("dialog-open", ""); }}"
+                                    ?disabled="${this.signingProcessActive}"
+                                    class="button is-primary">
+                                ${i18n.t('qualified-pdf-upload.upload-button-label')}
+                            </button>
+                       
                         <dbp-file-source
                             id="file-source"
                             context="${i18n.t('qualified-pdf-upload.upload-field-label')}"
@@ -957,7 +963,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                             ></dbp-file-source>
                     </div>
                 </div>
-                <div id="grid-container" class="${classMap({"border": this.queueBlockEnabled})}">
+                <div id="grid-container">
                     <div class="left-container">
                         <div class="files-block field ${classMap({hidden: !this.queueBlockEnabled})}">
                             <!-- Queued files headline and queueing spinner -->

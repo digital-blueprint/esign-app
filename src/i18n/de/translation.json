@@ -1,10 +1,11 @@
 {
   "official-pdf-upload": {
-    "upload-field-label": "PDF-Dokumente zum Signieren hochladen",
+    "upload-field-label": "Dokumente amtssignieren",
+    "sub-headline": "Erlaubt das Hochladen von PDF-Dokumenten, um sie mit einer Amtssignatur zu versehen",
     "save-field-label": "{{count}} Datei speichern",
     "save-field-label_plural": "{{count}} Dateien speichern",
     "save-field-label_2": "{{count}} Dateien speichern",
-    "upload-text": "Sie können in diesem Bereich PDF-Dokumente mit einer Maximalgröße von bis zu 32MB pro Dokument hochladen. Die PDF-Dokumente dürfen sich auch in ZIP-Dateien befinden.",
+    "upload-text": "Sie können PDF-Dokumente mit einer Maximalgröße von bis zu 32MB pro Dokument hochladen. Die PDF-Dokumente dürfen sich auch in ZIP-Dateien befinden.",
     "upload-area-text": "Sie können in diesem Bereich PDF-Dokumente mit einer Maximalgröße von bis zu 32MB pro Dokument per Drag & Drop oder per Direktauswahl hochladen. Die PDF-Dokumente dürfen sich auch in ZIP-Dateien befinden.",
     "queued-files-label": "Dokumente in der Warteschlange",
     "queued-files-empty1": "Kein Dokument in der Warteschlange",
@@ -33,10 +34,11 @@
     "confirm-page-leave": "Sind Sie sicher, dass Sie die Seite verlassen wollen? Es stehen signierte Dokumente zum Download bereit."
   },
   "qualified-pdf-upload": {
-    "upload-field-label": "PDF-Dokumente zum Signieren hochladen",
+    "upload-field-label": "Dokument persönlich signieren",
+    "sub-headline": "Erlaubt das Hochladen von PDF-Dokumenten, um sie mit einer persönlichen elektronischen Signatur zu versehen",
     "save-field-label": "{{count}} Datei speichern",
     "save-field-label_plural": "{{count}} Dateien speichern",
-    "upload-text": "Sie können in diesem Bereich PDF-Dokumente mit einer Maximalgröße von bis zu 32MB pro Dokument hochladen. Die PDF-Dokumente dürfen sich auch in ZIP-Dateien befinden.",
+    "upload-text": "Sie können PDF-Dokumente mit einer Maximalgröße von bis zu 32MB pro Dokument hochladen. Die PDF-Dokumente dürfen sich auch in ZIP-Dateien befinden.",
     "upload-area-text": "Sie können in diesem Bereich PDF-Dokumente mit einer Maximalgröße von bis zu 32MB pro Dokument per Drag & Drop oder per Direktauswahl hochladen. Die PDF-Dokumente dürfen sich auch in ZIP-Dateien befinden.",
     "current-signing-process-label": "Aktueller Signaturprozess",
     "queued-files-label": "Dokumente in der Warteschlange",
