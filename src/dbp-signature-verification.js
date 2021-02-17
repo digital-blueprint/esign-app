@@ -93,12 +93,21 @@ class SignatureVerification extends ScopedElementsMixin(DBPSignatureLitElement) 
                 animation: 0s linkIconIn;
                 font-size: 103%;
             }
+
+            .subheadline{
+                font-style: italic;
+                padding-left: 2em;
+                margin-top: -5px;
+            }
         `;
     }
 
     render() {
         return html`
             <h2>${i18n.t('signature-verification-extern.headline')}</h2>
+            <p class="subheadline">
+                ${i18n.t('signature-verification.sub-headline')}
+            </p>
             <p>
                 ${i18n.t('signature-verification-extern.description-text')}
             </p>

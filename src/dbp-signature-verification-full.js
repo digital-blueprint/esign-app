@@ -517,6 +517,12 @@ class SignatureVerificationFull extends ScopedElementsMixin(DBPSignatureLitEleme
                 padding-top: 2rem;
             }
 
+            .subheadline{
+                font-style: italic;
+                padding-left: 2em;
+                margin-top: -5px;
+            }
+
             /* Handling for small displays (like mobile devices) */
             @media (max-width: 680px) {
                 /* Modal preview, upload and external auth */
@@ -690,10 +696,10 @@ class SignatureVerificationFull extends ScopedElementsMixin(DBPSignatureLitEleme
                 <div class="field">
                     <h2>${i18n.t('signature-verification.upload-field-label')}</h2>
                     <div class="control">
-                        <p>
+                        <p class="subheadline">
                             ${i18n.t('signature-verification.sub-headline')}
                         </p>
-                        <p class="border">
+                        <p>
                             ${i18n.t('signature-verification.upload-text')}
                         </p>
                         <button @click="${() => { this._("#file-source").setAttribute("dialog-open", ""); }}"

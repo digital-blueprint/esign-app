@@ -749,6 +749,12 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                 border: solid 2px var(--dbp-override-danger-bg-color);
             }
             
+            .subheadline{
+                font-style: italic;
+                padding-left: 2em;
+                margin-top: -5px;
+            }
+            
             
 
             /* Handling for small displays (like mobile devices) */
@@ -932,17 +938,17 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                 <div class="field ${classMap({"is-disabled": this.isUserInterfaceDisabled()})}">
                     <h2>${i18n.t('qualified-pdf-upload.upload-field-label')}</h2>
                     <div class="control">
-                        <p>
+                        <p class="subheadline">
                             ${i18n.t('qualified-pdf-upload.sub-headline')}
                         </p>
-                        <p class="border">
+                        <p>
                                 ${i18n.t('qualified-pdf-upload.upload-text')}
-                            </p>
-                            <button @click="${() => { this._("#file-source").setAttribute("dialog-open", ""); }}"
-                                    ?disabled="${this.signingProcessActive}"
-                                    class="button is-primary">
-                                ${i18n.t('qualified-pdf-upload.upload-button-label')}
-                            </button>
+                        </p>
+                        <button @click="${() => { this._("#file-source").setAttribute("dialog-open", ""); }}"
+                                ?disabled="${this.signingProcessActive}"
+                                class="button is-primary">
+                            ${i18n.t('qualified-pdf-upload.upload-button-label')}
+                        </button>
                        
                         <dbp-file-source
                             id="file-source"

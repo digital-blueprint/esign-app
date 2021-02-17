@@ -602,6 +602,12 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                 border: solid 2px var(--dbp-override-danger-bg-color);
             }
 
+            .subheadline{
+                font-style: italic;
+                padding-left: 2em;
+                margin-top: -5px;
+            }
+
             /* Handling for small displays (like mobile devices) */
             @media (max-width: 680px) {
                 /* Modal preview, upload and external auth */
@@ -765,10 +771,10 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                 <div class="field">
                     <h2>${i18n.t('official-pdf-upload.upload-field-label')}</h2>
                     <div class="control">
-                        <p>
+                        <p class="subheadline">
                             ${i18n.t('official-pdf-upload.sub-headline')}
                         </p>
-                        <p class="border">
+                        <p>
                             ${i18n.t('official-pdf-upload.upload-text')}
                         </p>
                         <button @click="${() => { this._("#file-source").setAttribute("dialog-open", ""); }}"
@@ -795,7 +801,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                             ></dbp-file-source>
                     </div>
                 </div>
-                <div id="grid-container"öä--.>
+                <div id="grid-container">
                     <div class="left-container">
                         <div class="files-block field ${classMap({hidden: !this.queueBlockEnabled})}">
                             <!-- Queued files headline and queueing spinner -->
