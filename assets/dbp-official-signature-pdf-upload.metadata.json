@@ -14,5 +14,6 @@
     "de": "Erlaubt das Hochladen von PDF-Dokumenten, um sie mit einer Amtssignatur zu versehen",
     "en": "Allows upload of PDF-documents to officially sign them"
   },
-  "subscribe": "lang:lang,entry-point-url:entry-point-url,nextcloud-web-app-password-url:nextcloud-web-app-password-url,nextcloud-webdav-url:nextcloud-webdav-url,nextcloud-name:nextcloud-name,nextcloud-file-url:nextcloud-file-url,show-nextcloud-file-picker:show-nextcloud-file-picker,auth:auth"
+  "subscribe": "lang:lang,entry-point-url:entry-point-url,nextcloud-web-app-password-url:nextcloud-web-app-password-url,nextcloud-webdav-url:nextcloud-webdav-url,nextcloud-name:nextcloud-name,nextcloud-file-url:nextcloud-file-url,show-nextcloud-file-picker:show-nextcloud-file-picker,auth:auth",
+  "required_roles": ["ROLE_SCOPE_OFFICIAL-SIGNATURE"]
 }
