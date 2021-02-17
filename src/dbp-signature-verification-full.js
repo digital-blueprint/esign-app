@@ -704,7 +704,7 @@ class SignatureVerificationFull extends ScopedElementsMixin(DBPSignatureLitEleme
                         <dbp-file-source
                             id="file-source"
                             allowed-mime-types="application/pdf"
-                            enabled-sources="local${this.showNextcloudFilePicker ? ",nextcloud" : ""}"
+                            enabled-targets="local${this.showNextcloudFilePicker ? ",nextcloud" : ""}"
                             nextcloud-auth-url="${this.nextcloudWebAppPasswordURL}"
                             nextcloud-web-dav-url="${this.nextcloudWebDavURL}"
                             nextcloud-name="${this.nextcloudName}"
@@ -716,6 +716,7 @@ class SignatureVerificationFull extends ScopedElementsMixin(DBPSignatureLitEleme
                             text="${i18n.t('signature-verification.upload-area-text')}"
                             button-label="${i18n.t('signature-verification.upload-button-label')}"
                             @dbp-file-source-file-selected="${this.onFileSelected}"
+                            @dbp-file-source-switched="${this.onFileSourceSwitch}"
                             ></dbp-file-source>
                     </div>
                 </div>
