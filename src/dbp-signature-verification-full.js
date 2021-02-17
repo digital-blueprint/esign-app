@@ -720,7 +720,7 @@ class SignatureVerificationFull extends ScopedElementsMixin(DBPSignatureLitEleme
                             ></dbp-file-source>
                     </div>
                 </div>
-                <div id="grid-container" class="${classMap({"border": this.queueBlockEnabled})}">
+                <div id="grid-container">
                     <div class="left-container">
                         <div class="files-block field ${classMap({hidden: !this.queueBlockEnabled})}">
                             <!-- Queued files headline and queueing spinner -->
