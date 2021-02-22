@@ -149,6 +149,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                 notify({
                     "body": i18n.t('error-manual-positioning-missing'),
                     "type": "danger",
+                    "timeout": 5,
                 });
                 this.signingProcessEnabled = false;
                 this.signingProcessActive = false;
