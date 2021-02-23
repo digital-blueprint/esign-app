@@ -63,7 +63,7 @@
               nextcloud-file-url="<%= nextcloudFileURL %>"
               initial-file-handling-state>
     <<%= name %>
-        subscribe="lang:lang,entry-point-url:entry-point-url"
+        subscribe="lang,entry-point-url"
         auth requested-login-status analytics-event
         src="<%= getUrl(name + '.topic.metadata.json') %>"
         base-path="<%= getUrl('') %>"
