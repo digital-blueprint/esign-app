@@ -310,14 +310,12 @@ class SignatureVerificationFull extends ScopedElementsMixin(DBPSignatureLitEleme
 
             #pdf-preview {
                 min-width: 320px;
+                box-sizing: border-box;
             }
 
             h2:first-child {
                 margin-top: 0;
-            }
-
-            h2 {
-                margin-bottom: 10px;
+                margin-bottom: 0px;
             }
 
             strong {
@@ -521,6 +519,8 @@ class SignatureVerificationFull extends ScopedElementsMixin(DBPSignatureLitEleme
                 font-style: italic;
                 padding-left: 2em;
                 margin-top: -5px;
+                line-height: 1.8;
+                margin-bottom: 1.2em;
             }
 
             /* Handling for small displays (like mobile devices) */
@@ -695,10 +695,11 @@ class SignatureVerificationFull extends ScopedElementsMixin(DBPSignatureLitEleme
             <div class="${classMap({hidden: !this.isLoggedIn() || !this.hasSignaturePermissions() || this.isLoading()})}">
                 <div class="field">
                     <h2>${i18n.t('signature-verification.upload-field-label')}</h2>
+                    <p class="subheadline">
+                        ${i18n.t('signature-verification.sub-headline')}
+                    </p>
                     <div class="control">
-                        <p class="subheadline">
-                            ${i18n.t('signature-verification.sub-headline')}
-                        </p>
+                        
                         <p>
                             ${i18n.t('signature-verification.upload-text')}
                         </p>

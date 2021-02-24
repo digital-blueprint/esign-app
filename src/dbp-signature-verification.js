@@ -54,10 +54,7 @@ class SignatureVerification extends ScopedElementsMixin(DBPSignatureLitElement) 
 
             h2:first-child {
                 margin-top: 0;
-            }
-
-            h2 {
-                margin-bottom: 10px;
+                margin-bottom: 0px;
             }
 
             .int-link-internal{
@@ -98,6 +95,8 @@ class SignatureVerification extends ScopedElementsMixin(DBPSignatureLitElement) 
                 font-style: italic;
                 padding-left: 2em;
                 margin-top: -5px;
+                line-height: 1.8;
+                margin-bottom: 1.2em;
             }
         `;
     }

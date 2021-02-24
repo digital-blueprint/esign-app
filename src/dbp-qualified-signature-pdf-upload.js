@@ -528,16 +528,14 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
 
             #pdf-preview {
                 min-width: 320px;
+                box-sizing: border-box;
             }
 
             h2:first-child {
                 margin-top: 0;
+                margin-bottom: 0px;
             }
-
-            h2 {
-                margin-bottom: 10px;
-            }
-
+            
             strong {
                 font-weight: 600;
             }
@@ -754,6 +752,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                 font-style: italic;
                 padding-left: 2em;
                 margin-top: -5px;
+                line-height: 1.8;
+                margin-bottom: 1.2em;
             }
             
             
@@ -938,10 +938,11 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             <div class="${classMap({hidden: !this.isLoggedIn() || !this.hasSignaturePermissions() || this.isLoading()})}">
                 <div class="field ${classMap({"is-disabled": this.isUserInterfaceDisabled()})}">
                     <h2>${i18n.t('qualified-pdf-upload.upload-field-label')}</h2>
+                    <p class="subheadline">
+                        ${i18n.t('qualified-pdf-upload.sub-headline')}
+                    </p>
                     <div class="control">
-                        <p class="subheadline">
-                            ${i18n.t('qualified-pdf-upload.sub-headline')}
-                        </p>
+                        
                         <p>
                                 ${i18n.t('qualified-pdf-upload.upload-text')}
                         </p>
