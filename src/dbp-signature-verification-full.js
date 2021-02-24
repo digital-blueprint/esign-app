@@ -518,8 +518,8 @@ class SignatureVerificationFull extends ScopedElementsMixin(DBPSignatureLitEleme
             .subheadline{
                 font-style: italic;
                 padding-left: 2em;
-                margin-top: -5px;
-                line-height: 1.8;
+                margin-top: -1px;
+                /*line-height: 1.8;*/
                 margin-bottom: 1.2em;
             }
 
