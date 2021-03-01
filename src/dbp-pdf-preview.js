@@ -364,8 +364,8 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                                     text = annotation.contents;
                                     break;
                                 case 'Widget':
-                                    // pdf.js doesn't show signatures, so we will show them manually
-                                    if (annotation.hasAppearance && annotation.fieldType !== 'Sig') {
+                                    // Annotations by Adobe Acrobat already have an appearance that can be viewed by pdf.js
+                                    if (annotation.hasAppearance) {
                                         return;
                                     }
 
