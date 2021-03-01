@@ -103,7 +103,7 @@
   },
   "signature-verification-extern": {
     "headline": "Signierte Dokumente verifizieren",
-    "description-text": "Um eine PDF-Signatur auf ihre Gültigkeit zu überprüfen, benutzen Sie bitte das Verifikationsservice der Rundfunk und Telekom Regulierungs-GmbH. Mit diesem Verifikationsservice können Sie überprüfen, dass das Dokument nicht verändert wurde, welcher Teil des PDFs signiert wurde und von wem.",
+    "description-text": "Um eine PDF-Signatur auf ihre Gültigkeit zu überprüfen, benutzen Sie bitte das Verifikationsservice der Rundfunk und Telekom Regulierungs-GmbH. Mit diesem Verifikationsservice können Sie überprüfen, ob das Dokument eine valide Signatur enthält.",
     "link-label": "Zum RTR Verifikationsservice wechseln",
     "adobe-reader-text": "Des Weiteren besteht auch die Möglichkeit, das Dokument lokal mit dem Adobe Reader zu überprüfen.",
     "adobe-link-label": "Weitere Information zur Verfikation mit Adobe Reader"
