@@ -383,7 +383,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                             annotationDiv.style.bottom = (annotation.rect[1] * that.canvasToPdfScale) + 'px';
                             annotationDiv.style.width = ((annotation.rect[2] - annotation.rect[0]) * that.canvasToPdfScale) + 'px';
                             annotationDiv.style.height = ((annotation.rect[3] - annotation.rect[1]) * that.canvasToPdfScale) + 'px';
-                            annotationDivInner.innerText = text;
+                            annotationDivInner.innerText = text === '' ? subtype : text;
 
                             annotationDiv.appendChild(annotationDivInner);
                             that.annotationLayer.appendChild(annotationDiv);
