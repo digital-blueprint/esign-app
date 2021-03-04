@@ -10,6 +10,7 @@ import * as commonStyles from '@dbp-toolkit/common/styles';
 import pdfjs from 'pdfjs-dist/es5/build/pdf.js';
 import {name as pkgName} from './../package.json';
 import {readBinaryFileContent} from './utils.js';
+import {AnnotationFactory} from 'annotpdf/_bundles/pdfAnnotate.js';
 
 const i18n = createI18nInstance();
 
@@ -223,6 +224,74 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
             console.error(error);
             return;
         }
+
+        this.pdfDoc.getData().then((data) => {
+            let pdfFactory = new AnnotationFactory(data);
+            console.log("pdfFactory.getAnnotations() before", pdfFactory.getAnnotations());
+            // pdfFactory.createTextAnnotation(0, [50, 50, 180, 180], "Text annotation by annotpdf", "Patrizio");
+            // pdfFactory.createFreeTextAnnotation(0, [50, 50, 180, 180], "Annotation by annotpdf", "Patrizio");
+            // pdfFactory.createFreeTextAnnotation(0, [50, 50, 180, 180], "Annotation by annotpdf", "Patrizio", {r: 100, g: 100, b: 100});
+            // pdfFactory.createPolyLineAnnotation(0, [50, 50, 180, 180], "Annotation by annotpdf", "Patrizio", [50, 50, 180, 180, 200, 170]);
+            // pdfFactory.createPolygonAnnotation(0, [50, 50, 180, 180], "Annotation by annotpdf", "Patrizio", [50, 50, 180, 180, 200, 170], {r: 100, g: 100, b: 100});
+
+            const page = 0;
+            let rect = [50, 50, 180, 180];
+            const contents = "Annotation by annotpdf (fixed)";
+            const author = "Patrizio";
+
+            pdfFactory.checkRect(4, rect);
+
+            // // Create text annotation with print flag
+            // let annot = Object.assign(pdfFactory.createBaseAnnotation(page, rect, contents, author), {
+            //     opacity: 1,
+            //     annotation_flag: 4,
+            //     initiallyOpen: true,
+            // });
+            // annot.type = "/Text";
+            // pdfFactory.annotations.push(annot);
+
+            // // Create single free text annotation with print flag
+            // let annot = Object.assign(pdfFactory.createBaseAnnotation(page, rect, contents, author), {
+            //     // textAlignment: "right-justified",
+            //     annotation_flag: 4,
+            //     defaultAppearance: "/Invalid_font 9 Tf"
+            // });
+            // annot.type = "/FreeText";
+            // pdfFactory.annotations.push(annot);
+
+            // Create single, hidden text annotation
+            let annot = Object.assign(pdfFactory.createBaseAnnotation(page, rect, contents, author), {
+                // 1011110011
+                annotation_flag: 0x2F3,
+                initiallyOpen: false,
+            });
+            annot.type = "/Text";
+            pdfFactory.annotations.push(annot);
+
+            // // Create text annotation without print flag
+            // let annot = Object.assign(pdfFactory.createBaseAnnotation(page, rect, contents, author), {
+            //     opacity: 1,
+            //     initiallyOpen: false,
+            // });
+            // annot.type = "/Text";
+            // pdfFactory.annotations.push(annot);
+
+            // Create free text annotation with print flag
+            // rect = [250, 250, 380, 380];
+            // annot = Object.assign(pdfFactory.createBaseAnnotation(page, rect, contents, author), {
+            //     // textAlignment: "right-justified",
+            //     annotation_flag: 4,
+            //     defaultAppearance: "/Invalid_font 9 Tf"
+            // });
+            // annot.type = "/FreeText";
+            // pdfFactory.annotations.push(annot);
+
+            console.log("pdfFactory.getAnnotations() after", pdfFactory.getAnnotations());
+            // pdfFactory.createUnderlineAnnotation(0, [50, 50, 180, 180], "Annotation by annotpdf", "Patrizio");
+            // pdfFactory.createSquareAnnotation(0, [50, 50, 180, 180], "Annotation by annotpdf", "Patrizio", {r: 0, g: 0, b: 0}, {r: 255, g: 255, b: 255});
+            // pdfFactory.createSquareAnnotation(0, [50, 50, 180, 180], "Annotation by annotpdf", "Patrizio", {r: 0, g: 0, b: 0});
+            pdfFactory.download();
+        });
 
         // total pages in pdf
         this.totalPages = this.pdfDoc.numPages;
