@@ -236,7 +236,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
 
             const page = 0;
             let rect = [50, 50, 180, 180];
-            const contents = "Annotation by annotpdf (fixed)";
+            const contents = "Annotation by annotpdf";
             const author = "Patrizio";
 
             pdfFactory.checkRect(4, rect);
@@ -250,6 +250,13 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
             // annot.type = "/Text";
             // pdfFactory.annotations.push(annot);
 
+            // // Create single popup annotation with print flag
+            // let annot = Object.assign(pdfFactory.createBaseAnnotation(page, rect, contents, author), {
+            //     annotation_flag: 4,
+            // });
+            // annot.type = "/Popup";
+            // pdfFactory.annotations.push(annot);
+
             // // Create single free text annotation with print flag
             // let annot = Object.assign(pdfFactory.createBaseAnnotation(page, rect, contents, author), {
             //     // textAlignment: "right-justified",
@@ -259,14 +266,36 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
             // annot.type = "/FreeText";
             // pdfFactory.annotations.push(annot);
 
-            // Create single, hidden text annotation
-            let annot = Object.assign(pdfFactory.createBaseAnnotation(page, rect, contents, author), {
-                // 1011110011
-                annotation_flag: 0x2F3,
-                initiallyOpen: false,
-            });
-            annot.type = "/Text";
-            pdfFactory.annotations.push(annot);
+            // // Create single printable link annotation
+            // let annot = Object.assign(pdfFactory.createBaseAnnotation(page, rect, contents, author), {
+            //     annotation_flag: 4,
+            //     initiallyOpen: false,
+            // });
+            // annot.type = "/Link";
+            // pdfFactory.annotations.push(annot);
+
+            // // Create single printable text annotation
+            // let annot = Object.assign(pdfFactory.createBaseAnnotation(page, [20, 30, 20, 30], contents, author), {
+            //     // annotation_flag: 4,
+            //     annotation_flag: 0x2F3,
+            //     initiallyOpen: false,
+            // });
+            // annot.type = "/Text";
+            // pdfFactory.annotations.push(annot);
+
+            // Create single printable text annotation
+            // pdfFactory.createTextAnnotation(0, [20, 30, 20, 30], "Text annotation by annotpdf", "Patrizio");
+
+            pdfFactory.createFreeTextAnnotation(0, [20, 30, 20, 30], "FreeText annotation by annotpdf", "Patrizio");
+
+            // // Create single, hidden text annotation
+            // let annot = Object.assign(pdfFactory.createBaseAnnotation(page, rect, contents, author), {
+            //     // 1011110011
+            //     annotation_flag: 0x2F3,
+            //     initiallyOpen: false,
+            // });
+            // annot.type = "/Text";
+            // pdfFactory.annotations.push(annot);
 
             // // Create text annotation without print flag
             // let annot = Object.assign(pdfFactory.createBaseAnnotation(page, rect, contents, author), {
