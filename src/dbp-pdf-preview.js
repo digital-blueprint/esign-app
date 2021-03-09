@@ -10,7 +10,7 @@ import * as commonStyles from '@dbp-toolkit/common/styles';
 import pdfjs from 'pdfjs-dist/es5/build/pdf.js';
 import {name as pkgName} from './../package.json';
 import {readBinaryFileContent} from './utils.js';
-import {AnnotationFactory} from 'annotpdf/_bundles/pdfAnnotate.js';
+import {AnnotationFactory} from '@digital-blueprint/annotpdf/_bundles/pdfAnnotate.js';
 
 const i18n = createI18nInstance();
 

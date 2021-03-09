@@ -890,6 +890,16 @@
     lodash "^4.17.19"
     to-fast-properties "^2.0.0"
 
+"@digital-blueprint/annotpdf@^1.0.13a":
+  version "1.0.13-a"
+  resolved "https://registry.npmjs.org/@digital-blueprint/annotpdf/-/annotpdf-1.0.13-a.tgz#f588188a6e745dabcafa7756ca2c8b24a74e43f6"
+  integrity sha512-Nr/YcOYswe5XZG9NnjBVOa+tz5uNcQD1vg41pirbW7/zsnu0W48xjcCIpf46PkWsjAf+NxBRQB+i8gx/n0iQIg==
+  dependencies:
+    "@types/crypto-js" "^4.0.1"
+    "@types/pako" "^1.0.1"
+    crypto-js "^4.0.0"
+    pako "^1.0.10"
+
 "@eslint/eslintrc@^0.2.1":
   version "0.2.2"
   resolved "https://registry.yarnpkg.com/@eslint/eslintrc/-/eslintrc-0.2.2.tgz#d01fc791e2fc33e88a29d6f3dc7e93d0cd784b76"
@@ -1312,16 +1322,6 @@ ajv@^7.0.2:
     json-schema-traverse "^1.0.0"
     require-from-string "^2.0.2"
     uri-js "^4.2.2"
-
-annotpdf@^1.0.13:
-  version "1.0.13"
-  resolved "https://registry.npmjs.org/annotpdf/-/annotpdf-1.0.13.tgz#3ebc0abd4a540f85beb0af32e67011b465793201"
-  integrity sha512-A25cxuhHDme+w83J24Jnd3Yc86FDG8wI982g/izPyIFqkNhuceoc+6Sn4QWyU+lZObWr0d/7QsBo4yDV31HK7g==
-  dependencies:
-    "@types/crypto-js" "^4.0.1"
-    "@types/pako" "^1.0.1"
-    crypto-js "^4.0.0"
-    pako "^1.0.10"
 
 ansi-colors@4.1.1, ansi-colors@^4.1.1:
   version "4.1.1"

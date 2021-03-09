@@ -46,7 +46,7 @@
     "@dbp-toolkit/notification": "^0.2.0",
     "@dbp-toolkit/person-profile": "^0.2.0",
     "@open-wc/scoped-elements": "^1.1.1",
-    "annotpdf": "^1.0.13",
+    "@digital-blueprint/annotpdf": "^1.0.13a",
     "fabric": "^4.2.0",
     "file-saver": "^2.0.2",
     "i18next": "^19.5.1",
