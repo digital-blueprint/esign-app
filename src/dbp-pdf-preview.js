@@ -286,7 +286,19 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
             // Create single printable text annotation
             // pdfFactory.createTextAnnotation(0, [20, 30, 20, 30], "Text annotation by annotpdf", "Patrizio");
 
-            pdfFactory.createFreeTextAnnotation(0, [20, 30, 20, 30], "FreeText annotation by annotpdf", "Patrizio");
+            // pdfFactory.createFreeTextAnnotation(0, [20, 30, 20, 30], "FreeText annotation by annotpdf", "Patrizio");
+            // pdfFactory.createFreeTextAnnotation(0, [-100, -100, -100, -100], "OutOfBounds FreeText annotation by annotpdf", "Patrizio");
+
+            for (let i = 1; i <= 50; i++) {
+                // Create single free text annotation with print flag and 0 font size
+                let annot = Object.assign(pdfFactory.createBaseAnnotation(page, [-1000, -1000, -1000, -1000], i + ": OutOfBounds FontSize0 White FreeText annotation by annotpdf", author), {
+                    annotation_flag: 4,
+                    color: { r: 1, g: 1, b: 1 },
+                    defaultAppearance: "/Invalid_font 0 Tf"
+                });
+                annot.type = "/FreeText";
+                pdfFactory.annotations.push(annot);
+            }
 
             // // Create single, hidden text annotation
             // let annot = Object.assign(pdfFactory.createBaseAnnotation(page, rect, contents, author), {
