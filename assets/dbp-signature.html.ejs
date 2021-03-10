@@ -55,7 +55,7 @@
 <body>
 <dbp-provider id="root"
               lang="de" entry-point-url="<%= entryPointURL %>"
-              <%= buildInfo.env !== 'production' ? 'show-nextcloud-file-picker' : '' %>
+              show-nextcloud-file-picker
               <%= buildInfo.env !== 'production' ? 'allow-signature-rotation' : '' %>
               nextcloud-web-app-password-url="<%= nextcloudWebAppPasswordURL %>"
               nextcloud-webdav-url="<%= nextcloudWebDavURL %>"
