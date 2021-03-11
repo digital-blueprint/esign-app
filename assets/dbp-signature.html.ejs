@@ -57,11 +57,13 @@
               lang="de" entry-point-url="<%= entryPointURL %>"
               show-nextcloud-file-picker
               <%= buildInfo.env !== 'production' ? 'allow-signature-rotation' : '' %>
+              <%= buildInfo.env !== 'production' ? 'show-clipboard' : '' %>
               nextcloud-web-app-password-url="<%= nextcloudWebAppPasswordURL %>"
               nextcloud-webdav-url="<%= nextcloudWebDavURL %>"
               nextcloud-name="<%= nextcloudName %>"
               nextcloud-file-url="<%= nextcloudFileURL %>"
-              initial-file-handling-state>
+              initial-file-handling-state
+              clipboard-files>
     <<%= name %>
         subscribe="lang,entry-point-url"
         auth requested-login-status analytics-event

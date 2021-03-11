@@ -807,9 +807,9 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                     <div class="left-container">
                         <div class="files-block field ${classMap({hidden: !this.queueBlockEnabled})}">
                             <!-- Queued files headline and queueing spinner -->
-                            <h2 class="${classMap({"is-disabled": this.isUserInterfaceDisabled()})}">
+                            <h3 class="${classMap({"is-disabled": this.isUserInterfaceDisabled()})}">
                                 ${i18n.t('official-pdf-upload.queued-files-label')}
-                            </h2>
+                            </h3>
                             <!-- Buttons to start/stop signing process and clear queue -->
                             <div class="control field">
                                 <button @click="${this.clearQueuedFiles}"
@@ -847,7 +847,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                         </div>
                         <!-- List of signed PDFs -->
                         <div class="files-block field ${classMap({hidden: this.signedFilesCount === 0, "is-disabled": this.isUserInterfaceDisabled()})}">
-                            <h2>${i18n.t('official-pdf-upload.signed-files-label')}</h2>
+                            <h3>${i18n.t('official-pdf-upload.signed-files-label')}</h3>
                             <!-- Button to download all signed PDFs -->
                             <div class="field ${classMap({hidden: this.signedFilesCount === 0})}">
                                 <div class="control">
@@ -869,7 +869,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                         </div>
                         <!-- List of errored files -->
                         <div class="files-block error-files field ${classMap({hidden: this.errorFilesCount === 0, "is-disabled": this.isUserInterfaceDisabled()})}">
-                            <h2>${i18n.t('official-pdf-upload.error-files-label')}</h2>
+                            <h3>${i18n.t('official-pdf-upload.error-files-label')}</h3>
                             <!-- Button to upload errored files again -->
                             <div class="field ${classMap({hidden: this.errorFilesCount === 0})}">
                                 <div class="control">
@@ -894,7 +894,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                     <div class="right-container">
                         <!-- PDF preview -->
                         <div id="pdf-preview" class="field ${classMap({hidden: !this.signaturePlacementInProgress})}">
-                            <h2>${this.withSigBlock ? i18n.t('official-pdf-upload.signature-placement-label') : i18n.t('official-pdf-upload.preview-label')}</h2>
+                            <h3>${this.withSigBlock ? i18n.t('official-pdf-upload.signature-placement-label') : i18n.t('official-pdf-upload.preview-label')}</h3>
                             <div class="box-header">
                                 <div class="filename">
                                     <strong>${this.currentFile.name}</strong> (${humanFileSize(this.currentFile !== undefined ? this.currentFile.size : 0)})

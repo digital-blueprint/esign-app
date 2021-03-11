@@ -731,9 +731,9 @@ class SignatureVerificationFull extends ScopedElementsMixin(DBPSignatureLitEleme
                     <div class="left-container">
                         <div class="files-block field ${classMap({hidden: !this.queueBlockEnabled})}">
                             <!-- Queued files headline and queueing spinner -->
-                            <h2 class="${classMap({"is-disabled": this.isUserInterfaceDisabled()})}">
+                            <h3 class="${classMap({"is-disabled": this.isUserInterfaceDisabled()})}">
                                 ${i18n.t('signature-verification.queued-files-label')}
-                            </h2>
+                            </h3>
                             <!-- Buttons to start/stop verification process and clear queue -->
                             <div class="control field">
                                 <button @click="${this.clearQueuedFiles}"
@@ -771,7 +771,7 @@ class SignatureVerificationFull extends ScopedElementsMixin(DBPSignatureLitEleme
                         </div>
                         <!-- List of errored files -->
                         <div class="files-block error-files field ${classMap({hidden: this.errorFilesCount === 0, "is-disabled": this.isUserInterfaceDisabled()})}">
-                            <h2>${i18n.t('signature-verification.error-files-label')}</h2>
+                            <h3>${i18n.t('signature-verification.error-files-label')}</h3>
                             <!-- Button to upload errored files again -->
                             <div class="field ${classMap({hidden: this.errorFilesCount === 0})}">
                                 <div class="control">
@@ -821,7 +821,7 @@ class SignatureVerificationFull extends ScopedElementsMixin(DBPSignatureLitEleme
                 </div>
                 <!-- List of verified PDFs -->
                 <div class="verified-files files-block field ${classMap({hidden: this.verifiedFilesCount === 0, "is-disabled": this.isUserInterfaceDisabled()})}">
-                    <h2>${i18n.t('signature-verification.verified-files-label')}</h2>
+                    <h3>${i18n.t('signature-verification.verified-files-label')}</h3>
                     <!-- Button to clear verified PDFs -->
                     <div class="field ${classMap({hidden: this.verifiedFilesCount === 0})}">
                         <div class="control">
