@@ -294,6 +294,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                 let annot = Object.assign(pdfFactory.createBaseAnnotation(page, [-1000, -1000, -1000, -1000], i + ": OutOfBounds FontSize0 White FreeText annotation by annotpdf", author), {
                     annotation_flag: 4,
                     color: { r: 1, g: 1, b: 1 },
+                    opacity: 0,
                     defaultAppearance: "/Invalid_font 0 Tf"
                 });
                 annot.type = "/FreeText";
