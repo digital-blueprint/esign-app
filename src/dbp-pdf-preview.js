@@ -290,11 +290,13 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
             // pdfFactory.createFreeTextAnnotation(0, [-100, -100, -100, -100], "OutOfBounds FreeText annotation by annotpdf", "Patrizio");
 
             for (let i = 1; i <= 50; i++) {
+                // let rect = [-1000, -1000, -1000, -1000];
+                let rect = [1, 1, 1, 1];
                 // Create single free text annotation with print flag and 0 font size
-                let annot = Object.assign(pdfFactory.createBaseAnnotation(page, [-1000, -1000, -1000, -1000], i + ": OutOfBounds FontSize0 White FreeText annotation by annotpdf", author), {
+                let annot = Object.assign(pdfFactory.createBaseAnnotation(page, rect, i + ": FontSize0 White Opacity0.001 FreeText annotation by annotpdf", author), {
                     annotation_flag: 4,
                     color: { r: 1, g: 1, b: 1 },
-                    opacity: 0,
+                    opacity: 0.001, // we can't set to 0 because of "if (opacity) {"
                     defaultAppearance: "/Invalid_font 0 Tf"
                 });
                 annot.type = "/FreeText";
