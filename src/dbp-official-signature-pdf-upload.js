@@ -48,6 +48,8 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         this.queuedFilesNeedsPlacement = new Map();
         this.currentPreviewQueueKey = '';
         this.allowAnnotating = false;
+        this.queuedFilesAnnotations = [];
+        this.queuedFilesAnnotationsCount = 0;
     }
 
     static get scopedElements() {
@@ -88,7 +90,9 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             signaturePlacementInProgress: { type: Boolean, attribute: false },
             withSigBlock: { type: Boolean, attribute: false },
             isSignaturePlacement: { type: Boolean, attribute: false },
-            allowAnnotating: { type: Boolean, attribute: 'allow-annotating' }
+            allowAnnotating: { type: Boolean, attribute: 'allow-annotating' },
+            queuedFilesAnnotations: { type: Array, attribute: false },
+            queuedFilesAnnotationsCount: { type: Number, attribute: false },
         };
     }
 
@@ -674,7 +678,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                         <button class="button ${classMap({hidden: !this.allowAnnotating})}"
                                 ?disabled="${this.signingProcessEnabled}"
                                 title="${i18n.t('official-pdf-upload.add-annotation-title')}"
-                                @click="${() => { this.addAnnotation(id, i18n); }}">
+                                @click="${() => { this.addAnnotationToPDF(id, i18n); }}">
                             <dbp-icon name="plus"></dbp-icon></button>
                         <button class="button"
                             ?disabled="${this.signingProcessEnabled}"
@@ -693,6 +697,14 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                         ${ placementMissing ? html`
                             ${i18n.t('label-manual-positioning-missing')}
                         ` : '' }
+                    </div>
+                    <div class="annotation-line ${classMap({hidden: !this.allowAnnotating})}"
+                         ?disabled="${this.signingProcessEnabled}">
+                        <button class="button"
+                                title="Add annotation"
+                                @click="${() => { this.addAnnotation(id); }}">
+                            <dbp-icon name="plus"></dbp-icon></button>
+                        ${this.getAnnotationsHtml(id)}
                     </div>
                 </div>
             `);
@@ -757,6 +769,52 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                     </div>
                     <div class="bottom-line">
                         <strong class="error">${data.json["hydra:description"]}</strong>
+                    </div>
+                </div>
+            `);
+        });
+
+        return results;
+    }
+
+    // /**
+    //  * Returns the list of files of annotations of a queued file
+    //  */
+    // getAnnotationsHtml(key) {
+    //     const annotations = this.queuedFilesAnnotations[key] || [];
+    //     return annotations.length > 0 ?
+    //         html`
+    //             <button class="button"
+    //                     title="Add annotation"
+    //                     @click="${() => { this.addAnnotation(key); }}">
+    //                 <dbp-icon name="plus"></dbp-icon></button>
+    //             ${this.getAnnotationLinesHtml(key)}
+    //         ` :
+    //         html``;
+    // }
+
+    /**
+     * Returns the list of files of annotations of a queued file
+     *
+     * @returns {*[]} Array of html templates
+     */
+    getAnnotationsHtml(key) {
+        const annotations = this.queuedFilesAnnotations[key] || [];
+        const ids = Object.keys(annotations);
+        let results = [];
+
+        ids.forEach((id) => {
+            const data = this.queuedFilesAnnotations[key][id] || [];
+
+            results.push(html`
+                <div class="annotation-block">
+                    <input type="text" value="${data.key1}" placeholder="key1" />
+                    <input type="text" value="${data.key2}" placeholder="key2" />
+                    <input type="text" value="${data.value}" placeholder="value" />
+                    <button class="button"
+                        title="Remove annotation"
+                        @click="${() => { this.removeAnnotation(key, id); }}">
+                        <dbp-icon name="trash"></dbp-icon></button>
                     </div>
                 </div>
             `);

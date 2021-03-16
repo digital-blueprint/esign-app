@@ -118,7 +118,41 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
      *
      * @param key
      */
-    async addAnnotation(key, i18n) {
+    async addAnnotation(key) {
+        if (!this.queuedFilesAnnotations[key]) {
+            this.queuedFilesAnnotations[key] = [];
+            this.queuedFilesAnnotationsCount = 0;
+        }
+
+        this.queuedFilesAnnotations[key].push({'key1': 'my key 1', 'key2': 'my key 2', 'value': 'my value'});
+
+        // we just need this so the UI will update
+        this.queuedFilesAnnotationsCount++;
+
+        console.log("this.queuedFilesAnnotations", this.queuedFilesAnnotations);
+    }
+
+    /**
+     * Remove an annotation of a file on the queue
+     *
+     * @param key
+     * @param id
+     */
+    async removeAnnotation(key, id) {
+        if (this.queuedFilesAnnotations[key] && this.queuedFilesAnnotations[key][id]) {
+            delete this.queuedFilesAnnotations[key][id];
+            // we just need this so the UI will update
+            this.queuedFilesAnnotationsCount--;
+        }
+    }
+
+    /**
+     * Add an annotation to a file on the queue
+     *
+     * @param key
+     * @param i18n
+     */
+    async addAnnotationToPDF(key, i18n) {
         const annotationKey = prompt("Please enter a key");
 
         if (annotationKey === null || annotationKey === "") {
