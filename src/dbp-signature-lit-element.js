@@ -113,6 +113,39 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
         return file;
     }
 
+    /**
+     * Add an annotation to a file on the queue
+     *
+     * @param key
+     */
+    async addAnnotation(key, i18n) {
+        const annotationKey = prompt("Please enter a key");
+
+        if (annotationKey === null || annotationKey === "") {
+            return;
+        }
+
+        const annotationValue = prompt("Please enter a value");
+
+        if (annotationValue === null || annotationValue === "") {
+            return;
+        }
+
+        let file = this.queuedFiles[key];
+
+        // console.log("file before annotation", file);
+
+        // annotate the pwd with the key and value
+        file = await utils.addKeyValuePdfAnnotation(file, i18n, 'AppName', this.auth['user-full-name'], annotationKey, annotationValue);
+
+        // console.log("file after annotation", file);
+
+        // overwrite the current pdf
+        this.queuedFiles[key] = file;
+
+        return file;
+    }
+
     uploadOneQueuedFile() {
         const file = this.takeFileFromQueue();
 

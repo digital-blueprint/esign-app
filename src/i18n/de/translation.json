@@ -32,7 +32,8 @@
     "signature-placement-label": "Signatur platzieren",
     "positioning": "Positionierung",
     "confirm-page-leave": "Sind Sie sicher, dass Sie die Seite verlassen wollen? Es stehen signierte Dokumente zum Download bereit.",
-    "file-picker-context": "PDF-Dokumente zum Signieren auswählen"
+    "file-picker-context": "PDF-Dokumente zum Signieren auswählen",
+    "add-annotation-title": "Dem PDF eine Kennzahl hinzufügen"
   },
   "qualified-pdf-upload": {
     "upload-field-label": "Dokument persönlich signieren",
@@ -67,7 +68,8 @@
     "signature-placement-label": "Signatur platzieren",
     "positioning": "Positionierung",
     "confirm-page-leave": "Sind Sie sicher, dass Sie die Seite verlassen wollen? Es stehen signierte Dokumente zum Download bereit.",
-    "file-picker-context": "PDF-Dokumente zum Signieren auswählen"
+    "file-picker-context": "PDF-Dokumente zum Signieren auswählen",
+    "add-annotation-title": "Dem PDF eine Kennzahl hinzufügen"
   },
   "signature-verification": {
     "upload-field-label": "PDF-Dokumente zum Überprüfen der Signaturen hochladen",
@@ -123,5 +125,6 @@
   "error-cancel-message": "Der Signaturprozess wurde manuell abgebrochen.",
   "error-rights-message": "Abbruch auf Grund mangelnder Rechte Ihres Accounts.",
   "label-manual-positioning-missing": "Bestehende Signatur vorhanden, bitte wählen Sie ihre Positionierung manuell.",
-  "error-manual-positioning-missing": "Ein oder mehrere Signaturen in der Warteschlange müssen manuell positioniert werden."
+  "error-manual-positioning-missing": "Ein oder mehrere Signaturen in der Warteschlange müssen manuell positioniert werden.",
+  "annotation-author": "({{appName}}) im Namen von {{personName}}"
 }

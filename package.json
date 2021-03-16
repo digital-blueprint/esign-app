@@ -45,6 +45,7 @@
     "@dbp-toolkit/language-select": "^0.2.0",
     "@dbp-toolkit/notification": "^0.2.0",
     "@dbp-toolkit/person-profile": "^0.2.0",
+    "@digital-blueprint/annotpdf": "^1.0.13a",
     "@open-wc/scoped-elements": "^1.1.1",
     "fabric": "^4.2.0",
     "file-saver": "^2.0.2",

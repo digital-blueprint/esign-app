@@ -47,8 +47,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         this.queuedFilesPlacementModes = [];
         this.queuedFilesNeedsPlacement = new Map();
         this.currentPreviewQueueKey = '';
-
-
+        this.allowAnnotating = false;
     }
 
     static get scopedElements() {
@@ -89,6 +88,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             signaturePlacementInProgress: { type: Boolean, attribute: false },
             withSigBlock: { type: Boolean, attribute: false },
             isSignaturePlacement: { type: Boolean, attribute: false },
+            allowAnnotating: { type: Boolean, attribute: 'allow-annotating' }
         };
     }
 
@@ -670,7 +670,12 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                             <dbp-icon name="trash"></dbp-icon></button>
                     </div>
                     <div class="bottom-line">
-                        <div></div>
+                        <div class="${classMap({hidden: this.allowAnnotating})}"></div>
+                        <button class="button ${classMap({hidden: !this.allowAnnotating})}"
+                                ?disabled="${this.signingProcessEnabled}"
+                                title="${i18n.t('official-pdf-upload.add-annotation-title')}"
+                                @click="${() => { this.addAnnotation(id, i18n); }}">
+                            <dbp-icon name="plus"></dbp-icon></button>
                         <button class="button"
                             ?disabled="${this.signingProcessEnabled}"
                             @click="${() => { this.showPreview(id); }}">${i18n.t('official-pdf-upload.show-preview')}</button>

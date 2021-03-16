@@ -31,7 +31,8 @@
     "signature-placement-label": "Place signature",
     "positioning": "Positioning",
     "confirm-page-leave": "Are you sure you want to leave this page? There are still signed documents ready to be downloaded.",
-    "file-picker-context": "Upload PDF-documents to sign"
+    "file-picker-context": "Upload PDF-documents to sign",
+    "add-annotation-title": "Add annotation to PDF"
   },
   "qualified-pdf-upload": {
     "upload-field-label": "Personally Sign Document",
@@ -66,7 +67,8 @@
     "signature-placement-label": "Place signature",
     "positioning": "Positioning",
     "confirm-page-leave": "Are you sure you want to leave this page? There are still signed documents ready to be downloaded.",
-    "file-picker-context": "Upload PDF-documents to sign"
+    "file-picker-context": "Upload PDF-documents to sign",
+    "add-annotation-title": "Add annotation to PDF"
   },
   "signature-verification": {
     "upload-field-label": "Verify signed documents",
@@ -123,5 +125,6 @@
   "error-cancel-message": "The signature process was manually aborted.",
   "error-rights-message": "Abort due to insufficient rights of your account.",
   "label-manual-positioning-missing": "Existing signature present, please select its positioning manually.",
-  "error-manual-positioning-missing": "One or more signatures in the queue must be positioned manually."
+  "error-manual-positioning-missing": "One or more signatures in the queue must be positioned manually.",
+  "annotation-author": "({{appName}}) in the name of {{personName}}"
 }

@@ -58,6 +58,7 @@
               show-nextcloud-file-picker
               <%= buildInfo.env !== 'production' ? 'allow-signature-rotation' : '' %>
               <%= buildInfo.env !== 'production' ? 'show-clipboard' : '' %>
+              <%= buildInfo.env !== 'production' ? 'allow-annotating' : '' %>
               nextcloud-web-app-password-url="<%= nextcloudWebAppPasswordURL %>"
               nextcloud-webdav-url="<%= nextcloudWebDavURL %>"
               nextcloud-name="<%= nextcloudName %>"

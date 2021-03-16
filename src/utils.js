@@ -1,3 +1,5 @@
+import {AnnotationFactory} from '@digital-blueprint/annotpdf/_bundles/pdfAnnotate.js';
+
 /**
  * Finds an object in a JSON result by identifier
  *
@@ -101,6 +103,25 @@ export const readBinaryFileContent = async (file) => {
 };
 
 /**
+ * Returns the content of the file as array buffer
+ *
+ * @param {File} file The file to read
+ * @returns {string} The content
+ */
+export const readArrayBufferFileContent = async (file) => {
+    return new Promise((resolve, reject) => {
+        let reader = new FileReader();
+        reader.onload = () => {
+            resolve(reader.result);
+        };
+        reader.onerror = () => {
+            reject(reader.error);
+        };
+        reader.readAsArrayBuffer(file);
+    });
+};
+
+/**
  * Given a PDF file returns the amount of signatures found in it.
  *
  * Note that this uses an heuristic, so the result can be wrong
@@ -119,4 +140,35 @@ export const getPDFSignatureCount = async (file) => {
         matches++;
     }
     return matches;
+};
+
+export const addKeyValuePdfAnnotation = async (file, i18n, appName, personName, key, value) => {
+    const data = await readArrayBufferFileContent(file);
+    let pdfFactory = new AnnotationFactory(data);
+
+    // console.log("pdfFactory.getAnnotations() before", pdfFactory.getAnnotations());
+
+    const page = 0;
+    const rect = [1, 1, 1, 1];
+    const author = i18n.t('annotation-author', {
+        appName: appName,
+        personName: personName
+    });
+    const contents = 'DBP-SIGNATURE-' + key + ': ' + value;
+
+    // pdfFactory.checkRect(4, rect);
+
+    // Create single free text annotation with print flag and 0 font size
+    let annot = Object.assign(pdfFactory.createBaseAnnotation(page, rect, contents, author), {
+        annotation_flag: 4, // enable print to be PDF/A conform
+        color: {r: 1, g: 1, b: 1}, // white to (maybe) hide it better
+        opacity: 0.001, // we can't set to 0 because of "if (opacity) {"
+        defaultAppearance: "/Invalid_font 0 Tf" // font size 0 to (maybe) hide it better
+    });
+    annot.type = "/FreeText";
+    pdfFactory.annotations.push(annot);
+
+    const blob = pdfFactory.write();
+
+    return new File([blob], file.name, { type: file.type });
 };

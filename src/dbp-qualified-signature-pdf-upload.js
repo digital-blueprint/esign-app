@@ -48,6 +48,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         this.queuedFilesPlacementModes = [];
         this.queuedFilesNeedsPlacement = new Map();
         this.currentPreviewQueueKey = '';
+        this.allowAnnotating = false;
 
         this._onReceiveIframeMessage = this.onReceiveIframeMessage.bind(this);
         this._onReceiveBeforeUnload = this.onReceiveBeforeUnload.bind(this);
@@ -92,6 +93,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             signaturePlacementInProgress: { type: Boolean, attribute: false },
             withSigBlock: { type: Boolean, attribute: false },
             isSignaturePlacement: { type: Boolean, attribute: false },
+            allowAnnotating: { type: Boolean, attribute: 'allow-annotating' }
         };
     }
 
