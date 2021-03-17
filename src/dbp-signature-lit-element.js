@@ -134,6 +134,14 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
         this.queuedFilesAnnotationsCount++;
     }
 
+    /**
+     * Add multiple annotations to a PDF file
+     *
+     * @param file
+     * @param annotations
+     * @param i18n
+     * @returns {File}
+     */
     async addAnnotationsToFile(file, annotations, i18n) {
         // We need to work with the AnnotationFactory because the pdf file is broken if
         // we add the multiple annotations to the file itself
