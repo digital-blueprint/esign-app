@@ -1,6 +1,7 @@
 import * as utils from "./utils";
 import {AdapterLitElement} from "@dbp-toolkit/provider/src/adapter-lit-element";
 import JSONLD from "@dbp-toolkit/common/jsonld";
+import * as commonUtils from "@dbp-toolkit/common/utils";
 
 export class DBPSignatureBaseLitElement extends AdapterLitElement {
     constructor() {
@@ -90,9 +91,9 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
 
     /**
      * @param file
-     * @returns {Promise<string>} key of the queued item
+     * @returns key of the queued item
      */
-    async queueFile(file) {
+    queueFile(file) {
         this._queueKey++;
         const key = this._queueKey;
         this.queuedFiles[key] = file;
@@ -118,16 +119,40 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
      *
      * @param key
      */
-    async addAnnotation(key) {
+    addAnnotation(key) {
         if (!this.queuedFilesAnnotations[key]) {
             this.queuedFilesAnnotations[key] = [];
             this.queuedFilesAnnotationsCount = 0;
         }
 
-        this.queuedFilesAnnotations[key].push({'key1': 'my key 1', 'key2': 'my key 2', 'value': 'my value'});
+        // TODO: remove key/value presets
+        const number =  Math.floor((Math.random() * 1000) + 1);
+        this.queuedFilesAnnotations[key].push({'key1': 'geschaeftszahl', 'key2': 'F' + number, 'value': 'my value ' + number});
 
         // we just need this so the UI will update
         this.queuedFilesAnnotationsCount++;
+    }
+
+    async addAnnotationsToFile(file, annotations, i18n) {
+        await commonUtils.asyncObjectForEach(annotations, async (annotation) => {
+            console.log("annotation", annotation);
+            console.log("file before", file);
+            const key1 = annotation.key1.trim();
+            const key2 = annotation.key2.trim();
+            const value = annotation.value.trim();
+
+            if (key1 === '' || key2 === '' || value === '') {
+                return;
+            }
+
+            const annotationKey = key1 + '-' + key2;
+            file = await utils.addKeyValuePdfAnnotation(file, i18n, 'AppName', this.auth['user-full-name'], annotationKey, value);
+            console.log("file after", file);
+        });
+
+        console.log("addAnnotationsToFile file", file);
+
+        return file;
     }
 
     /**
@@ -136,12 +161,24 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
      * @param key
      * @param id
      */
-    async removeAnnotation(key, id) {
+    removeAnnotation(key, id) {
         if (this.queuedFilesAnnotations[key] && this.queuedFilesAnnotations[key][id]) {
             delete this.queuedFilesAnnotations[key][id];
             // we just need this so the UI will update
             this.queuedFilesAnnotationsCount--;
         }
+    }
+
+    /**
+     * Takes the annotations of a file off of the queue
+     *
+     * @param key
+     */
+    takeAnnotationsFromQueue(key) {
+        const annotations = this.queuedFilesAnnotations[key];
+        delete this.queuedFilesAnnotations[key];
+
+        return annotations;
     }
 
     /**
@@ -152,7 +189,7 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
      * @param annotationKey
      * @param value
      */
-    async updateAnnotation(key, id, annotationKey, value) {
+    updateAnnotation(key, id, annotationKey, value) {
         if (this.queuedFilesAnnotations[key] && this.queuedFilesAnnotations[key][id]) {
             this.queuedFilesAnnotations[key][id][annotationKey] = value;
         }
@@ -222,11 +259,20 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
     /**
      * @param file
      * @param params
+     * @param annotations
+     * @param i18n
      * @returns {Promise<void>}
      */
-    async uploadFile(file, params = {}) {
+    async uploadFile(file, params = {}, annotations = [], i18n = {}) {
         this.uploadInProgress = true;
         this.uploadStatusFileName = file.name;
+
+        // add annotations
+        if (annotations.length > 0) {
+            file = await this.addAnnotationsToFile(file, annotations, i18n)
+            console.log("uploadFile file", file);
+        }
+
         let url = new URL(this.fileSourceUrl);
         let formData = new FormData();
         formData.append('file', file);

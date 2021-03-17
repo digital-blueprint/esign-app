@@ -143,6 +143,14 @@ export const getPDFSignatureCount = async (file) => {
 };
 
 export const addKeyValuePdfAnnotation = async (file, i18n, appName, personName, key, value) => {
+    key = key.trim();
+    value = value.trim();
+
+    // don't annotate if key or value are empty
+    if (key === '' || value === '') {
+        return file;
+    }
+
     const data = await readArrayBufferFileContent(file);
     let pdfFactory = new AnnotationFactory(data);
 
@@ -154,7 +162,7 @@ export const addKeyValuePdfAnnotation = async (file, i18n, appName, personName, 
         appName: appName,
         personName: personName
     });
-    const contents = 'DBP-SIGNATURE-' + key + ': ' + value;
+    const contents = 'dbp-annotation-' + key + '=' + value;
 
     // pdfFactory.checkRect(4, rect);
 
