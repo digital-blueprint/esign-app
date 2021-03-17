@@ -2,6 +2,7 @@ import * as utils from "./utils";
 import {AdapterLitElement} from "@dbp-toolkit/provider/src/adapter-lit-element";
 import JSONLD from "@dbp-toolkit/common/jsonld";
 import * as commonUtils from "@dbp-toolkit/common/utils";
+import {getAnnotationFactoryFromFile} from "./utils";
 
 export class DBPSignatureBaseLitElement extends AdapterLitElement {
     constructor() {
@@ -134,9 +135,11 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
     }
 
     async addAnnotationsToFile(file, annotations, i18n) {
+        // We need to work with the AnnotationFactory because the pdf file is broken if
+        // we add the multiple annotations to the file itself
+        let pdfFactory = await utils.getAnnotationFactoryFromFile(file);
+
         await commonUtils.asyncObjectForEach(annotations, async (annotation) => {
-            console.log("annotation", annotation);
-            console.log("file before", file);
             const key1 = annotation.key1.trim();
             const key2 = annotation.key2.trim();
             const value = annotation.value.trim();
@@ -146,13 +149,12 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
             }
 
             const annotationKey = key1 + '-' + key2;
-            file = await utils.addKeyValuePdfAnnotation(file, i18n, 'AppName', this.auth['user-full-name'], annotationKey, value);
-            console.log("file after", file);
+            pdfFactory = await utils.addKeyValuePdfAnnotationToAnnotationFactory(
+                pdfFactory, i18n, 'AppName', this.auth['user-full-name'], annotationKey, value);
         });
 
-        console.log("addAnnotationsToFile file", file);
-
-        return file;
+        // output the AnnotationFactory as File again
+        return utils.writeAnnotationFactoryToFile(pdfFactory, file);
     }
 
     /**

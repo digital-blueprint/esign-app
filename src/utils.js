@@ -142,6 +142,17 @@ export const getPDFSignatureCount = async (file) => {
     return matches;
 };
 
+/**
+ * Adds an annotation to a PDF file
+ *
+ * @param file
+ * @param i18n
+ * @param appName
+ * @param personName
+ * @param key
+ * @param value
+ * @returns {File}
+ */
 export const addKeyValuePdfAnnotation = async (file, i18n, appName, personName, key, value) => {
     key = key.trim();
     value = value.trim();
@@ -151,10 +162,58 @@ export const addKeyValuePdfAnnotation = async (file, i18n, appName, personName, 
         return file;
     }
 
-    const data = await readArrayBufferFileContent(file);
-    let pdfFactory = new AnnotationFactory(data);
+    let annotationFactory = await getAnnotationFactoryFromFile(file);
+    annotationFactory = addKeyValuePdfAnnotationToAnnotationFactory(annotationFactory, i18n, appName, personName, key, value);
 
-    // console.log("pdfFactory.getAnnotations() before", pdfFactory.getAnnotations());
+    return writeAnnotationFactoryToFile(annotationFactory, file);
+};
+
+/**
+ * Returns a File from an AnnotationFactory
+ *
+ * @param annotationFactory
+ * @param file
+ * @returns {File}
+ */
+export const writeAnnotationFactoryToFile = (annotationFactory, file) => {
+    const blob = annotationFactory.write();
+
+    return new File([blob], file.name, { type: file.type });
+}
+
+/**
+ * Creates an AnnotationFactory from a File
+ *
+ * @param file
+ * @returns AnnotationFactory
+ */
+export const getAnnotationFactoryFromFile = async (file) => {
+    const data = await readArrayBufferFileContent(file);
+
+    return new AnnotationFactory(data);
+};
+
+/**
+ * Adds a key/value annotation to a AnnotationFactory and returns the AnnotationFactory
+ *
+ * @param annotationFactory
+ * @param i18n
+ * @param appName
+ * @param personName
+ * @param key
+ * @param value
+ * @returns PdfFactory
+ */
+export const addKeyValuePdfAnnotationToAnnotationFactory = (annotationFactory, i18n, appName, personName, key, value) => {
+    key = key.trim();
+    value = value.trim();
+
+    // don't annotate if key or value are empty
+    if (key === '' || value === '') {
+        return annotationFactory;
+    }
+
+    // console.log("annotationFactory.getAnnotations() before", annotationFactory.getAnnotations());
 
     const page = 0;
     const rect = [1, 1, 1, 1];
@@ -164,19 +223,17 @@ export const addKeyValuePdfAnnotation = async (file, i18n, appName, personName, 
     });
     const contents = 'dbp-annotation-' + key + '=' + value;
 
-    // pdfFactory.checkRect(4, rect);
+    // annotationFactory.checkRect(4, rect);
 
     // Create single free text annotation with print flag and 0 font size
-    let annot = Object.assign(pdfFactory.createBaseAnnotation(page, rect, contents, author), {
+    let annotation = Object.assign(annotationFactory.createBaseAnnotation(page, rect, contents, author), {
         annotation_flag: 4, // enable print to be PDF/A conform
         color: {r: 1, g: 1, b: 1}, // white to (maybe) hide it better
         opacity: 0.001, // we can't set to 0 because of "if (opacity) {"
         defaultAppearance: "/Invalid_font 0 Tf" // font size 0 to (maybe) hide it better
     });
-    annot.type = "/FreeText";
-    pdfFactory.annotations.push(annot);
+    annotation.type = "/FreeText";
+    annotationFactory.annotations.push(annotation);
 
-    const blob = pdfFactory.write();
-
-    return new File([blob], file.name, { type: file.type });
+    return annotationFactory;
 };
