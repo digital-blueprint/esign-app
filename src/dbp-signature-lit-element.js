@@ -192,12 +192,6 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
         return file;
     }
 
-    uploadOneQueuedFile() {
-        const file = this.takeFileFromQueue();
-
-        return this.uploadFile(file);
-    }
-
     getQueuedFile(key) {
         return this.queuedFiles[key];
     }
