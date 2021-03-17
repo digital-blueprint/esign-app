@@ -777,28 +777,14 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         return results;
     }
 
-    // /**
-    //  * Returns the list of files of annotations of a queued file
-    //  */
-    // getAnnotationsHtml(key) {
-    //     const annotations = this.queuedFilesAnnotations[key] || [];
-    //     return annotations.length > 0 ?
-    //         html`
-    //             <button class="button"
-    //                     title="Add annotation"
-    //                     @click="${() => { this.addAnnotation(key); }}">
-    //                 <dbp-icon name="plus"></dbp-icon></button>
-    //             ${this.getAnnotationLinesHtml(key)}
-    //         ` :
-    //         html``;
-    // }
-
     /**
      * Returns the list of files of annotations of a queued file
      *
      * @returns {*[]} Array of html templates
      */
     getAnnotationsHtml(key) {
+        // console.log("getAnnotationsHtml(key)", key);
+
         const annotations = this.queuedFilesAnnotations[key] || [];
         const ids = Object.keys(annotations);
         let results = [];
@@ -807,10 +793,10 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             const data = this.queuedFilesAnnotations[key][id] || [];
 
             results.push(html`
-                <div class="annotation-block">
-                    <input type="text" value="${data.key1}" placeholder="key1" />
-                    <input type="text" value="${data.key2}" placeholder="key2" />
-                    <input type="text" value="${data.value}" placeholder="value" />
+                <div class="annotation-block" class="annotation-block-${key}-${id}">
+                    <input type="text" .value="${data.key1}" @change=${e => { this.updateAnnotation(key, id, 'key1', e.target.value); }} placeholder="key1" />
+                    <input type="text" .value="${data.key2}" @change=${e => { this.updateAnnotation(key, id, 'key2', e.target.value); }} placeholder="key2" />
+                    <input type="text" .value="${data.value}" @change=${e => { this.updateAnnotation(key, id, 'value', e.target.value); }} placeholder="value" />
                     <button class="button"
                         title="Remove annotation"
                         @click="${() => { this.removeAnnotation(key, id); }}">

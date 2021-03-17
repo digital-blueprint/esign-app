@@ -128,8 +128,6 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
 
         // we just need this so the UI will update
         this.queuedFilesAnnotationsCount++;
-
-        console.log("this.queuedFilesAnnotations", this.queuedFilesAnnotations);
     }
 
     /**
@@ -143,6 +141,20 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
             delete this.queuedFilesAnnotations[key][id];
             // we just need this so the UI will update
             this.queuedFilesAnnotationsCount--;
+        }
+    }
+
+    /**
+     * Update an annotation of a file on the queue
+     *
+     * @param key
+     * @param id
+     * @param annotationKey
+     * @param value
+     */
+    async updateAnnotation(key, id, annotationKey, value) {
+        if (this.queuedFilesAnnotations[key] && this.queuedFilesAnnotations[key][id]) {
+            this.queuedFilesAnnotations[key][id][annotationKey] = value;
         }
     }
 
