@@ -675,12 +675,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                             <dbp-icon name="trash"></dbp-icon></button>
                     </div>
                     <div class="bottom-line">
-                        <div class="${classMap({hidden: this.allowAnnotating})}"></div>
-                        <button class="button ${classMap({hidden: !this.allowAnnotating})}"
-                                ?disabled="${this.signingProcessEnabled}"
-                                title="${i18n.t('official-pdf-upload.add-annotation-title')}"
-                                @click="${() => { this.addAnnotationToPDF(id, i18n); }}">
-                            <dbp-icon name="plus"></dbp-icon></button>
+                        <div></div>
                         <button class="button"
                             ?disabled="${this.signingProcessEnabled}"
                             @click="${() => { this.showPreview(id); }}">${i18n.t('official-pdf-upload.show-preview')}</button>
@@ -702,7 +697,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                     <div class="annotation-line ${classMap({hidden: !this.allowAnnotating})}"
                          ?disabled="${this.signingProcessEnabled}">
                         <button class="button"
-                                title="Add annotation"
+                                title="${i18n.t('official-pdf-upload.add-annotation-title')}"
                                 @click="${() => { this.addAnnotation(id); }}">
                             <dbp-icon name="plus"></dbp-icon></button>
                         ${this.getAnnotationsHtml(id)}
