@@ -4,11 +4,11 @@
   "routing_name": "official-pdf-upload",
   "name": {
     "de": "Dokumente amtssignieren",
-    "en": "Officially sign"
+    "en": "Officially sign documents"
   },
   "short_name": {
     "de": "Dokumente amtssignieren",
-    "en": "Officially sign"
+    "en": "Officially sign documents"
   },
   "description": {
     "de": "Erlaubt das Hochladen von PDF-Dokumenten, um sie mit einer Amtssignatur zu versehen",
