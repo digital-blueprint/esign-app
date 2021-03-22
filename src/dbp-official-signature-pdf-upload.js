@@ -16,6 +16,7 @@ import {FileSink} from "@dbp-toolkit/file-handling";
 import {name as pkgName} from './../package.json';
 import {getPDFSignatureCount} from './utils.js';
 import {send as notify} from '@dbp-toolkit/common/notification';
+import {OrganizationSelect} from "@dbp-toolkit/organization-select";
 
 const i18n = createI18nInstance();
 
@@ -61,6 +62,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
           'dbp-mini-spinner': MiniSpinner,
           'dbp-button': Button,
           'dbp-textswitch': TextSwitch,
+          'dbp-organization-select': OrganizationSelect,
         };
     }
 
@@ -791,7 +793,9 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             results.push(html`
                 <div class="annotation-block" class="annotation-block-${key}-${id}">
                     <input type="text" .value="${data.key1}" @change=${e => { this.updateAnnotation(key, id, 'key1', e.target.value); }} placeholder="key1" />
-                    <input type="text" .value="${data.key2}" @change=${e => { this.updateAnnotation(key, id, 'key2', e.target.value); }} placeholder="key2" />
+                    <dbp-organization-select subscribe="lang:lang,entry-point-url:entry-point-url,auth:auth"
+                                             value="${data.key2}"
+                                             @change=${e => { this.updateAnnotation(key, id, 'key2', JSON.parse(e.target.getAttribute("data-object")).alternateName); }}></dbp-organization-select>
                     <input type="text" .value="${data.value}" @change=${e => { this.updateAnnotation(key, id, 'value', e.target.value); }} placeholder="value" />
                     <button class="button"
                         title="Remove annotation"

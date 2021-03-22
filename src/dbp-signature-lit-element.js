@@ -128,7 +128,7 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
 
         // TODO: remove key/value presets
         const number =  Math.floor((Math.random() * 1000) + 1);
-        this.queuedFilesAnnotations[key].push({'key1': 'geschaeftszahl', 'key2': 'F' + number, 'value': 'my value ' + number});
+        this.queuedFilesAnnotations[key].push({'key1': 'geschaeftszahl', 'value': 'my value ' + number});
 
         // we just need this so the UI will update
         this.queuedFilesAnnotationsCount++;
