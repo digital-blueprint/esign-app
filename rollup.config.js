@@ -189,6 +189,7 @@ Dependencies:
                 {src: 'assets/icon-*.png', dest: 'dist/' + await getDistPath(pkg.name)},
                 {src: 'assets/manifest.json', dest: 'dist', rename: pkg.name + '.manifest.json'},
                 {src: 'assets/silent-check-sso.html', dest:'dist'},
+                {src: 'assets/dbp-signature-maintainance.html', dest:'dist'},
                 {
                     src: await getPackagePath('pdfjs-dist', 'es5/build/pdf.worker.js'),
                     dest: 'dist/' + await getDistPath(pkg.name, 'pdfjs'),
