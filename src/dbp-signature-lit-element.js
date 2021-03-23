@@ -39,6 +39,7 @@ export class DBPSignatureBaseLitElement extends AdapterLitElement {
         changedProperties.forEach((oldValue, propName) => {
             switch (propName) {
                 case "auth":
+                    JSONLD.doInitializationOnce(this.entryPointUrl, this.auth.token);
                     this._updateAuth();
                     break;
             }
