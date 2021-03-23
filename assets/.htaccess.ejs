@@ -1,6 +1,8 @@
 DirectoryIndex <%- getUrl(name + '.html') %>
+# DirectoryIndex <%- getUrl(name + '-maintenance.html') %>
 <FilesMatch "^(de|en|)$">
     FallbackResource <%- getUrl(name + '.html') %>
+    # FallbackResource <%- getUrl(name + '-maintenance.html') %>
 </FilesMatch>
 
 Header set Cache-Control "must-revalidate, max-age=60"
