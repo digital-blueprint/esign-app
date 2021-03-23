@@ -4,7 +4,6 @@ cache:
   key: $CI_PROJECT_PATH
   paths:
     - _yarn_cache
-    - _cypress_cache
 
 before_script:
   - 'git config --global url."https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.tugraz.at/".insteadOf "git@gitlab.tugraz.at:"'
@@ -101,6 +100,11 @@ deploy_production:
     - yarn install
 #    - ./node_modules/.bin/cypress run --browser "$BROWSER" --spec "cypress/integration/signature/*.spec.js"
     - xvfb-run ./node_modules/.bin/cypress run --browser "$BROWSER" --headed --spec "cypress/integration/signature/*.spec.js"
+  cache:
+    key: $CI_PROJECT_PATH-cypress
+    paths:
+      - _cypress_cache
+      - _yarn_cache
   artifacts:
     paths:
       - e2e-tests/cypress/videos/*
