@@ -85,6 +85,10 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
     }
 
     disconnectedCallback() {
+        if (this.fabricCanvas !== null) {
+            this.fabricCanvas.removeListeners();
+            this.fabricCanvas = null;
+        }
         window.removeEventListener('resize', this._onWindowResize);
         super.disconnectedCallback();
       }
