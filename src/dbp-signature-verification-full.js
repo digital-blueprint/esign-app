@@ -209,7 +209,7 @@ class SignatureVerificationFull extends ScopedElementsMixin(DBPSignatureLitEleme
                     i18n.changeLanguage(this.lang);
                     break;
                 case "entryPointUrl":
-                    JSONLD.initialize(this.entryPointUrl, (jsonld) => {
+                    JSONLD.getInstance(this.entryPointUrl).then((jsonld) => {
                         const apiUrlBase = jsonld.getApiUrlForEntityName("ElectronicSignatureVerificationReport");
                         this.fileSourceUrl = apiUrlBase;
                     });
