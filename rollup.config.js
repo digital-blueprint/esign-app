@@ -71,7 +71,7 @@ config.CSP = `default-src 'self' 'unsafe-eval' 'unsafe-inline' \
 ${getOrigin(config.matomoUrl)} ${getOrigin(config.keyCloakBaseURL)} ${getOrigin(config.entryPointURL)} \
 httpbin.org ${getOrigin(config.nextcloudBaseURL)} www.handy-signatur.at \
 ${getOrigin(config.pdfAsQualifiedlySigningServer)}; \
-img-src * blob: data:`;
+img-src * blob: data:; font-src 'self' data:`;
 
 function replaceAll(string, search, replace) {
     return string.split(search).join(replace);
@@ -189,7 +189,7 @@ Dependencies:
                 {src: 'assets/icon-*.png', dest: 'dist/' + await getDistPath(pkg.name)},
                 {src: 'assets/manifest.json', dest: 'dist', rename: pkg.name + '.manifest.json'},
                 {src: 'assets/silent-check-sso.html', dest:'dist'},
-                {src: 'assets/dbp-signature-maintainance.html', dest:'dist'},
+                {src: 'assets/dbp-signature-maintenance.html', dest:'dist'},
                 {
                     src: await getPackagePath('pdfjs-dist', 'es5/build/pdf.worker.js'),
                     dest: 'dist/' + await getDistPath(pkg.name, 'pdfjs'),
