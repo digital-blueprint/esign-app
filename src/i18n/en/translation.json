@@ -2,8 +2,6 @@
   "official-pdf-upload": {
     "upload-field-label": "Officially sign",
     "sub-headline": "Allows upload of PDF-documents to officially sign them",
-    "save-field-label": "Save {{count}} file",
-    "save-field-label_plural": "Save {{count}} files",
     "upload-text": "In this area you can upload PDF-documents up to a size of 32MB. The PDF-documents can also be located in a ZIP-file.",
     "upload-area-text": "In this area you can upload PDF-documents up to a size of 32MB via Drag & Drop or by selecting them directly. The PDF-documents can also be located in a ZIP-file.",
     "queued-files-label": "Queued documents",
@@ -67,14 +65,11 @@
     "signature-placement-label": "Place signature",
     "positioning": "Positioning",
     "confirm-page-leave": "Are you sure you want to leave this page? There are still signed documents ready to be downloaded.",
-    "file-picker-context": "Upload PDF-documents to sign",
-    "add-annotation-title": "Add annotation to PDF"
+    "file-picker-context": "Upload PDF-documents to sign"
   },
   "signature-verification": {
     "upload-field-label": "Verify signed documents",
     "sub-headline": "Allows verification of signed PDF-documents",
-    "save-field-label": "Save {{count}} file",
-    "save-field-label_plural": "Save {{count}} files",
     "upload-text": "In this area you can upload PDF-documents up to a size of 32MB. The PDF-documents can also be located in a ZIP-file.",
     "upload-area-text": "In this area you can upload PDF-documents up to a size of 32MB via Drag & Drop or by selecting them directly. The PDF-documents can also be located in a ZIP-file.",
     "queued-files-label": "Queued documents",
@@ -125,6 +120,5 @@
   "error-cancel-message": "The signature process was manually aborted.",
   "error-rights-message": "Abort due to insufficient rights of your account.",
   "label-manual-positioning-missing": "Existing signature present, please select its positioning manually.",
-  "error-manual-positioning-missing": "One or more signatures in the queue must be positioned manually.",
-  "annotation-author": "({{appName}}) in the name of {{personName}}"
+  "error-manual-positioning-missing": "One or more signatures in the queue must be positioned manually."
 }

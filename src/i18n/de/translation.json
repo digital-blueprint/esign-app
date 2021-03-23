@@ -2,9 +2,6 @@
   "official-pdf-upload": {
     "upload-field-label": "Dokumente amtssignieren",
     "sub-headline": "Erlaubt das Hochladen von PDF-Dokumenten, um sie mit einer Amtssignatur zu versehen",
-    "save-field-label": "{{count}} Datei speichern",
-    "save-field-label_plural": "{{count}} Dateien speichern",
-    "save-field-label_2": "{{count}} Dateien speichern",
     "upload-text": "Sie können PDF-Dokumente mit einer Maximalgröße von bis zu 32MB pro Dokument hochladen. Die PDF-Dokumente dürfen sich auch in ZIP-Dateien befinden.",
     "upload-area-text": "Sie können in diesem Bereich PDF-Dokumente mit einer Maximalgröße von bis zu 32MB pro Dokument per Drag & Drop oder per Direktauswahl hochladen. Die PDF-Dokumente dürfen sich auch in ZIP-Dateien befinden.",
     "queued-files-label": "Dokumente in der Warteschlange",
@@ -68,14 +65,11 @@
     "signature-placement-label": "Signatur platzieren",
     "positioning": "Positionierung",
     "confirm-page-leave": "Sind Sie sicher, dass Sie die Seite verlassen wollen? Es stehen signierte Dokumente zum Download bereit.",
-    "file-picker-context": "PDF-Dokumente zum Signieren auswählen",
-    "add-annotation-title": "Dem PDF eine Kennzahl hinzufügen"
+    "file-picker-context": "PDF-Dokumente zum Signieren auswählen"
   },
   "signature-verification": {
     "upload-field-label": "PDF-Dokumente zum Überprüfen der Signaturen hochladen",
     "sub-headline": "Erlaubt das Verifizieren von signierten PDF-Dokumenten",
-    "save-field-label": "{{count}} Datei speichern",
-    "save-field-label_plural": "{{count}} Dateien speichern",
     "upload-text": "Sie können in diesem Bereich PDF-Dokumente mit einer Maximalgröße von bis zu 32MB pro Dokument hochladen. Die PDF-Dokumente dürfen sich auch in ZIP-Dateien befinden.",
     "upload-area-text": "Sie können in diesem Bereich PDF-Dokumente mit einer Maximalgröße von bis zu 32MB pro Dokument per Drag & Drop oder per Direktauswahl hochladen. Die PDF-Dokumente dürfen sich auch in ZIP-Dateien befinden.",
     "queued-files-label": "Dokumente in der Warteschlange",
@@ -101,7 +95,8 @@
     "serial-number": "Seriennummer",
     "value-message": "Überprüfung",
     "no-signatures-found": "Es wurden keine Signaturen gefunden.",
-    "confirm-page-leave": "Sind Sie sicher, dass Sie die Seite verlassen wollen? Es stehen signierte Dokumente zum Download bereit."
+    "confirm-page-leave": "Sind Sie sicher, dass Sie die Seite verlassen wollen? Es stehen signierte Dokumente zum Download bereit.",
+    "file-picker-context": "PDF-Dokumente zum Verifizieren auswählen"
   },
   "signature-verification-extern": {
     "headline": "Signierte Dokumente verifizieren",
@@ -125,6 +120,5 @@
   "error-cancel-message": "Der Signaturprozess wurde manuell abgebrochen.",
   "error-rights-message": "Abbruch auf Grund mangelnder Rechte Ihres Accounts.",
   "label-manual-positioning-missing": "Bestehende Signatur vorhanden, bitte wählen Sie ihre Positionierung manuell.",
-  "error-manual-positioning-missing": "Ein oder mehrere Signaturen in der Warteschlange müssen manuell positioniert werden.",
-  "annotation-author": "({{appName}}) im Namen von {{personName}}"
+  "error-manual-positioning-missing": "Ein oder mehrere Signaturen in der Warteschlange müssen manuell positioniert werden."
 }
