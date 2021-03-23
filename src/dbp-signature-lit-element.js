@@ -139,10 +139,9 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
      *
      * @param file
      * @param annotations
-     * @param i18n
      * @returns {File}
      */
-    async addAnnotationsToFile(file, annotations, i18n) {
+    async addAnnotationsToFile(file, annotations) {
         // We need to work with the AnnotationFactory because the pdf file is broken if
         // we add the multiple annotations to the file itself
         let pdfFactory = await utils.getAnnotationFactoryFromFile(file);
@@ -156,9 +155,10 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
                 return;
             }
 
-            const annotationKey = key1 + '-' + key2;
-            pdfFactory = await utils.addKeyValuePdfAnnotationToAnnotationFactory(
-                pdfFactory, i18n, 'AppName', this.auth['user-full-name'], annotationKey, value);
+            // TODO: use real key1 names
+            pdfFactory = await utils.addKeyValuePdfAnnotationsToAnnotationFactory(
+                pdfFactory, 'AppNameDE', 'AppNameEN', this.auth['user-full-name'], key1,
+                "Geschaeftszahl", "Businessnumber", key2, value);
         });
 
         // output the AnnotationFactory as File again
@@ -209,9 +209,8 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
      * Add an annotation to a file on the queue
      *
      * @param key
-     * @param i18n
      */
-    async addAnnotationToPDF(key, i18n) {
+    async addAnnotationToPDF(key) {
         const annotationKey = prompt("Please enter a key");
 
         if (annotationKey === null || annotationKey === "") {
@@ -228,8 +227,8 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
 
         // console.log("file before annotation", file);
 
-        // annotate the pwd with the key and value
-        file = await utils.addKeyValuePdfAnnotation(file, i18n, 'AppName', this.auth['user-full-name'], annotationKey, annotationValue);
+        // annotate the pdf with the key and value
+        file = await utils.addKeyValuePdfAnnotation(file, 'AppNameDE', 'AppNameEN', this.auth['user-full-name'], annotationKey, annotationValue);
 
         // console.log("file after annotation", file);
 

@@ -146,14 +146,14 @@ export const getPDFSignatureCount = async (file) => {
  * Adds an annotation to a PDF file
  *
  * @param file
- * @param i18n
- * @param appName
+ * @param appNameDE
+ * @param appNameEN
  * @param personName
  * @param key
  * @param value
  * @returns {File}
  */
-export const addKeyValuePdfAnnotation = async (file, i18n, appName, personName, key, value) => {
+export const addKeyValuePdfAnnotation = async (file, appNameDE, appNameEN, personName, key, value) => {
     key = key.trim();
     value = value.trim();
 
@@ -163,7 +163,8 @@ export const addKeyValuePdfAnnotation = async (file, i18n, appName, personName, 
     }
 
     let annotationFactory = await getAnnotationFactoryFromFile(file);
-    annotationFactory = addKeyValuePdfAnnotationToAnnotationFactory(annotationFactory, i18n, appName, personName, key, value);
+    annotationFactory = addKeyValuePdfAnnotationsToAnnotationFactory(annotationFactory, appNameDE, appNameEN,
+        personName, key, 'Name DE', 'Name EN', 'key2', value);
 
     return writeAnnotationFactoryToFile(annotationFactory, file);
 };
@@ -197,36 +198,58 @@ export const getAnnotationFactoryFromFile = async (file) => {
  * Adds a key/value annotation to a AnnotationFactory and returns the AnnotationFactory
  *
  * @param annotationFactory
- * @param i18n
- * @param appName
+ * @param appNameDE
+ * @param appNameEN
  * @param personName
- * @param key
+ * @param key1
+ * @param key1NameDE
+ * @param key1NameEN
+ * @param key2
  * @param value
  * @returns PdfFactory
  */
-export const addKeyValuePdfAnnotationToAnnotationFactory = (annotationFactory, i18n, appName, personName, key, value) => {
-    key = key.trim();
+export const addKeyValuePdfAnnotationsToAnnotationFactory = (annotationFactory, appNameDE, appNameEN, personName,
+                                                             key1, key1NameDE, key1NameEN, key2, value) => {
+    key1 = key1.trim();
+    key1NameDE = key1NameDE.trim();
+    key1NameEN = key1NameEN.trim();
+    key2 = key2.trim();
     value = value.trim();
 
     // don't annotate if key or value are empty
-    if (key === '' || value === '') {
+    if (key1 === '' || key2 === '' || value === '') {
         return annotationFactory;
     }
 
-    // console.log("annotationFactory.getAnnotations() before", annotationFactory.getAnnotations());
+    // add human readable annotation
+    let author = personName + ' via  "' + appNameDE + ' / ' + appNameEN + '"';
+    let content = key1NameDE + ': ' + value +"\n" + key1NameEN + ': ' + value;
+    annotationFactory = addPdfAnnotationToAnnotationFactory(annotationFactory, author, content);
+
+    // add machine readable annotation
+    author = 'Maschinell aufgebracht, bitte nicht entfernen / Applied automatically, please do not remove';
+    content = 'dbp-annotation-' + key1 + '-' + key2 + '=' + value;
+    annotationFactory = addPdfAnnotationToAnnotationFactory(annotationFactory, author, content);
+
+    return annotationFactory;
+};
+
+export const addPdfAnnotationToAnnotationFactory = (annotationFactory, author, content) => {
+    author = author.trim();
+    content = content.trim();
+
+    // don't annotate if author of content are empty
+    if (author === '' || content === '') {
+        return annotationFactory;
+    }
 
     const page = 0;
-    const rect = [1, 1, 1, 1];
-    const author = i18n.t('annotation-author', {
-        appName: appName,
-        personName: personName
-    });
-    const contents = 'dbp-annotation-' + key + '=' + value;
+    const rect = [0, 0, 0, 0];
 
     // annotationFactory.checkRect(4, rect);
 
     // Create single free text annotation with print flag and 0 font size
-    let annotation = Object.assign(annotationFactory.createBaseAnnotation(page, rect, contents, author), {
+    let annotation = Object.assign(annotationFactory.createBaseAnnotation(page, rect, content, author), {
         annotation_flag: 4, // enable print to be PDF/A conform
         color: {r: 1, g: 1, b: 1}, // white to (maybe) hide it better
         opacity: 0.001, // we can't set to 0 because of "if (opacity) {"
