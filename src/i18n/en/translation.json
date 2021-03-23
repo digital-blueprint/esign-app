@@ -1,7 +1,5 @@
 {
   "official-pdf-upload": {
-    "upload-field-label": "Officially sign",
-    "sub-headline": "Allows upload of PDF-documents to officially sign them",
     "upload-text": "In this area you can upload PDF-documents up to a size of 32MB. The PDF-documents can also be located in a ZIP-file.",
     "upload-area-text": "In this area you can upload PDF-documents up to a size of 32MB via Drag & Drop or by selecting them directly. The PDF-documents can also be located in a ZIP-file.",
     "queued-files-label": "Queued documents",
@@ -33,8 +31,6 @@
     "add-annotation-title": "Add annotation to PDF"
   },
   "qualified-pdf-upload": {
-    "upload-field-label": "Personally Sign Document",
-    "sub-headline": "Allows upload of PDF-documents to personally sign them",
     "save-field-label": "Save {{count}} file",
     "save-field-label_plural": "Save {{count}} files",
     "upload-text": "In this area you can upload PDF-documents up to a size of 32MB. The PDF-documents can also be located in a ZIP-file.",
@@ -68,8 +64,6 @@
     "file-picker-context": "Upload PDF-documents to sign"
   },
   "signature-verification": {
-    "upload-field-label": "Verify signed documents",
-    "sub-headline": "Allows verification of signed PDF-documents",
     "upload-text": "In this area you can upload PDF-documents up to a size of 32MB. The PDF-documents can also be located in a ZIP-file.",
     "upload-area-text": "In this area you can upload PDF-documents up to a size of 32MB via Drag & Drop or by selecting them directly. The PDF-documents can also be located in a ZIP-file.",
     "queued-files-label": "Queued documents",
@@ -99,7 +93,6 @@
     "file-picker-context": "Upload PDF-documents to verify"
   },
   "signature-verification-extern": {
-    "headline": "Verify signed Documents",
     "description-text": "To check a PDF signature for validity, please use the verification service of the Rundfunk und Telekom Regulierungs-GmbH. This verification service allows you to check whether the document contains a valid signature.",
     "link-label": "Switch to the RTR verification service",
     "adobe-reader-text": "Furthermore, it is also possible to verify the signature locally with the Adobe Reader.",

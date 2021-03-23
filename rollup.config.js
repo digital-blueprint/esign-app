@@ -183,7 +183,7 @@ Dependencies:
                 {src: 'assets/*-placeholder.png', dest: 'dist/' + await getDistPath(pkg.name)},
                 {src: 'assets/*.css', dest: 'dist/' + await getDistPath(pkg.name)},
                 {src: 'assets/*.ico', dest: 'dist/' + await getDistPath(pkg.name)},
-                {src: 'assets/*.metadata.json', dest: 'dist'},
+                {src: 'src/*.metadata.json', dest: 'dist'},
                 {src: 'assets/*.svg', dest: 'dist/' + await getDistPath(pkg.name)},
                 {src: 'assets/htaccess-shared', dest: 'dist/shared/', rename: '.htaccess'},
                 {src: 'assets/icon-*.png', dest: 'dist/' + await getDistPath(pkg.name)},

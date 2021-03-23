@@ -16,6 +16,8 @@ import {FileSink} from "@dbp-toolkit/file-handling";
 import {name as pkgName} from './../package.json';
 import {getPDFSignatureCount} from './utils.js';
 import {send as notify} from '@dbp-toolkit/common/notification';
+import metadata from './dbp-qualified-signature-pdf-upload.metadata.json';
+import {Activity} from './activity.js';
 
 const i18n = createI18nInstance();
 
@@ -935,13 +937,14 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
 
     render() {
         const placeholderUrl = commonUtils.getAssetURL(pkgName, 'qualified-signature-placeholder.png');
+        const activity = new Activity(metadata);
 
         return html`
             <div class="${classMap({hidden: !this.isLoggedIn() || !this.hasSignaturePermissions() || this.isLoading()})}">
                 <div class="field ${classMap({"is-disabled": this.isUserInterfaceDisabled()})}">
-                    <h2>${i18n.t('qualified-pdf-upload.upload-field-label')}</h2>
+                    <h2>${activity.getName(this.lang)}</h2>
                     <p class="subheadline">
-                        ${i18n.t('qualified-pdf-upload.sub-headline')}
+                        ${activity.getDescription(this.lang)}
                     </p>
                     <div class="control">
                         

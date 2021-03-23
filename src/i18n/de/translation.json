@@ -1,7 +1,5 @@
 {
   "official-pdf-upload": {
-    "upload-field-label": "Dokumente amtssignieren",
-    "sub-headline": "Erlaubt das Hochladen von PDF-Dokumenten, um sie mit einer Amtssignatur zu versehen",
     "upload-text": "Sie können PDF-Dokumente mit einer Maximalgröße von bis zu 32MB pro Dokument hochladen. Die PDF-Dokumente dürfen sich auch in ZIP-Dateien befinden.",
     "upload-area-text": "Sie können in diesem Bereich PDF-Dokumente mit einer Maximalgröße von bis zu 32MB pro Dokument per Drag & Drop oder per Direktauswahl hochladen. Die PDF-Dokumente dürfen sich auch in ZIP-Dateien befinden.",
     "queued-files-label": "Dokumente in der Warteschlange",
@@ -33,8 +31,6 @@
     "add-annotation-title": "Dem PDF eine Kennzahl hinzufügen"
   },
   "qualified-pdf-upload": {
-    "upload-field-label": "Dokument persönlich signieren",
-    "sub-headline": "Erlaubt das Hochladen von PDF-Dokumenten, um sie mit einer persönlichen elektronischen Signatur zu versehen",
     "save-field-label": "{{count}} Datei speichern",
     "save-field-label_plural": "{{count}} Dateien speichern",
     "upload-text": "Sie können PDF-Dokumente mit einer Maximalgröße von bis zu 32MB pro Dokument hochladen. Die PDF-Dokumente dürfen sich auch in ZIP-Dateien befinden.",
@@ -68,8 +64,6 @@
     "file-picker-context": "PDF-Dokumente zum Signieren auswählen"
   },
   "signature-verification": {
-    "upload-field-label": "PDF-Dokumente zum Überprüfen der Signaturen hochladen",
-    "sub-headline": "Erlaubt das Verifizieren von signierten PDF-Dokumenten",
     "upload-text": "Sie können in diesem Bereich PDF-Dokumente mit einer Maximalgröße von bis zu 32MB pro Dokument hochladen. Die PDF-Dokumente dürfen sich auch in ZIP-Dateien befinden.",
     "upload-area-text": "Sie können in diesem Bereich PDF-Dokumente mit einer Maximalgröße von bis zu 32MB pro Dokument per Drag & Drop oder per Direktauswahl hochladen. Die PDF-Dokumente dürfen sich auch in ZIP-Dateien befinden.",
     "queued-files-label": "Dokumente in der Warteschlange",
@@ -99,7 +93,6 @@
     "file-picker-context": "PDF-Dokumente zum Verifizieren auswählen"
   },
   "signature-verification-extern": {
-    "headline": "Signierte Dokumente verifizieren",
     "description-text": "Um eine PDF-Signatur auf ihre Gültigkeit zu überprüfen, benutzen Sie bitte das Verifikationsservice der Rundfunk und Telekom Regulierungs-GmbH. Mit diesem Verifikationsservice können Sie überprüfen, ob das Dokument eine valide Signatur enthält.",
     "link-label": "Zum RTR Verifikationsservice wechseln",
     "adobe-reader-text": "Des Weiteren besteht auch die Möglichkeit, das Dokument lokal mit dem Adobe Reader zu überprüfen.",

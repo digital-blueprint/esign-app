@@ -4,6 +4,8 @@ import {ScopedElementsMixin} from '@open-wc/scoped-elements';
 import DBPSignatureLitElement from "./dbp-signature-lit-element";
 import * as commonUtils from '@dbp-toolkit/common/utils';
 import * as commonStyles from '@dbp-toolkit/common/styles';
+import metadata from './dbp-signature-verification.metadata.json';
+import {Activity} from './activity.js';
 
 const i18n = createI18nInstance();
 
@@ -102,10 +104,11 @@ class SignatureVerification extends ScopedElementsMixin(DBPSignatureLitElement) 
     }
 
     render() {
+        const activity = new Activity(metadata);
         return html`
-            <h2>${i18n.t('signature-verification-extern.headline')}</h2>
+            <h2>${activity.getName(this.lang)}</h2>
             <p class="subheadline">
-                ${i18n.t('signature-verification.sub-headline')}
+                ${activity.getDescription(this.lang)}
             </p>
             <p>
                 ${i18n.t('signature-verification-extern.description-text')}

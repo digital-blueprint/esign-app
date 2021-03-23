@@ -11,6 +11,8 @@ import {classMap} from 'lit-html/directives/class-map.js';
 import {FileSource} from '@dbp-toolkit/file-handling';
 import JSONLD from "@dbp-toolkit/common/jsonld";
 import {name as pkgName} from './../package.json';
+import metadata from './dbp-signature-verification-full.metadata.json';
+import {Activity} from './activity.js';
 
 const i18n = createI18nInstance();
 
@@ -690,13 +692,14 @@ class SignatureVerificationFull extends ScopedElementsMixin(DBPSignatureLitEleme
 
     render() {
         const placeholderUrl = commonUtils.getAssetURL(pkgName, 'official-signature-placeholder.png');
+        const activity = new Activity(metadata);
 
         return html`
             <div class="${classMap({hidden: !this.isLoggedIn() || !this.hasSignaturePermissions() || this.isLoading()})}">
                 <div class="field">
-                    <h2>${i18n.t('signature-verification.upload-field-label')}</h2>
+                    <h2>${activity.getName(this.lang)}</h2>
                     <p class="subheadline">
-                        ${i18n.t('signature-verification.sub-headline')}
+                        ${activity.getDescription(this.lang)}
                     </p>
                     <div class="control">
                         
