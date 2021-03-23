@@ -9,7 +9,7 @@ export default {
         nextcloudBaseURL: 'http://localhost:8081',
         nextcloudName: 'TU Graz cloud',
         pdfAsQualifiedlySigningServer: 'https://sig-dev.tugraz.at',
-        hiddenActivities: [],
+        hiddenActivities: ['dbp-signature-verification-full'],
     },
     bs: {
         basePath: '/dist/',
@@ -33,7 +33,7 @@ export default {
         nextcloudBaseURL: 'https://nc-dev.tugraz.at/pers',
         nextcloudName: 'TU Graz cloud',
         pdfAsQualifiedlySigningServer: 'https://sig-dev.tugraz.at',
-        hiddenActivities: [],
+        hiddenActivities: ['dbp-signature-verification-full'],
     },
     demo: {
         basePath: '/apps/signature/',
