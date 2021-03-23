@@ -314,7 +314,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         const fileName = this.currentFileName === "" ? "mydoc.pdf" : this.currentFileName;
 
         // fetch pdf from api gateway with sessionId
-        JSONLD.initialize(this.entryPointUrl, (jsonld) => {
+        JSONLD.getInstance(this.entryPointUrl).then((jsonld) => {
             const apiUrl = jsonld.getApiUrlForEntityName("QualifiedlySignedDocument") + '/' + encodeURIComponent(sessionId) + '?fileName=' +
                 encodeURIComponent(fileName);
 
@@ -417,7 +417,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                     i18n.changeLanguage(this.lang);
                     break;
                 case "entryPointUrl":
-                    JSONLD.initialize(this.entryPointUrl, (jsonld) => {
+                    JSONLD.getInstance(this.entryPointUrl).then((jsonld) => {
                         const apiUrlBase = jsonld.getApiUrlForEntityName("QualifiedSigningRequest");
                         this.fileSourceUrl = apiUrlBase ;
                     });
