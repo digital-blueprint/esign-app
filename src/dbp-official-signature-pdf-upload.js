@@ -14,7 +14,6 @@ import JSONLD from "@dbp-toolkit/common/jsonld";
 import {TextSwitch} from './textswitch.js';
 import {FileSink} from "@dbp-toolkit/file-handling";
 import {name as pkgName} from './../package.json';
-import {getPDFSignatureCount, getAnnotationTypeSelectOptionsHtml} from './utils.js';
 import {send as notify} from '@dbp-toolkit/common/notification';
 import {OrganizationSelect} from "@dbp-toolkit/organization-select";
 import metadata from './dbp-official-signature-pdf-upload.metadata.json';
@@ -108,7 +107,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
 
     async _updateNeedsPlacementStatus(id) {
         let file = this.queuedFiles[id];
-        let sigCount = await getPDFSignatureCount(file);
+        let sigCount = await utils.getPDFSignatureCount(file);
         this.queuedFilesNeedsPlacement.delete(id);
         if (sigCount > 0)
             this.queuedFilesNeedsPlacement.set(id, true);
@@ -796,7 +795,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                 <div class="annotation-block" class="annotation-block-${key}-${id}">
                     <select class="select" @change=${e => { this.updateAnnotation(key, id, 'key1', e.target.value); }}>
                         <option value="">${i18n.t('official-pdf-upload.annotation-type-please-select')}</option>
-                        ${getAnnotationTypeSelectOptionsHtml(data.key1, this.lang)}
+                        ${utils.getAnnotationTypeSelectOptionsHtml(data.key1, this.lang)}
                     </select>
                     <dbp-organization-select subscribe="lang:lang,entry-point-url:entry-point-url,auth:auth"
                                              value="${data.key2}"

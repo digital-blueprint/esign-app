@@ -1,6 +1,5 @@
 import * as utils from "./utils";
 import {AdapterLitElement} from "@dbp-toolkit/provider/src/adapter-lit-element";
-import JSONLD from "@dbp-toolkit/common/jsonld";
 import * as commonUtils from "@dbp-toolkit/common/utils";
 
 export class DBPSignatureBaseLitElement extends AdapterLitElement {
