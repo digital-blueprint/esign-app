@@ -282,12 +282,17 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
             file = await this.addAnnotationsToFile(file, annotations, i18n)
             console.log("uploadFile file", file);
 
-            // Also send to the server so it gets included in the signature block
+            // Also send annotations to the server so they get included in the signature block
             let userText = [];
-            for (let ann of annotations) {
-                userText.push({"description": ann["annotationType"], "value": `${ann["value"]} (${ann["organizationNumber"]})`});
+            for (let annotation of annotations) {
+                const annotationTypeNames = utils.getAnnotationTypes(annotation['annotationType']);
+
+                userText.push({
+                    'description': `${annotationTypeNames.de || ''} / ${annotationTypeNames.en || ''}`,
+                    'value': `${annotation['value']} (${annotation['organizationNumber']})`
+                });
             }
-            formData.append("user_text", JSON.stringify(userText));
+            formData.append('user_text', JSON.stringify(userText));
         }
 
         let url = new URL(this.fileSourceUrl);
