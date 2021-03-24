@@ -1,7 +1,6 @@
 export class Activity {
     constructor(data) {
         this._data = data;
-        this._defaultLang = 'en';
     }
 
     getName(lang) {
