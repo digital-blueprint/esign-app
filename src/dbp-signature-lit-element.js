@@ -125,7 +125,7 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
 
         // TODO: remove key/value presets
         const number =  Math.floor((Math.random() * 1000) + 1);
-        this.queuedFilesAnnotations[key].push({'key1': 'geschaeftszahl', 'value': 'my value ' + number});
+        this.queuedFilesAnnotations[key].push({'annotationType': 'geschaeftszahl', 'value': 'my value ' + number});
 
         // we just need this so the UI will update
         this.queuedFilesAnnotationsCount++;
@@ -142,23 +142,23 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
         // We need to work with the AnnotationFactory because the pdf file is broken if
         // we add the multiple annotations to the file itself
         let pdfFactory = await utils.getAnnotationFactoryFromFile(file);
-        const appNameDE = this.activity.getName('de');
-        const appNameEN = this.activity.getName('en');
+        const activityNameDE = this.activity.getName('de');
+        const activityNameEN = this.activity.getName('en');
 
         await commonUtils.asyncObjectForEach(annotations, async (annotation) => {
-            const key1 = (annotation.key1 || '').trim();
-            const key2 = (annotation.key2 || '').trim();
+            const annotationType = (annotation.annotationType || '').trim();
+            const organizationNumber = (annotation.organizationNumber || '').trim();
             const value = (annotation.value || '').trim();
 
-            if (key1 === '' || key2 === '' || value === '') {
+            if (annotationType === '' || organizationNumber === '' || value === '') {
                 return;
             }
 
-            const annotationTypeNames = utils.getAnnotationTypes(key1);
+            const annotationTypeNames = utils.getAnnotationTypes(annotationType);
 
             pdfFactory = await utils.addKeyValuePdfAnnotationsToAnnotationFactory(
-                pdfFactory, appNameDE, appNameEN, this.auth['user-full-name'], key1,
-                annotationTypeNames.de, annotationTypeNames.en, key2, value);
+                pdfFactory, activityNameDE, activityNameEN, this.auth['user-full-name'], annotationType,
+                annotationTypeNames.de, annotationTypeNames.en, organizationNumber, value);
         });
 
         // output the AnnotationFactory as File again
@@ -285,7 +285,7 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
             // Also send to the server so it gets included in the signature block
             let userText = [];
             for (let ann of annotations) {
-                userText.push({"description": ann["key1"], "value": `${ann["value"]} (${ann["key2"]})`});
+                userText.push({"description": ann["annotationType"], "value": `${ann["value"]} (${ann["organizationNumber"]})`});
             }
             formData.append("user_text", JSON.stringify(userText));
         }

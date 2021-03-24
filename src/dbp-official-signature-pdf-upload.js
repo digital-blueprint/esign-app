@@ -794,13 +794,13 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
 
             results.push(html`
                 <div class="annotation-block" class="annotation-block-${key}-${id}">
-                    <select class="select" @change=${e => { this.updateAnnotation(key, id, 'key1', e.target.value); }}>
+                    <select class="select" @change=${e => { this.updateAnnotation(key, id, 'annotationType', e.target.value); }}>
                         <option value="">${i18n.t('official-pdf-upload.annotation-type-please-select')}</option>
-                        ${utils.getAnnotationTypeSelectOptionsHtml(data.key1, this.lang)}
+                        ${utils.getAnnotationTypeSelectOptionsHtml(data.annotationType, this.lang)}
                     </select>
                     <dbp-organization-select subscribe="lang:lang,entry-point-url:entry-point-url,auth:auth"
-                                             value="${data.key2}"
-                                             @change=${e => { this.updateAnnotation(key, id, 'key2', JSON.parse(e.target.getAttribute("data-object")).alternateName); }}></dbp-organization-select>
+                                             value="${data.organizationNumber}"
+                                             @change=${e => { this.updateAnnotation(key, id, 'organizationNumber', JSON.parse(e.target.getAttribute("data-object")).alternateName); }}></dbp-organization-select>
                     <input type="text" .value="${data.value}" @change=${e => { this.updateAnnotation(key, id, 'value', e.target.value); }} placeholder="value" />
                     <button class="button"
                         title="Remove annotation"

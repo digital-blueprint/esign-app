@@ -148,14 +148,14 @@ export const getPDFSignatureCount = async (file) => {
  * Adds an annotation to a PDF file
  *
  * @param file
- * @param appNameDE
- * @param appNameEN
+ * @param activityNameDE
+ * @param activityNameEN
  * @param personName
  * @param key
  * @param value
  * @returns {File}
  */
-export const addKeyValuePdfAnnotation = async (file, appNameDE, appNameEN, personName, key, value) => {
+export const addKeyValuePdfAnnotation = async (file, activityNameDE, activityNameEN, personName, key, value) => {
     key = key.trim();
     value = value.trim();
 
@@ -165,8 +165,8 @@ export const addKeyValuePdfAnnotation = async (file, appNameDE, appNameEN, perso
     }
 
     let annotationFactory = await getAnnotationFactoryFromFile(file);
-    annotationFactory = addKeyValuePdfAnnotationsToAnnotationFactory(annotationFactory, appNameDE, appNameEN,
-        personName, key, 'Name DE', 'Name EN', 'key2', value);
+    annotationFactory = addKeyValuePdfAnnotationsToAnnotationFactory(annotationFactory, activityNameDE, activityNameEN,
+        personName, key, 'Name DE', 'Name EN', 'organizationNumber', value);
 
     return writeAnnotationFactoryToFile(annotationFactory, file);
 };
@@ -200,37 +200,37 @@ export const getAnnotationFactoryFromFile = async (file) => {
  * Adds a key/value annotation to a AnnotationFactory and returns the AnnotationFactory
  *
  * @param annotationFactory
- * @param appNameDE
- * @param appNameEN
+ * @param activityNameDE
+ * @param activityNameEN
  * @param personName
- * @param key1
- * @param key1NameDE
- * @param key1NameEN
- * @param key2
+ * @param annotationType
+ * @param annotationTypeNameDE
+ * @param annotationTypeNameEN
+ * @param organizationNumber
  * @param value
  * @returns PdfFactory
  */
-export const addKeyValuePdfAnnotationsToAnnotationFactory = (annotationFactory, appNameDE, appNameEN, personName,
-                                                             key1, key1NameDE, key1NameEN, key2, value) => {
-    key1 = key1.trim();
-    key1NameDE = key1NameDE.trim();
-    key1NameEN = key1NameEN.trim();
-    key2 = key2.trim();
+export const addKeyValuePdfAnnotationsToAnnotationFactory = (annotationFactory, activityNameDE, activityNameEN, personName,
+                                                             annotationType, annotationTypeNameDE, annotationTypeNameEN, organizationNumber, value) => {
+    annotationType = annotationType.trim();
+    annotationTypeNameDE = annotationTypeNameDE.trim();
+    annotationTypeNameEN = annotationTypeNameEN.trim();
+    organizationNumber = organizationNumber.trim();
     value = value.trim();
 
     // don't annotate if key or value are empty
-    if (key1 === '' || key2 === '' || value === '') {
+    if (annotationType === '' || organizationNumber === '' || value === '') {
         return annotationFactory;
     }
 
     // add human readable annotation
-    let author = personName + ' via  "' + appNameDE + ' / ' + appNameEN + '"';
-    let content = key1NameDE + ': ' + value +"\n" + key1NameEN + ': ' + value;
+    let author = personName + ' via  "' + activityNameDE + ' / ' + activityNameEN + '"';
+    let content = annotationTypeNameDE + ': ' + value +"\n" + annotationTypeNameEN + ': ' + value;
     annotationFactory = addPdfAnnotationToAnnotationFactory(annotationFactory, author, content);
 
     // add machine readable annotation
     author = 'Maschinell aufgebracht, bitte nicht entfernen / Applied automatically, please do not remove';
-    content = 'dbp-annotation-' + key1 + '-' + key2 + '=' + value;
+    content = 'dbp-annotation-' + annotationType + '-' + organizationNumber + '=' + value;
     annotationFactory = addPdfAnnotationToAnnotationFactory(annotationFactory, author, content);
 
     return annotationFactory;
