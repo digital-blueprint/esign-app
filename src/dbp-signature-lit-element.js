@@ -279,7 +279,7 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
 
         // add annotations
         if (annotations.length > 0) {
-            file = await this.addAnnotationsToFile(file, annotations, i18n)
+            file = await this.addAnnotationsToFile(file, annotations, i18n);
             console.log("uploadFile file", file);
 
             // Also send annotations to the server so they get included in the signature block
