@@ -2,7 +2,6 @@ import * as utils from "./utils";
 import {AdapterLitElement} from "@dbp-toolkit/provider/src/adapter-lit-element";
 import JSONLD from "@dbp-toolkit/common/jsonld";
 import * as commonUtils from "@dbp-toolkit/common/utils";
-import {getAnnotationFactoryFromFile} from "./utils";
 
 export class DBPSignatureBaseLitElement extends AdapterLitElement {
     constructor() {
@@ -146,18 +145,19 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
         let pdfFactory = await utils.getAnnotationFactoryFromFile(file);
 
         await commonUtils.asyncObjectForEach(annotations, async (annotation) => {
-            const key1 = annotation.key1.trim();
-            const key2 = annotation.key2.trim();
-            const value = annotation.value.trim();
+            const key1 = (annotation.key1 || '').trim();
+            const key2 = (annotation.key2 || '').trim();
+            const value = (annotation.value || '').trim();
 
             if (key1 === '' || key2 === '' || value === '') {
                 return;
             }
 
-            // TODO: use real key1 names
+            const annotationTypeNames = utils.getAnnotationTypes(key1);
+
             pdfFactory = await utils.addKeyValuePdfAnnotationsToAnnotationFactory(
                 pdfFactory, 'AppNameDE', 'AppNameEN', this.auth['user-full-name'], key1,
-                "Geschaeftszahl", "Businessnumber", key2, value);
+                annotationTypeNames.de, annotationTypeNames.en, key2, value);
         });
 
         // output the AnnotationFactory as File again

@@ -1,4 +1,6 @@
 import {AnnotationFactory} from '@digital-blueprint/annotpdf/_bundles/pdfAnnotate.js';
+import {html} from "lit-element";
+import {humanFileSize} from "@dbp-toolkit/common/i18next";
 
 /**
  * Finds an object in a JSON result by identifier
@@ -259,4 +261,45 @@ export const addPdfAnnotationToAnnotationFactory = (annotationFactory, author, c
     annotationFactory.annotations.push(annotation);
 
     return annotationFactory;
+};
+
+/**
+ * Returns an object with all annotations types or only the values for one type
+ *
+ * @param key
+ * @returns {}
+ */
+export const getAnnotationTypes = (key = null) => {
+    const types = {
+        'bbe3a371': {
+            'de': 'Geschäftszahl',
+            'en': 'Businessnumber',
+        },
+        '85a4eb4c': {
+            'de': 'Andere Zahl',
+            'en': 'Other number',
+        }
+    }
+
+    return key === null ? types : types[key] || {};
+};
+
+/**
+ * Returns the html for the annotation type select
+ *
+ * @returns {*[]} Array of html templates
+ */
+export const getAnnotationTypeSelectOptionsHtml = (selectedKey, lang) => {
+    const annotationTypes = getAnnotationTypes();
+    const keys = Object.keys(annotationTypes);
+    let results = [];
+
+    keys.forEach((key) => {
+        const name = annotationTypes[key][lang];
+        results.push(html`
+            <option value="${key}" .selected=${selectedKey === key}>${name}</option>
+        `);
+    });
+
+    return results;
 };

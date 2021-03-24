@@ -28,7 +28,8 @@
     "positioning": "Positionierung",
     "confirm-page-leave": "Sind Sie sicher, dass Sie die Seite verlassen wollen? Es stehen signierte Dokumente zum Download bereit.",
     "file-picker-context": "PDF-Dokumente zum Signieren auswählen",
-    "add-annotation-title": "Dem PDF eine Kennzahl hinzufügen"
+    "add-annotation-title": "Dem PDF eine Kennzahl hinzufügen",
+    "annotation-type-please-select": "Bitte wählen Sie einen Typ aus"
   },
   "qualified-pdf-upload": {
     "save-field-label": "{{count}} Datei speichern",

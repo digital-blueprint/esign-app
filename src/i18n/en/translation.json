@@ -28,7 +28,8 @@
     "positioning": "Positioning",
     "confirm-page-leave": "Are you sure you want to leave this page? There are still signed documents ready to be downloaded.",
     "file-picker-context": "Upload PDF-documents to sign",
-    "add-annotation-title": "Add annotation to PDF"
+    "add-annotation-title": "Add annotation to PDF",
+    "annotation-type-please-select": "Please select a type"
   },
   "qualified-pdf-upload": {
     "save-field-label": "Save {{count}} file",

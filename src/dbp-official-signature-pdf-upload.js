@@ -14,7 +14,7 @@ import JSONLD from "@dbp-toolkit/common/jsonld";
 import {TextSwitch} from './textswitch.js';
 import {FileSink} from "@dbp-toolkit/file-handling";
 import {name as pkgName} from './../package.json';
-import {getPDFSignatureCount} from './utils.js';
+import {getPDFSignatureCount, getAnnotationTypeSelectOptionsHtml} from './utils.js';
 import {send as notify} from '@dbp-toolkit/common/notification';
 import {OrganizationSelect} from "@dbp-toolkit/organization-select";
 import metadata from './dbp-official-signature-pdf-upload.metadata.json';
@@ -794,7 +794,10 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
 
             results.push(html`
                 <div class="annotation-block" class="annotation-block-${key}-${id}">
-                    <input type="text" .value="${data.key1}" @change=${e => { this.updateAnnotation(key, id, 'key1', e.target.value); }} placeholder="key1" />
+                    <select class="select" @change=${e => { this.updateAnnotation(key, id, 'key1', e.target.value); }}>
+                        <option value="">${i18n.t('official-pdf-upload.annotation-type-please-select')}</option>
+                        ${getAnnotationTypeSelectOptionsHtml(data.key1, this.lang)}
+                    </select>
                     <dbp-organization-select subscribe="lang:lang,entry-point-url:entry-point-url,auth:auth"
                                              value="${data.key2}"
                                              @change=${e => { this.updateAnnotation(key, id, 'key2', JSON.parse(e.target.getAttribute("data-object")).alternateName); }}></dbp-organization-select>
