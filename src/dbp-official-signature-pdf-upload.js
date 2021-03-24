@@ -52,6 +52,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         this.allowAnnotating = false;
         this.queuedFilesAnnotations = [];
         this.queuedFilesAnnotationsCount = 0;
+        this.activity = new Activity(metadata);
     }
 
     static get scopedElements() {
@@ -819,14 +820,13 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
 
     render() {
         const placeholderUrl = commonUtils.getAssetURL(pkgName, 'official-signature-placeholder.png');
-        const activity = new Activity(metadata);
 
         return html`
             <div class="${classMap({hidden: !this.isLoggedIn() || !this.hasSignaturePermissions() || this.isLoading()})}">
                 <div class="field">
-                    <h2>${activity.getName(this.lang)}</h2>
+                    <h2>${this.activity.getName(this.lang)}</h2>
                     <p class="subheadline">
-                        ${activity.getDescription(this.lang)}
+                        ${this.activity.getDescription(this.lang)}
                     </p>
                     <div class="control">
                        

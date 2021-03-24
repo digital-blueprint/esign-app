@@ -51,6 +51,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         this.queuedFilesNeedsPlacement = new Map();
         this.currentPreviewQueueKey = '';
         this.allowAnnotating = false;
+        this.activity = new Activity(metadata);
 
         this._onReceiveIframeMessage = this.onReceiveIframeMessage.bind(this);
         this._onReceiveBeforeUnload = this.onReceiveBeforeUnload.bind(this);
@@ -937,14 +938,13 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
 
     render() {
         const placeholderUrl = commonUtils.getAssetURL(pkgName, 'qualified-signature-placeholder.png');
-        const activity = new Activity(metadata);
 
         return html`
             <div class="${classMap({hidden: !this.isLoggedIn() || !this.hasSignaturePermissions() || this.isLoading()})}">
                 <div class="field ${classMap({"is-disabled": this.isUserInterfaceDisabled()})}">
-                    <h2>${activity.getName(this.lang)}</h2>
+                    <h2>${this.activity.getName(this.lang)}</h2>
                     <p class="subheadline">
-                        ${activity.getDescription(this.lang)}
+                        ${this.activity.getDescription(this.lang)}
                     </p>
                     <div class="control">
                         

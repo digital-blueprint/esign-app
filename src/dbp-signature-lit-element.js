@@ -142,6 +142,8 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
         // We need to work with the AnnotationFactory because the pdf file is broken if
         // we add the multiple annotations to the file itself
         let pdfFactory = await utils.getAnnotationFactoryFromFile(file);
+        const appNameDE = this.activity.getName('de');
+        const appNameEN = this.activity.getName('en');
 
         await commonUtils.asyncObjectForEach(annotations, async (annotation) => {
             const key1 = (annotation.key1 || '').trim();
@@ -155,7 +157,7 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
             const annotationTypeNames = utils.getAnnotationTypes(key1);
 
             pdfFactory = await utils.addKeyValuePdfAnnotationsToAnnotationFactory(
-                pdfFactory, 'AppNameDE', 'AppNameEN', this.auth['user-full-name'], key1,
+                pdfFactory, appNameDE, appNameEN, this.auth['user-full-name'], key1,
                 annotationTypeNames.de, annotationTypeNames.en, key2, value);
         });
 
