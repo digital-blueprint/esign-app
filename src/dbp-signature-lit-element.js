@@ -401,13 +401,16 @@ export default class DBPSignatureLitElement extends BaseLitElement {
      * Open Filesink for a single File
      *
      * @param file
+     * @param id of element to mark
      */
-    async downloadFileClickHandler(file) {
+    async downloadFileClickHandler(file, id) {
         let files = [];
         const arr = utils.convertDataURIToBinary(file.contentUrl);
         const binaryFile = new File([arr], file.name, { type: utils.getDataURIContentType(file.contentUrl) });
         files.push(binaryFile);
         this.signedFilesToDownload = files.length;
         this._("#file-sink").files = files;
+        const div = this.shadowRoot.querySelector('#' + id);
+        div.style.background='#c8dcc8';
     }
 }
