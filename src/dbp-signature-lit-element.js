@@ -89,7 +89,7 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
 
     /**
      * @param file
-     * @returns key of the queued item
+     * @returns {string} key of the queued item
      */
     queueFile(file) {
         this._queueKey++;
@@ -136,7 +136,7 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
      *
      * @param file
      * @param annotations
-     * @returns {File}
+     * @returns {File} file given as parameter, but with annotations
      */
     async addAnnotationsToFile(file, annotations) {
         // We need to work with the AnnotationFactory because the pdf file is broken if

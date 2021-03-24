@@ -780,6 +780,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
     /**
      * Returns the list of files of annotations of a queued file
      *
+     * @param key
      * @returns {*[]} Array of html templates
      */
     getAnnotationsHtml(key) {

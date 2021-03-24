@@ -1,6 +1,6 @@
 import {AnnotationFactory} from '@digital-blueprint/annotpdf/_bundles/pdfAnnotate.js';
 import {html} from "lit-element";
-import {humanFileSize} from "@dbp-toolkit/common/i18next";
+//import {humanFileSize} from "@dbp-toolkit/common/i18next";
 
 /**
  * Finds an object in a JSON result by identifier
@@ -153,7 +153,7 @@ export const getPDFSignatureCount = async (file) => {
  * @param personName
  * @param key
  * @param value
- * @returns {File}
+ * @returns {File} file given as parameter, but with annotations
  */
 export const addKeyValuePdfAnnotation = async (file, activityNameDE, activityNameEN, personName, key, value) => {
     key = key.trim();
@@ -176,19 +176,19 @@ export const addKeyValuePdfAnnotation = async (file, activityNameDE, activityNam
  *
  * @param annotationFactory
  * @param file
- * @returns {File}
+ * @returns {File} file given as parameter, but with annotations
  */
 export const writeAnnotationFactoryToFile = (annotationFactory, file) => {
     const blob = annotationFactory.write();
 
     return new File([blob], file.name, { type: file.type });
-}
+};
 
 /**
  * Creates an AnnotationFactory from a File
  *
  * @param file
- * @returns AnnotationFactory
+ * @returns {AnnotationFactory} from given file
  */
 export const getAnnotationFactoryFromFile = async (file) => {
     const data = await readArrayBufferFileContent(file);
@@ -208,7 +208,7 @@ export const getAnnotationFactoryFromFile = async (file) => {
  * @param annotationTypeNameEN
  * @param organizationNumber
  * @param value
- * @returns PdfFactory
+ * @returns {AnnotationFactory} prepared to annotate
  */
 export const addKeyValuePdfAnnotationsToAnnotationFactory = (annotationFactory, activityNameDE, activityNameEN, personName,
                                                              annotationType, annotationTypeNameDE, annotationTypeNameEN, organizationNumber, value) => {
@@ -267,7 +267,7 @@ export const addPdfAnnotationToAnnotationFactory = (annotationFactory, author, c
  * Returns an object with all annotations types or only the values for one type
  *
  * @param key
- * @returns {}
+ * @returns {object} describing the annotation type named key
  */
 export const getAnnotationTypes = (key = null) => {
     const types = {
@@ -279,7 +279,7 @@ export const getAnnotationTypes = (key = null) => {
             'de': 'Andere Zahl',
             'en': 'Other number',
         }
-    }
+    };
 
     return key === null ? types : types[key] || {};
 };
@@ -287,7 +287,9 @@ export const getAnnotationTypes = (key = null) => {
 /**
  * Returns the html for the annotation type select
  *
- * @returns {*[]} Array of html templates
+ * @param selectedKey
+ * @param lang
+ * * @returns {*[]} Array of html templates
  */
 export const getAnnotationTypeSelectOptionsHtml = (selectedKey, lang) => {
     const annotationTypes = getAnnotationTypes();
