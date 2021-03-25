@@ -230,7 +230,7 @@ export const addKeyValuePdfAnnotationsToAnnotationFactory = (annotationFactory, 
 
     // add machine readable annotation
     author = 'Maschinell aufgebracht, bitte nicht entfernen / Applied automatically, please do not remove';
-    content = 'dbp-annotation-' + annotationType + '-' + organizationNumber + '=' + value;
+    content = 'dbp_annotation_' + annotationType + '_' + organizationNumber + '=' + value;
     annotationFactory = addPdfAnnotationToAnnotationFactory(annotationFactory, author, content);
 
     return annotationFactory;
