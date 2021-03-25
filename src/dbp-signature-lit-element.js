@@ -247,6 +247,8 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
     }
 
     clearQueuedFiles() {
+        this.queuedFilesAnnotations = [];
+        this.queuedFilesAnnotationsCount = 0;
         this.queuedFiles = [];
         this.updateQueuedFilesCount();
     }
