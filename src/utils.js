@@ -276,8 +276,8 @@ export const getAnnotationTypes = (key = null) => {
             'en': 'Businessnumber',
         },
         '85a4eb4c': {
-            'de': 'Andere Zahl',
-            'en': 'Other number',
+            'de': 'Verwendungszweck',
+            'en': 'Intended use',
         }
     };
 

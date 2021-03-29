@@ -29,7 +29,11 @@
     "confirm-page-leave": "Sind Sie sicher, dass Sie die Seite verlassen wollen? Es stehen signierte Dokumente zum Download bereit.",
     "file-picker-context": "PDF-Dokumente zum Signieren auswählen",
     "add-annotation-title": "Dem PDF eine Kennzahl hinzufügen",
-    "annotation-type-please-select": "Bitte wählen Sie einen Typ aus"
+    "annotation-type-please-select": "Bitte wählen Sie einen Typ aus",
+    "annotation": "Text anbringen",
+    "annotation-no": "Nein",
+    "annotation-yes": "Ja",
+    "annotation-view-label": "Text zu Dokument hinzufügen"
   },
   "qualified-pdf-upload": {
     "save-field-label": "{{count}} Datei speichern",
@@ -62,7 +66,11 @@
     "signature-placement-label": "Signatur platzieren",
     "positioning": "Positionierung",
     "confirm-page-leave": "Sind Sie sicher, dass Sie die Seite verlassen wollen? Es stehen signierte Dokumente zum Download bereit.",
-    "file-picker-context": "PDF-Dokumente zum Signieren auswählen"
+    "file-picker-context": "PDF-Dokumente zum Signieren auswählen",
+    "annotation": "Text anbringen",
+    "annotation-no": "Nein",
+    "annotation-yes": "Ja",
+    "annotation-view-label": "Text zu Dokument hinzufügen"
   },
   "signature-verification": {
     "upload-text": "Sie können in diesem Bereich PDF-Dokumente mit einer Maximalgröße von bis zu 32MB pro Dokument hochladen. Die PDF-Dokumente dürfen sich auch in ZIP-Dateien befinden.",
@@ -108,6 +116,19 @@
     "rotate-signature": "Signatur im Uhrzeigersinn rotieren",
     "rotate": "Signatur rotieren",
     "continue": "Platzierung bestätigen"
+  },
+  "annotation-view": {
+    "delete-all-button-text": "Alle entfernen",
+    "delete-all-button-title": "Alle entfernen",
+    "save-all-button-text": "Für Dokument übernehmen", 
+    "save-all-button-title": "Für Dokument übernehmen",
+    "insert-field": "Neues Feld einfügen",
+    "remove-field": "Feld löschen",
+    "type-value-1": "Geschäftszahl",
+    "type-value-2": "Verwendungszweck",
+    "businessnumber-placeholder": "Z.B. 247/1/2020-S",
+    "intended-use-placeholder": "Fügen Sie hier den gewünschten Text ein",
+    "introduction": "In diesem Bereich können Sie zusätzlichen Text definieren, der in der Signatur enthalten sein soll. Klicken Sie dafür auf \"Neues Feld einfügen\" und wählen Sie das gewünschte Feld aus. Klicken Sie dann auf das \"+\" um das Feld einzufügen und den gewünschten Text einzugeben."
   },
   "error-permission-message": "Sie müssen das Recht auf Amtssignaturen besitzen um diese Funktion nutzen zu können!",
   "error-login-message": "Sie müssen eingeloggt sein um diese Funktion nutzen zu können!",

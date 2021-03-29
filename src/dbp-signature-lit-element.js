@@ -113,6 +113,54 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
     }
 
     /**
+     * 
+     * @param {*} key 
+     * @param {*} name 
+     * @returns 
+     */
+    async showAnnotationView(key, name) {
+        if (this.signingProcessEnabled) {
+            return;
+        }
+
+        if (name === 'text-selected') {
+            const file = this.getQueuedFile(key);
+            this.currentFile = file;
+            this.currentPreviewQueueKey = key;
+            console.log(file);
+
+            const viewTag = this.constructor.getScopedTagName('dbp-annotation-view');
+            this._(viewTag).setAttribute('key', key);
+
+            this.isAnnotationViewVisible = true;
+
+        } else if (this.currentPreviewQueueKey === key) {
+            this.isAnnotationViewVisible = false;
+        }
+    }
+
+    /**
+     * 
+     * @param {*} event 
+     */
+    processAnnotationEvent(event) {
+        let annotationDetails = event.detail;
+        let key = this.currentPreviewQueueKey;
+
+        this.queuedFilesAnnotations[key] = annotationDetails.annotationRows;
+
+        this.isAnnotationViewVisible = false;
+    }
+
+    /**
+     * Hides the AnnotationView
+     */
+    hideAnnotationView() {
+        this._("#annotation-switch").name = "no-text";
+        this.isAnnotationViewVisible = false;
+    }
+
+    /**
      * Add an annotation to a file on the queue
      *
      * @param key
