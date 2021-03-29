@@ -278,13 +278,13 @@ export class AnnotationView extends ScopedElementsMixin(DBPLitElement) {
                         <dbp-organization-select subscribe="lang:lang,entry-point-url:entry-point-url,auth:auth"
                                 value="${data.organizationNumber}"
                                 @change=${e => { this.updateAnnotation(id, 'organizationNumber', JSON.parse(e.target.getAttribute("data-object")).alternateName); }}></dbp-organization-select>
-                        <input type="text" class="input" placeholder="${i18n.t('annotation-view.businessnumber-placeholder')}" @change=${e => { this.updateAnnotation(id, 'value', e.target.value) }}>
+                        <input type="text" class="input" placeholder="${i18n.t('annotation-view.businessnumber-placeholder')}" @change=${e => { this.updateAnnotation(id, 'value', e.target.value); }}>
                         <button class="button close" 
                             title="${i18n.t('annotation-view.remove-field')}" 
                             @click="${() => { this.removeAnnotation(id); } }">
                             <dbp-icon name="trash"></dbp-icon></button>
                     </div>
-                `)
+                `);
             } else {
                 results.push(html`
                     <div class="annotation-block-${this.key}-${id}">
@@ -295,7 +295,7 @@ export class AnnotationView extends ScopedElementsMixin(DBPLitElement) {
                             @click="${() => { this.removeAnnotation(id); } }">
                             <dbp-icon name="trash"></dbp-icon></button>
                     </div>
-                `)
+                `);
             }
        });
 

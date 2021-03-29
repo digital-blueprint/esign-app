@@ -116,7 +116,7 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
      * 
      * @param {*} key 
      * @param {*} name 
-     * @returns 
+     * @returns shows AnnotationView
      */
     async showAnnotationView(key, name) {
         if (this.signingProcessEnabled) {
