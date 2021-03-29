@@ -187,7 +187,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         });
 
         await this.uploadFile(file, params);
-        this.uploadInProgr666666666666666ess = false;
+        this.uploadInProgress = false;
     }
 
     storePDFData(event) {
