@@ -192,7 +192,7 @@ export const addKeyValuePdfAnnotationsToAnnotationFactory = (annotationFactory, 
     value = value.trim();
 
     // don't annotate if key or value are empty
-    if (annotationType === '' || organizationNumber === '' || value === '') {
+    if (annotationType === '' || value === '') {
         return annotationFactory;
     }
 
@@ -202,8 +202,9 @@ export const addKeyValuePdfAnnotationsToAnnotationFactory = (annotationFactory, 
     annotationFactory = addPdfAnnotationToAnnotationFactory(annotationFactory, author, content);
 
     // add machine readable annotation
+    const organizationNumberContent = organizationNumber !== '' ? '_' + organizationNumber : '';
     author = 'Maschinell aufgebracht, bitte nicht entfernen / Applied automatically, please do not remove';
-    content = 'dbp_annotation_' + annotationType + '_' + organizationNumber + '=' + value;
+    content = 'dbp_annotation_' + annotationType + organizationNumberContent + '=' + value;
     annotationFactory = addPdfAnnotationToAnnotationFactory(annotationFactory, author, content);
 
     return annotationFactory;

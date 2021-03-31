@@ -200,7 +200,7 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
             const organizationNumber = (annotation.organizationNumber || '').trim();
             const value = (annotation.value || '').trim();
 
-            if (annotationType === '' || organizationNumber === '' || value === '') {
+            if (annotationType === '' || value === '') {
                 return;
             }
 
