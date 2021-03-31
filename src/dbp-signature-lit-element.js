@@ -305,10 +305,11 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
             let userText = [];
             for (let annotation of annotations) {
                 const annotationTypeData = utils.getAnnotationTypes(annotation['annotationType']);
+                const organizationNumberText = annotation['organizationNumber'] ? ` (${annotation['organizationNumber']})` : '';
 
                 userText.push({
                     'description': `${annotationTypeData.name.de || ''} / ${annotationTypeData.name.en || ''}`,
-                    'value': `${annotation['value']} (${annotation['organizationNumber']})`
+                    'value': annotation['value'] + organizationNumberText
                 });
             }
             formData.append('user_text', JSON.stringify(userText));
