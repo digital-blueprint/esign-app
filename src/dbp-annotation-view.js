@@ -271,8 +271,11 @@ export class AnnotationView extends ScopedElementsMixin(DBPLitElement) {
                     <div class="annotation-block annotation-block-${this.key}-${id} with-organization">
                         <label>${name}</label>
                         <dbp-organization-select subscribe="lang:lang,entry-point-url:entry-point-url,auth:auth"
-                                value="${data.organizationNumber}"
-                                @change=${e => { this.updateAnnotation(id, 'organizationNumber', JSON.parse(e.target.getAttribute("data-object")).alternateName); }}></dbp-organization-select>
+                                value="${data.organizationValue}"
+                                @change=${e => {
+                                    this.updateAnnotation(id, 'organizationValue', e.target.value);
+                                    this.updateAnnotation(id, 'organizationNumber', JSON.parse(e.target.getAttribute("data-object")).alternateName);
+                                }}></dbp-organization-select>
                         <input type="text" class="input" placeholder="${i18n.t('annotation-view.businessnumber-placeholder')}" @change=${e => { this.updateAnnotation(id, 'value', e.target.value); }}>
                         <button class="button close" 
                             title="${i18n.t('annotation-view.remove-field')}" 
