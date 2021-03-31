@@ -11,9 +11,9 @@ import * as utils from './utils';
 const i18n = createI18nInstance();
 
 /**
- * AnnotationView web component
+ * PdfAnnotationView web component
  */
-export class AnnotationView extends ScopedElementsMixin(DBPLitElement) {
+export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
     constructor() {
         super();
         this.lang = 'de';

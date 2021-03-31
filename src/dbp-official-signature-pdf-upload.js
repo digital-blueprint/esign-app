@@ -18,7 +18,7 @@ import {send as notify} from '@dbp-toolkit/common/notification';
 import {OrganizationSelect} from "@dbp-toolkit/organization-select";
 import metadata from './dbp-official-signature-pdf-upload.metadata.json';
 import {Activity} from './activity.js';
-import {AnnotationView} from "./dbp-annotation-view";
+import {PdfAnnotationView} from "./dbp-pdf-annotation-view";
 
 const i18n = createI18nInstance();
 
@@ -67,7 +67,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
           'dbp-button': Button,
           'dbp-textswitch': TextSwitch,
           'dbp-organization-select': OrganizationSelect,
-          'dbp-annotation-view': AnnotationView,
+          'dbp-pdf-annotation-view': PdfAnnotationView,
         };
     }
 
@@ -966,9 +966,9 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                 <button class="button is-cancel annotation"
                                     @click="${this.hideAnnotationView}"><dbp-icon name="close" id="close-icon"></dbp-icon></button>
                             </div>
-                            <dbp-annotation-view lang="${this.lang}"
+                            <dbp-pdf-annotation-view lang="${this.lang}"
                                              @dbp-pdf-annotations-save="${this.processAnnotationEvent}"
-                                             @dbp-pdf-annotations-cancel="${this.hideAnnotationView}"></dbp-annotation-view>
+                                             @dbp-pdf-annotations-cancel="${this.hideAnnotationView}"></dbp-pdf-annotation-view>
                         </div>
                         <!-- File upload progress -->
                         <div id="upload-progress" class="field notification is-info ${classMap({hidden: !this.uploadInProgress})}">

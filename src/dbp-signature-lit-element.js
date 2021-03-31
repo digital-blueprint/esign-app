@@ -116,7 +116,7 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
      * 
      * @param {*} key 
      * @param {*} name 
-     * @returns shows AnnotationView
+     * @returns shows PdfAnnotationView
      */
     async showAnnotationView(key, name) {
         if (this.signingProcessEnabled) {
@@ -129,7 +129,7 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
             this.currentPreviewQueueKey = key;
             console.log(file);
 
-            const viewTag = this.constructor.getScopedTagName('dbp-annotation-view');
+            const viewTag = this.constructor.getScopedTagName('dbp-pdf-annotation-view');
             this._(viewTag).setAttribute('key', key);
 
             this.isAnnotationViewVisible = true;
@@ -153,7 +153,7 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
     }
 
     /**
-     * Hides the AnnotationView
+     * Hides the PdfAnnotationView
      */
     hideAnnotationView() {
         this._("#annotation-switch").name = "no-text";
