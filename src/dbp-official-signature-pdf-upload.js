@@ -177,7 +177,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         });
 
         const annotations = this.takeAnnotationsFromQueue(key);
-        await this.uploadFile(file, params, annotations, i18n);
+        await this.uploadFile(file, params, annotations);
         this.uploadInProgress = false;
     }
 

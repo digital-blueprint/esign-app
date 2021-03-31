@@ -288,17 +288,16 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
      * @param file
      * @param params
      * @param annotations
-     * @param i18n
      * @returns {Promise<void>}
      */
-    async uploadFile(file, params = {}, annotations = [], i18n = {}) {
+    async uploadFile(file, params = {}, annotations = []) {
         this.uploadInProgress = true;
         this.uploadStatusFileName = file.name;
         let formData = new FormData();
 
         // add annotations
         if (annotations.length > 0) {
-            file = await this.addAnnotationsToFile(file, annotations, i18n);
+            file = await this.addAnnotationsToFile(file, annotations);
             console.log("uploadFile file", file);
 
             // Also send annotations to the server so they get included in the signature block
