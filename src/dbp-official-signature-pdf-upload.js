@@ -734,14 +734,6 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                             ${i18n.t('label-manual-positioning-missing')}
                         ` : '' }
                     </div>
-                    <div class="annotation-line ${classMap({hidden: !this.allowAnnotating})}"
-                         ?disabled="${this.signingProcessEnabled}">
-                        <button class="button"
-                                title="${i18n.t('official-pdf-upload.add-annotation-title')}"
-                                @click="${() => { this.addAnnotation(id); }}">
-                            <dbp-icon name="plus"></dbp-icon></button>
-                        ${this.getAnnotationsHtml(id)}
-                    </div>
                 </div>
             `);
         });
@@ -805,44 +797,6 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                     </div>
                     <div class="bottom-line">
                         <strong class="error">${data.json["hydra:description"]}</strong>
-                    </div>
-                </div>
-            `);
-        });
-
-        return results;
-    }
-
-    /**
-     * Returns the list of files of annotations of a queued file
-     *
-     * @param key
-     * @returns {*[]} Array of html templates
-     */
-    getAnnotationsHtml(key) {
-        // console.log("getAnnotationsHtml(key)", key);
-
-        const annotations = this.queuedFilesAnnotations[key] || [];
-        const ids = Object.keys(annotations);
-        let results = [];
-
-        ids.forEach((id) => {
-            const data = this.queuedFilesAnnotations[key][id] || [];
-
-            results.push(html`
-                <div class="annotation-block" class="annotation-block-${key}-${id}">
-                    <select class="select" @change=${e => { this.updateAnnotation(key, id, 'annotationType', e.target.value); }}>
-                        <option value="">${i18n.t('official-pdf-upload.annotation-type-please-select')}</option>
-                        ${utils.getAnnotationTypeSelectOptionsHtml(data.annotationType, this.lang)}
-                    </select>
-                    <dbp-organization-select subscribe="lang:lang,entry-point-url:entry-point-url,auth:auth"
-                                             value="${data.organizationNumber}"
-                                             @change=${e => { this.updateAnnotation(key, id, 'organizationNumber', JSON.parse(e.target.getAttribute("data-object")).alternateName); }}></dbp-organization-select>
-                    <input type="text" .value="${data.value}" @change=${e => { this.updateAnnotation(key, id, 'value', e.target.value); }} placeholder="value" />
-                    <button class="button"
-                        title="Remove annotation"
-                        @click="${() => { this.removeAnnotation(key, id); }}">
-                        <dbp-icon name="trash"></dbp-icon></button>
                     </div>
                 </div>
             `);

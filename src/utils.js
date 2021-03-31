@@ -145,33 +145,6 @@ export const getPDFSignatureCount = async (file) => {
 };
 
 /**
- * Adds an annotation to a PDF file
- *
- * @param file
- * @param activityNameDE
- * @param activityNameEN
- * @param personName
- * @param key
- * @param value
- * @returns {File} file given as parameter, but with annotations
- */
-export const addKeyValuePdfAnnotation = async (file, activityNameDE, activityNameEN, personName, key, value) => {
-    key = key.trim();
-    value = value.trim();
-
-    // don't annotate if key or value are empty
-    if (key === '' || value === '') {
-        return file;
-    }
-
-    let annotationFactory = await getAnnotationFactoryFromFile(file);
-    annotationFactory = addKeyValuePdfAnnotationsToAnnotationFactory(annotationFactory, activityNameDE, activityNameEN,
-        personName, key, 'Name DE', 'Name EN', 'organizationNumber', value);
-
-    return writeAnnotationFactoryToFile(annotationFactory, file);
-};
-
-/**
  * Returns a File from an AnnotationFactory
  *
  * @param annotationFactory
