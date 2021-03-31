@@ -59,6 +59,10 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
         super.update(changedProperties);
     }
 
+    setAnnotationRows(rows) {
+        this.annotationRows = rows ? rows : [];
+    }
+
     /**
      * Deletes all fields and restore introduction text 
      */
@@ -266,44 +270,30 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
             const annotationTypeData = utils.getAnnotationTypes(data.annotationType);
             const name = annotationTypeData.name[this.lang];
 
-            if (annotationTypeData.hasOrganization) {
-                results.push(html`
-                    <div class="annotation-block annotation-block-${this.key}-${id} with-organization">
-                        <label>${name}</label>
-                        <dbp-organization-select subscribe="lang:lang,entry-point-url:entry-point-url,auth:auth"
-                                value="${data.organizationValue}"
-                                @change=${e => {
-                                    this.updateAnnotation(id, 'organizationValue', e.target.value);
-                                    this.updateAnnotation(id, 'organizationNumber', JSON.parse(e.target.getAttribute("data-object")).alternateName);
-                                }}></dbp-organization-select>
-                        <input type="text" class="input" placeholder="${i18n.t('annotation-view.businessnumber-placeholder')}" @change=${e => { this.updateAnnotation(id, 'value', e.target.value); }}>
-                        <button class="button close" 
-                            title="${i18n.t('annotation-view.remove-field')}" 
-                            @click="${() => { this.removeAnnotation(id); } }">
-                            <dbp-icon name="trash"></dbp-icon></button>
-                    </div>
-                `);
-            } else {
-                results.push(html`
-                    <div class="annotation-block annotation-block-${this.key}-${id}">
-                        <label>${name}</label>
-                        <input type="text" class="input" placeholder="${i18n.t('annotation-view.intended-use-placeholder')}" @change=${e => { this.updateAnnotation(id, 'value', e.target.value); }}>
-                        <button class="button close" 
-                            title="${i18n.t('annotation-view.remove-field')}" 
-                            @click="${() => { this.removeAnnotation(id); } }">
-                            <dbp-icon name="trash"></dbp-icon></button>
-                    </div>
-                `);
-            }
+            results.push(html`
+                <div class="${classMap({'with-organization': annotationTypeData.hasOrganization, 'annotation-block': true})}">
+                    <label>${name}</label>
+                    <dbp-organization-select subscribe="lang:lang,entry-point-url:entry-point-url,auth:auth"
+                                             class="${classMap({hidden: !annotationTypeData.hasOrganization})}"
+                            value="${data.organizationValue}"
+                            @change=${e => {
+                                this.updateAnnotation(id, 'organizationValue', e.target.value);
+                                this.updateAnnotation(id, 'organizationNumber', JSON.parse(e.target.getAttribute("data-object")).alternateName);
+                            }}></dbp-organization-select>
+                    <input type="text" .value="${data.value}" class="input" placeholder="${i18n.t('annotation-view.businessnumber-placeholder')}" @change=${e => { this.updateAnnotation(id, 'value', e.target.value); }}>
+                    <button class="button close" 
+                        title="${i18n.t('annotation-view.remove-field')}" 
+                        @click="${() => { this.removeAnnotation(id); } }">
+                        <dbp-icon name="trash"></dbp-icon></button>
+                </div>
+            `);
        });
 
        return results;
    }
 
     render() {
-
         return html`
-
             <div id="pdf-main-container">
                 <div id="pdf-meta">
                     <div class="nav-buttons">

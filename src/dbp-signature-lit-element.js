@@ -131,6 +131,7 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
 
             const viewTag = this.constructor.getScopedTagName('dbp-pdf-annotation-view');
             this._(viewTag).setAttribute('key', key);
+            this._(viewTag).setAnnotationRows(this.queuedFilesAnnotations[key]);
 
             this.isAnnotationViewVisible = true;
 
