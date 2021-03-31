@@ -1131,8 +1131,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                     @click="${this.hideAnnotationView}"><dbp-icon name="close" id="close-icon"></dbp-icon></button>
                             </div>
                             <dbp-annotation-view lang="${this.lang}"
-                                             @dbp-annotation-save="${this.processAnnotationEvent}"
-                                             @dbp-annotation-cancel="${this.hideAnnotationView}"></dbp-annotation-view>
+                                             @dbp-pdf-annotations-save="${this.processAnnotationEvent}"
+                                             @dbp-pdf-annotations-cancel="${this.hideAnnotationView}"></dbp-annotation-view>
                         </div>
                         <!-- File upload progress -->
                         <div id="upload-progress" class="field notification is-info ${classMap({hidden: !this.uploadInProgress})}">

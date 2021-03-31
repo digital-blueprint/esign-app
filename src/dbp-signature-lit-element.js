@@ -194,6 +194,8 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
         const activityNameEN = this.activity.getName('en');
 
         await commonUtils.asyncObjectForEach(annotations, async (annotation) => {
+            console.log("annotation", annotation);
+
             const annotationType = (annotation.annotationType || '').trim();
             const organizationNumber = (annotation.organizationNumber || '').trim();
             const value = (annotation.value || '').trim();
@@ -202,11 +204,11 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
                 return;
             }
 
-            const annotationTypeNames = utils.getAnnotationTypes(annotationType);
+            const annotationTypeData = utils.getAnnotationTypes(annotationType);
 
             pdfFactory = await utils.addKeyValuePdfAnnotationsToAnnotationFactory(
                 pdfFactory, activityNameDE, activityNameEN, this.auth['user-full-name'], annotationType,
-                annotationTypeNames.de, annotationTypeNames.en, organizationNumber, value);
+                annotationTypeData.name.de, annotationTypeData.name.en, organizationNumber, value);
         });
 
         // output the AnnotationFactory as File again
@@ -335,10 +337,10 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
             // Also send annotations to the server so they get included in the signature block
             let userText = [];
             for (let annotation of annotations) {
-                const annotationTypeNames = utils.getAnnotationTypes(annotation['annotationType']);
+                const annotationTypeData = utils.getAnnotationTypes(annotation['annotationType']);
 
                 userText.push({
-                    'description': `${annotationTypeNames.de || ''} / ${annotationTypeNames.en || ''}`,
+                    'description': `${annotationTypeData.name.de || ''} / ${annotationTypeData.name.en || ''}`,
                     'value': `${annotation['value']} (${annotation['organizationNumber']})`
                 });
             }

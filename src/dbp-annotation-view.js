@@ -6,6 +6,7 @@ import DBPLitElement from '@dbp-toolkit/common/dbp-lit-element';
 import {MiniSpinner, Icon} from '@dbp-toolkit/common';
 import {OrganizationSelect} from "@dbp-toolkit/organization-select";
 import * as commonStyles from '@dbp-toolkit/common/styles';
+import * as utils from './utils';
 
 const i18n = createI18nInstance();
 
@@ -67,7 +68,7 @@ export class AnnotationView extends ScopedElementsMixin(DBPLitElement) {
     }
 
     sendCancelEvent() {
-        const event = new CustomEvent("dbp-annotation-cancel",
+        const event = new CustomEvent("dbp-pdf-annotations-cancel",
             { "detail": {}, bubbles: true, composed: true });
         this.dispatchEvent(event);
     }
@@ -80,7 +81,7 @@ export class AnnotationView extends ScopedElementsMixin(DBPLitElement) {
             "key": this.key,
             "annotationRows": this.annotationRows,
         };
-        const event = new CustomEvent("dbp-annotation-save",
+        const event = new CustomEvent("dbp-pdf-annotations-save",
             { "detail": data, bubbles: true, composed: true });
         this.dispatchEvent(event);
     }
@@ -97,9 +98,7 @@ export class AnnotationView extends ScopedElementsMixin(DBPLitElement) {
 
         let e = this._('#additional-select');
         let type = e?.options[e?.selectedIndex]?.value;
-        let text = e?.options[e?.selectedIndex]?.text;
-
-        this.annotationRows.push({'annotationType': type, 'label': text, 'value': ''});
+        this.annotationRows.push({'annotationType': type, 'value': ''});
 
         // we just need this so the UI will update
         this.queuedFilesAnnotationsCount++;
@@ -118,12 +117,7 @@ export class AnnotationView extends ScopedElementsMixin(DBPLitElement) {
      */
     updateAnnotation(id, annotationKey, value) {
         if (this.annotationRows && this.annotationRows[id]) {
-            if (value != '') {
-                this.annotationRows[id][annotationKey] = value;
-                this.annotationRows[id].value = value;
-            } else { 
-                this.annotationRows[id].value = '';
-            }
+            this.annotationRows[id][annotationKey] = value;
         }
     }
 
@@ -156,11 +150,11 @@ export class AnnotationView extends ScopedElementsMixin(DBPLitElement) {
                 text-overflow: ellipsis;
             }
 
-            div[class*='annotation-gz-block'] select:not(.select) {
+            div.annotation-block.with-organization select:not(.select) {
                 background-size: 4%;
             }
 
-            div[class*='annotation-gz-block']{
+            div.annotation-block.with-organization {
                 display: grid;
                 grid-template-columns: 140px auto auto 42px; 
                 column-gap: .5em;
@@ -171,7 +165,7 @@ export class AnnotationView extends ScopedElementsMixin(DBPLitElement) {
                 margin-right: 2px;
             }
 
-            div[class*='annotation-block'] {
+            div.annotation-block {
                 display: grid;
                 grid-template-columns: 140px auto 42px; 
                 column-gap: .5em;
@@ -218,7 +212,6 @@ export class AnnotationView extends ScopedElementsMixin(DBPLitElement) {
                 border-style: solid;
                 padding: 0.5em;
                 padding-bottom: 1.5em;
-                border-bottom-width: 1px;
                 border-top-width: 0;
             }
 
@@ -270,11 +263,13 @@ export class AnnotationView extends ScopedElementsMixin(DBPLitElement) {
 
        ids.forEach((id) => {
             const data = this.annotationRows[id] || [];
-   
-            if (data.annotationType === 'gz') {
+            const annotationTypeData = utils.getAnnotationTypes(data.annotationType);
+            const name = annotationTypeData.name[this.lang];
+
+            if (annotationTypeData.hasOrganization) {
                 results.push(html`
-                    <div class="annotation-gz-block-${this.key}-${id}">
-                        <label>${data.label}</label>
+                    <div class="annotation-block annotation-block-${this.key}-${id} with-organization">
+                        <label>${name}</label>
                         <dbp-organization-select subscribe="lang:lang,entry-point-url:entry-point-url,auth:auth"
                                 value="${data.organizationNumber}"
                                 @change=${e => { this.updateAnnotation(id, 'organizationNumber', JSON.parse(e.target.getAttribute("data-object")).alternateName); }}></dbp-organization-select>
@@ -287,8 +282,8 @@ export class AnnotationView extends ScopedElementsMixin(DBPLitElement) {
                 `);
             } else {
                 results.push(html`
-                    <div class="annotation-block-${this.key}-${id}">
-                        <label>${data.label}</label>
+                    <div class="annotation-block annotation-block-${this.key}-${id}">
+                        <label>${name}</label>
                         <input type="text" class="input" placeholder="${i18n.t('annotation-view.intended-use-placeholder')}" @change=${e => { this.updateAnnotation(id, 'value', e.target.value); }}>
                         <button class="button close" 
                             title="${i18n.t('annotation-view.remove-field')}" 
@@ -333,9 +328,8 @@ export class AnnotationView extends ScopedElementsMixin(DBPLitElement) {
                     </div>
                     
                     <div class="add-elements">
-                        <select id="additional-select" @change="${() => { this.isSelected = true; } }"> 
-                            <option value="gz" >${i18n.t('annotation-view.type-value-1')}</option>
-                            <option value="vz" >${i18n.t('annotation-view.type-value-2')}</option>
+                        <select id="additional-select" @change="${() => { this.isSelected = true; } }">
+                            ${utils.getAnnotationTypeSelectOptionsHtml('', this.lang)}
                             <option value="" disabled selected>${i18n.t('annotation-view.insert-field')}</option>
                         </select>
                         <button class="button"

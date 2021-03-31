@@ -272,12 +272,18 @@ export const addPdfAnnotationToAnnotationFactory = (annotationFactory, author, c
 export const getAnnotationTypes = (key = null) => {
     const types = {
         'bbe3a371': {
-            'de': 'Geschäftszahl',
-            'en': 'Businessnumber',
+            'name': {
+                'de': 'Geschäftszahl',
+                'en': 'Businessnumber',
+            },
+            'hasOrganization': true,
         },
         '85a4eb4c': {
-            'de': 'Verwendungszweck',
-            'en': 'Intended use',
+            'name': {
+                'de': 'Verwendungszweck',
+                'en': 'Intended use',
+            },
+            'hasOrganization': false,
         }
     };
 
@@ -297,7 +303,7 @@ export const getAnnotationTypeSelectOptionsHtml = (selectedKey, lang) => {
     let results = [];
 
     keys.forEach((key) => {
-        const name = annotationTypes[key][lang];
+        const name = annotationTypes[key].name[lang];
         results.push(html`
             <option value="${key}" .selected=${selectedKey === key}>${name}</option>
         `);
