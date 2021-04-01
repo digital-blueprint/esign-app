@@ -162,25 +162,6 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
     }
 
     /**
-     * Add an annotation to a file on the queue
-     *
-     * @param key
-     */
-    addAnnotation(key) {
-        if (!this.queuedFilesAnnotations[key]) {
-            this.queuedFilesAnnotations[key] = [];
-            this.queuedFilesAnnotationsCount = 0;
-        }
-
-        // TODO: remove key/value presets
-        const number =  Math.floor((Math.random() * 1000) + 1);
-        this.queuedFilesAnnotations[key].push({'annotationType': 'geschaeftszahl', 'value': 'my value ' + number});
-
-        // we just need this so the UI will update
-        this.queuedFilesAnnotationsCount++;
-    }
-
-    /**
      * Add multiple annotations to a PDF file
      *
      * @param file
