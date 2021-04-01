@@ -134,9 +134,13 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
             this._(viewTag).setAnnotationRows(this.queuedFilesAnnotations[key]);
 
             this.isAnnotationViewVisible = true;
+            this.enableAnnotationsForKey(key);
+        } else {
+            this.disableAnnotationsForKey(key);
 
-        } else if (this.currentPreviewQueueKey === key) {
-            this.isAnnotationViewVisible = false;
+            if (this.currentPreviewQueueKey === key) {
+                this.isAnnotationViewVisible = false;
+            }
         }
     }
 
@@ -219,8 +223,48 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
     takeAnnotationsFromQueue(key) {
         const annotations = this.queuedFilesAnnotations[key];
         delete this.queuedFilesAnnotations[key];
+        this.disableAnnotationsForKey(key);
 
         return annotations;
+    }
+
+    /**
+     * Checks if annotations are enabled for an annotation key
+     *
+     * @param key
+     * @returns {boolean}
+     */
+    isAnnotationsEnabledForKey(key) {
+        return this.queuedFilesEnabledAnnotations.includes(key);
+    }
+
+    /**
+     * Enables annotations for an annotation key
+     *
+     * @param key
+     */
+    enableAnnotationsForKey(key) {
+        if (!this.isAnnotationsEnabledForKey(key)) {
+            this.queuedFilesEnabledAnnotations.push(key);
+        }
+    }
+
+    /**
+     * Disables annotations for an annotation key
+     *
+     * @param key
+     */
+    disableAnnotationsForKey(key) {
+        let i = 0;
+
+        // remove all occurrences of the value "key" in array this.queuedFilesEnabledAnnotations
+        while (i < this.queuedFilesEnabledAnnotations.length) {
+            if (this.queuedFilesEnabledAnnotations[i] === key) {
+                this.queuedFilesEnabledAnnotations.splice(i, 1);
+            } else {
+                ++i;
+            }
+        }
     }
 
     /**

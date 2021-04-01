@@ -52,6 +52,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         this.currentPreviewQueueKey = '';
         this.allowAnnotating = false;
         this.queuedFilesAnnotations = [];
+        this.queuedFilesEnabledAnnotations = [];
         this.queuedFilesAnnotationsCount = 0;
         this.isAnnotationViewVisible = false;
         this.activity = new Activity(metadata);
@@ -176,8 +177,9 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             fileSize: humanFileSize(file.size, false),
         });
 
+        const annotationsEnabled = this.isAnnotationsEnabledForKey(key);
         const annotations = this.takeAnnotationsFromQueue(key);
-        await this.uploadFile(file, params, annotations);
+        await this.uploadFile(file, params, annotationsEnabled ? annotations : []);
         this.uploadInProgress = false;
     }
 
