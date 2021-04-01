@@ -54,6 +54,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         this.allowAnnotating = false;
         this.queuedFilesAnnotations = [];
         this.queuedFilesAnnotationsCount = 0;
+        this.queuedFilesEnabledAnnotations = [];
         this.isAnnotationViewVisible = false;
 
         this.activity = new Activity(metadata);
@@ -195,7 +196,9 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             fileSize: humanFileSize(file.size, false),
         });
 
-        await this.uploadFile(file, params);
+        const annotationsEnabled = this.isAnnotationsEnabledForKey(key);
+        const annotations = this.takeAnnotationsFromQueue(key);
+        await this.uploadFile(file, params, annotationsEnabled ? annotations : []);
         this.uploadInProgress = false;
     }
 
