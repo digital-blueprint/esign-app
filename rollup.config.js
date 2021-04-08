@@ -78,7 +78,7 @@ function replaceAll(string, search, replace) {
 }
 
 export default (async () => {
-    let privatePath = await getDistPath(pkg.internalName)
+    let privatePath = await getDistPath(pkg.name)
     return {
     input: (appEnv != 'test') ? [
       'src/' + pkg.internalName + '.js',
@@ -180,26 +180,26 @@ Dependencies:
         }),
         copy({
             targets: [
-                {src: 'assets/*-placeholder.png', dest: 'dist/' + await getDistPath(pkg.internalName)},
-                {src: 'assets/*.css', dest: 'dist/' + await getDistPath(pkg.internalName)},
-                {src: 'assets/*.ico', dest: 'dist/' + await getDistPath(pkg.internalName)},
+                {src: 'assets/*-placeholder.png', dest: 'dist/' + await getDistPath(pkg.name)},
+                {src: 'assets/*.css', dest: 'dist/' + await getDistPath(pkg.name)},
+                {src: 'assets/*.ico', dest: 'dist/' + await getDistPath(pkg.name)},
                 {src: 'src/*.metadata.json', dest: 'dist'},
-                {src: 'assets/*.svg', dest: 'dist/' + await getDistPath(pkg.internalName)},
+                {src: 'assets/*.svg', dest: 'dist/' + await getDistPath(pkg.name)},
                 {src: 'assets/htaccess-shared', dest: 'dist/shared/', rename: '.htaccess'},
-                {src: 'assets/icon-*.png', dest: 'dist/' + await getDistPath(pkg.internalName)},
-                {src: 'assets/manifest.json', dest: 'dist', rename: pkg.internalName + '.manifest.json'},
+                {src: 'assets/icon-*.png', dest: 'dist/' + await getDistPath(pkg.name)},
+                {src: 'assets/manifest.json', dest: 'dist', rename: pkg.name + '.manifest.json'},
                 {src: 'assets/silent-check-sso.html', dest:'dist'},
                 {src: 'assets/dbp-signature-maintenance.html', dest:'dist'},
                 {
                     src: await getPackagePath('pdfjs-dist', 'es5/build/pdf.worker.js'),
-                    dest: 'dist/' + await getDistPath(pkg.internalName, 'pdfjs'),
+                    dest: 'dist/' + await getDistPath(pkg.name, 'pdfjs'),
                     // enable signatures in pdf preview
                     transform: (contents) => replaceAll(contents.toString(), '"Sig"', '"Sig-patched-show-anyway"')
                 },
-                {src: await getPackagePath('pdfjs-dist', 'cmaps/*'), dest: 'dist/' + await getDistPath(pkg.internalName, 'pdfjs')}, // do we want all map files?
-                {src: await getPackagePath('@dbp-toolkit/font-source-sans-pro', 'files/*'), dest: 'dist/' + await getDistPath(pkg.internalName, 'fonts/source-sans-pro')},
-                {src: await getPackagePath('@dbp-toolkit/common', 'src/spinner.js'), dest: 'dist/' + await getDistPath(pkg.internalName)},
-                {src: await getPackagePath('@dbp-toolkit/common', 'misc/browser-check.js'), dest: 'dist/' + await getDistPath(pkg.internalName)},
+                {src: await getPackagePath('pdfjs-dist', 'cmaps/*'), dest: 'dist/' + await getDistPath(pkg.name, 'pdfjs')}, // do we want all map files?
+                {src: await getPackagePath('@dbp-toolkit/font-source-sans-pro', 'files/*'), dest: 'dist/' + await getDistPath(pkg.name, 'fonts/source-sans-pro')},
+                {src: await getPackagePath('@dbp-toolkit/common', 'src/spinner.js'), dest: 'dist/' + await getDistPath(pkg.name)},
+                {src: await getPackagePath('@dbp-toolkit/common', 'misc/browser-check.js'), dest: 'dist/' + await getDistPath(pkg.name)},
                 {src: await getPackagePath('@dbp-toolkit/common', 'assets/icons/*.svg'), dest: 'dist/' + await getDistPath('@dbp-toolkit/common', 'icons')},
                 {src: await getPackagePath('tabulator-tables', 'dist/css'), dest: 'dist/' + await getDistPath('@dbp-toolkit/file-handling', 'tabulator-tables')},
             ],
