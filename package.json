@@ -1,5 +1,6 @@
 {
   "name": "@dbp-apps/signature",
+  "internalName": "dbp-signature",
   "version": "1.0.0",
   "main": "src/dbp-signature.js",
   "license": "LGPL-2.1-or-later",
