@@ -834,7 +834,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                         <dbp-file-source
                             id="file-source"
                             context="${i18n.t('official-pdf-upload.file-picker-context')}"
-                            subscribe="clipboard-files:clipboard-files,show-clipboard:show-clipboard"
+                            subscribe="show-clipboard:show-clipboard"
                             allowed-mime-types="application/pdf"
                             enabled-targets="local${this.showNextcloudFilePicker ? ",nextcloud" : ""},clipboard"
                             nextcloud-auth-url="${this.nextcloudWebAppPasswordURL}"
