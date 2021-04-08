@@ -1,8 +1,12 @@
 {
-  "name": "dbp-signature",
+  "name": "@dbp-apps/signature",
   "version": "1.0.0",
   "main": "src/dbp-signature.js",
   "license": "LGPL-2.1-or-later",
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.tugraz.at/dbp/apps/signature.git",
+  },
   "private": true,
   "workspaces": [
     "vendor/toolkit/packages/*",
