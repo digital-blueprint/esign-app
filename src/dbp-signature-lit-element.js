@@ -129,6 +129,8 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
             this.currentPreviewQueueKey = key;
             console.log(file);
 
+            this.addAnnotationInProgress = true;
+
             const viewTag = this.constructor.getScopedTagName('dbp-pdf-annotation-view');
             this._(viewTag).setAttribute('key', key);
             this._(viewTag).setAnnotationRows(this.queuedFilesAnnotations[key]);
@@ -155,6 +157,7 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
         this.queuedFilesAnnotations[key] = annotationDetails.annotationRows;
 
         this.isAnnotationViewVisible = false;
+        this.addAnnotationInProgress = false;
     }
 
     /**
@@ -163,6 +166,7 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
     hideAnnotationView() {
         this._("#annotation-switch").name = "no-text";
         this.isAnnotationViewVisible = false;
+        this.addAnnotationInProgress = false;
     }
 
     /**

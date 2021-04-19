@@ -56,6 +56,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         this.queuedFilesAnnotationsCount = 0;
         this.queuedFilesEnabledAnnotations = [];
         this.isAnnotationViewVisible = false;
+        this.addAnnotationInProgress = false;
 
         this.activity = new Activity(metadata);
 
@@ -107,6 +108,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             isAnnotationViewVisible: { type: Boolean, attribute: false },
             queuedFilesAnnotations: { type: Array, attribute: false },
             queuedFilesAnnotationsCount: { type: Number, attribute: false },
+            addAnnotationInProgress: { type: Boolean, attribute: false },
         };
     }
 
@@ -151,7 +153,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             return;
         }
 
-        if (!this.signingProcessEnabled || this.externalAuthInProgress || this.uploadInProgress) {
+        if (!this.signingProcessEnabled || this.externalAuthInProgress || this.uploadInProgress || this.addAnnotationInProgress) {
             return;
         }
         this.signaturePlacementInProgress = false;
@@ -532,7 +534,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
     }
 
     isUserInterfaceDisabled() {
-        return this.signaturePlacementInProgress || this.externalAuthInProgress || this.uploadInProgress;
+        return this.signaturePlacementInProgress || this.externalAuthInProgress || this.uploadInProgress || this.addAnnotationInProgress;
     }
 
     static get styles() {
@@ -550,8 +552,9 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                 color: var(--dbp-override-danger-bg-color);
                 cursor: pointer;
                 padding: 0px;
+                padding-right: 2px;
             }
-
+            
             #annotation-view .box-header, #external-auth .box-header {
                 display: flex;
                 justify-content: space-between;

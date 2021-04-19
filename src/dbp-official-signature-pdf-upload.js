@@ -55,6 +55,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         this.queuedFilesEnabledAnnotations = [];
         this.queuedFilesAnnotationsCount = 0;
         this.isAnnotationViewVisible = false;
+        this.addAnnotationInProgress = false;
         this.activity = new Activity(metadata);
     }
 
@@ -102,6 +103,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             isAnnotationViewVisible: { type: Boolean, attribute: false },
             queuedFilesAnnotations: { type: Array, attribute: false },
             queuedFilesAnnotationsCount: { type: Number, attribute: false },
+            addAnnotationInProgress: { type: Boolean, attribute: false },
         };
     }
 
@@ -130,7 +132,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             return;
         }
 
-        if (!this.signingProcessEnabled || this.uploadInProgress) {
+        if (!this.signingProcessEnabled || this.uploadInProgress || this.addAnnotationInProgress) {
             return;
         }
         this.signaturePlacementInProgress = false;
@@ -401,7 +403,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
     }
 
     isUserInterfaceDisabled() {
-        return this.signaturePlacementInProgress || this.externalAuthInProgress || this.uploadInProgress;
+        return this.signaturePlacementInProgress || this.externalAuthInProgress || this.uploadInProgress || this.addAnnotationInProgress;
     }
 
     static get styles() {
