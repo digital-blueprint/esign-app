@@ -296,6 +296,8 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             const entryPoint = data.json;
             this.currentFileName = entryPoint.name;
             this.endSigningProcessIfQueueEmpty();
+            this.sendSetPropertyEvent('analytics-event', {
+                'category': 'OfficialSigning', 'action': 'DocumentSigned', 'name': data.json.contentSize});
         }
     }
 
