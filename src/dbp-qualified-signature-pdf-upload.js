@@ -735,7 +735,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
 
             #iframe {
                 width: 100%;
-                height: 240px;
+                height: 350px;
                 /* "overflow" should not be supported by browsers, but some seem to use it */
                 overflow: hidden;
                 border-width: 0;
