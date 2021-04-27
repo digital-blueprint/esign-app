@@ -44,7 +44,7 @@ publish:
     - echo '//registry.npmjs.org/:_authToken=${NPM_TOKEN}' > ~/.npmrc
     - yarn install
     - yarn run build
-    - yarn run publish
+    - npm run publish
 
 .deploy_defaults: &deploy_defaults
   except:
