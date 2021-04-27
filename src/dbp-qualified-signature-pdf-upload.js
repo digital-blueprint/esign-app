@@ -936,6 +936,10 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         ids.forEach((id) => {
             const data = this.errorFiles[id];
 
+            if (data.file === undefined) {
+                return;
+            }
+
             results.push(html`
                 <div class="file-block error">
                     <div class="header">
