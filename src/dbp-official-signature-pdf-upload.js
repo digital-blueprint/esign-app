@@ -57,6 +57,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         this.isAnnotationViewVisible = false;
         this.addAnnotationInProgress = false;
         this.activity = new Activity(metadata);
+        this.showClipboard = false;
     }
 
     static get scopedElements() {
@@ -104,6 +105,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             queuedFilesAnnotations: { type: Array, attribute: false },
             queuedFilesAnnotationsCount: { type: Number, attribute: false },
             addAnnotationInProgress: { type: Boolean, attribute: false },
+            showClipboard: { type: Boolean, attribute: 'show-clipboard' },
         };
     }
 
@@ -843,9 +845,8 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                         <dbp-file-source
                             id="file-source"
                             context="${i18n.t('official-pdf-upload.file-picker-context')}"
-                            subscribe="show-clipboard:show-clipboard"
                             allowed-mime-types="application/pdf"
-                            enabled-targets="local${this.showNextcloudFilePicker ? ",nextcloud" : ""},clipboard"
+                            enabled-targets="local${this.showNextcloudFilePicker ? ",nextcloud" : ""}${this.showClipboard ? ",clipboard" : ""}"
                             nextcloud-auth-url="${this.nextcloudWebAppPasswordURL}"
                             nextcloud-web-dav-url="${this.nextcloudWebDavURL}"
                             nextcloud-name="${this.nextcloudName}"
@@ -1002,8 +1003,8 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             <dbp-file-sink id="file-sink"
                 context="${i18n.t('qualified-pdf-upload.save-field-label', {count: this.signedFilesToDownload})}"
                 filename="signed-documents.zip"
-                subscribe="initial-file-handling-state:initial-file-handling-state,clipboard-files:clipboard-files,show-clipboard:show-clipboard"
-                enabled-targets="local${this.showNextcloudFilePicker ? ",nextcloud" : ""},clipboard"
+                subscribe="initial-file-handling-state:initial-file-handling-state,clipboard-files:clipboard-files"
+                enabled-targets="local${this.showNextcloudFilePicker ? ",nextcloud" : ""}${this.showClipboard ? ",clipboard" : ""}"
                 nextcloud-auth-url="${this.nextcloudWebAppPasswordURL}"
                 nextcloud-web-dav-url="${this.nextcloudWebDavURL}"
                 nextcloud-name="${this.nextcloudName}"
