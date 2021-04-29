@@ -498,7 +498,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         // start signature placement process
         this.signaturePlacementInProgress = true;
         this.withSigBlock = withSigBlock;
-        const previewTag = this.constructor.getScopedTagName("dbp-pdf-preview");
+        const previewTag = this.getScopedTagName("dbp-pdf-preview");
         await this._(previewTag).showPDF(
             file,
             withSigBlock, //this.queuedFilesPlacementModes[key] === "manual",

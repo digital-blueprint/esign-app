@@ -273,7 +273,7 @@ class SignatureVerificationFull extends ScopedElementsMixin(DBPSignatureLitEleme
         console.log(file);
         // start signature placement process
         this.previewInProgress = true;
-        const previewTag = this.constructor.getScopedTagName("dbp-pdf-preview");
+        const previewTag = this.getScopedTagName("dbp-pdf-preview");
         await this._(previewTag).showPDF(file);
     }
 
