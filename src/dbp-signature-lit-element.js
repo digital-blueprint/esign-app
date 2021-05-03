@@ -139,9 +139,6 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
             this._(viewTag).setAttribute('key', key);
             this._(viewTag).setAnnotationRows(this.queuedFilesAnnotations[key]);
 
-            console.log('in show: ', this.queuedFilesAnnotations[key]);
-            console.log('key: ', key);
-
             this.isAnnotationViewVisible = true;
             this.enableAnnotationsForKey(key);
         } else {
