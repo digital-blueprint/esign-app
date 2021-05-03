@@ -5,6 +5,7 @@ import {ScopedElementsMixin} from '@open-wc/scoped-elements';
 import DBPLitElement from '@dbp-toolkit/common/dbp-lit-element';
 import {MiniSpinner, Icon} from '@dbp-toolkit/common';
 import {OrganizationSelect} from "@dbp-toolkit/organization-select";
+import { send } from '@dbp-toolkit/common/notification';
 import * as commonStyles from '@dbp-toolkit/common/styles';
 import * as utils from './utils';
 
@@ -61,6 +62,9 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
 
     setAnnotationRows(rows) {
         this.annotationRows = rows ? rows : [];
+        if (this.annotationRows.length === 0) {
+            this.isTextHidden = false;
+        }
     }
 
     /**
@@ -69,18 +73,69 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
     deleteAll() {
         this.annotationRows = [];
         this.isTextHidden = false;
+        this.sendCancelEvent();
     }
 
     sendCancelEvent() {
+        console.log('cancel event called');
         const event = new CustomEvent("dbp-pdf-annotations-cancel",
             { "detail": {}, bubbles: true, composed: true });
         this.dispatchEvent(event);
+    }
+
+    validateValues() {
+        
+        for (let annotation of this.annotationRows) {
+            const annotationTypeData = utils.getAnnotationTypes(annotation['annotationType']);
+
+            if (annotationTypeData['hasOrganization']) {
+                let organization = annotation.organizationValue;
+
+                if (typeof organization === 'undefined' || organization === null || organization === '') {
+                    send({
+                        "summary": i18n.t('annotation-view.empty-organization-title'),
+                        "body": i18n.t('annotation-view.empty-organization-message'),
+                        "type": "danger",
+                        "timeout": 5,
+                    });
+                    return false;
+                }
+            }
+
+            if (annotation['value'] === null || annotation['value'] === '') {
+                send({
+                    "summary": i18n.t('annotation-view.empty-annotation-title', {annotationType: annotationTypeData.name[this.lang]}),
+                    "body": i18n.t('annotation-view.empty-annotation-message'),
+                    "type": "danger",
+                    "timeout": 5,
+                });
+                return false;
+            }
+
+            const pattern = new RegExp('[A-Za-z0-9ÄäÖöÜüß\*\\/?! &@()=+_-]*');
+            let matchResult = annotation['value'].match(pattern);
+
+            if (matchResult[0] === undefined || annotation['value'].length !== matchResult[0].length) {
+                send({
+                    "summary": i18n.t('annotation-view.invalid-annotation-text-title'),
+                    "body": i18n.t('annotation-view.invalid-annotation-text-message'),
+                    "type": "danger",
+                    "timeout": 5,
+                });
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
      * Stores information to document
      */
     saveAll() {
+        if (!this.validateValues()) {
+            return;
+        }
+        
         const data = {
             "key": this.key,
             "annotationRows": this.annotationRows,
@@ -88,6 +143,10 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
         const event = new CustomEvent("dbp-pdf-annotations-save",
             { "detail": data, bubbles: true, composed: true });
         this.dispatchEvent(event);
+
+        if (this.annotationRows.length === 0) {
+            this.isTextHidden = false;
+        }
     }
 
     /**
@@ -137,6 +196,7 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
 
             if(this.annotationRows.length === 0) {
                 this.isTextHidden = false;
+                this.sendCancelEvent();
             }
 
             // we just need this so the UI will update
@@ -206,6 +266,8 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
 
             select:not(.select) {
                 background-size: 13px;
+                background-position-x: calc(100% - 0.4rem);
+                padding-right: 1.3rem;
                 height: 33px;
             }
 
@@ -306,7 +368,7 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
                                 this.updateAnnotation(id, 'organizationNumber', JSON.parse(e.target.getAttribute("data-object")).alternateName);
                             }}></dbp-organization-select>
 
-                    <input type="text" .value="${data.value}" class="input" 
+                    <input type="text" .value="${data.value}" class="input" pattern="[A-Za-z0-9ÄäÖöÜüß\*\\/! &@()=+_-]*" 
                             placeholder="${annotationTypeData.hasOrganization ? i18n.t('annotation-view.businessnumber-placeholder') : i18n.t('annotation-view.intended-use-placeholder')}" 
                             @change=${e => { this.updateAnnotation(id, 'value', e.target.value); }}>
                 </div>
@@ -348,13 +410,13 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
                 </div>
                 <div id="fields-wrapper">
                     <div id="inside-fields">
-                        <div class="text ${classMap({hidden: this.isTextHidden})}">
+                        <div class="text ${classMap({hidden: this.isTextHidden || this.annotationRows.length > 0})}">
                             <p>${i18n.t('annotation-view.introduction')}</p>
                         </div>
                         ${this.getAnnotationsHtml()}
                     </div>
                     <div class="delete-elements">
-                        <button class="button ${classMap({hidden: !this.isTextHidden})}"
+                        <button class="button ${classMap({hidden: !this.isTextHidden && this.annotationRows.length === 0})}"
                                 title="${i18n.t('annotation-view.delete-all-button-title')}"
                                 @click="${() => { this.deleteAll(); } }"
                                 ?disabled="${ this.annotationRows.length === 0 }">

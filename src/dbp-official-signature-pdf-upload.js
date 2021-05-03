@@ -52,8 +52,10 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         this.currentPreviewQueueKey = '';
         this.allowAnnotating = false;
         this.queuedFilesAnnotations = [];
-        this.queuedFilesEnabledAnnotations = [];
+        this.queuedFilesAnnotationModes = [];
         this.queuedFilesAnnotationsCount = 0;
+        this.queuedFilesAnnotationSaved = [];
+        this.queuedFilesEnabledAnnotations = [];
         this.isAnnotationViewVisible = false;
         this.addAnnotationInProgress = false;
         this.activity = new Activity(metadata);
@@ -105,6 +107,8 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             queuedFilesAnnotations: { type: Array, attribute: false },
             queuedFilesAnnotationsCount: { type: Number, attribute: false },
             addAnnotationInProgress: { type: Boolean, attribute: false },
+            queuedFilesAnnotationModes: { type: Array, attribute: false },
+            queuedFilesAnnotationSaved: { type: Array, attribute: false },
             showClipboard: { type: Boolean, attribute: 'show-clipboard' },
         };
     }
@@ -731,6 +735,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                             <dbp-textswitch id="annotation-switch" 
                                 name1="no-text"
                                 name2="text-selected"
+                                name="${this.queuedFilesAnnotationModes[id] || "no-text"}"
                                 class="${classMap({'switch': true})}"
                                 value1="${i18n.t('official-pdf-upload.annotation-no')}"
                                 value2="${i18n.t('official-pdf-upload.annotation-yes')}"
@@ -980,7 +985,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                             </div>
                             <dbp-pdf-annotation-view lang="${this.lang}"
                                              @dbp-pdf-annotations-save="${this.processAnnotationEvent}"
-                                             @dbp-pdf-annotations-cancel="${this.hideAnnotationView}"></dbp-pdf-annotation-view>
+                                             @dbp-pdf-annotations-cancel="${this.processAnnotationCancelEvent}"></dbp-pdf-annotation-view>
                         </div>
                         <!-- File upload progress -->
                         <div id="upload-progress" class="field notification is-info ${classMap({hidden: !this.uploadInProgress})}">

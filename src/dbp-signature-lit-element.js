@@ -119,6 +119,10 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
      * @returns shows PdfAnnotationView
      */
     async showAnnotationView(key, name) {
+
+        this.queuedFilesAnnotationModes[key] = name;
+        console.log(name);
+
         if (this.signingProcessEnabled) {
             return;
         }
@@ -135,10 +139,14 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
             this._(viewTag).setAttribute('key', key);
             this._(viewTag).setAnnotationRows(this.queuedFilesAnnotations[key]);
 
+            console.log('in show: ', this.queuedFilesAnnotations[key]);
+            console.log('key: ', key);
+
             this.isAnnotationViewVisible = true;
             this.enableAnnotationsForKey(key);
         } else {
             this.disableAnnotationsForKey(key);
+            this.queuedFilesAnnotationSaved[key] = false;
 
             if (this.currentPreviewQueueKey === key) {
                 this.isAnnotationViewVisible = false;
@@ -158,13 +166,37 @@ export default class DBPSignatureLitElement extends DBPSignatureBaseLitElement {
 
         this.isAnnotationViewVisible = false;
         this.addAnnotationInProgress = false;
+
+        this.queuedFilesAnnotationModes[this.currentPreviewQueueKey] = "text-selected";
+        this.queuedFilesAnnotationSaved[this.currentPreviewQueueKey] = true;
+    }
+
+    /**
+     * 
+     * @param {*} event 
+     */
+    processAnnotationCancelEvent(event) {
+        let key = this.currentPreviewQueueKey;
+
+        this.queuedFilesAnnotations[key] = [];
+        this.queuedFilesAnnotations[key] = undefined;
+        this.disableAnnotationsForKey(key);
+
+        this.queuedFilesAnnotationModes[this.currentPreviewQueueKey] = "no-text";
+        this.queuedFilesAnnotationSaved[this.currentPreviewQueueKey] = false;
     }
 
     /**
      * Hides the PdfAnnotationView
      */
     hideAnnotationView() {
-        this._("#annotation-switch").name = "no-text";
+        console.log('hide view - x click');
+
+        if (this.queuedFilesAnnotationSaved[this.currentPreviewQueueKey] !== undefined && this.queuedFilesAnnotationSaved[this.currentPreviewQueueKey]) {
+            this.queuedFilesAnnotationModes[this.currentPreviewQueueKey] = "text-selected";
+        } else {
+            this.queuedFilesAnnotationModes[this.currentPreviewQueueKey] = "no-text";
+        }
         this.isAnnotationViewVisible = false;
         this.addAnnotationInProgress = false;
     }
