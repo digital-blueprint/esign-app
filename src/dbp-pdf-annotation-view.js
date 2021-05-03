@@ -112,7 +112,7 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
                 return false;
             }
 
-            const pattern = new RegExp('[A-Za-z0-9ÄäÖöÜüß\*\\/?! &@()=+_-]*');
+            const pattern = new RegExp('[A-Za-z0-9ÄäÖöÜüß*\\/?! &@()=+_-]*');
             let matchResult = annotation['value'].match(pattern);
 
             if (matchResult[0] === undefined || annotation['value'].length !== matchResult[0].length) {
@@ -336,11 +336,11 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
     }
 
     /**
-    * Returns the list of files of annotations of a queued file
-    *
-    * @returns {*[]} Array of html templates
-    */
-   getAnnotationsHtml() {
+     * Returns the list of files of annotations of a queued file
+     *
+     * @returns {*[]} Array of html templates
+     */
+    getAnnotationsHtml() {
        const annotations = this.annotationRows || [];
        const ids = Object.keys(annotations);
        let results = [];
