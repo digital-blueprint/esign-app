@@ -376,7 +376,6 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         this.signaturePlacementInProgress = true;
         this.withSigBlock = withSigBlock;
         const previewTag = this.getScopedTagName("dbp-pdf-preview");
-        console.error(previewTag);
         await this._(previewTag).showPDF(
             file,
             withSigBlock, //this.queuedFilesPlacementModes[key] === "manual",
