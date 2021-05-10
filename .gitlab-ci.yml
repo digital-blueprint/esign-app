@@ -1,5 +1,8 @@
 image: registry.gitlab.tugraz.at/dbp/topics/signature/main:v1
 
+variables:
+  NODE_OPTIONS: '--max-old-space-size=4096'
+
 cache:
   key: $CI_PROJECT_PATH
   paths:
