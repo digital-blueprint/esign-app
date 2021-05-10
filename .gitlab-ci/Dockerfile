@@ -42,3 +42,6 @@ ADD composer.lock "${COMPOSER_HOME}"
 ADD composer.json "${COMPOSER_HOME}"
 RUN composer global install
 ENV PATH "${COMPOSER_HOME}/vendor/bin:${PATH}"
+
+# https://stackoverflow.com/questions/53230823
+ENV NODE_OPTIONS '--max-old-space-size=2048'
