@@ -44,4 +44,4 @@ RUN composer global install
 ENV PATH "${COMPOSER_HOME}/vendor/bin:${PATH}"
 
 # https://stackoverflow.com/questions/53230823
-ENV NODE_OPTIONS '--max-old-space-size=2048'
+ENV NODE_OPTIONS '--max-old-space-size=4096'
