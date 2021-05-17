@@ -1673,13 +1673,6 @@ axios@^0.20.0:
   dependencies:
     follow-redirects "^1.10.0"
 
-axios@^0.21.1:
-  version "0.21.1"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-0.21.1.tgz#22563481962f4d6bde9a76d516ef0e5d3c09b2b8"
-  integrity sha512-dKQiRHxGD9PPRIUNIWvZhPTPpl1rf/OxTYKsqKUDjBwYylTvV7SjSHJb9ratfyzM6wCdLCOYLzs73qpg5c4iGA==
-  dependencies:
-    follow-redirects "^1.10.0"
-
 babel-eslint@^10.0.3, babel-eslint@^10.1.0:
   version "10.1.0"
   resolved "https://registry.yarnpkg.com/babel-eslint/-/babel-eslint-10.1.0.tgz#6968e568a910b78fb3779cdd8b6ac2f479943232"
@@ -6642,22 +6635,6 @@ web-component-analyzer@~1.1.1:
     ts-simple-type "~1.0.5"
     typescript "^3.8.3"
     yargs "^15.3.1"
-
-webdav@^3.3.0:
-  version "3.6.2"
-  resolved "https://registry.yarnpkg.com/webdav/-/webdav-3.6.2.tgz#76e3d8e950e80698a2f1db23ef2496888662cbeb"
-  integrity sha512-HFRiI1jluMSPQMVgxVD6VVYNtaglO53vHG0uf7Zec+wl0A1Mei2z8/IFgAAAJMUuEWAx2AfBD5lcWhAiYA9LUw==
-  dependencies:
-    axios "^0.21.1"
-    base-64 "^0.1.0"
-    fast-xml-parser "^3.17.4"
-    he "^1.2.0"
-    hot-patcher "^0.5.0"
-    minimatch "^3.0.4"
-    nested-property "^4.0.0"
-    path-posix "^1.0.0"
-    url-join "^4.0.1"
-    url-parse "^1.4.7"
 
 webdav@^3.6.1:
   version "3.6.1"

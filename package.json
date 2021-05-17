@@ -60,8 +60,7 @@
     "lit-element": "^2.3.1",
     "lit-html": "^1.2.1",
     "pdfjs-dist": "2.7.570",
-    "universal-router": "^9.0.1",
-    "webdav": "^3.3.0"
+    "universal-router": "^9.0.1"
   },
   "scripts": {
     "build": "rollup -c",
