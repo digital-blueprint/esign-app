@@ -1,12 +1,12 @@
 # Digital Signing Application
 
-[GitLab Repository](https://gitlab.tugraz.at/dbp/topics/signature)
+[GitLab Repository](https://gitlab.tugraz.at/dbp/esign/signature)
 
 ## Local development
 
 ```bash
 # get the source
-git clone git@gitlab.tugraz.at:dbp/topics/signature.git
+git clone git@gitlab.tugraz.at:dbp/esign/signature.git
 cd signature
 git submodule update --init
 
