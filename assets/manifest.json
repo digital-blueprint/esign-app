@@ -1,6 +1,6 @@
 {
-  "short_name": "Signature",
-  "name": "TUGraz Signature",
+  "short_name": "TU Graz esign",
+  "name": "TU Graz Electronic Signature Service",
   "start_url": "/",
   "icons": [
     {
