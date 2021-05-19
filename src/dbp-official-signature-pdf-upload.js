@@ -696,7 +696,6 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
      * @returns {*[]} Array of html templates
      */
     getQueuedFilesHtml() {
-
         const ids = Object.keys(this.queuedFiles);
         let results = [];
 

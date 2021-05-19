@@ -53,13 +53,12 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         this.currentPreviewQueueKey = '';
         this.allowAnnotating = false;
         this.queuedFilesAnnotations = [];
-        this.queuedFilesAnnotationsCount = 0;
         this.queuedFilesAnnotationModes = [];
+        this.queuedFilesAnnotationsCount = 0;
         this.queuedFilesAnnotationSaved = [];
         this.queuedFilesEnabledAnnotations = [];
         this.isAnnotationViewVisible = false;
         this.addAnnotationInProgress = false;
-
         this.activity = new Activity(metadata);
 
         this._onReceiveIframeMessage = this.onReceiveIframeMessage.bind(this);
@@ -384,7 +383,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
      * @param ev
      */
     onFileSelected(ev) {
-        console.log("File was selected: ev", ev);
         this.queueFile(ev.detail.file);
     }
 
@@ -444,10 +442,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                     });
                     break;
             }
-
-            // console.log(propName, oldValue);
         });
-
         super.update(changedProperties);
     }
 
@@ -558,7 +553,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                 padding: 0px;
                 padding-right: 2px;
             }
-            
+
             #annotation-view .box-header, #external-auth .box-header {
                 display: flex;
                 justify-content: space-between;
@@ -580,7 +575,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                 margin-top: 0;
                 margin-bottom: 0px;
             }
-            
+
             strong {
                 font-weight: 600;
             }
@@ -1012,7 +1007,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                 class="button is-primary">
                             ${i18n.t('qualified-pdf-upload.upload-button-label')}
                         </button>
-                       
                         <dbp-file-source
                             id="file-source"
                             context="${i18n.t('qualified-pdf-upload.file-picker-context')}"
