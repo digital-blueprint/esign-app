@@ -19,6 +19,7 @@ import {send as notify} from '@dbp-toolkit/common/notification';
 import metadata from './dbp-qualified-signature-pdf-upload.metadata.json';
 import {Activity} from './activity.js';
 import {PdfAnnotationView} from "./dbp-pdf-annotation-view";
+import { ExternalSignIFrame } from './ext-sign-iframe.js';
 
 const i18n = createI18nInstance();
 
@@ -61,7 +62,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         this.addAnnotationInProgress = false;
         this.activity = new Activity(metadata);
 
-        this._onReceiveIframeMessage = this.onReceiveIframeMessage.bind(this);
         this._onReceiveBeforeUnload = this.onReceiveBeforeUnload.bind(this);
     }
 
@@ -75,6 +75,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
           'dbp-button': Button,
           'dbp-textswitch': TextSwitch,
           'dbp-pdf-annotation-view': PdfAnnotationView,
+          'external-sign-iframe': ExternalSignIFrame,
         };
     }
 
@@ -120,18 +121,12 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         // needs to be called in a function to get the variable scope of "this"
         setInterval(() => { this.handleQueuedFiles(); }, 1000);
 
-        this.updateComplete.then(()=>{
-            // see: https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage
-            window.addEventListener('message', this._onReceiveIframeMessage);
-
-            // we want to be able to cancel the leaving of the page
-            window.addEventListener('beforeunload', this._onReceiveBeforeUnload);
-        });
+        // we want to be able to cancel the leaving of the page
+        window.addEventListener('beforeunload', this._onReceiveBeforeUnload);
     }
 
     disconnectedCallback() {
         // remove event listeners
-        window.removeEventListener('message', this._onReceiveIframeMessage);
         window.removeEventListener('beforeunload', this._onReceiveBeforeUnload);
 
         super.disconnectedCallback();
@@ -299,36 +294,15 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         return errorParsed;
     }
 
-    onReceiveIframeMessage(event) {
-        const data = event.data;
-
-        // check if this is really a postMessage from our iframe without using event.origin
-        if (data.type === 'pdf-as-error') {
-            let file = this.currentFile;
-            let error = data.error;
-            if (data.cause) {
-                error = `${error}: ${data.cause}`;
-            }
-            file.json = {"hydra:description" : this.parseError(error)};
-            this.addToErrorFiles(file);
-            this._("#iframe").src = "about:blank";
-            this.externalAuthInProgress = false;
-            this.endSigningProcessIfQueueEmpty();
-            return;
-        }
-
-        if (data.type !== 'pdf-as-callback') {
-            return;
-        }
-
-        const sessionId = data.sessionId;
+    _onIFrameDone(event) {
+        const sessionId = event.detail.id;
 
         // check if sessionId is valid
         if ((typeof sessionId !== 'string') || (sessionId.length < 15)) {
             return;
         }
 
-        console.log("Got iframe message for sessionId " + sessionId + ", origin: " + event.origin);
+        console.log("Got iframe message for sessionId " + sessionId);
         const that = this;
 
         // get correct file name
@@ -348,7 +322,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                 .then(result => {
                     // hide iframe
                     that.externalAuthInProgress = false;
-                    this._("#iframe").src = "about:blank";
+                    this._("#iframe").reset();
                     this.endSigningProcessIfQueueEmpty();
 
                     if (!result.ok) throw result;
@@ -371,7 +345,16 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                     this.addToErrorFiles(file);
                 });
         }, {}, that.lang);
+    }
 
+    _onIFrameError(event) {
+        let error = event.detail.message;
+        let file = this.currentFile;
+        file.json = {"hydra:description" : this.parseError(error)};
+        this.addToErrorFiles(file);
+        this._("#iframe").reset();
+        this.externalAuthInProgress = false;
+        this.endSigningProcessIfQueueEmpty();
     }
 
     endSigningProcessIfQueueEmpty() {
@@ -426,7 +409,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
 
             // we want to load the redirect url in the iframe
             let iframe = this._("#iframe");
-            iframe.src = entryPoint.url;
+            iframe.setUrl(entryPoint.url);
         }
     }
 
@@ -725,7 +708,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                 color: #e4154b;
             }
 
-            #external-auth iframe {
+            #external-auth #iframe {
                 margin-top: 0.5em;
             }
 
@@ -736,9 +719,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             #iframe {
                 width: 100%;
                 height: 350px;
-                /* "overflow" should not be supported by browsers, but some seem to use it */
-                overflow: hidden;
-                border-width: 0;
                 /* keeps the A-Trust webpage aligned left */
                 max-width: 575px;
             }
@@ -974,7 +954,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             return;
         }
 
-        this._("#iframe").src = "about:blank";
+        this._("#iframe").reset();
         this.signingProcessEnabled = false;
         this.externalAuthInProgress = false;
         this.signingProcessActive = false;
@@ -1162,8 +1142,10 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                             title="${i18n.t('qualified-pdf-upload.stop-signing-process-button')}"
                                             @click="${this.stopSigningProcess}"><dbp-icon name="close"></dbp-icon></button>
                                 </div>
-                                <!-- "scrolling" is deprecated, but still seem to help -->
-                                <iframe id="iframe" scrolling="no"></iframe>
+                                <external-sign-iframe id="iframe"
+                                    @signature-error="${this._onIFrameError}"
+                                    @signature-done="${this._onIFrameDone}"
+                                    ></external-sign-iframe>
                             </div>
                         </div>
                     </div>
