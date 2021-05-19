@@ -138,8 +138,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
     }
 
     async _updateNeedsPlacementStatus(id) {
-        let file = this.queuedFiles[id];
-        let sigCount = await getPDFSignatureCount(file);
+        let entry = this.queuedFiles[id];
+        let sigCount = await getPDFSignatureCount(entry.file);
         this.queuedFilesNeedsPlacement.delete(id);
         if (sigCount > 0)
             this.queuedFilesNeedsPlacement.set(id, true);
@@ -179,7 +179,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
 
         // take the file off the queue
         const key = Object.keys(this.queuedFiles)[0];
-        const file = this.takeFileFromQueue(key);
+        const entry = this.takeFileFromQueue(key);
+        const file = entry.file;
         this.currentFile = file;
 
         // set placement mode and parameters to restore them when canceled
@@ -490,16 +491,16 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             return;
         }
 
-        const file = this.getQueuedFile(key);
-        this.currentFile = file;
+        const entry = this.getQueuedFile(key);
+        this.currentFile = entry.file;
         this.currentPreviewQueueKey = key;
-        console.log(file);
+        console.log(entry);
         // start signature placement process
         this.signaturePlacementInProgress = true;
         this.withSigBlock = withSigBlock;
         const previewTag = this.getScopedTagName("dbp-pdf-preview");
         await this._(previewTag).showPDF(
-            file,
+            entry.file,
             withSigBlock, //this.queuedFilesPlacementModes[key] === "manual",
             this.queuedFilesSignaturePlacements[key]);
     }
@@ -843,7 +844,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         let results = [];
 
         ids.forEach((id) => {
-            const file = this.queuedFiles[id];
+            const file = this.queuedFiles[id].file;
             const isManual = this.queuedFilesPlacementModes[id] === 'manual';
             const placementMissing = this.queuedFilesNeedsPlacement.get(id) && !isManual;
 

@@ -1,6 +1,7 @@
 import * as utils from "./utils";
 import * as commonUtils from "@dbp-toolkit/common/utils";
 import {BaseLitElement} from './base-element.js';
+import {SignatureEntry} from './signature-entry.js';
 
 export default class DBPSignatureLitElement extends BaseLitElement {
     constructor() {
@@ -32,23 +33,24 @@ export default class DBPSignatureLitElement extends BaseLitElement {
      */
     queueFile(file) {
         this._queueKey++;
-        const key = this._queueKey;
-        this.queuedFiles[key] = file;
+        const key = String(this._queueKey);
+        this.queuedFiles[key] = new SignatureEntry(key, file);
         this.updateQueuedFilesCount();
-        return String(key);
+        return key;
     }
 
     /**
      * Takes a file off of the queue
      *
      * @param key
+     * @returns {SignatureEntry} entry
      */
     takeFileFromQueue(key) {
-        const file = this.queuedFiles[key];
+        const entry = this.queuedFiles[key];
         delete this.queuedFiles[key];
         this.updateQueuedFilesCount();
 
-        return file;
+        return entry;
     }
 
     /**
@@ -257,10 +259,6 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         return this.queuedFiles[key];
     }
 
-    getQueuedFiles() {
-        return this.queuedFiles;
-    }
-
     clearQueuedFiles() {
         this.queuedFilesAnnotations = [];
         this.queuedFilesAnnotationsCount = 0;
@@ -275,10 +273,6 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             this.queueBlockEnabled = true;
         }
 
-        return this.queuedFilesCount;
-    }
-
-    getQueuedFilesCount() {
         return this.queuedFilesCount;
     }
 
