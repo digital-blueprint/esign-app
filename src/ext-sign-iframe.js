@@ -1,4 +1,7 @@
 import {LitElement, html, css} from "lit-element";
+import {classMap} from 'lit-html/directives/class-map.js';
+import {MiniSpinner} from '@dbp-toolkit/common';
+import {ScopedElementsMixin} from '@open-wc/scoped-elements';
 
 /**
  * Set the URL via setUrl(), reset via reset().
@@ -7,11 +10,24 @@ import {LitElement, html, css} from "lit-element";
  *  * signature-error with a "message"
  *  * signature-done with an "id"
  */
-export class ExternalSignIFrame extends LitElement {
+export class ExternalSignIFrame extends ScopedElementsMixin(LitElement) {
 
     constructor() {
         super();
+        this._loading = false;
         this._onReceiveIframeMessage = this._onReceiveIframeMessage.bind(this);
+    }
+
+    static get scopedElements() {
+        return {
+          'dbp-mini-spinner': MiniSpinner,
+        };
+    }
+
+    static get properties() {
+        return {
+            _loading: { type: Boolean, attribute: false },
+        };
     }
 
     connectedCallback() {
@@ -47,6 +63,7 @@ export class ExternalSignIFrame extends LitElement {
 
     setUrl(url) {
         let iframe = this.renderRoot.querySelector("#iframe");
+        this._loading = true;
         iframe.src = url;
     }
 
@@ -68,13 +85,26 @@ export class ExternalSignIFrame extends LitElement {
                 width: 100%;
                 height: 100%;
             }
+
+            .hidden {
+                display: none;
+            }
         `;
     }
 
     render() {
+
+        let onDone = (event) => {
+            this._loading = false;
+        };
+
         return html`
+            ${ this._loading ? html`<dbp-mini-spinner></dbp-mini-spinner>` : html`` }
             <!-- "scrolling" is deprecated, but still seem to help -->
-            <iframe id="iframe" scrolling="no"></iframe>
+            <iframe id="iframe" class=${classMap({hidden: this._loading})}
+                @load="${onDone}"
+                @error="${onDone}"
+                scrolling="no"></iframe>
         `;
     }
 }
