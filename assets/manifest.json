@@ -9,6 +9,11 @@
       "sizes": "192x192"
     },
     {
+      "src": "local/@dbp-topics/signature/icon-256.png",
+      "type": "image/png",
+      "sizes": "256x256"
+    },
+    {
       "src": "local/@dbp-topics/signature/icon-512.png",
       "type": "image/png",
       "sizes": "512x512"
