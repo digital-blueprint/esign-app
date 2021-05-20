@@ -1,7 +1,7 @@
 {
   "short_name": "TU Graz esign",
   "name": "TU Graz Electronic Signature Service",
-  "start_url": "/",
+  "start_url": "./",
   "icons": [
     {
       "src": "local/@dbp-topics/signature/icon-72x72.png",
