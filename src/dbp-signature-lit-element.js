@@ -411,6 +411,6 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         this.signedFilesToDownload = files.length;
         this._("#file-sink").files = files;
         const div = this.shadowRoot.querySelector('#' + id);
-        div.style.background='#c8dcc8';
+        div.classList.add('downloaded');
     }
 }

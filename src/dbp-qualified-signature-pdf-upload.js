@@ -706,6 +706,10 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                 white-space: nowrap;
             }
 
+            .downloaded {
+                background: var(--dbp-downloaded-bg-color);
+            }
+
             #pdf-preview .button.is-cancel {
                 color: #e4154b;
             }

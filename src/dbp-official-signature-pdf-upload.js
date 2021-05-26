@@ -600,6 +600,10 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                 white-space: nowrap;
             }
 
+            .downloaded {
+                background: var(--dbp-downloaded-bg-color);
+            }
+
             #pdf-preview .button.is-cancel {
                 color: #e4154b;
             }
