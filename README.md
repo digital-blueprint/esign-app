@@ -108,3 +108,13 @@ Note that you will need a Keycloak server along with a client id for the domain 
     - example `allow-annotating`
 - `show-clipboard` (optional): Needs to be set to allow using the clipboard in the file picker dialog
     - example `show-clipboard`
+
+### dbp-signature-verification
+
+This activity shows an information page where to verify signed documents, you can use it like this:
+[dbp-signature-verification/index.html](https://gitlab.tugraz.at/dbp/esign/signature/-/tree/master/examples/dbp-signature-verification/index.html)
+
+#### Attributes
+
+- `lang` (optional, default: `de`): set to `de` or `en` for German or English
+    - example `lang="de"`
