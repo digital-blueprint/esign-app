@@ -45,13 +45,12 @@ Note that you will need a Keycloak server along with a client id for the domain 
 
 ### dbp-qualified-signature-pdf-upload
 
-You can also use a single activity directly from the [Unpkg CDN](https://unpkg.com/browse/@dbp-topics/signature/)
-for example the `dbp-qualified-signature-pdf-upload` activity to qualifiedly sign PDF documents like this:
+You can use this activity to qualifiedly sign PDF documents like this:
 [dbp-qualified-signature-pdf-upload/index.html](https://gitlab.tugraz.at/dbp/esign/signature/-/tree/master/examples/dbp-qualified-signature-pdf-upload/index.html)
 
 Note that you will need a Keycloak server along with a client id for the domain you are running this html on.
 
-## Attributes
+#### Attributes
 
 - `lang` (optional, default: `de`): set to `de` or `en` for German or English
     - example `lang="de"`
@@ -77,13 +76,12 @@ Note that you will need a Keycloak server along with a client id for the domain 
 
 ### dbp-official-signature-pdf-upload
 
-You can also use a single activity directly from the [Unpkg CDN](https://unpkg.com/browse/@dbp-topics/signature/)
-for example the `dbp-official-signature-pdf-upload` activity to officially sign PDF documents like this:
+You can use this activity to officially sign PDF documents like this:
 [dbp-official-signature-pdf-upload/index.html](https://gitlab.tugraz.at/dbp/esign/signature/-/tree/master/examples/dbp-official-signature-pdf-upload/index.html)
 
 Note that you will need a Keycloak server along with a client id for the domain you are running this html on.
 
-## Attributes
+#### Attributes
 
 - `lang` (optional, default: `de`): set to `de` or `en` for German or English
     - example `lang="de"`
