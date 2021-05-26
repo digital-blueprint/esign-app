@@ -78,7 +78,7 @@ Note that you will need a Keycloak server along with a client id for the domain 
 ### dbp-official-signature-pdf-upload
 
 You can also use a single activity directly from the [Unpkg CDN](https://unpkg.com/browse/@dbp-topics/signature/)
-for example the `dbp-official-signature-pdf-upload` activity to qualifiedly sign PDF documents like this:
+for example the `dbp-official-signature-pdf-upload` activity to officially sign PDF documents like this:
 [dbp-official-signature-pdf-upload/index.html](https://gitlab.tugraz.at/dbp/esign/signature/-/tree/master/examples/dbp-official-signature-pdf-upload/index.html)
 
 Note that you will need a Keycloak server along with a client id for the domain you are running this html on.
