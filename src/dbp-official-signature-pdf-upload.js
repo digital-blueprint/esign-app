@@ -31,6 +31,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         this.nextcloudWebDavURL = "";
         this.nextcloudName = "";
         this.nextcloudFileURL = "";
+        this.nextcloudAuthInfo = "";
         this.signedFiles = [];
         this.signedFilesCount = 0;
         this.signedFilesToDownload = 0;
@@ -85,6 +86,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             nextcloudWebDavURL: { type: String, attribute: 'nextcloud-webdav-url' },
             nextcloudName: { type: String, attribute: 'nextcloud-name' },
             nextcloudFileURL: { type: String, attribute: 'nextcloud-file-url' },
+            nextcloudAuthInfo: {type: String, attribute: 'nextcloud-auth-info'},
             signedFiles: { type: Array, attribute: false },
             signedFilesCount: { type: Number, attribute: false },
             signedFilesToDownload: { type: Number, attribute: false },
@@ -854,6 +856,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                             nextcloud-auth-url="${this.nextcloudWebAppPasswordURL}"
                             nextcloud-web-dav-url="${this.nextcloudWebDavURL}"
                             nextcloud-name="${this.nextcloudName}"
+                            nextcloud-auth-info="${this.nextcloudAuthInfo}"
                             nextcloud-file-url="${this.nextcloudFileURL}"
                             decompress-zip
                             lang="${this.lang}"

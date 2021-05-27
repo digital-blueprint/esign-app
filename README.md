@@ -71,6 +71,8 @@ Note that you will need a Keycloak server along with a client id for the domain 
     - example `nextcloud-file-url="http://localhost:8081/apps/files/?dir="`
 - `nextcloud-name` (optional): Name of the Nextcloud service
     - example `nextcloud-name="My Nextcloud"`
+- `nextcloud-auth-info` (optional): Additional authentication information text that is shown in the Nextcloud file picker
+    - example `nextcloud-auth-info="You need special permissions for this function"`
 - `allow-annotating` (optional): Needs to be set to allow annotating the PDFs
     - example `allow-annotating`
 
@@ -102,6 +104,8 @@ Note that you will need a Keycloak server along with a client id for the domain 
     - example `nextcloud-file-url="http://localhost:8081/apps/files/?dir="`
 - `nextcloud-name` (optional): Name of the Nextcloud service
     - example `nextcloud-name="My Nextcloud"`
+- `nextcloud-auth-info` (optional): Additional authentication information text that is shown in the Nextcloud file picker
+    - example `nextcloud-auth-info="You need special permissions for this function"`
 - `allow-annotating` (optional): Needs to be set to allow annotating the PDFs
     - example `allow-annotating`
 - `show-clipboard` (optional): Needs to be set to allow using the clipboard in the file picker dialog
