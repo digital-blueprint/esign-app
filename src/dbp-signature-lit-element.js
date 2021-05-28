@@ -388,6 +388,12 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         this.signedFilesToDownload = files.length;
         this._("#file-sink").files = files;
         this._("#zip-download-button").stop();
+        // mark downloaded files buttons
+        const buttons = this.shadowRoot.querySelectorAll('.file-block > div > button');
+        buttons.forEach(button => {
+            button.classList.add('downloaded');
+            button.classList.remove('is-primary');
+        });
     }
 
     /**
@@ -410,7 +416,9 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         files.push(binaryFile);
         this.signedFilesToDownload = files.length;
         this._("#file-sink").files = files;
-        const div = this.shadowRoot.querySelector('#' + id);
-        div.classList.add('downloaded');
+        // mark downloaded files button
+        const button = this.shadowRoot.querySelector('#' + id);
+        button.classList.add('downloaded');
+        button.classList.remove('is-primary');
     }
 }
