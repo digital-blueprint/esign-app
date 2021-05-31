@@ -389,10 +389,9 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         this._("#file-sink").files = files;
         this._("#zip-download-button").stop();
         // mark downloaded files buttons
-        const buttons = this.shadowRoot.querySelectorAll('.file-block > div > button');
-        buttons.forEach(button => {
-            button.classList.add('downloaded');
-            button.classList.remove('is-primary');
+        const spans = this.shadowRoot.querySelectorAll('.file-block > div.header > span.filename > span.bold-filename');
+        spans.forEach(span => {
+            span.classList.remove('bold-filename');
         });
     }
 
@@ -417,8 +416,9 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         this.signedFilesToDownload = files.length;
         this._("#file-sink").files = files;
         // mark downloaded files button
-        const button = this.shadowRoot.querySelector('#' + id);
-        button.classList.add('downloaded');
-        button.classList.remove('is-primary');
+        const span = this.shadowRoot.querySelector('#' + id + ' > div.header > span.filename > span.bold-filename');
+        if (span) {
+            span.classList.remove('bold-filename');
+        }
     }
 }

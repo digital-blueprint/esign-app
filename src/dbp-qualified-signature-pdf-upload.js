@@ -706,8 +706,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                 white-space: nowrap;
             }
 
-            .downloaded {
-                background-color: var(--dbp-downloaded-bg-color);
+            .bold-filename {
+                font-weight: bold;
             }
 
             #pdf-preview .button.is-cancel {
@@ -896,12 +896,12 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             const file = this.signedFiles[id];
 
             results.push(html`
-                <div class="file-block">
+                <div class="file-block" id="file-block-${id}">
                     <div class="header">
-                        <span class="filename"><strong>${file.name}</strong> (${humanFileSize(file.contentSize)})</span>
-                        <button class="button is-primary" id="file-download-button-${id}"
+                        <span class="filename"><span class="bold-filename">${file.name}</span> (${humanFileSize(file.contentSize)})</span>
+                        <button class="button close"
                             title="${i18n.t('qualified-pdf-upload.download-file-button-title')}"
-                            @click="${() => { this.downloadFileClickHandler(file, 'file-download-button-' + id); }}">
+                            @click="${() => { this.downloadFileClickHandler(file, 'file-block-' + id); }}">
                             <dbp-icon name="download"></dbp-icon></button>
                     </div>
                 </div>
