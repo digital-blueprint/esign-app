@@ -1,3 +1,6 @@
+const nextcloudAuthInfoDE = 'Für diese Funktion ist ein TU Graz Bediensteten Account nötig!';
+const nextcloudAuthInfoEN = 'A TU Graz employee account is required for this function!';
+
 export default {
     local: {
         basePath: '/dist/',
@@ -8,6 +11,8 @@ export default {
         matomoSiteId: 131,
         nextcloudBaseURL: 'http://localhost:8081',
         nextcloudName: 'TU Graz cloud',
+        nextcloudAuthInfoDE: nextcloudAuthInfoDE,
+        nextcloudAuthInfoEN: nextcloudAuthInfoEN,
         pdfAsQualifiedlySigningServer: 'https://sig-dev.tugraz.at',
         hiddenActivities: ['dbp-signature-verification-full'],
     },
@@ -20,6 +25,8 @@ export default {
         matomoSiteId: 131,
         nextcloudBaseURL: 'http://bs-local.com:8081',
         nextcloudName: 'TU Graz cloud',
+        nextcloudAuthInfoDE: nextcloudAuthInfoDE,
+        nextcloudAuthInfoEN: nextcloudAuthInfoEN,
         pdfAsQualifiedlySigningServer: 'https://sig-dev.tugraz.at',
         hiddenActivities: [],
     },
@@ -32,6 +39,8 @@ export default {
         matomoSiteId: 131,
         nextcloudBaseURL: 'https://nc-dev.tugraz.at/pers',
         nextcloudName: 'TU Graz cloud',
+        nextcloudAuthInfoDE: nextcloudAuthInfoDE,
+        nextcloudAuthInfoEN: nextcloudAuthInfoEN,
         pdfAsQualifiedlySigningServer: 'https://sig-dev.tugraz.at',
         hiddenActivities: ['dbp-signature-verification-full'],
     },
@@ -44,6 +53,8 @@ export default {
         matomoSiteId: 131,
         nextcloudBaseURL: 'https://cloud.tugraz.at',
         nextcloudName: 'TU Graz cloud',
+        nextcloudAuthInfoDE: nextcloudAuthInfoDE,
+        nextcloudAuthInfoEN: nextcloudAuthInfoEN,
         pdfAsQualifiedlySigningServer: 'https://sig-test.tugraz.at',
         hiddenActivities: ['dbp-signature-verification-full'],
     },
@@ -56,6 +67,8 @@ export default {
         matomoSiteId: 137,
         nextcloudBaseURL: 'https://cloud.tugraz.at',
         nextcloudName: 'TU Graz cloud',
+        nextcloudAuthInfoDE: nextcloudAuthInfoDE,
+        nextcloudAuthInfoEN: nextcloudAuthInfoEN,
         pdfAsQualifiedlySigningServer: 'https://sig.tugraz.at',
         hiddenActivities: ['dbp-signature-verification-full'],
     },
