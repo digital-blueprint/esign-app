@@ -15,5 +15,6 @@
     "en": "Allows upload of PDF-documents to officially sign them"
   },
   "subscribe": "lang,entry-point-url,nextcloud-web-app-password-url,nextcloud-webdav-url,nextcloud-name,nextcloud-auth-info,nextcloud-file-url,show-nextcloud-file-picker,auth,allow-annotating,show-clipboard",
+  "exportparts": "dbp-icon-download",
   "required_roles": ["ROLE_SCOPE_OFFICIAL-SIGNATURE"]
 }

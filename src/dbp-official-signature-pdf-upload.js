@@ -779,7 +779,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                         <button class="button close"
                             title="${i18n.t('official-pdf-upload.download-file-button-title')}"
                             @click="${() => { this.downloadFileClickHandler(file, 'file-block-' + id); }}">
-                            <dbp-icon name="download"></dbp-icon></button>
+                            <dbp-icon exportparts="dbp-icon-download" name="download"></dbp-icon></button>
                     </div>
                 </div>
             `);
