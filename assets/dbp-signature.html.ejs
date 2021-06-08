@@ -50,8 +50,10 @@
             --dbp-override-warning-text-color: black;
             --dbp-override-success-bg-color: #259207;
  /*           --dbp-override-downloaded-bg-color: #9fdf9f; */
-            --dbp-icon-base-path: "<%= getUrl('') %>";
-            --dbp-override-icon-nextcloud: "icons/nextcloud.svg";
+            /*----dbp-icon-base-path: "<%= getUrl('') %>";*/
+            /*--dbp-override-icon-nextcloud: "icons/nextcloud.svg";*/
+            --dbp-override-image-nextcloud: url(<%= getUrl('') %>icons/nextcloud.svg);
+        /*--dbp-override-icon-cloud: url(<%= getUrl('') %>icons/nextcloud.svg);*/
         }
     </style>
 
