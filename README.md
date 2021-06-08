@@ -76,6 +76,11 @@ Note that you will need a Keycloak server along with a client id for the domain 
 - `allow-annotating` (optional): Needs to be set to allow annotating the PDFs
     - example `allow-annotating`
 
+#### Exposed CSS variables
+
+- `--dbp-override-image-nextcloud` is used to override the cloud image on the connection screen of the Nextcloud file picker
+  - example CSS: `html { --dbp-override-image-nextcloud: url(/icons/nextcloud.svg); }`
+
 ### dbp-official-signature-pdf-upload
 
 You can use this activity to officially sign PDF documents like this:
@@ -110,6 +115,11 @@ Note that you will need a Keycloak server along with a client id for the domain 
     - example `allow-annotating`
 - `show-clipboard` (optional): Needs to be set to allow using the clipboard in the file picker dialog
     - example `show-clipboard`
+
+#### Exposed CSS variables
+
+- `--dbp-override-image-nextcloud` is used to override the cloud image on the connection screen of the Nextcloud file picker
+  - example CSS: `html { --dbp-override-image-nextcloud: url(/icons/nextcloud.svg); }`
 
 ### dbp-signature-verification
 
