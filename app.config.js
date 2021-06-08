@@ -15,6 +15,8 @@ export default {
         nextcloudAuthInfoEN: nextcloudAuthInfoEN,
         pdfAsQualifiedlySigningServer: 'https://sig-dev.tugraz.at',
         hiddenActivities: ['dbp-signature-verification-full'],
+        siteName: 'TU Graz',
+        siteSubName: 'Graz University of Technology'
     },
     bs: {
         basePath: '/dist/',
@@ -29,6 +31,8 @@ export default {
         nextcloudAuthInfoEN: nextcloudAuthInfoEN,
         pdfAsQualifiedlySigningServer: 'https://sig-dev.tugraz.at',
         hiddenActivities: [],
+        siteName: 'TU Graz',
+        siteSubName: 'Graz University of Technology'
     },
     development: {
         basePath: '/apps/signature/',
@@ -43,6 +47,8 @@ export default {
         nextcloudAuthInfoEN: nextcloudAuthInfoEN,
         pdfAsQualifiedlySigningServer: 'https://sig-dev.tugraz.at',
         hiddenActivities: ['dbp-signature-verification-full'],
+        siteName: 'TU Graz',
+        siteSubName: 'Graz University of Technology'
     },
     demo: {
         basePath: '/apps/signature/',
@@ -57,6 +63,8 @@ export default {
         nextcloudAuthInfoEN: nextcloudAuthInfoEN,
         pdfAsQualifiedlySigningServer: 'https://sig-test.tugraz.at',
         hiddenActivities: ['dbp-signature-verification-full'],
+        siteName: 'TU Graz',
+        siteSubName: 'Graz University of Technology'
     },
     production: {
         basePath: '/',
@@ -71,5 +79,7 @@ export default {
         nextcloudAuthInfoEN: nextcloudAuthInfoEN,
         pdfAsQualifiedlySigningServer: 'https://sig.tugraz.at',
         hiddenActivities: ['dbp-signature-verification-full'],
+        siteName: 'TU Graz',
+        siteSubName: 'Graz University of Technology'
     },
 };
