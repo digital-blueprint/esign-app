@@ -14,9 +14,7 @@ export default {
         nextcloudAuthInfoDE: nextcloudAuthInfoDE,
         nextcloudAuthInfoEN: nextcloudAuthInfoEN,
         pdfAsQualifiedlySigningServer: 'https://sig-dev.tugraz.at',
-        hiddenActivities: ['dbp-signature-verification-full'],
-        siteName: 'TU Graz',
-        siteSubName: 'Graz University of Technology'
+        hiddenActivities: ['dbp-signature-verification-full']
     },
     bs: {
         basePath: '/dist/',
@@ -30,9 +28,7 @@ export default {
         nextcloudAuthInfoDE: nextcloudAuthInfoDE,
         nextcloudAuthInfoEN: nextcloudAuthInfoEN,
         pdfAsQualifiedlySigningServer: 'https://sig-dev.tugraz.at',
-        hiddenActivities: [],
-        siteName: 'TU Graz',
-        siteSubName: 'Graz University of Technology'
+        hiddenActivities: []
     },
     development: {
         basePath: '/apps/signature/',
@@ -46,9 +42,7 @@ export default {
         nextcloudAuthInfoDE: nextcloudAuthInfoDE,
         nextcloudAuthInfoEN: nextcloudAuthInfoEN,
         pdfAsQualifiedlySigningServer: 'https://sig-dev.tugraz.at',
-        hiddenActivities: ['dbp-signature-verification-full'],
-        siteName: 'TU Graz',
-        siteSubName: 'Graz University of Technology'
+        hiddenActivities: ['dbp-signature-verification-full']
     },
     demo: {
         basePath: '/apps/signature/',
@@ -62,9 +56,7 @@ export default {
         nextcloudAuthInfoDE: nextcloudAuthInfoDE,
         nextcloudAuthInfoEN: nextcloudAuthInfoEN,
         pdfAsQualifiedlySigningServer: 'https://sig-test.tugraz.at',
-        hiddenActivities: ['dbp-signature-verification-full'],
-        siteName: 'TU Graz',
-        siteSubName: 'Graz University of Technology'
+        hiddenActivities: ['dbp-signature-verification-full']
     },
     production: {
         basePath: '/',
@@ -78,8 +70,6 @@ export default {
         nextcloudAuthInfoDE: nextcloudAuthInfoDE,
         nextcloudAuthInfoEN: nextcloudAuthInfoEN,
         pdfAsQualifiedlySigningServer: 'https://sig.tugraz.at',
-        hiddenActivities: ['dbp-signature-verification-full'],
-        siteName: 'TU Graz',
-        siteSubName: 'Graz University of Technology'
+        hiddenActivities: ['dbp-signature-verification-full']
     },
 };
