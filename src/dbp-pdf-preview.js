@@ -7,7 +7,7 @@ import DBPLitElement from '@dbp-toolkit/common/dbp-lit-element';
 import {MiniSpinner, Icon} from '@dbp-toolkit/common';
 import * as commonUtils from "@dbp-toolkit/common/utils";
 import * as commonStyles from '@dbp-toolkit/common/styles';
-import pdfjs from 'pdfjs-dist/es5/build/pdf.js';
+import pdfjs from 'pdfjs-dist/legacy/build/pdf.js';
 import {name as pkgName} from './../package.json';
 import {readBinaryFileContent} from './utils.js';
 
