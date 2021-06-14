@@ -1,6 +1,6 @@
 {
   "official-pdf-upload": {
-    "upload-text": "In this area you can upload PDF-documents up to a size of 32MB. The PDF-documents can also be located in a ZIP-file.",
+    "upload-text": "The official signature of the \"Electronic Signature Service\" is an application with which you can provide PDF files with an electronic (qualified) official signature. A qualified signature is legally equivalent to your personal signature on the Internet and a handwritten signature.",
     "upload-area-text": "In this area you can upload PDF-documents up to a size of 32MB via Drag & Drop or by selecting them directly. The PDF-documents can also be located in a ZIP-file.",
     "queued-files-label": "Queued documents",
     "queued-files-empty1": "No queued documents",
@@ -27,7 +27,7 @@
     "signature-placement-label": "Place signature",
     "positioning": "Positioning",
     "confirm-page-leave": "Are you sure you want to leave this page? There are still signed documents ready to be downloaded.",
-    "file-picker-context": "Upload PDF-documents to sign",
+    "file-picker-context": "Upload PDF-documents to sign (max. 32 MB per file)",
     "add-annotation-title": "Add annotation to PDF",
     "annotation-type-please-select": "Please select a type",
     "annotation": "Annotations",
@@ -38,7 +38,7 @@
   "qualified-pdf-upload": {
     "save-field-label": "Save {{count}} file",
     "save-field-label_plural": "Save {{count}} files",
-    "upload-text": "In this area you can upload PDF-documents up to a size of 32MB. The PDF-documents can also be located in a ZIP-file.",
+    "upload-text": "The \"Electronic Signature Service\" is an application with which you can provide PDF files with a personal, electronic (qualified) signature. A qualified signature is legally equivalent to your personal signature on the Internet and a handwritten signature.",
     "upload-area-text": "In this area you can upload PDF-documents up to a size of 32MB via Drag & Drop or by selecting them directly. The PDF-documents can also be located in a ZIP-file.",
     "current-signing-process-label": "Current signing process",
     "queued-files-label": "Queued documents",
@@ -66,7 +66,7 @@
     "signature-placement-label": "Place signature",
     "positioning": "Positioning",
     "confirm-page-leave": "Are you sure you want to leave this page? There are still signed documents ready to be downloaded.",
-    "file-picker-context": "Upload PDF-documents to sign",
+    "file-picker-context": "Upload PDF-documents to sign  (max. 32 MB per file)",
     "annotation": "Annotations",
     "annotation-no": "No",
     "annotation-yes": "Yes",
@@ -99,7 +99,7 @@
     "value-message": "Verification",
     "no-signatures-found": "No signatures were found.",
     "confirm-page-leave": "Are you sure you want to leave this page? There are still signed documents ready to be downloaded.",
-    "file-picker-context": "Upload PDF-documents to verify"
+    "file-picker-context": "Upload PDF-documents to verify  (max. 32 MB per file)"
   },
   "signature-verification-extern": {
     "description-text": "To check a PDF signature for validity, please use the verification service of the Rundfunk und Telekom Regulierungs-GmbH. This verification service allows you to check whether the document contains a valid signature.",

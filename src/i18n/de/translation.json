@@ -1,6 +1,6 @@
 {
   "official-pdf-upload": {
-    "upload-text": "Sie können PDF-Dokumente mit einer Maximalgröße von bis zu 32MB pro Dokument hochladen. Die PDF-Dokumente dürfen sich auch in ZIP-Dateien befinden.",
+    "upload-text": "Die Amtssignatur des \"Elektronische Signaturservice\" ist eine Applikation, mit der Sie PDF-Dateien mit einer elektronischen (qualifizierten) Amtssignatur versehen können. Eine qualifizierte Signatur ist Ihre persönliche Unterschrift im Internet und der eigenhändigen Unterschrift rechtlich gleichgestellt.",
     "upload-area-text": "Sie können in diesem Bereich PDF-Dokumente mit einer Maximalgröße von bis zu 32MB pro Dokument per Drag & Drop oder per Direktauswahl hochladen. Die PDF-Dokumente dürfen sich auch in ZIP-Dateien befinden.",
     "queued-files-label": "Dokumente in der Warteschlange",
     "queued-files-empty1": "Kein Dokument in der Warteschlange",
@@ -27,7 +27,7 @@
     "signature-placement-label": "Signatur platzieren",
     "positioning": "Positionierung",
     "confirm-page-leave": "Sind Sie sicher, dass Sie die Seite verlassen wollen? Es stehen signierte Dokumente zum Download bereit.",
-    "file-picker-context": "PDF-Dokumente zum Signieren auswählen",
+    "file-picker-context": "PDF-Dokumente zum Signieren auswählen (max. 32 MB pro Datei)",
     "add-annotation-title": "Dem PDF eine Kennzahl hinzufügen",
     "annotation-type-please-select": "Bitte wählen Sie einen Typ aus",
     "annotation": "Anmerkungen",
@@ -38,7 +38,7 @@
   "qualified-pdf-upload": {
     "save-field-label": "{{count}} Datei speichern",
     "save-field-label_plural": "{{count}} Dateien speichern",
-    "upload-text": "Sie können PDF-Dokumente mit einer Maximalgröße von bis zu 32MB pro Dokument hochladen. Die PDF-Dokumente dürfen sich auch in ZIP-Dateien befinden.",
+    "upload-text": "Das \"Elektronische Signaturservice\" ist eine Applikation, mit der Sie PDF-Dateien mit einer persönlichen, elektronischen (qualifizierten) Signatur versehen können. Eine qualifizierte Signatur ist Ihre persönliche Unterschrift im Internet und der eigenhändigen Unterschrift rechtlich gleichgestellt.",
     "upload-area-text": "Sie können in diesem Bereich PDF-Dokumente mit einer Maximalgröße von bis zu 32MB pro Dokument per Drag & Drop oder per Direktauswahl hochladen. Die PDF-Dokumente dürfen sich auch in ZIP-Dateien befinden.",
     "current-signing-process-label": "Aktueller Signaturprozess",
     "queued-files-label": "Dokumente in der Warteschlange",
@@ -66,7 +66,7 @@
     "signature-placement-label": "Signatur platzieren",
     "positioning": "Positionierung",
     "confirm-page-leave": "Sind Sie sicher, dass Sie die Seite verlassen wollen? Es stehen signierte Dokumente zum Download bereit.",
-    "file-picker-context": "PDF-Dokumente zum Signieren auswählen",
+    "file-picker-context": "PDF-Dokumente zum Signieren auswählen  (max. 32 MB pro Datei)",
     "annotation": "Anmerkungen",
     "annotation-no": "Nein",
     "annotation-yes": "Ja",
@@ -99,7 +99,7 @@
     "value-message": "Überprüfung",
     "no-signatures-found": "Es wurden keine Signaturen gefunden.",
     "confirm-page-leave": "Sind Sie sicher, dass Sie die Seite verlassen wollen? Es stehen signierte Dokumente zum Download bereit.",
-    "file-picker-context": "PDF-Dokumente zum Verifizieren auswählen"
+    "file-picker-context": "PDF-Dokumente zum Verifizieren auswählen (max. 32 MB pro Datei)"
   },
   "signature-verification-extern": {
     "description-text": "Um eine PDF-Signatur auf ihre Gültigkeit zu überprüfen, benutzen Sie bitte das Verifikationsservice der Rundfunk und Telekom Regulierungs-GmbH. Mit diesem Verifikationsservice können Sie überprüfen, ob das Dokument eine valide Signatur enthält.",
