@@ -39,8 +39,6 @@ if (appEnv in appConfig) {
         matomoSiteId: -1,
         nextcloudBaseURL: 'https://test',
         nextcloudName: '',
-        nextcloudAuthInfoDE: '',
-        nextcloudAuthInfoEN: '',
         pdfAsQualifiedlySigningServer: 'https://test',
         hiddenActivities: [],
     };
@@ -133,8 +131,6 @@ export default (async () => {
             nextcloudBaseURL: config.nextcloudBaseURL,
             nextcloudFileURL: config.nextcloudFileURL,
             nextcloudName: config.nextcloudName,
-            nextcloudAuthInfoDE: config.nextcloudAuthInfoDE,
-            nextcloudAuthInfoEN: config.nextcloudAuthInfoEN,
             keyCloakBaseURL: config.keyCloakBaseURL,
             keyCloakClientId: config.keyCloakClientId,
             CSP: config.CSP,
