@@ -92,10 +92,10 @@
     nextcloud-web-app-password-url="<%= nextcloudWebAppPasswordURL %>"
     nextcloud-webdav-url="<%= nextcloudWebDavURL %>"
     nextcloud-name="<%= nextcloudName %>"
-    nextcloud-auth-info=""
     nextcloud-file-url="<%= nextcloudFileURL %>"
     initial-file-handling-state
     clipboard-files
+    html-overrides="global-override"
     auth requested-login-status analytics-event
     src="<%= getUrl(name + '.topic.metadata.json') %>"
     base-path="<%= getUrl('') %>"
@@ -137,28 +137,23 @@
 </template>
 </<%= name %>>
 
+<template id="global-override">
+    <template id="dbp-nextcloud-file-picker">
+        <div slot="auth-info">
+            <dbp-translated subscribe="lang">
+                <div slot="de">
+                    <%= nextcloudAuthInfoDE %>
+                </div>
+                <div slot="en">
+                    <%= nextcloudAuthInfoEN %>
+                </div>
+            </dbp-translated>
+        </div>
+    </template>
+</template>
+
 <!-- Error handling for too old browsers -->
 <script src="<%= getPrivateUrl('browser-check.js') %>" defer></script>
 <noscript>Diese Applikation benötigt Javascript / This application requires Javascript</noscript>
-<script>
-    const langTexts = {
-        "de": {
-            "nextcloud-auth-info": "<%= nextcloudAuthInfoDE %>",
-        },
-        "en": {
-            "nextcloud-auth-info": "<%= nextcloudAuthInfoEN %>",
-        },
-    }
-
-    window.addEventListener('dbp-lang', function (e) {
-        const lang = e.detail;
-        if (!lang) {
-            return;
-        }
-
-        const app = document.getElementById("app");
-        app.setAttribute("nextcloud-auth-info", langTexts[lang]["nextcloud-auth-info"]);
-    });
-</script>
 </body>
 </html>
