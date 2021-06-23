@@ -14,5 +14,5 @@
     "de": "Erlaubt das Verifizieren von signierten PDF-Dokumenten",
     "en": "Allows verification of signed PDF-documents"
   },
-  "subscribe": "lang,entry-point-url,auth"
+  "subscribe": "lang,entry-point-url,auth,html-overrides"
 }

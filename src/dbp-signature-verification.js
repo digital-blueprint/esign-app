@@ -117,7 +117,7 @@ class SignatureVerification extends ScopedElementsMixin(DBPSignatureLitElement) 
             <p>
                 ${i18n.t('signature-verification-extern.adobe-reader-text')}
             </p>
-            <a target="_blank" rel="noopener" class="int-link-internal" href="https://security.tugraz.at/zertifikate/pruefung/adobe.shtml">${i18n.t('signature-verification-extern.adobe-link-label')}</a>
+            <slot name="additional-information"></slot>
         `;
     }
 }

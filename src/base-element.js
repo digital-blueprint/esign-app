@@ -1,6 +1,6 @@
-import {AdapterLitElement} from "@dbp-toolkit/provider/src/adapter-lit-element";
+import DBPLitElement from "../vendor/toolkit/packages/common/dbp-lit-element";
 
-export class BaseLitElement extends AdapterLitElement {
+export class BaseLitElement extends DBPLitElement {
     constructor() {
         super();
         this.auth = {};
