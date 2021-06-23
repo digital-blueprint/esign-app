@@ -269,7 +269,7 @@ export const getAnnotationTypes = (key = null) => {
  *
  * @param selectedKey
  * @param lang
- * * @returns {*[]} Array of html templates
+ * @returns {*[]} Array of html templates
  */
 export const getAnnotationTypeSelectOptionsHtml = (selectedKey, lang) => {
     const annotationTypes = getAnnotationTypes();

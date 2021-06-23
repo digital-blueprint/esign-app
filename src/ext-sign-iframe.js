@@ -7,8 +7,8 @@ import {ScopedElementsMixin} from '@open-wc/scoped-elements';
  * Set the URL via setUrl(), reset via reset().
  * 
  * Emits two custom events:
- *  * signature-error with a "message"
- *  * signature-done with an "id"
+ *  signature-error with a "message"
+ *  signature-done with an "id"
  */
 export class ExternalSignIFrame extends ScopedElementsMixin(LitElement) {
 

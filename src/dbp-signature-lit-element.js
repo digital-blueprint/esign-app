@@ -54,10 +54,8 @@ export default class DBPSignatureLitElement extends BaseLitElement {
     }
 
     /**
-     * 
      * @param {*} key 
      * @param {*} name 
-     * @returns shows PdfAnnotationView
      */
     async showAnnotationView(key, name) {
 
@@ -206,7 +204,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
      * Checks if annotations are enabled for an annotation key
      *
      * @param key
-     * @returns {boolean}
+     * @returns {boolean} true if annotations are enabled for annotation key
      */
     isAnnotationsEnabledForKey(key) {
         return this.queuedFilesEnabledAnnotations.includes(key);
