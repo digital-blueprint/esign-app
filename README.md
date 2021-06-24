@@ -130,3 +130,35 @@ This activity shows an information page where to verify signed documents, you ca
 
 - `lang` (optional, default: `de`): set to `de` or `en` for German or English
     - example `lang="de"`
+
+#### Slots
+
+You use templates tags to inject slots into the activity.
+These templates will be converted to div containers when the page is loaded and will not show up before that.
+
+##### additional-information
+
+The content of this slot will be shown below the other text and can be used to provide
+further information about the verification process. For example a link to a page with
+more information about verifying a document with Adobe Reader can be provided.
+
+Example:
+
+```html
+<dbp-signature-verification lang="de">
+  <template slot="additional-information">
+    <dbp-translated subscribe="lang">
+      <div slot="de">
+        <a target="_blank" href="#german-link">
+          Weitere Information zur Verifikation mit Adobe Reader
+        </a>
+      </div>
+      <div slot="en">
+        <a target="_blank" href="#english-link">
+          More information about verification with Adobe Reader
+        </a>
+      </div>
+    </dbp-translated>
+  </template>
+</dbp-signature-verification>
+```
