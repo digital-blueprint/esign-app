@@ -162,3 +162,6 @@ Example:
   </template>
 </dbp-signature-verification>
 ```
+
+### Design Note
+To enable a uniform design, the activity should be used in a container with a width of at least 768 pixels. Under a width of 768 pixels, the activity should occupy 100% of the width of the window to ensure a responsive design.
