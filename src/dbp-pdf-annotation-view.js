@@ -320,7 +320,9 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
             }
 
             /* Handling for small displays (like mobile devices) */
-            @media (max-width: 680px) {
+            @media only screen
+            and (orientation: portrait)
+            and (max-width: 768px) {
                 .nav-buttons {
                     flex-direction: column;
                 }

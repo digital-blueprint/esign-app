@@ -526,7 +526,9 @@ class SignatureVerificationFull extends ScopedElementsMixin(DBPSignatureLitEleme
             }
 
             /* Handling for small displays (like mobile devices) */
-            @media (max-width: 680px) {
+            @media only screen
+            and (orientation: portrait)
+            and (max-width: 768px) {
                 /* Modal preview, upload and external auth */
                 div.right-container > * {
                     position: fixed;
