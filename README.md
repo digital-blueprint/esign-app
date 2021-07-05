@@ -167,3 +167,19 @@ Example:
 
 To ensure a uniform and responsive design the activity should occupy 100% of the window width
 when the activity width is less than 768 px.
+
+## Mandatory attributes
+
+If you are not using the `provider-root` attribute to "terminate" all provider attributes
+you need to manually add these attributes so that the topic will work properly:
+
+```html
+<dbp-signature
+    auth
+    requested-login-status
+    analytics-event
+    initial-file-handling-state
+    clipboard-files
+>
+</dbp-signature>
+```
