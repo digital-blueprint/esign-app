@@ -163,5 +163,7 @@ Example:
 </dbp-signature-verification>
 ```
 
-### Design Note
-To ensure a uniform and responsive design the activity should occupy 100% of the window width when the activity width is less than 768 px.
+## Design Notes
+
+To ensure a uniform and responsive design the activity should occupy 100% of the window width
+when the activity width is less than 768 px.
