@@ -25,6 +25,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
         this.totalPages = 0;
         this.isShowPage = false;
         this.isPageLoaded = false;
+        this.showErrorMessage = false;
         this.isPageRenderingInProgress = false;
         this.isShowPlacement = true;
         this.canvas = null;
@@ -60,6 +61,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
             isShowPage: { type: Boolean, attribute: false },
             isPageRenderingInProgress: { type: Boolean, attribute: false },
             isPageLoaded: { type: Boolean, attribute: false },
+            showErrorMessage: { type: Boolean, attribute: false },
             isShowPlacement: { type: Boolean, attribute: false },
             placeholder: { type: String, attribute: 'signature-placeholder-image-src' },
             signature_width: { type: Number, attribute: 'signature-width' },
@@ -195,6 +197,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
     async showPDF(file, isShowPlacement = false, placementData = {}) {
         let item = this.getSignatureRect();
         this.isPageLoaded = false; // prevent redisplay of previous pdf
+        this.showErrorMessage = false;
 
         // move signature if placementData was set
         if (item !== undefined) {
@@ -225,6 +228,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
             this.pdfDoc = await pdfjs.getDocument({data: data}).promise;
         } catch (error) {
             console.error(error);
+            this.showErrorMessage = true;
             return;
         }
 
@@ -561,6 +565,13 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
             .button.is-cancel {
                 color: #e4154b;
             }
+            
+            .error-message{
+                text-align: center;
+                border: 1px solid black;
+                border-top: 0px;
+                padding: 15px;
+            }
         `;
     }
 
@@ -575,7 +586,10 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
             </form>
 -->
             <div id="pdf-main-container" class="${classMap({hidden: !this.isShowPage})}">
-                <dbp-mini-spinner class="${classMap({hidden: this.isPageLoaded})}"></dbp-mini-spinner>
+                <dbp-mini-spinner class="${classMap({hidden: this.isPageLoaded || this.showErrorMessage})}"></dbp-mini-spinner>
+                <div class="error-message ${classMap({hidden: !this.showErrorMessage || this.isPageLoaded})}">
+                    ${i18n.t('pdf-preview.error-message')}
+                </div>
                 <div class="${classMap({hidden: !this.isPageLoaded})}">
                     <div id="pdf-meta">
                         <div class="buttons ${classMap({hidden: !this.isPageLoaded})}">

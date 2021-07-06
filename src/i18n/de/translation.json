@@ -114,7 +114,8 @@
     "page-count": "von {{totalPages}}",
     "rotate-signature": "Signatur im Uhrzeigersinn rotieren",
     "rotate": "Signatur rotieren",
-    "continue": "Platzierung bestätigen"
+    "continue": "Platzierung bestätigen",
+    "error-message": "Fehler: Dieses Dokument ist beschädigt."
   },
   "annotation-view": {
     "delete-all-button-text": "Alle entfernen",

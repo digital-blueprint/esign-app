@@ -114,7 +114,8 @@
     "page-count": "of {{totalPages}}",
     "rotate-signature": "Rotate signature clockwise",
     "rotate": "Rotate signature",
-    "continue": "Confirm placement"
+    "continue": "Confirm placement",
+    "error-message": "Error: This document is incorrect."
   },
   "annotation-view": {
     "delete-all-button-text": "Clear all",
