@@ -14,7 +14,6 @@ import JSONLD from "@dbp-toolkit/common/jsonld";
 import {TextSwitch} from './textswitch.js';
 import {FileSink} from "@dbp-toolkit/file-handling";
 import {name as pkgName} from './../package.json';
-import {getPDFSignatureCount} from './utils.js';
 import {send as notify} from '@dbp-toolkit/common/notification';
 import metadata from './dbp-qualified-signature-pdf-upload.metadata.json';
 import {Activity} from './activity.js';
@@ -383,6 +382,13 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             }
         });
         super.update(changedProperties);
+    }
+
+    clearQueuedFiles() {
+        this.queuedFilesSignaturePlacements = [];
+        this.queuedFilesPlacementModes = [];
+        this.queuedFilesNeedsPlacement.clear();
+        super.clearQueuedFiles();
     }
 
 

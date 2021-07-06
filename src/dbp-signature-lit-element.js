@@ -549,12 +549,6 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         return file;
     }
 
-    clearQueuedFiles() {
-        this.queuedFilesSignaturePlacements = [];
-        this.queuedFilesPlacementModes = [];
-        this.queuedFilesNeedsPlacement.clear();
-        super.clearQueuedFiles();
-    }
 
     clearSignedFiles() {
         this.signedFiles = [];

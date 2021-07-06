@@ -276,6 +276,13 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         super.update(changedProperties);
     }
 
+    clearQueuedFiles() {
+        this.queuedFilesSignaturePlacements = [];
+        this.queuedFilesPlacementModes = [];
+        this.queuedFilesNeedsPlacement.clear();
+        super.clearQueuedFiles();
+    }
+
 
 
     static get styles() {
