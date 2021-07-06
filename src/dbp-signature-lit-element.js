@@ -2,6 +2,7 @@ import * as utils from "./utils";
 import * as commonUtils from "@dbp-toolkit/common/utils";
 import {BaseLitElement} from './base-element.js';
 import {SignatureEntry} from './signature-entry.js';
+import {getPDFSignatureCount} from "./utils";
 
 export default class DBPSignatureLitElement extends BaseLitElement {
     constructor() {
@@ -419,4 +420,156 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             span.classList.remove('bold-filename');
         }
     }
+
+    async _updateNeedsPlacementStatus(id) {
+        let entry = this.queuedFiles[id];
+        let sigCount = await getPDFSignatureCount(entry.file);
+        this.queuedFilesNeedsPlacement.delete(id);
+        if (sigCount > 0)
+            this.queuedFilesNeedsPlacement.set(id, true);
+    }
+
+    storePDFData(event) {
+        let placement = event.detail;
+        let placementMode = 'manual';
+
+        let key = this.currentPreviewQueueKey;
+        this.queuedFilesSignaturePlacements[key] = placement;
+        this.queuedFilesPlacementModes[key] = placementMode;
+        this.signaturePlacementInProgress = false;
+    }
+
+    /**
+     * Called when preview is "canceled"
+     *
+     * @param event
+     */
+    hidePDF(event) {
+        // reset placement mode to "auto" if no placement was confirmed previously
+        if (this.queuedFilesSignaturePlacements[this.currentPreviewQueueKey] === undefined) {
+            this.queuedFilesPlacementModes[this.currentPreviewQueueKey] = "auto";
+        }
+        this.signaturePlacementInProgress = false;
+    }
+
+    queuePlacementSwitch(key, name) {
+        this.queuedFilesPlacementModes[key] = name;
+        console.log(name);
+
+        if (name === "manual") {
+            this.showPreview(key, true);
+        } else if (this.currentPreviewQueueKey === key) {
+            this.signaturePlacementInProgress = false;
+        }
+        this.requestUpdate();
+    }
+
+    endSigningProcessIfQueueEmpty() {
+        if (this.queuedFilesCount === 0 && this.signingProcessActive) {
+            this.signingProcessActive = false;
+        }
+    }
+
+    /**
+     * @param ev
+     */
+    onFileSelected(ev) {
+        this.queueFile(ev.detail.file);
+    }
+
+
+
+    /**
+     * Re-Upload all failed files
+     */
+    reUploadAllClickHandler() {
+        const that = this;
+
+        // we need to make a copy and reset the queue or else our queue will run crazy
+        const errorFilesCopy = {...this.errorFiles};
+        this.errorFiles = [];
+        this.errorFilesCount = 0;
+
+        commonUtils.asyncObjectForEach(errorFilesCopy, async (file, id) => {
+            await this.fileQueueingClickHandler(file.file, id);
+        });
+
+        that._("#re-upload-all-button").stop();
+    }
+
+    /**
+     * Queues a failed pdf-file again
+     *
+     * @param file
+     * @param id
+     */
+    async fileQueueingClickHandler(file, id) {
+        this.takeFailedFileFromQueue(id);
+        return this.queueFile(file);
+    }
+
+    /**
+     * Shows the preview
+     *
+     * @param key
+     * @param withSigBlock
+     */
+    async showPreview(key, withSigBlock=false) {
+        if (this.signingProcessEnabled) {
+            return;
+        }
+
+        const entry = this.getQueuedFile(key);
+        this.currentFile = entry.file;
+        this.currentPreviewQueueKey = key;
+        console.log(entry);
+        // start signature placement process
+        this.signaturePlacementInProgress = true;
+        this.withSigBlock = withSigBlock;
+        const previewTag = this.getScopedTagName("dbp-pdf-preview");
+        await this._(previewTag).showPDF(
+            entry.file,
+            withSigBlock, //this.queuedFilesPlacementModes[key] === "manual",
+            this.queuedFilesSignaturePlacements[key]);
+    }
+
+    onLanguageChanged(e) {
+        this.lang = e.detail.lang;
+    }
+
+
+    /**
+     * Takes a failed file off of the queue
+     *
+     * @param key
+     */
+    takeFailedFileFromQueue(key) {
+        const file = this.errorFiles.splice(key, 1);
+        this.errorFilesCount = Object.keys(this.errorFiles).length;
+        return file;
+    }
+
+    clearQueuedFiles() {
+        this.queuedFilesSignaturePlacements = [];
+        this.queuedFilesPlacementModes = [];
+        this.queuedFilesNeedsPlacement.clear();
+        super.clearQueuedFiles();
+    }
+
+    clearSignedFiles() {
+        this.signedFiles = [];
+        this.signedFilesCount = 0;
+    }
+
+    clearErrorFiles() {
+        this.errorFiles = [];
+        this.errorFilesCount = 0;
+    }
+
+    isUserInterfaceDisabled() {
+        return this.signaturePlacementInProgress || this.externalAuthInProgress || this.uploadInProgress || this.addAnnotationInProgress;
+    }
+
+
+
 }

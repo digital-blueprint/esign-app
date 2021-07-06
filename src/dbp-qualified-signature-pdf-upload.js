@@ -20,6 +20,7 @@ import metadata from './dbp-qualified-signature-pdf-upload.metadata.json';
 import {Activity} from './activity.js';
 import {PdfAnnotationView} from "./dbp-pdf-annotation-view";
 import { ExternalSignIFrame } from './ext-sign-iframe.js';
+import * as SignatureStyles from './styles';
 
 const i18n = createI18nInstance();
 
@@ -130,16 +131,16 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
     disconnectedCallback() {
         // remove event listeners
         window.removeEventListener('beforeunload', this._onReceiveBeforeUnload);
+        window.removeEventListener('beforeunload', this._onReceiveBeforeUnload);
 
         super.disconnectedCallback();
     }
 
-    async _updateNeedsPlacementStatus(id) {
-        let entry = this.queuedFiles[id];
-        let sigCount = await getPDFSignatureCount(entry.file);
-        this.queuedFilesNeedsPlacement.delete(id);
-        if (sigCount > 0)
-            this.queuedFilesNeedsPlacement.set(id, true);
+    async queueFile(file) {
+        let id = await super.queueFile(file);
+        await this._updateNeedsPlacementStatus(id);
+        this.requestUpdate();
+        return id;
     }
 
     /**
@@ -205,40 +206,10 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         this.uploadInProgress = false;
     }
 
-    storePDFData(event) {
-        let placement = event.detail;
-        let placementMode = 'manual';
 
-        let key = this.currentPreviewQueueKey;
-        this.queuedFilesSignaturePlacements[key] = placement;
-        this.queuedFilesPlacementModes[key] = placementMode;
-        this.signaturePlacementInProgress = false;
-    }
 
-    /**
-     * Called when preview is "canceled"
-     *
-     * @param event
-     */
-    hidePDF(event) {
-        // reset placement mode to "auto" if no placement was confirmed previously
-        if (this.queuedFilesSignaturePlacements[this.currentPreviewQueueKey] === undefined) {
-            this.queuedFilesPlacementModes[this.currentPreviewQueueKey] = "auto";
-        }
-        this.signaturePlacementInProgress = false;
-    }
 
-    queuePlacementSwitch(key, name) {
-        this.queuedFilesPlacementModes[key] = name;
-        console.log(name);
 
-        if (name === "manual") {
-            this.showPreview(key, true);
-        } else if (this.currentPreviewQueueKey === key) {
-            this.signaturePlacementInProgress = false;
-        }
-        this.requestUpdate();
-    }
 
     /**
      * Decides if the "beforeunload" event needs to be canceled
@@ -349,6 +320,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         }, {}, that.lang);
     }
 
+
     _onIFrameError(event) {
         let error = event.detail.message;
         let file = this.currentFile;
@@ -359,25 +331,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         this.endSigningProcessIfQueueEmpty();
     }
 
-    endSigningProcessIfQueueEmpty() {
-        if (this.queuedFilesCount === 0 && this.signingProcessActive) {
-            this.signingProcessActive = false;
-        }
-    }
-
-    /**
-     * @param ev
-     */
-    onFileSelected(ev) {
-        this.queueFile(ev.detail.file);
-    }
-
-    async queueFile(file) {
-        let id = await super.queueFile(file);
-        await this._updateNeedsPlacementStatus(id);
-        this.requestUpdate();
-        return id;
-    }
 
     addToErrorFiles(file) {
         this.endSigningProcessIfQueueEmpty();
@@ -432,95 +385,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         super.update(changedProperties);
     }
 
-    onLanguageChanged(e) {
-        this.lang = e.detail.lang;
-    }
-
-    /**
-     * Re-Upload all failed files
-     */
-    reUploadAllClickHandler() {
-        const that = this;
-
-        // we need to make a copy and reset the queue or else our queue will run crazy
-        const errorFilesCopy = {...this.errorFiles};
-        this.errorFiles = [];
-        this.errorFilesCount = 0;
-
-        commonUtils.asyncObjectForEach(errorFilesCopy, async (file, id) => {
-            await this.fileQueueingClickHandler(file.file, id);
-        });
-
-        that._("#re-upload-all-button").stop();
-    }
-
-    /**
-     * Queues a failed pdf-file again
-     *
-     * @param file
-     * @param id
-     */
-    async fileQueueingClickHandler(file, id) {
-        this.takeFailedFileFromQueue(id);
-        return this.queueFile(file);
-    }
-
-    /**
-     * Shows the preview
-     *
-     * @param key
-     * @param withSigBlock
-     */
-    async showPreview(key, withSigBlock=false) {
-        if (this.signingProcessEnabled) {
-            return;
-        }
-
-        const entry = this.getQueuedFile(key);
-        this.currentFile = entry.file;
-        this.currentPreviewQueueKey = key;
-        console.log(entry);
-        // start signature placement process
-        this.signaturePlacementInProgress = true;
-        this.withSigBlock = withSigBlock;
-        const previewTag = this.getScopedTagName("dbp-pdf-preview");
-        await this._(previewTag).showPDF(
-            entry.file,
-            withSigBlock, //this.queuedFilesPlacementModes[key] === "manual",
-            this.queuedFilesSignaturePlacements[key]);
-    }
-
-    /**
-     * Takes a failed file off of the queue
-     *
-     * @param key
-     */
-    takeFailedFileFromQueue(key) {
-        const file = this.errorFiles.splice(key, 1);
-        this.errorFilesCount = Object.keys(this.errorFiles).length;
-        return file;
-    }
-
-    clearQueuedFiles() {
-        this.queuedFilesSignaturePlacements = [];
-        this.queuedFilesPlacementModes = [];
-        this.queuedFilesNeedsPlacement.clear();
-        super.clearQueuedFiles();
-    }
-
-    clearSignedFiles() {
-        this.signedFiles = [];
-        this.signedFilesCount = 0;
-    }
-
-    clearErrorFiles() {
-        this.errorFiles = [];
-        this.errorFilesCount = 0;
-    }
-
-    isUserInterfaceDisabled() {
-        return this.signaturePlacementInProgress || this.externalAuthInProgress || this.uploadInProgress || this.addAnnotationInProgress;
-    }
 
     static get styles() {
         // language=css
@@ -529,191 +393,9 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             ${commonStyles.getGeneralCSS(false)}
             ${commonStyles.getButtonCSS()}
             ${commonStyles.getNotificationCSS()}
+            ${SignatureStyles.getSignatureCss()}
 
-            #annotation-view .button.is-cancel {
-                background: transparent;
-                border: none;
-                font-size: 1.5rem;
-                color: var(--dbp-override-danger-bg-color);
-                cursor: pointer;
-                padding: 0px;
-                padding-right: 2px;
-            }
-
-            #annotation-view .box-header, #external-auth .box-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: start;
-            }
-
-            #annotation-view .box-header .filename, #external-auth .box-header .filename {
-                overflow: hidden;
-                text-overflow: ellipsis;
-                margin-right: 0.5em;
-            }
-
-            #pdf-preview, #annotation-view {
-                min-width: 320px;
-                box-sizing: border-box;
-            }
-
-            h2:first-child {
-                margin-top: 0;
-                margin-bottom: 0px;
-            }
-
-            strong {
-                font-weight: 600;
-            }
-
-            #pdf-preview .box-header, #annotation-view .box-header {
-                border: 1px solid #000;
-                border-bottom-width: 0;
-                padding: 0.5em 0.5em 0 0.5em;
-            }
-
-            .hidden {
-                display: none;
-            }
-
-            .files-block.field:not(:last-child) {
-                margin-bottom: 40px;
-            }
-
-            .files-block .file {
-                margin: 10px 0;
-            }
-
-            .error-files .file {
-                display: grid;
-                grid-template-columns: 40px auto;
-            }
-
-            .files-block .file .button-box {
-                display: flex;
-                align-items: center;
-            }
-
-            .files-block .file .info {
-                display: inline-block;
-                vertical-align: middle;
-            }
-
-            .file .info strong {
-                font-weight: 600;
-            }
-
-            .notification dbp-mini-spinner {
-                position: relative;
-                top: 2px;
-                margin-right: 5px;
-            }
-
-            .error, #cancel-signing-process {
-                color: #e4154b;
-            }
-
-            #cancel-signing-process:hover {
-                color: white;
-            }
-
-            /* using dbp-icon doesn't work */
-            button > [name=close], a > [name=close] {
-                font-size: 0.8em;
-            }
-
-            a > [name=close] {
-                color: red;
-            }
-
-            .empty-queue {
-                margin: 10px 0;
-            }
-
-            #grid-container {
-                display: flex;
-                flex-flow: row wrap;
-            }
-
-            #grid-container > div {
-                margin-right: 20px;
-            }
-
-            #grid-container > div:last-child {
-                margin-right: 0;
-                flex: 1 0;
-            }
-
-            .file-block {
-                max-width: 320px;
-            }
-
-            .file-block, .box {
-                border: solid 1px black;
-                padding: 10px;
-            }
-
-            .file-block, .box .file {
-                margin-top: 0;
-            }
-
-            .file-block {
-                margin-bottom: 10px;
-            }
-
-            .file-block .header {
-                display: grid;
-                align-items: center;
-                grid-template-columns: auto 40px;
-                grid-gap: 10px;
-            }
-
-            .file-block.error .header {
-                grid-template-columns: auto 80px;
-            }
-
-            .file-block.error .header .buttons {
-                white-space: nowrap;
-            }
-
-            .file-block div.bottom-line {
-                display: grid;
-                align-items: center;
-                grid-template-columns: auto auto;
-                grid-gap: 6px;
-                margin-top: 6px;
-            }
-
-            .file-block .error-line {
-                margin-top: 6px;
-                color: var(--dbp-override-danger-bg-color);
-            }
-
-            .file-block.error div.bottom-line {
-                display: block;
-            }
-
-            .file-block div.bottom-line .headline {
-                text-align: right;
-            }
-
-            .file-block .filename, .file-block div.bottom-line .headline {
-                text-overflow: ellipsis;
-                overflow: hidden;
-            }
-
-            .file-block .filename {
-                white-space: nowrap;
-            }
-
-            .bold-filename {
-                font-weight: bold;
-            }
-
-            #pdf-preview .button.is-cancel {
-                color: #e4154b;
-            }
-
+            
             #external-auth #iframe {
                 margin-top: 0.5em;
             }
@@ -727,97 +409,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                 height: 350px;
                 /* keeps the A-Trust webpage aligned left */
                 max-width: 575px;
-            }
-
-            .is-right {
-                float: right;
-            }
-
-            .error-files .header {
-                color: black;
-            }
-
-            /* prevent hovering of disabled default button */
-            .button[disabled]:not(.is-primary):hover {
-                background-color: inherit;
-                color: inherit;
-            }
-
-            .is-disabled, .is-disabled.button[disabled] {
-                opacity: 0.2;
-                pointer-events: none;
-            }
-
-            #pdf-preview .box-header, #external-auth .box-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: start;
-            }
-
-            #pdf-preview .box-header .filename, #external-auth .box-header .filename {
-                overflow: hidden;
-                text-overflow: ellipsis;
-                margin-right: 0.5em;
-            }
-            
-            #grid-container{
-                margin-top: 2rem;
-                /* padding-top: 2rem; */
-            }
-            
-            .border{
-                border-top: 1px solid black;
-                margin-top: 2rem;
-                padding-top: 2rem;
-            }
-
-            .placement-missing {
-                border: solid 2px var(--dbp-override-danger-bg-color);
-            }
-            
-            .subheadline{
-                font-style: italic;
-                padding-left: 2em;
-                margin-top: -1px;
-                /*line-height: 1.8;*/
-                margin-bottom: 1.2em;
-            }
-            
-            
-
-            /* Handling for small displays (like mobile devices) */
-            @media only screen
-            and (orientation: portrait)
-            and (max-width: 768px) {
-                /* Modal preview, upload and external auth */
-                div.right-container > * {
-                    position: fixed;
-                    z-index: 1000;
-                    padding: 10px;
-                    top: 0;
-                    left: 0;
-                    right: 0;
-                    bottom: 0;
-                    background-color: white;
-                    overflow-y: scroll;
-                }
-
-                /* Don't use the whole screen for the upload progress */
-                #upload-progress {
-                    top: 10px;
-                    left: 10px;
-                    right: 10px;
-                    bottom: inherit;
-                }
-
-                #grid-container > div {
-                    margin-right: 0;
-                    width: 100%;
-                }
-
-                .file-block {
-                    max-width: inherit;
-                }
             }
         `;
     }
