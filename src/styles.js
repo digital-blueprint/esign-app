@@ -206,11 +206,12 @@ export function getSignatureCss() {
             pointer-events: none;
         }
 
-        #pdf-preview {
+        #pdf-preview, #annotation-view {
             position: sticky;
             top: 0px;
             height: 100vh;
             overflow: auto;
+            padding-bottom: 30px;
         }
 
         #pdf-preview .box-header {
