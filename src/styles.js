@@ -253,7 +253,7 @@ export function getSignatureCss() {
         and (orientation: portrait)
         and (max-width: 768px) {
             /* Modal preview, upload and external auth */
-            div.right-container > * {
+            div.right-container > *  {
                 position: fixed;
                 z-index: 1000;
                 padding: 10px;
@@ -282,7 +282,7 @@ export function getSignatureCss() {
                 max-width: inherit;
             }
             
-            #pdf-preview {
+            #pdf-preview, #annotation-view {
                 position: fixed;
             }
         }
