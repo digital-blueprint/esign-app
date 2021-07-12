@@ -290,6 +290,20 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         super.clearQueuedFiles();
     }
 
+    async stopSigningProcess() {
+        console.log("stop");
+        this.signingProcessEnabled = false;
+        this.signingProcessActive = false;
+
+        if (this.currentFile.file !== undefined) {
+            const key = await this.queueFile(this.currentFile.file);
+
+            // set placement mode and parameters so they are restore when canceled
+            this.queuedFilesPlacementModes[key] = this.currentFilePlacementMode;
+            this.queuedFilesSignaturePlacements[key] = this.currentFileSignaturePlacement;
+        }
+    }
+
 
 
     static get styles() {
@@ -504,7 +518,6 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                 </button>
                                 <!-- -->
                                 <button @click="${this.stopSigningProcess}"
-                                        ?disabled="${this.uploadInProgress}"
                                         id="cancel-signing-process"
                                         class="button is-right ${classMap({hidden: !this.signingProcessActive})}">
                                     ${i18n.t('official-pdf-upload.stop-signing-process-button')}

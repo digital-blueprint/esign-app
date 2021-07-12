@@ -565,5 +565,4 @@ export default class DBPSignatureLitElement extends BaseLitElement {
     }
 
 
-
 }
