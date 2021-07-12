@@ -583,7 +583,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                             <h2>${i18n.t('official-pdf-upload.annotation-view-label')}</h2>
                             <div class="box-header">
                                 <div class="filename">
-                                    <strong>${this.currentFile.name}</strong> (${humanFileSize(this.currentFile !== undefined ? this.currentFile.size : 0)})
+                                    <strong>${this.currentFile.file !== undefined ? this.currentFile.file.name : ''}</strong> (${humanFileSize(this.currentFile.file !== undefined ? this.currentFile.file.size : 0)})
                                 </div>
                                 <button class="button is-cancel annotation"
                                     @click="${this.hideAnnotationView}"><dbp-icon name="close" id="close-icon"></dbp-icon></button>
