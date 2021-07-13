@@ -1,4 +1,4 @@
-import {createI18nInstance} from './i18n.js';
+import {createInstance} from './i18n.js';
 import {css, html} from 'lit-element';
 import {classMap} from 'lit-html/directives/class-map.js';
 import {live} from 'lit-html/directives/live.js';
@@ -11,15 +11,14 @@ import pdfjs from 'pdfjs-dist/legacy/build/pdf.js';
 import {name as pkgName} from './../package.json';
 import {readBinaryFileContent} from './utils.js';
 
-const i18n = createI18nInstance();
-
 /**
  * PdfPreview web component
  */
 export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
     constructor() {
         super();
-        this.lang = 'de';
+        this._i18n = createInstance();
+        this.lang = this._i18n.language;
         this.pdfDoc = null;
         this.currentPage = 0;
         this.totalPages = 0;
@@ -74,7 +73,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
         changedProperties.forEach((oldValue, propName) => {
             switch (propName) {
                 case "lang":
-                    i18n.changeLanguage(this.lang);
+                    this._i18n.changeLanguage(this.lang);
                     break;
             }
         });
@@ -581,6 +580,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
 
     render() {
         const isRotationHidden = !this.allowSignatureRotation;
+        const i18n = this._i18n;
 
         return html`
 

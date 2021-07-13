@@ -1,4 +1,4 @@
-import {createI18nInstance} from './i18n.js';
+import {createInstance} from './i18n.js';
 import {humanFileSize} from '@dbp-toolkit/common/i18next.js';
 import {css, html} from 'lit-element';
 import {ScopedElementsMixin} from '@open-wc/scoped-elements';
@@ -21,12 +21,11 @@ import {PdfAnnotationView} from "./dbp-pdf-annotation-view";
 import { ExternalSignIFrame } from './ext-sign-iframe.js';
 import * as SignatureStyles from './styles';
 
-const i18n = createI18nInstance();
-
 class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElement) {
     constructor() {
         super();
-        this.lang = i18n.language;
+        this._i18n = createInstance();
+        this.lang = this._i18n.language;
         this.entryPointUrl = '';
         this.nextcloudWebAppPasswordURL = "";
         this.nextcloudWebDavURL = "";
@@ -148,6 +147,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
      * Processes queued files
      */
     async handleQueuedFiles() {
+        const i18n = this._i18n;
         this.endSigningProcessIfQueueEmpty();
         if (this.queuedFilesCount === 0) {
             // reset signingProcessEnabled button
@@ -220,6 +220,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
      * @param event
      */
     onReceiveBeforeUnload(event) {
+        const i18n = this._i18n;
         // we don't need to stop if there are no signed files
         if (this.signedFilesCount === 0) {
             return;
@@ -250,6 +251,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
      * @param error
      */
     parseError(error) {
+        const i18n = this._i18n;
         let errorParsed = error;
         // Common Error Messages fpr pdf-as: https://www.buergerkarte.at/konzept/securitylayer/spezifikation/20140114/errorcodes/errorcodes.html
         // SecurityLayer Error: [6000] Unklassifizierter Abbruch durch den Bürger.
@@ -382,7 +384,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         changedProperties.forEach((oldValue, propName) => {
             switch (propName) {
                 case "lang":
-                    i18n.changeLanguage(this.lang);
+                    this._i18n.changeLanguage(this.lang);
                     break;
                 case "entryPointUrl":
                     JSONLD.getInstance(this.entryPointUrl).then((jsonld) => {
@@ -442,6 +444,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
      */
     getQueuedFilesHtml() {
         const ids = Object.keys(this.queuedFiles);
+        const i18n = this._i18n;
         let results = [];
 
         ids.forEach((id) => {
@@ -505,6 +508,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
      */
     getSignedFilesHtml() {
         const ids = Object.keys(this.signedFiles);
+        const i18n = this._i18n;
         let results = [];
 
         ids.forEach((id) => {
@@ -533,6 +537,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
      */
     getErrorFilesHtml() {
         const ids = Object.keys(this.errorFiles);
+        const i18n = this._i18n;
         let results = [];
 
         ids.forEach((id) => {
@@ -591,6 +596,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
 
     render() {
         const placeholderUrl = commonUtils.getAssetURL(pkgName, 'qualified-signature-placeholder.png');
+        const i18n = this._i18n;
 
         return html`
             <div class="${classMap({hidden: !this.isLoggedIn() || !this.hasSignaturePermissions() || this.isLoading()})}">

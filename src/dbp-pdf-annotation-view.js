@@ -1,4 +1,4 @@
-import {createI18nInstance} from './i18n.js';
+import {createInstance} from './i18n.js';
 import {css, html} from 'lit-element';
 import {classMap} from 'lit-html/directives/class-map.js';
 import {ScopedElementsMixin} from '@open-wc/scoped-elements';
@@ -9,15 +9,14 @@ import { send } from '@dbp-toolkit/common/notification';
 import * as commonStyles from '@dbp-toolkit/common/styles';
 import * as utils from './utils';
 
-const i18n = createI18nInstance();
-
 /**
  * PdfAnnotationView web component
  */
 export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
     constructor() {
         super();
-        this.lang = 'de';
+        this._i18n = createInstance();
+        this.lang = this._i18n.language;
         this.isTextHidden = false;
         this.isSelected = false;
         this.annotationRows = [];
@@ -52,7 +51,7 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
         changedProperties.forEach((oldValue, propName) => {
             switch (propName) {
                 case "lang":
-                    i18n.changeLanguage(this.lang);
+                    this._i18n.changeLanguage(this.lang);
                     break;
             }
         });
@@ -84,7 +83,7 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
     }
 
     validateValues() {
-        
+        const i18n = this._i18n;
         for (let annotation of this.annotationRows) {
             const annotationTypeData = utils.getAnnotationTypes(annotation['annotationType']);
 
@@ -343,6 +342,7 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
      * @returns {*[]} Array of html templates
      */
     getAnnotationsHtml() {
+       const i18n = this._i18n;
        const annotations = this.annotationRows || [];
        const ids = Object.keys(annotations);
        let results = [];
@@ -381,6 +381,7 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
    }
 
     render() {
+        const i18n = this._i18n;
         return html`
             <div id="pdf-main-container">
                 <div id="pdf-meta">
