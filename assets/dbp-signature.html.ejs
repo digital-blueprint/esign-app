@@ -67,8 +67,7 @@
     provider-root
     id="app"
     lang="de" entry-point-url="<%= entryPointURL %>"
-    show-nextcloud-file-picker
-    <%= buildInfo.env !== 'production' ? 'show-clipboard' : '' %>
+    file-handling-enabled-targets="local,nextcloud"
     <%= buildInfo.env !== 'production' ? 'allow-annotating' : '' %>
     nextcloud-web-app-password-url="<%= nextcloudWebAppPasswordURL %>"
     nextcloud-webdav-url="<%= nextcloudWebDavURL %>"

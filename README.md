@@ -59,8 +59,6 @@ Note that you will need a Keycloak server along with a client id for the domain 
 - `auth` object: you need to set that object property for the auth token
     - example auth property: `{token: "THE_BEARER_TOKEN"}`
     - note: most often this should be an attribute that is not set directly, but subscribed at a provider
-- `show-nextcloud-file-picker` (optional): Needs to be set for the Nextcloud file picker to be shown
-    - example `show-nextcloud-file-picker`
 - `nextcloud-web-app-password-url` (optional): Nextcloud Auth Url to use with the Nextcloud file picker
     - example `nextcloud-web-app-password-url="http://localhost:8081/index.php/apps/webapppassword"`
     - `nextcloud-web-dav-url` also needs to be set for the Nextcloud file picker to be active
@@ -75,6 +73,10 @@ Note that you will need a Keycloak server along with a client id for the domain 
     - example `nextcloud-auth-info="You need special permissions for this function"`
 - `allow-annotating` (optional): Needs to be set to allow annotating the PDFs
     - example `allow-annotating`
+- `file-handling-enabled-targets` (optional, default: `local`): Needs to be set to allow using other filehandling
+  targets than local, comma seperated list
+  actual supported: `local`, `clipboard`, `nextcloud`
+  - example `file-handling-enabled-targets="local,nextcloud,clipboard"`
 
 #### Exposed CSS variables
 
@@ -97,8 +99,6 @@ Note that you will need a Keycloak server along with a client id for the domain 
 - `auth` object: you need to set that object property for the auth token
     - example auth property: `{token: "THE_BEARER_TOKEN"}`
     - note: most often this should be an attribute that is not set directly, but subscribed at a provider
-- `show-nextcloud-file-picker` (optional): Needs to be set for the Nextcloud file picker to be shown
-    - example `show-nextcloud-file-picker`
 - `nextcloud-web-app-password-url` (optional): Nextcloud Auth Url to use with the Nextcloud file picker
     - example `nextcloud-web-app-password-url="http://localhost:8081/index.php/apps/webapppassword"`
     - `nextcloud-web-dav-url` also needs to be set for the Nextcloud file picker to be active
@@ -113,8 +113,10 @@ Note that you will need a Keycloak server along with a client id for the domain 
     - example `nextcloud-auth-info="You need special permissions for this function"`
 - `allow-annotating` (optional): Needs to be set to allow annotating the PDFs
     - example `allow-annotating`
-- `show-clipboard` (optional): Needs to be set to allow using the clipboard in the file picker dialog
-    - example `show-clipboard`
+- `file-handling-enabled-targets` (optional, default: `local`): Needs to be set to allow using other filehandling 
+    targets than local, comma seperated list
+    actual supported: `local`, `clipboard`, `nextcloud`
+    - example `file-handling-enabled-targets="local,nextcloud,clipboard"`
 
 #### Exposed CSS variables
 

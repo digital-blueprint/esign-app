@@ -12,7 +12,6 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         this.uploadInProgress = false;
         this.queueBlockEnabled = false;
         this._queueKey = 0;
-        this.showNextcloudFilePicker = false;
 
         // will be set in function update
         this.fileSourceUrl = "";
@@ -24,7 +23,6 @@ export default class DBPSignatureLitElement extends BaseLitElement {
     static get properties() {
         return {
             ...super.properties,
-            showNextcloudFilePicker: { type: Boolean, attribute: 'show-nextcloud-file-picker' },
         };
     }
 
