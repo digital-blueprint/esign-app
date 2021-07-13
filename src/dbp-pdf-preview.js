@@ -572,6 +572,10 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                 border-top: 0px;
                 padding: 15px;
             }
+            
+            #canvas-wrapper canvas#fabric-canvas, #canvas-wrapper canvas.upper-canvas{
+                border: unset;
+            }
         `;
     }
 
