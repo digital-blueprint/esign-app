@@ -1,4 +1,4 @@
-import {createI18nInstance} from './i18n.js';
+import {createInstance} from './i18n.js';
 import {humanFileSize} from '@dbp-toolkit/common/i18next.js';
 import {css, html} from 'lit-element';
 import {ScopedElementsMixin} from '@open-wc/scoped-elements';
@@ -15,12 +15,11 @@ import metadata from './dbp-signature-verification-full.metadata.json';
 import {Activity} from './activity.js';
 import * as SignatureStyles from './styles';
 
-const i18n = createI18nInstance();
-
 class SignatureVerificationFull extends ScopedElementsMixin(DBPSignatureLitElement) {
     constructor() {
         super();
-        this.lang = i18n.language;
+        this._i18n = createInstance();
+        this.lang = this._i18n.language;
         this.entryPointUrl = '';
         this.nextcloudWebAppPasswordURL = "";
         this.nextcloudWebDavURL = "";
@@ -117,7 +116,7 @@ class SignatureVerificationFull extends ScopedElementsMixin(DBPSignatureLitEleme
         this.uploadInProgress = true;
         let params = {};
 
-        this.uploadStatusText = i18n.t('signature-verification.upload-status-file-text', {
+        this.uploadStatusText = this._i18n.t('signature-verification.upload-status-file-text', {
             fileName: file.name,
             fileSize: humanFileSize(file.size, false),
         });
@@ -150,7 +149,7 @@ class SignatureVerificationFull extends ScopedElementsMixin(DBPSignatureLitEleme
         if (!event.isTrusted) {
             // note that this only works with custom event since calls of "confirm" are ignored
             // in the non-custom event, see https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeunload_event
-            const result = confirm(i18n.t('signature-verification.confirm-page-leave'));
+            const result = confirm(this._i18n.t('signature-verification.confirm-page-leave'));
 
             // don't stop the page leave if the user wants to leave
             if (result) {
@@ -212,7 +211,7 @@ class SignatureVerificationFull extends ScopedElementsMixin(DBPSignatureLitEleme
         changedProperties.forEach((oldValue, propName) => {
             switch (propName) {
                 case "lang":
-                    i18n.changeLanguage(this.lang);
+                    this._i18n.changeLanguage(this.lang);
                     break;
                 case "entryPointUrl":
                     JSONLD.getInstance(this.entryPointUrl).then((jsonld) => {
@@ -342,6 +341,7 @@ class SignatureVerificationFull extends ScopedElementsMixin(DBPSignatureLitEleme
      * @returns {*[]} Array of html templates
      */
     getQueuedFilesHtml() {
+        const i18n = this._i18n;
         const ids = Object.keys(this.queuedFiles);
         let results = [];
 
@@ -378,6 +378,7 @@ class SignatureVerificationFull extends ScopedElementsMixin(DBPSignatureLitEleme
      */
     getVerifiedFilesHtml() {
         const ids = Object.keys(this.verifiedFiles);
+        const i18n = this._i18n;
         let results = [];
 
         ids.forEach((id) => {
@@ -433,6 +434,7 @@ class SignatureVerificationFull extends ScopedElementsMixin(DBPSignatureLitEleme
      */
     getErrorFilesHtml() {
         const ids = Object.keys(this.errorFiles);
+        const i18n = this._i18n;
         let results = [];
 
         ids.forEach((id) => {
@@ -471,6 +473,7 @@ class SignatureVerificationFull extends ScopedElementsMixin(DBPSignatureLitEleme
     }
 
     render() {
+        const i18n = this._i18n;
         const placeholderUrl = commonUtils.getAssetURL(pkgName, 'official-signature-placeholder.png');
         const activity = new Activity(metadata);
 

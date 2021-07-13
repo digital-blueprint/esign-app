@@ -1,4 +1,4 @@
-import {createI18nInstance} from './i18n.js';
+import {createInstance} from './i18n.js';
 import {humanFileSize} from '@dbp-toolkit/common/i18next.js';
 import {css, html} from 'lit-element';
 import {ScopedElementsMixin} from '@open-wc/scoped-elements';
@@ -21,12 +21,11 @@ import {Activity} from './activity.js';
 import {PdfAnnotationView} from "./dbp-pdf-annotation-view";
 import * as SignatureStyles from './styles';
 
-const i18n = createI18nInstance();
-
 class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElement) {
     constructor() {
         super();
-        this.lang = i18n.language;
+        this._i18n = createInstance();
+        this.lang = this._i18n.language;
         this.entryPointUrl = '';
         this.nextcloudWebAppPasswordURL = "";
         this.nextcloudWebDavURL = "";
@@ -133,6 +132,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
      * Processes queued files
      */
     async handleQueuedFiles() {
+        const i18n = this._i18n;
         this.endSigningProcessIfQueueEmpty();
         if (this.queuedFilesCount === 0) {
             // reset signingProcessEnabled button
@@ -203,6 +203,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
      * @param event
      */
     onReceiveBeforeUnload(event) {
+        const i18n = this._i18n;
         // we don't need to stop if there are no signed files
         if (this.signedFilesCount === 0) {
             return;
@@ -263,7 +264,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         changedProperties.forEach((oldValue, propName) => {
             switch (propName) {
                 case "lang":
-                    i18n.changeLanguage(this.lang);
+                    this._i18n.changeLanguage(this.lang);
                     break;
                 case "entryPointUrl":
                     JSONLD.getInstance(this.entryPointUrl).then((jsonld) => {
@@ -316,6 +317,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
      * @returns {*[]} Array of html templates
      */
     getQueuedFilesHtml() {
+        const i18n = this._i18n;
         const ids = Object.keys(this.queuedFiles);
         let results = [];
 
@@ -380,6 +382,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
      */
     getSignedFilesHtml() {
         const ids = Object.keys(this.signedFiles);
+        const i18n = this._i18n;
         let results = [];
 
         ids.forEach((id) => {
@@ -408,6 +411,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
      */
     getErrorFilesHtml() {
         const ids = Object.keys(this.errorFiles);
+        const i18n = this._i18n;
         let results = [];
 
         ids.forEach((id) => {
@@ -447,6 +451,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
 
     render() {
         const placeholderUrl = commonUtils.getAssetURL(pkgName, 'official-signature-placeholder.png');
+        const i18n = this._i18n;
 
         return html`
             <div class="${classMap({hidden: !this.isLoggedIn() || !this.hasSignaturePermissions() || this.isLoading()})}">

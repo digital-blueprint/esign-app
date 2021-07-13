@@ -1,4 +1,4 @@
-import {createI18nInstance} from './i18n.js';
+import {createInstance} from './i18n.js';
 import {css, html} from 'lit-element';
 import {ScopedElementsMixin} from '@open-wc/scoped-elements';
 import DBPSignatureLitElement from "./dbp-signature-lit-element";
@@ -7,12 +7,12 @@ import * as commonStyles from '@dbp-toolkit/common/styles';
 import metadata from './dbp-signature-verification.metadata.json';
 import {Activity} from './activity.js';
 
-const i18n = createI18nInstance();
 
 class SignatureVerification extends ScopedElementsMixin(DBPSignatureLitElement) {
     constructor() {
         super();
-        this.lang = i18n.language;
+        this._i18n = createInstance();
+        this.lang = this._i18n.language;
     }
 
     static get scopedElements() {
@@ -30,7 +30,7 @@ class SignatureVerification extends ScopedElementsMixin(DBPSignatureLitElement) 
         changedProperties.forEach((oldValue, propName) => {
             switch (propName) {
                 case "lang":
-                    i18n.changeLanguage(this.lang);
+                    this._i18n.changeLanguage(this.lang);
                     break;
             }
         });
@@ -104,6 +104,7 @@ class SignatureVerification extends ScopedElementsMixin(DBPSignatureLitElement) 
     }
 
     render() {
+        const i18n = this._i18n;
         const activity = new Activity(metadata);
         return html`
             <h2>${activity.getName(this.lang)}</h2>
