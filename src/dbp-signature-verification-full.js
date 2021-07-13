@@ -41,6 +41,8 @@ class SignatureVerificationFull extends ScopedElementsMixin(DBPSignatureLitEleme
         this.previewInProgress = false;
         this.currentPreviewQueueKey = '';
 
+        this.fileHandlingEnabledTargets="local";
+
         // will be set in function update
         this.verificationUrl = "";
     }
@@ -79,6 +81,7 @@ class SignatureVerificationFull extends ScopedElementsMixin(DBPSignatureLitEleme
             currentFileName: { type: String, attribute: false },
             previewInProgress: { type: Boolean, attribute: false },
             isSignaturePlacement: { type: Boolean, attribute: false },
+            fileHandlingEnabledTargets: { type: String, attribute: 'file-handling-enabled-targets'}
         };
     }
 
@@ -491,7 +494,7 @@ class SignatureVerificationFull extends ScopedElementsMixin(DBPSignatureLitEleme
                         <dbp-file-source
                             id="file-source"
                             allowed-mime-types="application/pdf"
-                            enabled-targets="local${this.showNextcloudFilePicker ? ",nextcloud" : ""}"
+                            enabled-targets="${this.fileHandlingEnabledTargets}"
                             nextcloud-auth-url="${this.nextcloudWebAppPasswordURL}"
                             nextcloud-web-dav-url="${this.nextcloudWebDavURL}"
                             nextcloud-name="${this.nextcloudName}"

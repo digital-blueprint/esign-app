@@ -63,7 +63,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         this.addAnnotationInProgress = false;
         this.showNextcloudAdditionalMenu = false;
         this.activity = new Activity(metadata);
-
+        this.fileHandlingEnabledTargets = "local";
         this._onReceiveBeforeUnload = this.onReceiveBeforeUnload.bind(this);
     }
 
@@ -116,6 +116,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             addAnnotationInProgress: { type: Boolean, attribute: false },
             queuedFilesAnnotationModes: { type: Array, attribute: false },
             queuedFilesAnnotationSaved: { type: Array, attribute: false },
+            fileHandlingEnabledTargets: {type: String, attribute: 'file-handling-enabled-targets'}
         };
     }
 
@@ -612,7 +613,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                             id="file-source"
                             context="${i18n.t('qualified-pdf-upload.file-picker-context')}"
                             allowed-mime-types="application/pdf"
-                            enabled-targets="local${this.showNextcloudFilePicker ? ",nextcloud" : ""}"
+                            enabled-targets="${this.fileHandlingEnabledTargets}"
                             nextcloud-auth-url="${this.nextcloudWebAppPasswordURL}"
                             nextcloud-web-dav-url="${this.nextcloudWebDavURL}"
                             nextcloud-name="${this.nextcloudName}"
@@ -786,7 +787,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                 context="${i18n.t('qualified-pdf-upload.save-field-label', {count: this.signedFilesToDownload})}"
                 filename="signed-documents.zip"
                 subscribe="initial-file-handling-state:initial-file-handling-state"
-                enabled-targets="local${this.showNextcloudFilePicker ? ",nextcloud" : ""}"
+                enabled-targets="${this.fileHandlingEnabledTargets}"
                 nextcloud-auth-url="${this.nextcloudWebAppPasswordURL}"
                 nextcloud-web-dav-url="${this.nextcloudWebDavURL}"
                 nextcloud-name="${this.nextcloudName}"
