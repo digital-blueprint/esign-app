@@ -30,16 +30,28 @@ To use the Nextcloud functionality you need a running Nextcloud server with the
 
 ## Using this app as pre-built package
 
-Not only you can use this app as pre-built package installed from [npmjs](https://www.npmjs.com/package/@dbp-topics/signature) via:
+### Install apps
+
+If you want to install the DBP Signature App in a new folder `signature-app` you can call:
 
 ```bash
-npm install @dbp-topics/signature
+npx @digital-blueprint/cli install-app signature signature-app
 ```
 
-But you can also use this app directly from the [Unpkg CDN](https://unpkg.com/browse/@dbp-topics/signature/)
+Afterwards you can point your Apache web-server to `signature-app/public`.
+
+You can also use this app directly from the [Unpkg CDN](https://unpkg.com/browse/@dbp-topics/signature/)
 for example like this: [dbp-signature/index.html](https://gitlab.tugraz.at/dbp/esign/signature/-/tree/master/examples/dbp-signature/index.html)
 
 Note that you will need a Keycloak server along with a client id for the domain you are running this html on.
+
+### Update apps
+
+If you want to update the DBP Signature App in the current folder you can call:
+
+```bash
+npx @digital-blueprint/cli update-app signature
+```
 
 ## Activities
 
