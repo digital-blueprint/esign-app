@@ -30,7 +30,7 @@ To use the Nextcloud functionality you need a running Nextcloud server with the
 
 ## Using this app as pre-built package
 
-### Install apps
+### Install app
 
 If you want to install the DBP Signature App in a new folder `signature-app` you can call:
 
@@ -45,7 +45,7 @@ for example like this: [dbp-signature/index.html](https://gitlab.tugraz.at/dbp/e
 
 Note that you will need a Keycloak server along with a client id for the domain you are running this html on.
 
-### Update apps
+### Update app
 
 If you want to update the DBP Signature App in the current folder you can call:
 
