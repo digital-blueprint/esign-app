@@ -611,6 +611,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                             nextcloud-auth-info="${this.nextcloudAuthInfo}"
                             nextcloud-file-url="${this.nextcloudFileURL}"
                             decompress-zip
+                            max-file-size="32000"
                             lang="${this.lang}"
                             ?disabled="${this.signingProcessActive}"
                             text="${i18n.t('qualified-pdf-upload.upload-area-text')}"
