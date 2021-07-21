@@ -488,6 +488,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                             nextcloud-auth-info="${this.nextcloudAuthInfo}"
                             nextcloud-file-url="${this.nextcloudFileURL}"
                             decompress-zip
+                            max-file-size="32000"
                             lang="${this.lang}"
                             ?disabled="${this.signingProcessActive}"
                             ?show-nextcloud-additional-menu="${this.showNextcloudAdditionalMenu}"

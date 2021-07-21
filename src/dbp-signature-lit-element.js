@@ -309,9 +309,6 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             formData.append(key, params[key]);
         }
 
-        // FIXME: We now send the parameters via the body and keep this to
-        // support older backends. Remove once the backend is deployed.
-        url.search = new URLSearchParams(params).toString();
 
         // I got a 60s timeout in Google Chrome and found no way to increase that
         await fetch(url, {
