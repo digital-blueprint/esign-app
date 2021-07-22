@@ -105,7 +105,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             signaturePlacementInProgress: { type: Boolean, attribute: false },
             withSigBlock: { type: Boolean, attribute: false },
             isSignaturePlacement: { type: Boolean, attribute: false },
-            allowAnnotating: { type: Boolean, attribute: 'allow-annotating' },
+            allowAnnotating_disabled: { type: Boolean, attribute: 'allow-annotating' },
             isAnnotationViewVisible: { type: Boolean, attribute: false },
             queuedFilesAnnotations: { type: Array, attribute: false },
             queuedFilesAnnotationsCount: { type: Number, attribute: false },
