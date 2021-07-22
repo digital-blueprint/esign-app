@@ -108,7 +108,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             signaturePlacementInProgress: { type: Boolean, attribute: false },
             withSigBlock: { type: Boolean, attribute: false },
             isSignaturePlacement: { type: Boolean, attribute: false },
-            allowAnnotating_disabled: { type: Boolean, attribute: 'allow-annotating' },
+            allowAnnotating: { type: Boolean, attribute: 'allow-annotating' },
             isAnnotationViewVisible: { type: Boolean, attribute: false },
             queuedFilesAnnotations: { type: Array, attribute: false },
             queuedFilesAnnotationsCount: { type: Number, attribute: false },
