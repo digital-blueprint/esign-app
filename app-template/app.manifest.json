@@ -2,7 +2,7 @@
   "short_name": "esign",
   "name": "Electronic Signature Service",
   "start_url": "./",
-  "images": [
+  "icons": [
     {
       "src": "/images/icon-72x72.png",
       "sizes": "72x72",

@@ -1,7 +1,7 @@
 {
   "name": "@dbp-topics/signature",
   "internalName": "dbp-signature",
-  "version": "1.0.18",
+  "version": "1.0.19",
   "main": "src/dbp-signature.js",
   "license": "LGPL-2.1-or-later",
   "repository": {
