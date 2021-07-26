@@ -992,20 +992,8 @@
     crypto-js "^4.0.0"
     pako "^1.0.10"
 
-<<<<<<< HEAD
-"@es-joy/jsdoccomment@0.12.0":
-  version "0.12.0"
-  resolved "https://registry.yarnpkg.com/@es-joy/jsdoccomment/-/jsdoccomment-0.12.0.tgz#47de05d86e9728ae3a5f1c57d6e9b63b07c6dc98"
-  integrity sha512-Gw4/j9v36IKY8ET+W0GoOzrRw17xjf21EIFFRL3zx21fF5MnqmeNpNi+PU/LKjqLpPb2Pw2XdlJbYM31VVo/PQ==
-  dependencies:
-    comment-parser "1.2.4"
-    esquery "^1.4.0"
-    jsdoc-type-pratt-parser "2.0.0"
 
-"@es-joy/jsdoccomment@^0.9.0-alpha.1":
-=======
 "@es-joy/jsdoccomment@0.9.0-alpha.1":
->>>>>>> Update all non-major dependencies
   version "0.9.0-alpha.1"
   resolved "https://registry.yarnpkg.com/@es-joy/jsdoccomment/-/jsdoccomment-0.9.0-alpha.1.tgz#f48bd162e185ec7f9f222273a282d10e52fe52f7"
   integrity sha512-Clxxc0PwpISoYYBibA+1L2qFJ7gvFVhI2Hos87S06K+Q0cXdOhZQJNKWuaQGPAeHjZEuUB/YoWOfwjuF2wirqA==
@@ -1014,10 +1002,19 @@
     esquery "^1.4.0"
     jsdoc-type-pratt-parser "1.0.4"
 
-"@eslint/eslintrc@^0.4.2":
-  version "0.4.2"
-  resolved "https://registry.yarnpkg.com/@eslint/eslintrc/-/eslintrc-0.4.2.tgz#f63d0ef06f5c0c57d76c4ab5f63d3835c51b0179"
-  integrity sha512-8nmGq/4ycLpIwzvhI4tNDmQztZ8sp+hI7cyG8i1nQDhkAbRzHpXPidRAHlNvCZQpJTKw5ItIpMw9RSToGF00mg==
+"@es-joy/jsdoccomment@0.9.0-alpha.6":
+  version "0.9.0-alpha.6"
+  resolved "https://registry.yarnpkg.com/@es-joy/jsdoccomment/-/jsdoccomment-0.9.0-alpha.6.tgz#f5737c907038692ad5dd25c091523bb5ad93f6c3"
+  integrity sha512-/eTjMezCcNne3VvKGle3kgz14PeOb7sQAX/OsV6a4jCmjzWgrAlQuISLcqgqUlI97BFWCNz7E0U9YyRm3ucyOA==
+  dependencies:
+    comment-parser "1.1.6-beta.3"
+    esquery "^1.4.0"
+    jsdoc-type-pratt-parser "1.0.4"
+
+"@eslint/eslintrc@^0.2.1":
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/@eslint/eslintrc/-/eslintrc-0.2.2.tgz#d01fc791e2fc33e88a29d6f3dc7e93d0cd784b76"
+  integrity sha512-EfB5OHNYp1F4px/LI/FEnGylop7nOqkQ1LRzCM0KccA2U8tvV8w01KBv37LbO7nW4H+YhKyo2LcJhRwjjV17QQ==
   dependencies:
     ajv "^6.12.4"
     debug "^4.1.1"
@@ -2250,10 +2247,11 @@ comment-parser@1.1.6-beta.0:
   resolved "https://registry.yarnpkg.com/comment-parser/-/comment-parser-1.1.6-beta.0.tgz#57e503b18d0a5bd008632dcc54b1f95c2fffe8f6"
   integrity sha512-q3cA8TSMyqW7wcPSYWzbO/rMahnXgzs4SLG/UIWXdEsnXTFPZkEkWAdNgPiHig2OzxgpPLOh4WwsmClDxndwHw==
 
-comment-parser@1.2.4:
-  version "1.2.4"
-  resolved "https://registry.yarnpkg.com/comment-parser/-/comment-parser-1.2.4.tgz#489f3ee55dfd184a6e4bffb31baba284453cb760"
-  integrity sha512-pm0b+qv+CkWNriSTMsfnjChF9kH0kxz55y44Wo5le9qLxMj5xDQAaEd9ZN1ovSuk9CsrncWaFwgpOMg7ClJwkw==
+
+comment-parser@1.1.6-beta.3:
+  version "1.1.6-beta.3"
+  resolved "https://registry.yarnpkg.com/comment-parser/-/comment-parser-1.1.6-beta.3.tgz#66df48fa6e8a10d9e31016613491b78075fe3065"
+  integrity sha512-LkPpVUx533rkxrkgphwWo0u6A3Vn9/fa8biHo2mrL6NUKPL6ubnF1P7NTm/M9i/rUvQ/mDxVqOVlmqy5uNUmVw==
 
 commenting@1.1.0:
   version "1.1.0"
@@ -2800,22 +2798,24 @@ eslint-plugin-jsdoc@^35.0.0:
     semver "^7.3.5"
     spdx-expression-parse "^3.0.1"
 
-eslint-plugin-jsdoc@^37.0.0:
-  version "37.0.3"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-jsdoc/-/eslint-plugin-jsdoc-37.0.3.tgz#42ddd0393c166c2724a7fdee808b94ab1d9dfb00"
-  integrity sha512-Qg/gIZAfcrM4Qu/JzcnxPGD45Je6wPLFzMZQboeqit/CL4aY6wuzBTkgUMiWXfw/PaPl+sb0GF1XdBlV23ReDA==
+
+eslint-plugin-jsdoc@^36.0.0:
+  version "36.0.2"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-jsdoc/-/eslint-plugin-jsdoc-36.0.2.tgz#6348b0bca5f5c8baebdad31ad40e435d8cfad45d"
+  integrity sha512-cpb8IVYSrBqanUVeIO3Gfk5KD6PwM/7muZBgklCJP8q7ry1HuT4kriB+0EENkUFnVq0OCFmoo9F+edAnvTQvSw==
   dependencies:
-    "@es-joy/jsdoccomment" "0.12.0"
-    comment-parser "1.2.4"
+    "@es-joy/jsdoccomment" "0.9.0-alpha.6"
+    comment-parser "1.1.6-beta.3"
     debug "^4.3.2"
     esquery "^1.4.0"
-    jsdoc-type-pratt-parser "^2.0.0"
+    jsdoc-type-pratt-parser "^1.0.4"
     lodash "^4.17.21"
     regextras "^0.8.0"
     semver "^7.3.5"
     spdx-expression-parse "^3.0.1"
 
-eslint-scope@^5.1.1:
+
+eslint-scope@^5.0.0, eslint-scope@^5.1.1:
   version "5.1.1"
   resolved "https://registry.yarnpkg.com/eslint-scope/-/eslint-scope-5.1.1.tgz#e786e59a66cb92b3f6c1fb0d508aab174848f48c"
   integrity sha512-2NxwbF/hZ0KpepYN0cNbo+FN6XoK7GaHlQhgx/hIZl6Va0bF45RQOOwhLIy8lQDbuCiadSLCBnH2CFYquit5bw==
