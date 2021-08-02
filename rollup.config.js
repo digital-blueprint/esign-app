@@ -73,10 +73,6 @@ httpbin.org ${getOrigin(config.nextcloudBaseURL)} www.handy-signatur.at \
 ${getOrigin(config.pdfAsQualifiedlySigningServer)}; \
 img-src * blob: data:; font-src 'self' data:`;
 
-function replaceAll(string, search, replace) {
-    return string.split(search).join(replace);
-}
-
 export default (async () => {
     let privatePath = await getDistPath(pkg.name)
     return {
@@ -191,9 +187,7 @@ Dependencies:
                 {src: 'assets/dbp-signature-maintenance.html', dest:'dist'},
                 {
                     src: await getPackagePath('pdfjs-dist', 'legacy/build/pdf.worker.js'),
-                    dest: 'dist/' + await getDistPath(pkg.name, 'pdfjs'),
-                    // enable signatures in pdf preview
-                    transform: (contents) => replaceAll(contents.toString(), '"Sig"', '"Sig-patched-show-anyway"')
+                    dest: 'dist/' + await getDistPath(pkg.name, 'pdfjs')
                 },
                 {src: await getPackagePath('pdfjs-dist', 'cmaps/*'), dest: 'dist/' + await getDistPath(pkg.name, 'pdfjs')}, // do we want all map files?
                 {src: await getPackagePath('@dbp-toolkit/font-source-sans-pro', 'files/*'), dest: 'dist/' + await getDistPath(pkg.name, 'fonts/source-sans-pro')},
