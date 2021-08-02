@@ -59,7 +59,7 @@
     "jszip": "^3.5.0",
     "lit-element": "^2.3.1",
     "lit-html": "^1.2.1",
-    "pdfjs-dist": "2.8.335",
+    "pdfjs-dist": "2.9.359",
     "universal-router": "^9.0.1"
   },
   "scripts": {
