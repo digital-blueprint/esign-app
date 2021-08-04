@@ -44,9 +44,9 @@ export default {
     demo: {
         basePath: '/apps/signature/',
         entryPointURL: 'https://api-demo.tugraz.at',
-        keyCloakBaseURL: 'https://auth-demo.tugraz.at/auth',
-        keyCloakRealm: 'tugraz-vpu',
-        keyCloakClientId: 'dbp-esign',
+        keyCloakBaseURL: 'https://auth-test.tugraz.at/auth',
+        keyCloakRealm: 'tugraz',
+        keyCloakClientId: 'esig-demo_tugraz_at-ESIG',
         matomoUrl: 'https://analytics.tugraz.at/',
         matomoSiteId: 131,
         nextcloudBaseURL: 'https://cloud.tugraz.at',
