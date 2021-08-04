@@ -27,7 +27,7 @@ export default {
     },
     development: {
         basePath: '/apps/signature/',
-        entryPointURL: 'https://mw-dev.tugraz.at',
+        entryPointURL: 'https://api-dev.tugraz.at',
         keyCloakBaseURL: 'https://auth-dev.tugraz.at/auth',
         keyCloakRealm: 'tugraz-vpu',
         keyCloakClientId: 'esign-dev_tugraz_at-ESIGN',
