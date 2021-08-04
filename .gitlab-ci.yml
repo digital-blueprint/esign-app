@@ -78,7 +78,7 @@ deploy_development:
       - master
   environment:
     name: development
-    url: https://mw-frontend-dev.tugraz.at/apps/signature
+    url: https://dbp-dev.tugraz.at/apps/signature
   variables:
     DEPLOY_HOST: mw01-dev.tugraz.at
     DEPLOY_KEY: "$DEPLOY_SSH_KEY"
