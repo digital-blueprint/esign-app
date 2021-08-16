@@ -285,7 +285,14 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
 
         // fetch pdf from api gateway with sessionId
         JSONLD.getInstance(this.entryPointUrl).then((jsonld) => {
-            const apiUrl = jsonld.getApiUrlForEntityName("QualifiedlySignedDocument") + '/' + encodeURIComponent(sessionId) + '?fileName=' +
+            let apiUrlBase;
+            try {
+                apiUrlBase = jsonld.getApiUrlForEntityName("EsignQualifiedlySignedDocument");
+            } catch (error) {
+                apiUrlBase = jsonld.getApiUrlForEntityName("QualifiedlySignedDocument");
+            }
+
+            const apiUrl = apiUrlBase + '/' + encodeURIComponent(sessionId) + '?fileName=' +
                 encodeURIComponent(fileName);
 
             fetch(apiUrl, {
@@ -378,7 +385,12 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                     break;
                 case "entryPointUrl":
                     JSONLD.getInstance(this.entryPointUrl).then((jsonld) => {
-                        const apiUrlBase = jsonld.getApiUrlForEntityName("QualifiedSigningRequest");
+                        let apiUrlBase;
+                        try {
+                            apiUrlBase = jsonld.getApiUrlForEntityName("EsignQualifiedSigningRequest");
+                        } catch (error) {
+                            apiUrlBase = jsonld.getApiUrlForEntityName("QualifiedSigningRequest");
+                        }
                         this.fileSourceUrl = apiUrlBase ;
                     });
                     break;
