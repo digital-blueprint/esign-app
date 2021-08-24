@@ -195,6 +195,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             }
         }
 
+        params['profile'] = 'default';
+
         this.uploadStatusText = i18n.t('qualified-pdf-upload.upload-status-file-text', {
             fileName: file.name,
             fileSize: humanFileSize(file.size, false),
