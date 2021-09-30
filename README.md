@@ -32,10 +32,10 @@ To use the Nextcloud functionality you need a running Nextcloud server with the
 
 ### Install app
 
-If you want to install the DBP Signature App in a new folder `signature-app` you can call:
+If you want to install the DBP Signature App in a new folder `signature-app` with a path prefix `/` you can call:
 
 ```bash
-npx @digital-blueprint/cli install-app signature signature-app
+npx @digital-blueprint/cli install-app signature signature-app /
 ```
 
 Afterwards you can point your Apache web-server to `signature-app/public`.
