@@ -8,5 +8,6 @@
   "rangeStrategy": "update-lockfile",
   "composer": {
     "enabled": false
-  }
+  },
+  "cloneSubmodules": true
 }
