@@ -48,7 +48,7 @@ export default {
         matomoSiteId: 131,
         nextcloudBaseURL: 'https://cloud.tugraz.at',
         nextcloudName: 'TU Graz cloud',
-        pdfAsQualifiedlySigningServer: 'https://sig-test.tugraz.at',
+        pdfAsQualifiedlySigningServer: 'https://sig-demo.tugraz.at',
         hiddenActivities: ['dbp-signature-verification-full']
     },
     production: {
