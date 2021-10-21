@@ -42,6 +42,7 @@ if (appEnv in appConfig) {
         nextcloudName: '',
         pdfAsQualifiedlySigningServer: 'https://test',
         hiddenActivities: [],
+        enableAnnotations: true,
     };
 } else {
     console.error(`Unknown build environment: '${appEnv}', use one of '${Object.keys(appConfig)}'`);
@@ -134,7 +135,8 @@ export default (async () => {
             CSP: config.CSP,
             matomoUrl: config.matomoUrl,
             matomoSiteId: config.matomoSiteId,
-            buildInfo: getBuildInfo(appEnv)
+            buildInfo: getBuildInfo(appEnv),
+            enableAnnotations: config.enableAnnotations,
           }
         }),
         resolve({
