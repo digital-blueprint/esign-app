@@ -10,7 +10,8 @@ export default {
         nextcloudBaseURL: 'http://localhost:8081',
         nextcloudName: 'TU Graz cloud',
         pdfAsQualifiedlySigningServer: 'https://sig-dev.tugraz.at',
-        hiddenActivities: ['dbp-signature-verification-full']
+        hiddenActivities: ['dbp-signature-verification-full'],
+        enableAnnotations: true
     },
     bs: {
         basePath: '/dist/',
@@ -23,7 +24,8 @@ export default {
         nextcloudBaseURL: 'http://bs-local.com:8081',
         nextcloudName: 'TU Graz cloud',
         pdfAsQualifiedlySigningServer: 'https://sig-dev.tugraz.at',
-        hiddenActivities: []
+        hiddenActivities: [],
+        enableAnnotations: true
     },
     development: {
         basePath: '/apps/signature/',
@@ -36,7 +38,8 @@ export default {
         nextcloudBaseURL: 'https://nc-dev.tugraz.at/pers',
         nextcloudName: 'TU Graz cloud',
         pdfAsQualifiedlySigningServer: 'https://sig-dev.tugraz.at',
-        hiddenActivities: ['dbp-signature-verification-full']
+        hiddenActivities: ['dbp-signature-verification-full'],
+        enableAnnotations: true
     },
     demo: {
         basePath: '/apps/signature/',
@@ -49,7 +52,8 @@ export default {
         nextcloudBaseURL: 'https://cloud.tugraz.at',
         nextcloudName: 'TU Graz cloud',
         pdfAsQualifiedlySigningServer: 'https://sig-demo.tugraz.at',
-        hiddenActivities: ['dbp-signature-verification-full']
+        hiddenActivities: ['dbp-signature-verification-full'],
+        enableAnnotations: true
     },
     production: {
         basePath: '/',
@@ -62,6 +66,7 @@ export default {
         nextcloudBaseURL: 'https://cloud.tugraz.at',
         nextcloudName: 'TU Graz cloud',
         pdfAsQualifiedlySigningServer: 'https://sig.tugraz.at',
-        hiddenActivities: ['dbp-signature-verification-full']
+        hiddenActivities: ['dbp-signature-verification-full'],
+        enableAnnotations: false
     },
 };
