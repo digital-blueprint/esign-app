@@ -52,8 +52,7 @@ export default {
         nextcloudBaseURL: 'https://cloud.tugraz.at',
         nextcloudName: 'TU Graz cloud',
         pdfAsQualifiedlySigningServer: 'https://sig-demo.tugraz.at',
-        hiddenActivities: ['dbp-signature-verification-full'],
-        enableAnnotations: true
+        hiddenActivities: ['dbp-signature-verification-full']
     },
     production: {
         basePath: '/',
