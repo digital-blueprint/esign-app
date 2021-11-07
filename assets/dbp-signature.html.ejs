@@ -70,6 +70,7 @@
     file-handling-enabled-targets="local,nextcloud"
     <%= buildInfo.env !== 'production' && buildInfo.env !== 'local' ? 'show-nextcloud-additional-menu' : '' %>
     <%= enableAnnotations ? 'allow-annotating' : '' %>
+    <%= buildInfo.env !== 'production' && buildInfo.env !== 'local' ? 'show-nextcloud-additional-menu' : '' %>
     nextcloud-web-app-password-url="<%= nextcloudWebAppPasswordURL %>"
     nextcloud-webdav-url="<%= nextcloudWebDavURL %>"
     nextcloud-name="<%= nextcloudName %>"
