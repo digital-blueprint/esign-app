@@ -61,6 +61,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         this.queuedFilesEnabledAnnotations = [];
         this.isAnnotationViewVisible = false;
         this.addAnnotationInProgress = false;
+        this.showNextcloudAdditionalMenu = false;
         this.activity = new Activity(metadata);
 
         this._onReceiveBeforeUnload = this.onReceiveBeforeUnload.bind(this);
@@ -193,6 +194,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                 params = utils.fabricjs2pdfasPosition(data);
             }
         }
+        
+        params['profile'] = 'default';
 
         this.uploadStatusText = i18n.t('qualified-pdf-upload.upload-status-file-text', {
             fileName: file.name,
@@ -282,7 +285,14 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
 
         // fetch pdf from api gateway with sessionId
         JSONLD.getInstance(this.entryPointUrl).then((jsonld) => {
-            const apiUrl = jsonld.getApiUrlForEntityName("QualifiedlySignedDocument") + '/' + encodeURIComponent(sessionId) + '?fileName=' +
+            let apiUrlBase;
+            try {
+                apiUrlBase = jsonld.getApiUrlForEntityName("EsignQualifiedlySignedDocument");
+            } catch (error) {
+                apiUrlBase = jsonld.getApiUrlForEntityName("QualifiedlySignedDocument");
+            }
+
+            const apiUrl = apiUrlBase + '/' + encodeURIComponent(sessionId) + '?fileName=' +
                 encodeURIComponent(fileName);
 
             fetch(apiUrl, {
@@ -375,7 +385,12 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                     break;
                 case "entryPointUrl":
                     JSONLD.getInstance(this.entryPointUrl).then((jsonld) => {
-                        const apiUrlBase = jsonld.getApiUrlForEntityName("QualifiedSigningRequest");
+                        let apiUrlBase;
+                        try {
+                            apiUrlBase = jsonld.getApiUrlForEntityName("EsignQualifiedSigningRequest");
+                        } catch (error) {
+                            apiUrlBase = jsonld.getApiUrlForEntityName("QualifiedSigningRequest");
+                        }
                         this.fileSourceUrl = apiUrlBase ;
                     });
                     break;
@@ -606,6 +621,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                             decompress-zip
                             lang="${this.lang}"
                             ?disabled="${this.signingProcessActive}"
+                            ?show-nextcloud-additional-menu="${this.showNextcloudAdditionalMenu}"
                             text="${i18n.t('qualified-pdf-upload.upload-area-text')}"
                             button-label="${i18n.t('qualified-pdf-upload.upload-button-label')}"
                             @dbp-file-source-file-selected="${this.onFileSelected}"
@@ -776,6 +792,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                 nextcloud-name="${this.nextcloudName}"
                 nextcloud-file-url="${this.nextcloudFileURL}"
                 lang="${this.lang}"
+                show-nextcloud-additional-menu="${this.showNextcloudAdditionalMenu}"
                 ></dbp-file-sink>
         `;
     }

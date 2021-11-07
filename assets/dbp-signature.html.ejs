@@ -70,6 +70,7 @@
     show-nextcloud-file-picker
     <%= buildInfo.env !== 'production' ? 'show-clipboard' : '' %>
     <%= buildInfo.env !== 'production' ? 'allow-annotating' : '' %>
+    <%= buildInfo.env !== 'production' && buildInfo.env !== 'local' ? 'show-nextcloud-additional-menu' : '' %>
     nextcloud-web-app-password-url="<%= nextcloudWebAppPasswordURL %>"
     nextcloud-webdav-url="<%= nextcloudWebDavURL %>"
     nextcloud-name="<%= nextcloudName %>"
@@ -77,7 +78,7 @@
     html-overrides="global-override"
     src="<%= getUrl(name + '.topic.metadata.json') %>"
     base-path="<%= getUrl('') %>"
-    keycloak-config='{"url": "<%= keyCloakBaseURL %>", "realm": "tugraz", "clientId": "<%= keyCloakClientId %>", "silentCheckSsoRedirectUri": "<%= getUrl('silent-check-sso.html') %>"}'
+    keycloak-config='{"url": "<%= keyCloakBaseURL %>", "realm": "<%= keyCloakRealm %>", "clientId": "<%= keyCloakClientId %>", "silentCheckSsoRedirectUri": "<%= getUrl('silent-check-sso.html') %>"}'
     matomo-url='<%= matomoUrl %>'
     matomo-site-id='<%= matomoSiteId %>'
     git-info='<%= buildInfo.info %>'

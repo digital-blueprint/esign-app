@@ -60,6 +60,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         this.queuedFilesEnabledAnnotations = [];
         this.isAnnotationViewVisible = false;
         this.addAnnotationInProgress = false;
+        this.showNextcloudAdditionalMenu = false;
         this.activity = new Activity(metadata);
         this.showClipboard = false;
     }
@@ -113,6 +114,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             queuedFilesAnnotationModes: { type: Array, attribute: false },
             queuedFilesAnnotationSaved: { type: Array, attribute: false },
             showClipboard: { type: Boolean, attribute: 'show-clipboard' },
+            showNextcloudAdditionalMenu: { type: Boolean, attribute: 'show-nextcloud-additional-menu' }
         };
     }
 
@@ -267,7 +269,12 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                     break;
                 case "entryPointUrl":
                     JSONLD.getInstance(this.entryPointUrl).then((jsonld) => {
-                        let apiUrlBase = jsonld.getApiUrlForEntityName("AdvancedlySignedDocument");
+                        let apiUrlBase;
+                        try {
+                            apiUrlBase = jsonld.getApiUrlForEntityName("EsignAdvancedlySignedDocument");
+                        } catch (error) {
+                            apiUrlBase = jsonld.getApiUrlForEntityName("AdvancedlySignedDocument");
+                        }
                         this.fileSourceUrl = apiUrlBase;
                     });
                     break;
@@ -464,6 +471,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                             decompress-zip
                             lang="${this.lang}"
                             ?disabled="${this.signingProcessActive}"
+                            ?show-nextcloud-additional-menu="${this.showNextcloudAdditionalMenu}"
                             text="${i18n.t('official-pdf-upload.upload-area-text')}"
                             button-label="${i18n.t('official-pdf-upload.upload-button-label')}"
                             @dbp-file-source-file-selected="${this.onFileSelected}"
@@ -619,6 +627,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                 nextcloud-web-dav-url="${this.nextcloudWebDavURL}"
                 nextcloud-name="${this.nextcloudName}"
                 nextcloud-file-url="${this.nextcloudFileURL}"
+                show-nextcloud-additional-menu="${this.showNextcloudAdditionalMenu}"
                 lang="${this.lang}"
                 ></dbp-file-sink>
         `;
