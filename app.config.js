@@ -11,7 +11,8 @@ export default {
         nextcloudName: 'TU Graz cloud',
         pdfAsQualifiedlySigningServer: 'https://sig-dev.tugraz.at',
         hiddenActivities: ['dbp-signature-verification-full'],
-        enableAnnotations: true
+        enableAnnotations: true,
+        enableAdditionalMenu: true
     },
     bs: {
         basePath: '/dist/',
@@ -25,7 +26,8 @@ export default {
         nextcloudName: 'TU Graz cloud',
         pdfAsQualifiedlySigningServer: 'https://sig-dev.tugraz.at',
         hiddenActivities: [],
-        enableAnnotations: true
+        enableAnnotations: true,
+        enableAdditionalMenu: true
     },
     development: {
         basePath: '/apps/signature/',
@@ -39,7 +41,8 @@ export default {
         nextcloudName: 'TU Graz cloud',
         pdfAsQualifiedlySigningServer: 'https://sig-dev.tugraz.at',
         hiddenActivities: ['dbp-signature-verification-full'],
-        enableAnnotations: true
+        enableAnnotations: true,
+        enableAdditionalMenu: true
     },
     demo: {
         basePath: '/apps/signature/',
@@ -53,7 +56,8 @@ export default {
         nextcloudName: 'TU Graz cloud',
         pdfAsQualifiedlySigningServer: 'https://sig-demo.tugraz.at',
         hiddenActivities: ['dbp-signature-verification-full'],
-        enableAnnotations: true
+        enableAnnotations: true,
+        enableAdditionalMenu: true
     },
     production: {
         basePath: '/',
@@ -67,6 +71,7 @@ export default {
         nextcloudName: 'TU Graz cloud',
         pdfAsQualifiedlySigningServer: 'https://sig.tugraz.at',
         hiddenActivities: ['dbp-signature-verification-full'],
-        enableAnnotations: false
+        enableAnnotations: false,
+        enableAdditionalMenu: false
     },
 };

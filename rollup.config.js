@@ -43,6 +43,7 @@ if (appEnv in appConfig) {
         pdfAsQualifiedlySigningServer: 'https://test',
         hiddenActivities: [],
         enableAnnotations: true,
+        enableAdditionalMenu: true,
     };
 } else {
     console.error(`Unknown build environment: '${appEnv}', use one of '${Object.keys(appConfig)}'`);
@@ -137,6 +138,7 @@ export default (async () => {
             matomoSiteId: config.matomoSiteId,
             buildInfo: getBuildInfo(appEnv),
             enableAnnotations: config.enableAnnotations,
+            enableAdditionalMenu: config.enableAdditionalMenu,
           }
         }),
         resolve({

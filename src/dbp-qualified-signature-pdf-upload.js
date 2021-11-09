@@ -115,7 +115,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             addAnnotationInProgress: { type: Boolean, attribute: false },
             queuedFilesAnnotationModes: { type: Array, attribute: false },
             queuedFilesAnnotationSaved: { type: Array, attribute: false },
-            fileHandlingEnabledTargets: {type: String, attribute: 'file-handling-enabled-targets'}
+            fileHandlingEnabledTargets: {type: String, attribute: 'file-handling-enabled-targets'},
+            showNextcloudAdditionalMenu: { type: Boolean, attribute: 'show-nextcloud-additional-menu' },
         };
     }
 
