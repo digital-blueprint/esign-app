@@ -32,7 +32,7 @@ export default {
         entryPointURL: 'https://api-dev.tugraz.at',
         keyCloakBaseURL: 'https://auth-dev.tugraz.at/auth',
         keyCloakRealm: 'tugraz-vpu',
-        keyCloakClientId: 'esign-dev_tugraz_at-ESIGN',
+        keyCloakClientId: 'dbp-esign',
         matomoUrl: 'https://analytics.tugraz.at/',
         matomoSiteId: 131,
         nextcloudBaseURL: 'https://cloud-dev.tugraz.at',
