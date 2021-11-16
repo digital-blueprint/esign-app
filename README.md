@@ -40,6 +40,11 @@ npx @digital-blueprint/cli install-app signature signature-app /
 
 Afterwards you can point your Apache web-server to `signature-app/public`.
 
+Make sure you are allowing `.htaccess` files in your Apache configuration.
+
+Also make sure to add all of your resources you are using (like your API and Keycloak servers) to the
+`Content-Security-Policy` in your `signature-app/public/.htaccess`, so the browser allows access to those sites.
+
 You can also use this app directly from the [Unpkg CDN](https://unpkg.com/browse/@dbp-topics/signature/)
 for example like this: [dbp-signature/index.html](https://gitlab.tugraz.at/dbp/esign/signature/-/tree/master/examples/dbp-signature/index.html)
 
