@@ -182,7 +182,7 @@ Example:
 </dbp-signature-verification>
 ```
 
-## "dbp-greenlight" Slots
+## "dbp-signature" Slots
 
 These are common slots for the appshell. You can find the documentation of these slot in the `README.md` of the appshell webcomponent.
 
