@@ -81,6 +81,23 @@
 </template>
 </dbp-signature>
 
+
+<template id="global-override">
+    <template id="dbp-signature">
+        <div slot="name">
+            DBP<br />
+            <dbp-translated subscribe="lang">
+                <div slot="de">
+                    Meine Universität
+                </div>
+                <div slot="en">
+                    My University
+                </div>
+            </dbp-translated>
+        </div>
+    </template>
+</template>
+
 <!-- Error handling for too old browsers -->
 <script src="/app/local/@dbp-topics/signature/browser-check.js" defer></script>
 <noscript>Diese Applikation benötigt Javascript / This application requires Javascript</noscript>
