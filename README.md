@@ -182,6 +182,10 @@ Example:
 </dbp-signature-verification>
 ```
 
+## "dbp-greenlight" Slots
+
+These are common slots for the appshell. You can find the documentation of these slot in the `README.md` of the appshell webcomponent.
+
 ## Design Notes
 
 To ensure a uniform and responsive design the activity should occupy 100% of the window width
