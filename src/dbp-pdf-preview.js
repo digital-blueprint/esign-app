@@ -1,7 +1,7 @@
 import {createInstance} from './i18n.js';
-import {css, html} from 'lit-element';
-import {classMap} from 'lit-html/directives/class-map.js';
-import {live} from 'lit-html/directives/live.js';
+import {css, html} from 'lit';
+import {classMap} from 'lit/directives/class-map.js';
+import {live} from 'lit/directives/live.js';
 import {ScopedElementsMixin} from '@open-wc/scoped-elements';
 import DBPLitElement from '@dbp-toolkit/common/dbp-lit-element';
 import {MiniSpinner, Icon} from '@dbp-toolkit/common';

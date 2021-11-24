@@ -1,5 +1,5 @@
 import {AnnotationFactory} from '@digital-blueprint/annotpdf/_bundles/pdfAnnotate.js';
-import {html} from "lit-element";
+import {html} from 'lit';
 //import {humanFileSize} from "@dbp-toolkit/common/i18next";
 
 /**

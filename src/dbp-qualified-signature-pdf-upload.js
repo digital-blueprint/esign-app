@@ -1,6 +1,6 @@
 import {createInstance} from './i18n.js';
 import {humanFileSize} from '@dbp-toolkit/common/i18next.js';
-import {css, html} from 'lit-element';
+import {css, html} from 'lit';
 import {ScopedElementsMixin} from '@open-wc/scoped-elements';
 import DBPSignatureLitElement from "./dbp-signature-lit-element";
 import {PdfPreview} from "./dbp-pdf-preview";
@@ -8,7 +8,7 @@ import * as commonUtils from '@dbp-toolkit/common/utils';
 import * as utils from './utils';
 import {Button, Icon, MiniSpinner} from '@dbp-toolkit/common';
 import * as commonStyles from '@dbp-toolkit/common/styles';
-import {classMap} from 'lit-html/directives/class-map.js';
+import {classMap} from 'lit/directives/class-map.js';
 import {FileSource} from '@dbp-toolkit/file-handling';
 import JSONLD from "@dbp-toolkit/common/jsonld";
 import {TextSwitch} from './textswitch.js';
