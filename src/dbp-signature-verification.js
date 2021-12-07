@@ -45,13 +45,13 @@ class SignatureVerification extends ScopedElementsMixin(DBPSignatureLitElement) 
             ${commonStyles.getGeneralCSS(false)}
 
             a {
-                border-bottom: 1px solid rgba(0,0,0,0.3);
+                border-bottom: var(--dbp-border-dark);
                 padding: 0;
             }
 
             a:hover {
-                color: #fff;
-                background-color: #000;
+                background-color: var(--dbp-hover-base);
+                color: var(--dbp-hover-text);
             }
 
             h2:first-child {
@@ -61,12 +61,12 @@ class SignatureVerification extends ScopedElementsMixin(DBPSignatureLitElement) 
 
             .int-link-internal{
                 transition: background-color 0.15s, color 0.15s;
-                border-bottom: 1px solid rgba(0,0,0,0.3);
+                border-bottom: var(--dbp-border-dark);
             }
             
             .int-link-internal:hover{
-                background-color: black;
-                color: white;
+                background-color: var(--dbp-hover-base);
+                color: var(--dbp-hover-text);
             }
             
             .int-link-internal:after{

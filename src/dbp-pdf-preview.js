@@ -499,8 +499,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                 position: absolute;
                 top: 0;
                 left: 0;
-                border: solid 1px black;
-                border-top-color: #888;
+                border: var(--dbp-border-dark);
             }
 
             #annotation-layer {
@@ -548,21 +547,19 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
             }
 
             input[type=number] {
-                border: 1px solid #000;
+                border: var(--dbp-border-dark);
                 padding: 0 0.3em;
             }
 
             #pdf-meta {
-                border-color: #000;
-                border-width: 1px;
-                border-style: solid;
+                border: var(--dbp-border-dark);
                 padding: 0.54em;
                 border-bottom-width: 0;
                 border-top-width: 0;
             }
 
             .button.is-cancel {
-                color: #e4154b;
+                color: var(--dbp-danger-dark);
             }
             
             .error-message{

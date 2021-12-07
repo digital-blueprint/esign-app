@@ -55,10 +55,18 @@ export class TextSwitch extends LitElement {
             #button1 {
                 border-right-width: 0;
             }
+            
+            .button:first-child{
+                border-radius: var(--dbp-border-radius) 0 0 var(--dbp-border-radius);
+            }
+
+            .button:last-child{
+                border-radius: 0 var(--dbp-border-radius) var(--dbp-border-radius) 0;
+            }
 
             .active {
-                background-color: black !important;
-                color: var(--dbp-primary-text-color) !important;
+                background-color: var(--dbp-secondary-dark) !important;
+                color: var(--dbp-text-light) !important;
             }
 
             .button {
@@ -66,7 +74,8 @@ export class TextSwitch extends LitElement {
             }
 
             .button:hover {
-                background-color: var(--dbp-secondary-bg-color) !important;
+                background-color: var(--dbp-hover-base) !important;
+                color: var(--dbp-hover-text) !important;
             }
         `;
     }

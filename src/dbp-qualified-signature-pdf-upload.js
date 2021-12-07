@@ -424,7 +424,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             }
 
             #external-auth .button.is-cancel {
-                color: #e4154b;
+                color: var(--dbp-danger-dark);
             }
 
             #iframe {

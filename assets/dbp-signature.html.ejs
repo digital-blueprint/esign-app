@@ -41,18 +41,37 @@
             font-family: 'Source Sans Pro', 'Calibri', 'Arial', 'sans-serif';
             font-weight: 300;
             margin: 0;
+            background-color: var(--dbp-override-base-light);
+            color: var(--dbp-override-text-dark);
         }
 
         /* TU-Graz style override */
         html {
-            --dbp-override-primary-bg-color: #245b78;
-            --dbp-override-primary-button-border: solid 1px #245b78;
-            --dbp-override-info-bg-color: #245b78;
-            --dbp-override-danger-bg-color: #e4154b;
-            --dbp-override-warning-bg-color: #ffe183;
-            --dbp-override-warning-text-color: black;
-            --dbp-override-success-bg-color: #259207;
- /*           --dbp-override-downloaded-bg-color: #9fdf9f; */
+            --dbp-override-base-light: #ffffff;
+            --dbp-override-base-dark: #000000;
+            --dbp-override-text-light: #ffffff;
+            --dbp-override-text-dark: #000000;
+            --dbp-override-text-muted-light: #afaca7;
+            --dbp-override-text-muted-dark: #5c5856;
+            --dbp-override-accent-light: #e4154b;
+            --dbp-override-accent-dark: #e4154b;
+            --dbp-override-primary-light: #73899e;
+            --dbp-override-primary-dark: #245b78;
+            --dbp-override-secondary-light: #ffffff;
+            --dbp-override-secondary-dark: #000000;
+            --dbp-override-info-light: #73899e;
+            --dbp-override-info-dark: #245b78;
+            --dbp-override-success-light: #75c438;
+            --dbp-override-success-dark: #148800;
+            --dbp-override-warning-light: #ffad4d;
+            --dbp-override-warning-dark: #af6405;
+            --dbp-override-danger-light: #ff5d79;
+            --dbp-override-danger-dark: #e4154b;
+            --dbp-override-border-light: 1px solid #ffffff;
+            --dbp-override-border-dark: 1px solid #000000;
+            --dbp-override-hover-base: #000000;
+            --dbp-override-hover-text: #ffffff;
+
             --dbp-override-image-nextcloud: url(<%= getUrl('') %>images/nextcloud.svg);
         }
     </style>
@@ -114,18 +133,18 @@
                 }
 
                 .footer-links a {
-                    border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+                    border-bottom: var(--dbp-border-dark);
                     padding: 0;
                     margin-left: 1em;
                     transition: background-color 0.15s ease 0s, color 0.15s ease 0s;
-                    color: #6c757d;
+                    color: var(--dbp-text-dark);
                     cursor: pointer;
                     text-decoration: none;
                 }
 
                 .footer-links a:hover {
-                    color: #fff;
-                    background-color: #000;
+                    color: var(--dbp-hover-text);
+                    background-color: var(--dbp-hover-base);
                 }
             </style>
             <dbp-translated subscribe="lang">
@@ -159,12 +178,12 @@
             <style>
                 .int-link-internal{
                     transition: background-color 0.15s, color 0.15s;
-                    border-bottom: 1px solid rgba(0,0,0,0.3);
+                    border-bottom: var(--dbp-border-dark);
                 }
 
                 .int-link-internal:hover{
-                    background-color: black;
-                    color: white;
+                    background-color: var(--dbp-hover-base);
+                    color: var(--dbp-hover-text);
                 }
 
                 .int-link-internal:after{

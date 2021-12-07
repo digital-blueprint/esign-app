@@ -232,11 +232,11 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
             }
 
             .border {
-                border-top: 1px solid #888;
+                border-top: var(--dbp-border-dark);
                 padding-bottom: .5em;
             }
             .border-wrapper {
-                border: 1px solid black;
+                border: var(--dbp-border-dark);
                 border-bottom-width: 0;
                 border-top-width: 0;
 
@@ -272,23 +272,17 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
 
             #fields-wrapper {
                 position: relative;
-                border-color: #000;
-                border-width: 1px;
-                border-style: solid;
+                border: var(--dbp-border-dark);
                 padding: 0.5em;
                 padding-bottom: 0.8em;
-
                 border-top-width: 0;
             }
 
             #pdf-meta {
-                border-color: #000;
-                border-width: 1px;
-                border-style: solid;
+                border: var(--dbp-border-dark);
                 padding: 0.5em;
                 border-bottom-width: 0;
                 border-top-width: 0;
-
                 padding-bottom: 1em;
             }
 
@@ -296,7 +290,8 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
                 padding-left: 8px;
                 font-weight: 300;
                 color: inherit;
-                border: 1px solid #aaa;
+                border: var(--dbp-border-dark);
+                border-color: var(--dbp-text-muted-dark);
                 line-height: 100%;
                 height: 28px;
                 width: 100%;

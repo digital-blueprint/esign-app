@@ -8,7 +8,7 @@ export function getSignatureCss() {
             background: transparent;
             border: none;
             font-size: 1.5rem;
-            color: var(--dbp-override-danger-bg-color);
+            color: var(--dbp-accent-dark);
             cursor: pointer;
             padding: 0px;
             padding-right: 2px;
@@ -41,7 +41,7 @@ export function getSignatureCss() {
         }
 
         #pdf-preview .box-header, #annotation-view .box-header {
-            border: 1px solid #000;
+            border: var(--dbp-border-dark);
             border-bottom-width: 0;
             padding: 0.5em 0.5em 0 0.5em;
         }
@@ -85,11 +85,12 @@ export function getSignatureCss() {
         }
 
         .error, #cancel-signing-process {
-            color: #e4154b;
+            color: var(--dbp-danger-dark);
         }
 
         #cancel-signing-process:hover {
-            color: white;
+            color: var(--dbp-hover-text);
+            background-color: var(--dbp-hover-base);
         }
 
         /* using dbp-icon doesn't work */
@@ -98,7 +99,7 @@ export function getSignatureCss() {
         }
 
         a > [name=close] {
-            color: red;
+            color: var(--dbp-accent-dark);
         }
 
         .empty-queue {
@@ -120,7 +121,7 @@ export function getSignatureCss() {
         }
         
         .file-block, .box {
-            border: solid 1px black;
+            border: var(--dbp-border-dark);
             padding: 10px;
         }
 
@@ -159,7 +160,7 @@ export function getSignatureCss() {
 
         .file-block .error-line {
             margin-top: 6px;
-            color: var(--dbp-override-danger-bg-color);
+            color: var(--dbp-danger-dark);
         }
 
         .file-block.error div.bottom-line {
@@ -184,7 +185,7 @@ export function getSignatureCss() {
         }
         
         #pdf-preview .button.is-cancel {
-            color: #e4154b;
+            color: var(--dbp-accent-dark);
         }
 
         .is-right {
@@ -232,13 +233,14 @@ export function getSignatureCss() {
         }
 
         .border{
-            border-top: 1px solid black;
+            border-top: var(--dbp-border-dark);
             margin-top: 2rem;
             padding-top: 2rem;
         }
 
         .placement-missing {
-            border: solid 2px var(--dbp-override-danger-bg-color);
+            border: solid 2px var(--dbp-danger-dark);
+            border-radius: var(--dbp-border-radius);
         }
 
         .subheadline{
@@ -261,7 +263,8 @@ export function getSignatureCss() {
                 left: 0;
                 right: 0;
                 bottom: 0;
-                background-color: white;
+                background-color: var(--dbp-base-light);
+                color: var(--dbp-text-dark);
                 overflow-y: scroll;
             }
 
