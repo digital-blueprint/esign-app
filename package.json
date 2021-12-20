@@ -57,7 +57,7 @@
     "i18next": "^21.4.2",
     "jszip": "^3.5.0",
     "lit": "^2.0.0",
-    "pdfjs-dist": "2.10.377",
+    "pdfjs-dist": "2.12.313",
     "universal-router": "^9.0.1"
   },
   "scripts": {
