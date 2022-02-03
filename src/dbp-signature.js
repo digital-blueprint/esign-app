@@ -1,7 +1,7 @@
 import {AppShell} from '@dbp-toolkit/app-shell';
 import * as commonUtils from '@dbp-toolkit/common/utils';
-import {Translated} from "@dbp-toolkit/common/src/translated";
-import {TUGrazLogo} from "@dbp-toolkit/app-shell/src/tugraz-logo";
+import {Translated} from '@dbp-toolkit/common/src/translated';
+import {TUGrazLogo} from '@dbp-toolkit/app-shell/src/tugraz-logo';
 
 commonUtils.defineCustomElement('dbp-signature', AppShell);
 commonUtils.defineCustomElement('dbp-translated', Translated);

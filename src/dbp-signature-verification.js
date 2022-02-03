@@ -1,12 +1,11 @@
 import {createInstance} from './i18n.js';
 import {css, html} from 'lit';
 import {ScopedElementsMixin} from '@open-wc/scoped-elements';
-import DBPSignatureLitElement from "./dbp-signature-lit-element";
+import DBPSignatureLitElement from './dbp-signature-lit-element';
 import * as commonUtils from '@dbp-toolkit/common/utils';
 import * as commonStyles from '@dbp-toolkit/common/styles';
 import metadata from './dbp-signature-verification.metadata.json';
 import {Activity} from './activity.js';
-
 
 class SignatureVerification extends ScopedElementsMixin(DBPSignatureLitElement) {
     constructor() {
@@ -16,20 +15,20 @@ class SignatureVerification extends ScopedElementsMixin(DBPSignatureLitElement) 
     }
 
     static get scopedElements() {
-        return { };
+        return {};
     }
 
     static get properties() {
         return {
             ...super.properties,
-            lang: { type: String },
+            lang: {type: String},
         };
     }
 
     update(changedProperties) {
         changedProperties.forEach((oldValue, propName) => {
             switch (propName) {
-                case "lang":
+                case 'lang':
                     this._i18n.changeLanguage(this.lang);
                     break;
             }
@@ -59,18 +58,18 @@ class SignatureVerification extends ScopedElementsMixin(DBPSignatureLitElement) 
                 margin-bottom: 0px;
             }
 
-            .int-link-internal{
+            .int-link-internal {
                 transition: background-color 0.15s, color 0.15s;
                 border-bottom: var(--dbp-border-dark);
             }
-            
-            .int-link-internal:hover{
+
+            .int-link-internal:hover {
                 background-color: var(--dbp-hover-base);
                 color: var(--dbp-hover-text);
             }
-            
-            .int-link-internal:after{
-                content: "\\00a0\\00a0\\00a0";
+
+            .int-link-internal:after {
+                content: '\\00a0\\00a0\\00a0';
                 background-image: url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3Ardf%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20height%3D%228.6836mm%22%20width%3D%225.2043mm%22%20version%3D%221.1%22%20xmlns%3Acc%3D%22http%3A%2F%2Fcreativecommons.org%2Fns%23%22%20xmlns%3Adc%3D%22http%3A%2F%2Fpurl.org%2Fdc%2Felements%2F1.1%2F%22%20viewBox%3D%220%200%2018.440707%2030.768605%22%3E%3Cg%20transform%3D%22translate(-382.21%20-336.98)%22%3E%3Cpath%20style%3D%22stroke-linejoin%3Around%3Bstroke%3A%23000%3Bstroke-linecap%3Around%3Bstroke-miterlimit%3A10%3Bstroke-width%3A2%3Bfill%3Anone%22%20d%3D%22m383.22%20366.74%2016.43-14.38-16.43-14.37%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E');
                 background-size: 73%;
                 background-repeat: no-repeat;
@@ -80,9 +79,9 @@ class SignatureVerification extends ScopedElementsMixin(DBPSignatureLitElement) 
                 animation: 0.15s linkIconOut;
                 font-size: 103%;
             }
-            
-            .int-link-internal:hover::after{
-                content: "\\00a0\\00a0\\00a0";
+
+            .int-link-internal:hover::after {
+                content: '\\00a0\\00a0\\00a0';
                 background-image: url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3Ardf%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20height%3D%228.6836mm%22%20width%3D%225.2043mm%22%20version%3D%221.1%22%20xmlns%3Acc%3D%22http%3A%2F%2Fcreativecommons.org%2Fns%23%22%20xmlns%3Adc%3D%22http%3A%2F%2Fpurl.org%2Fdc%2Felements%2F1.1%2F%22%20viewBox%3D%220%200%2018.440707%2030.768605%22%3E%3Cg%20transform%3D%22translate(-382.21%20-336.98)%22%3E%3Cpath%20style%3D%22stroke-linejoin%3Around%3Bstroke%3A%23FFF%3Bstroke-linecap%3Around%3Bstroke-miterlimit%3A10%3Bstroke-width%3A2%3Bfill%3Anone%22%20d%3D%22m383.22%20366.74%2016.43-14.38-16.43-14.37%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E');
                 background-size: 73%;
                 background-repeat: no-repeat;
@@ -93,7 +92,7 @@ class SignatureVerification extends ScopedElementsMixin(DBPSignatureLitElement) 
                 font-size: 103%;
             }
 
-            .subheadline{
+            .subheadline {
                 font-style: italic;
                 padding-left: 2em;
                 margin-top: -1px;
@@ -108,16 +107,16 @@ class SignatureVerification extends ScopedElementsMixin(DBPSignatureLitElement) 
         const activity = new Activity(metadata);
         return html`
             <h2>${activity.getName(this.lang)}</h2>
-            <p class="subheadline">
-                ${activity.getDescription(this.lang)}
-            </p>
-            <p>
-                ${i18n.t('signature-verification-extern.description-text')}
-            </p>
-            <a target="_blank" rel="noopener" class="int-link-internal" href="https://www.signaturpruefung.gv.at">${i18n.t('signature-verification-extern.link-label')}</a>
-            <p>
-                ${i18n.t('signature-verification-extern.adobe-reader-text')}
-            </p>
+            <p class="subheadline">${activity.getDescription(this.lang)}</p>
+            <p>${i18n.t('signature-verification-extern.description-text')}</p>
+            <a
+                target="_blank"
+                rel="noopener"
+                class="int-link-internal"
+                href="https://www.signaturpruefung.gv.at">
+                ${i18n.t('signature-verification-extern.link-label')}
+            </a>
+            <p>${i18n.t('signature-verification-extern.adobe-reader-text')}</p>
             <slot name="additional-information"></slot>
         `;
     }

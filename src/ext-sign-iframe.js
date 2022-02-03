@@ -5,13 +5,12 @@ import {ScopedElementsMixin} from '@open-wc/scoped-elements';
 
 /**
  * Set the URL via setUrl(), reset via reset().
- * 
+ *
  * Emits two custom events:
  *  signature-error with a "message"
  *  signature-done with an "id"
  */
 export class ExternalSignIFrame extends ScopedElementsMixin(LitElement) {
-
     constructor() {
         super();
         this._loading = false;
@@ -20,13 +19,13 @@ export class ExternalSignIFrame extends ScopedElementsMixin(LitElement) {
 
     static get scopedElements() {
         return {
-          'dbp-mini-spinner': MiniSpinner,
+            'dbp-mini-spinner': MiniSpinner,
         };
     }
 
     static get properties() {
         return {
-            _loading: { type: Boolean, attribute: false },
+            _loading: {type: Boolean, attribute: false},
         };
     }
 
@@ -47,28 +46,32 @@ export class ExternalSignIFrame extends ScopedElementsMixin(LitElement) {
             if (data.cause) {
                 error = `${error}: ${data.cause}`;
             }
-            this.dispatchEvent(new CustomEvent('signature-error', {
-                detail: {
-                    message: error,
-                }
-            }));
+            this.dispatchEvent(
+                new CustomEvent('signature-error', {
+                    detail: {
+                        message: error,
+                    },
+                })
+            );
         } else if (data.type === 'pdf-as-callback') {
-            this.dispatchEvent(new CustomEvent('signature-done', {
-                detail: {
-                    id: data.sessionId,
-                }
-            }));
+            this.dispatchEvent(
+                new CustomEvent('signature-done', {
+                    detail: {
+                        id: data.sessionId,
+                    },
+                })
+            );
         }
     }
 
     setUrl(url) {
-        let iframe = this.renderRoot.querySelector("#iframe");
+        let iframe = this.renderRoot.querySelector('#iframe');
         this._loading = true;
         iframe.src = url;
     }
 
     reset() {
-        this.setUrl("about:blank");
+        this.setUrl('about:blank');
     }
 
     static get styles() {
@@ -93,15 +96,20 @@ export class ExternalSignIFrame extends ScopedElementsMixin(LitElement) {
     }
 
     render() {
-
         let onDone = (event) => {
             this._loading = false;
         };
 
         return html`
-            ${ this._loading ? html`<dbp-mini-spinner></dbp-mini-spinner>` : html`` }
+            ${this._loading
+                ? html`
+                      <dbp-mini-spinner></dbp-mini-spinner>
+                  `
+                : html``}
             <!-- "scrolling" is deprecated, but still seem to help -->
-            <iframe id="iframe" class=${classMap({hidden: this._loading})}
+            <iframe
+                id="iframe"
+                class=${classMap({hidden: this._loading})}
                 @load="${onDone}"
                 @error="${onDone}"
                 scrolling="no"></iframe>

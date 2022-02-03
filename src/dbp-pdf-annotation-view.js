@@ -4,8 +4,8 @@ import {classMap} from 'lit/directives/class-map.js';
 import {ScopedElementsMixin} from '@open-wc/scoped-elements';
 import DBPLitElement from '@dbp-toolkit/common/dbp-lit-element';
 import {MiniSpinner, Icon} from '@dbp-toolkit/common';
-import {OrganizationSelect} from "@dbp-toolkit/organization-select";
-import { send } from '@dbp-toolkit/common/notification';
+import {OrganizationSelect} from '@dbp-toolkit/organization-select';
+import {send} from '@dbp-toolkit/common/notification';
 import * as commonStyles from '@dbp-toolkit/common/styles';
 import * as utils from './utils';
 
@@ -38,24 +38,24 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
     static get properties() {
         return {
             ...super.properties,
-            lang: { type: String },
-            key: { type: Number },
-            isTextHidden: { type: Boolean, attribute: false },
-            isSelected: { type: Boolean, attribute: false },
-            annotationRows: { type: Array, attribute: false },
-            queuedFilesAnnotationsCount: { type: Number, attribute: false },
+            lang: {type: String},
+            key: {type: Number},
+            isTextHidden: {type: Boolean, attribute: false},
+            isSelected: {type: Boolean, attribute: false},
+            annotationRows: {type: Array, attribute: false},
+            queuedFilesAnnotationsCount: {type: Number, attribute: false},
         };
     }
 
     update(changedProperties) {
         changedProperties.forEach((oldValue, propName) => {
             switch (propName) {
-                case "lang":
+                case 'lang':
                     this._i18n.changeLanguage(this.lang);
                     break;
             }
         });
-        
+
         super.update(changedProperties);
     }
 
@@ -67,7 +67,7 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
     }
 
     /**
-     * Deletes all fields and restore introduction text 
+     * Deletes all fields and restore introduction text
      */
     deleteAll() {
         this.annotationRows = [];
@@ -77,8 +77,11 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
 
     sendCancelEvent() {
         console.log('cancel event called');
-        const event = new CustomEvent("dbp-pdf-annotations-cancel",
-            { "detail": {}, bubbles: true, composed: true });
+        const event = new CustomEvent('dbp-pdf-annotations-cancel', {
+            detail: {},
+            bubbles: true,
+            composed: true,
+        });
         this.dispatchEvent(event);
     }
 
@@ -90,12 +93,16 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
             if (annotationTypeData['hasOrganization']) {
                 let organization = annotation.organizationValue;
 
-                if (typeof organization === 'undefined' || organization === null || organization === '') {
+                if (
+                    typeof organization === 'undefined' ||
+                    organization === null ||
+                    organization === ''
+                ) {
                     send({
-                        "summary": i18n.t('annotation-view.empty-organization-title'),
-                        "body": i18n.t('annotation-view.empty-organization-message'),
-                        "type": "danger",
-                        "timeout": 5,
+                        summary: i18n.t('annotation-view.empty-organization-title'),
+                        body: i18n.t('annotation-view.empty-organization-message'),
+                        type: 'danger',
+                        timeout: 5,
                     });
                     return false;
                 }
@@ -103,10 +110,12 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
 
             if (annotation['value'] === null || annotation['value'] === '') {
                 send({
-                    "summary": i18n.t('annotation-view.empty-annotation-title', {annotationType: annotationTypeData.name[this.lang]}),
-                    "body": i18n.t('annotation-view.empty-annotation-message'),
-                    "type": "danger",
-                    "timeout": 5,
+                    summary: i18n.t('annotation-view.empty-annotation-title', {
+                        annotationType: annotationTypeData.name[this.lang],
+                    }),
+                    body: i18n.t('annotation-view.empty-annotation-message'),
+                    type: 'danger',
+                    timeout: 5,
                 });
                 return false;
             }
@@ -114,12 +123,15 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
             const pattern = new RegExp('[A-Za-z0-9ÄäÖöÜüß*\\/?! &@()=+_-]*');
             let matchResult = annotation['value'].match(pattern);
 
-            if (matchResult[0] === undefined || annotation['value'].length !== matchResult[0].length) {
+            if (
+                matchResult[0] === undefined ||
+                annotation['value'].length !== matchResult[0].length
+            ) {
                 send({
-                    "summary": i18n.t('annotation-view.invalid-annotation-text-title'),
-                    "body": i18n.t('annotation-view.invalid-annotation-text-message'),
-                    "type": "danger",
-                    "timeout": 5,
+                    summary: i18n.t('annotation-view.invalid-annotation-text-title'),
+                    body: i18n.t('annotation-view.invalid-annotation-text-message'),
+                    type: 'danger',
+                    timeout: 5,
                 });
                 return false;
             }
@@ -134,13 +146,16 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
         if (!this.validateValues()) {
             return;
         }
-        
+
         const data = {
-            "key": this.key,
-            "annotationRows": this.annotationRows,
+            key: this.key,
+            annotationRows: this.annotationRows,
         };
-        const event = new CustomEvent("dbp-pdf-annotations-save",
-            { "detail": data, bubbles: true, composed: true });
+        const event = new CustomEvent('dbp-pdf-annotations-save', {
+            detail: data,
+            bubbles: true,
+            composed: true,
+        });
         this.dispatchEvent(event);
 
         if (this.annotationRows.length === 0) {
@@ -160,7 +175,7 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
 
         let e = this._('#additional-select');
         let type = e?.options[e?.selectedIndex]?.value;
-        this.annotationRows.push({'annotationType': type, 'value': ''});
+        this.annotationRows.push({annotationType: type, value: ''});
 
         // we just need this so the UI will update
         this.queuedFilesAnnotationsCount++;
@@ -193,7 +208,7 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
             // delete this.annotationRows[id]; //length of array doesn't change
             this.annotationRows.splice(id, 1);
 
-            if(this.annotationRows.length === 0) {
+            if (this.annotationRows.length === 0) {
                 this.isTextHidden = false;
                 this.sendCancelEvent();
             }
@@ -218,10 +233,10 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
 
             div.annotation-block {
                 display: grid;
-                row-gap: .3em;
+                row-gap: 0.3em;
 
                 align-items: center;
-                
+
                 margin-left: 2px;
                 margin-right: 2px;
             }
@@ -233,7 +248,7 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
 
             .border {
                 border-top: var(--dbp-border-dark);
-                padding-bottom: .5em;
+                padding-bottom: 0.5em;
             }
             .border-wrapper {
                 border: var(--dbp-border-dark);
@@ -260,7 +275,7 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
             }
 
             .delete-elements .button {
-                margin-left: .5em;
+                margin-left: 0.5em;
             }
 
             select:not(.select) {
@@ -314,9 +329,7 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
             }
 
             /* Handling for small displays (like mobile devices) */
-            @media only screen
-            and (orientation: portrait)
-            and (max-width: 768px) {
+            @media only screen and (orientation: portrait) and (max-width: 768px) {
                 .nav-buttons {
                     flex-direction: column;
                 }
@@ -326,7 +339,6 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
                     grid-template-columns: auto 42px;
                     column-gap: 3px;
                 }
-
             }
         `;
     }
@@ -337,43 +349,64 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
      * @returns {*[]} Array of html templates
      */
     getAnnotationsHtml() {
-       const i18n = this._i18n;
-       const annotations = this.annotationRows || [];
-       const ids = Object.keys(annotations);
-       let results = [];
+        const i18n = this._i18n;
+        const annotations = this.annotationRows || [];
+        const ids = Object.keys(annotations);
+        let results = [];
 
-       ids.forEach((id) => {
+        ids.forEach((id) => {
             const data = this.annotationRows[id] || [];
             const annotationTypeData = utils.getAnnotationTypes(data.annotationType);
             const name = annotationTypeData.name[this.lang];
 
             results.push(html`
-                <div class="${classMap({'with-organization': annotationTypeData.hasOrganization, 'annotation-block': true})}">
+                <div
+                    class="${classMap({
+                        'with-organization': annotationTypeData.hasOrganization,
+                        'annotation-block': true,
+                    })}">
                     <div class="inner-grid">
                         <label><strong>${name}</strong></label>
-                        <button class="button close" 
-                            title="${i18n.t('annotation-view.remove-field')}" 
-                            @click="${() => { this.removeAnnotation(id); } }">
-                            <dbp-icon name="trash"></dbp-icon></button>
+                        <button
+                            class="button close"
+                            title="${i18n.t('annotation-view.remove-field')}"
+                            @click="${() => {
+                                this.removeAnnotation(id);
+                            }}">
+                            <dbp-icon name="trash"></dbp-icon>
+                        </button>
                     </div>
 
-                    <dbp-organization-select subscribe="lang:lang,entry-point-url:entry-point-url,auth:auth"
-                                            class="${classMap({hidden: !annotationTypeData.hasOrganization})}"
-                            value="${data.organizationValue}"
-                            @change=${e => {
-                                this.updateAnnotation(id, 'organizationValue', e.target.value);
-                                this.updateAnnotation(id, 'organizationNumber', JSON.parse(e.target.getAttribute("data-object")).alternateName);
-                            }}></dbp-organization-select>
+                    <dbp-organization-select
+                        subscribe="lang:lang,entry-point-url:entry-point-url,auth:auth"
+                        class="${classMap({hidden: !annotationTypeData.hasOrganization})}"
+                        value="${data.organizationValue}"
+                        @change=${(e) => {
+                            this.updateAnnotation(id, 'organizationValue', e.target.value);
+                            this.updateAnnotation(
+                                id,
+                                'organizationNumber',
+                                JSON.parse(e.target.getAttribute('data-object')).alternateName
+                            );
+                        }}></dbp-organization-select>
 
-                    <input type="text" .value="${data.value}" class="input" pattern="[A-Za-z0-9ÄäÖöÜüß\*\\/! &@()=+_-]*" 
-                            placeholder="${annotationTypeData.hasOrganization ? i18n.t('annotation-view.businessnumber-placeholder') : i18n.t('annotation-view.intended-use-placeholder')}" 
-                            @change=${e => { this.updateAnnotation(id, 'value', e.target.value); }}>
+                    <input
+                        type="text"
+                        .value="${data.value}"
+                        class="input"
+                        pattern="[A-Za-z0-9ÄäÖöÜüß*\\/! &@()=+_-]*"
+                        placeholder="${annotationTypeData.hasOrganization
+                            ? i18n.t('annotation-view.businessnumber-placeholder')
+                            : i18n.t('annotation-view.intended-use-placeholder')}"
+                        @change=${(e) => {
+                            this.updateAnnotation(id, 'value', e.target.value);
+                        }} />
                 </div>
             `);
-       });
+        });
 
-       return results;
-   }
+        return results;
+    }
 
     render() {
         const i18n = this._i18n;
@@ -383,22 +416,30 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
                     <div class="nav-buttons">
                         
                         <div class="add-elements">
-                            <select id="additional-select" @change="${() => { this.isSelected = true; } }">
+                            <select id="additional-select" @change="${() => {
+                                this.isSelected = true;
+                            }}">
                                 ${utils.getAnnotationTypeSelectOptionsHtml('', this.lang)}
-                                <option value="" disabled selected>${i18n.t('annotation-view.insert-field')}</option>
+                                <option value="" disabled selected>${i18n.t(
+                                    'annotation-view.insert-field'
+                                )}</option>
                             </select>
                             <button class="button"
                                     title="${i18n.t('annotation-view.insert-field')}" 
-                                    @click="${() => { this.addAnnotation(); } }" 
-                                    ?disabled="${ !this.isSelected }">
+                                    @click="${() => {
+                                        this.addAnnotation();
+                                    }}" 
+                                    ?disabled="${!this.isSelected}">
                                 <dbp-icon name="checkmark-circle"></dbp-icon></button>
                             </button>
                         </div>
 
                         <button class="button is-primary"
                             title="${i18n.t('annotation-view.save-all-button-title')}"
-                            @click="${() => { this.saveAll(); } }"
-                            ?disabled="${ this.annotationRows.length === 0 }">
+                            @click="${() => {
+                                this.saveAll();
+                            }}"
+                            ?disabled="${this.annotationRows.length === 0}">
                             ${i18n.t('annotation-view.save-all-button-text')}
                         </button>
                     </div>
@@ -408,16 +449,22 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
                 </div>
                 <div id="fields-wrapper">
                     <div id="inside-fields">
-                        <div class="text ${classMap({hidden: this.isTextHidden || this.annotationRows.length > 0})}">
+                        <div class="text ${classMap({
+                            hidden: this.isTextHidden || this.annotationRows.length > 0,
+                        })}">
                             <p>${i18n.t('annotation-view.introduction')}</p>
                         </div>
                         ${this.getAnnotationsHtml()}
                     </div>
                     <div class="delete-elements">
-                        <button class="button ${classMap({hidden: !this.isTextHidden && this.annotationRows.length === 0})}"
+                        <button class="button ${classMap({
+                            hidden: !this.isTextHidden && this.annotationRows.length === 0,
+                        })}"
                                 title="${i18n.t('annotation-view.delete-all-button-title')}"
-                                @click="${() => { this.deleteAll(); } }"
-                                ?disabled="${ this.annotationRows.length === 0 }">
+                                @click="${() => {
+                                    this.deleteAll();
+                                }}"
+                                ?disabled="${this.annotationRows.length === 0}">
                                 ${i18n.t('annotation-view.delete-all-button-text')}
                         </button>
                     </div>

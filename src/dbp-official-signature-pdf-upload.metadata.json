@@ -1,19 +1,19 @@
 {
-  "element": "dbp-official-signature-pdf-upload",
-  "module_src": "dbp-official-signature-pdf-upload.js",
-  "routing_name": "official-pdf-upload",
-  "name": {
-    "de": "Dokumente amtssignieren",
-    "en": "Officially sign documents"
-  },
-  "short_name": {
-    "de": "Dokumente amtssignieren",
-    "en": "Officially sign documents"
-  },
-  "description": {
-    "de": "Erlaubt das Hochladen von PDF-Dokumenten, um sie mit einer Amtssignatur zu versehen",
-    "en": "Allows upload of PDF-documents to officially sign them"
-  },
-  "subscribe": "lang,entry-point-url,nextcloud-web-app-password-url,nextcloud-webdav-url,nextcloud-name,nextcloud-auth-info,nextcloud-file-url,auth,allow-annotating,file-handling-enabled-targets",
-  "required_roles": ["ROLE_SCOPE_OFFICIAL-SIGNATURE"]
+    "element": "dbp-official-signature-pdf-upload",
+    "module_src": "dbp-official-signature-pdf-upload.js",
+    "routing_name": "official-pdf-upload",
+    "name": {
+        "de": "Dokumente amtssignieren",
+        "en": "Officially sign documents"
+    },
+    "short_name": {
+        "de": "Dokumente amtssignieren",
+        "en": "Officially sign documents"
+    },
+    "description": {
+        "de": "Erlaubt das Hochladen von PDF-Dokumenten, um sie mit einer Amtssignatur zu versehen",
+        "en": "Allows upload of PDF-documents to officially sign them"
+    },
+    "subscribe": "lang,entry-point-url,nextcloud-web-app-password-url,nextcloud-webdav-url,nextcloud-name,nextcloud-auth-info,nextcloud-file-url,auth,allow-annotating,file-handling-enabled-targets",
+    "required_roles": ["ROLE_SCOPE_OFFICIAL-SIGNATURE"]
 }

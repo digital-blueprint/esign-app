@@ -1,8 +1,8 @@
-import * as utils from "./utils";
-import * as commonUtils from "@dbp-toolkit/common/utils";
+import * as utils from './utils';
+import * as commonUtils from '@dbp-toolkit/common/utils';
 import {BaseLitElement} from './base-element.js';
 import {SignatureEntry} from './signature-entry.js';
-import {getPDFSignatureCount} from "./utils";
+import {getPDFSignatureCount} from './utils';
 
 export default class DBPSignatureLitElement extends BaseLitElement {
     constructor() {
@@ -14,7 +14,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         this._queueKey = 0;
 
         // will be set in function update
-        this.fileSourceUrl = "";
+        this.fileSourceUrl = '';
 
         this.fileSource = '';
         this.nextcloudDefaultDir = '';
@@ -53,11 +53,10 @@ export default class DBPSignatureLitElement extends BaseLitElement {
     }
 
     /**
-     * @param {*} key 
-     * @param {*} name 
+     * @param {*} key
+     * @param {*} name
      */
     async showAnnotationView(key, name) {
-
         this.queuedFilesAnnotationModes[key] = name;
         console.log(name);
 
@@ -90,8 +89,8 @@ export default class DBPSignatureLitElement extends BaseLitElement {
     }
 
     /**
-     * 
-     * @param {*} event 
+     *
+     * @param {*} event
      */
     processAnnotationEvent(event) {
         let annotationDetails = event.detail;
@@ -102,13 +101,13 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         this.isAnnotationViewVisible = false;
         this.addAnnotationInProgress = false;
 
-        this.queuedFilesAnnotationModes[this.currentPreviewQueueKey] = "text-selected";
+        this.queuedFilesAnnotationModes[this.currentPreviewQueueKey] = 'text-selected';
         this.queuedFilesAnnotationSaved[this.currentPreviewQueueKey] = true;
     }
 
     /**
-     * 
-     * @param {*} event 
+     *
+     * @param {*} event
      */
     processAnnotationCancelEvent(event) {
         let key = this.currentPreviewQueueKey;
@@ -117,7 +116,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         this.queuedFilesAnnotations[key] = undefined;
         this.disableAnnotationsForKey(key);
 
-        this.queuedFilesAnnotationModes[this.currentPreviewQueueKey] = "no-text";
+        this.queuedFilesAnnotationModes[this.currentPreviewQueueKey] = 'no-text';
         this.queuedFilesAnnotationSaved[this.currentPreviewQueueKey] = false;
     }
 
@@ -127,10 +126,13 @@ export default class DBPSignatureLitElement extends BaseLitElement {
     hideAnnotationView() {
         console.log('hide view - x click');
 
-        if (this.queuedFilesAnnotationSaved[this.currentPreviewQueueKey] !== undefined && this.queuedFilesAnnotationSaved[this.currentPreviewQueueKey]) {
-            this.queuedFilesAnnotationModes[this.currentPreviewQueueKey] = "text-selected";
+        if (
+            this.queuedFilesAnnotationSaved[this.currentPreviewQueueKey] !== undefined &&
+            this.queuedFilesAnnotationSaved[this.currentPreviewQueueKey]
+        ) {
+            this.queuedFilesAnnotationModes[this.currentPreviewQueueKey] = 'text-selected';
         } else {
-            this.queuedFilesAnnotationModes[this.currentPreviewQueueKey] = "no-text";
+            this.queuedFilesAnnotationModes[this.currentPreviewQueueKey] = 'no-text';
         }
         this.isAnnotationViewVisible = false;
         this.addAnnotationInProgress = false;
@@ -151,7 +153,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         const activityNameEN = this.activity.getName('en');
 
         await commonUtils.asyncObjectForEach(annotations, async (annotation) => {
-            console.log("annotation", annotation);
+            console.log('annotation', annotation);
 
             const annotationType = (annotation.annotationType || '').trim();
             const organizationNumber = (annotation.organizationNumber || '').trim();
@@ -164,8 +166,16 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             const annotationTypeData = utils.getAnnotationTypes(annotationType);
 
             pdfFactory = await utils.addKeyValuePdfAnnotationsToAnnotationFactory(
-                pdfFactory, activityNameDE, activityNameEN, this.auth['user-full-name'], annotationType,
-                annotationTypeData.name.de, annotationTypeData.name.en, organizationNumber, value);
+                pdfFactory,
+                activityNameDE,
+                activityNameEN,
+                this.auth['user-full-name'],
+                annotationType,
+                annotationTypeData.name.de,
+                annotationTypeData.name.en,
+                organizationNumber,
+                value
+            );
         });
 
         // output the AnnotationFactory as File again
@@ -287,17 +297,21 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         // add annotations
         if (annotations.length > 0) {
             file = await this.addAnnotationsToFile(file, annotations);
-            console.log("uploadFile file", file);
+            console.log('uploadFile file', file);
 
             // Also send annotations to the server so they get included in the signature block
             let userText = [];
             for (let annotation of annotations) {
                 const annotationTypeData = utils.getAnnotationTypes(annotation['annotationType']);
-                const organizationNumberText = annotation['organizationNumber'] ? ` (${annotation['organizationNumber']})` : '';
+                const organizationNumberText = annotation['organizationNumber']
+                    ? ` (${annotation['organizationNumber']})`
+                    : '';
 
                 userText.push({
-                    'description': `${annotationTypeData.name.de || ''} / ${annotationTypeData.name.en || ''}`,
-                    'value': annotation['value'] + organizationNumberText
+                    description: `${annotationTypeData.name.de || ''} / ${
+                        annotationTypeData.name.en || ''
+                    }`,
+                    value: annotation['value'] + organizationNumberText,
                 });
             }
             formData.append('user_text', JSON.stringify(userText));
@@ -309,14 +323,13 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             formData.append(key, params[key]);
         }
 
-
         // I got a 60s timeout in Google Chrome and found no way to increase that
         await fetch(url, {
             method: 'POST',
             headers: {
-                'Authorization': 'Bearer ' + this.auth.token,
+                Authorization: 'Bearer ' + this.auth.token,
             },
-            body: formData
+            body: formData,
         })
             .then((response) => {
                 /* Done. Inform the user */
@@ -337,10 +350,10 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             return;
         }
 
-        let data =  {
+        let data = {
             fileName: file.name,
             status: response.status,
-            json: {"hydra:description": ""}
+            json: {'hydra:description': ''},
         };
 
         try {
@@ -356,8 +369,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         this.onFileUploadFinished(data);
     }
 
-    onFileSourceSwitch(event)
-    {
+    onFileSourceSwitch(event) {
         if (event.detail.source) {
             this.fileSource = event.detail.source;
         }
@@ -376,15 +388,19 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         // add all signed pdf-files
         this.signedFiles.forEach((file) => {
             const arr = utils.convertDataURIToBinary(file.contentUrl);
-            const binaryFile = new File([arr], file.name, { type: utils.getDataURIContentType(file.contentUrl) });
+            const binaryFile = new File([arr], file.name, {
+                type: utils.getDataURIContentType(file.contentUrl),
+            });
             files.push(binaryFile);
         });
         this.signedFilesToDownload = files.length;
-        this._("#file-sink").files = files;
-        this._("#zip-download-button").stop();
+        this._('#file-sink').files = files;
+        this._('#zip-download-button').stop();
         // mark downloaded files buttons
-        const spans = this.shadowRoot.querySelectorAll('.file-block > div.header > span.filename > span.bold-filename');
-        spans.forEach(span => {
+        const spans = this.shadowRoot.querySelectorAll(
+            '.file-block > div.header > span.filename > span.bold-filename'
+        );
+        spans.forEach((span) => {
             span.classList.remove('bold-filename');
         });
     }
@@ -393,7 +409,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
      * @param data
      */
     onFileUploadFinished(data) {
-        console.log("Override me");
+        console.log('Override me');
     }
 
     /**
@@ -405,12 +421,16 @@ export default class DBPSignatureLitElement extends BaseLitElement {
     async downloadFileClickHandler(file, id) {
         let files = [];
         const arr = utils.convertDataURIToBinary(file.contentUrl);
-        const binaryFile = new File([arr], file.name, { type: utils.getDataURIContentType(file.contentUrl) });
+        const binaryFile = new File([arr], file.name, {
+            type: utils.getDataURIContentType(file.contentUrl),
+        });
         files.push(binaryFile);
         this.signedFilesToDownload = files.length;
-        this._("#file-sink").files = files;
+        this._('#file-sink').files = files;
         // mark downloaded files button
-        const span = this.shadowRoot.querySelector('#' + id + ' > div.header > span.filename > span.bold-filename');
+        const span = this.shadowRoot.querySelector(
+            '#' + id + ' > div.header > span.filename > span.bold-filename'
+        );
         if (span) {
             span.classList.remove('bold-filename');
         }
@@ -420,8 +440,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         let entry = this.queuedFiles[id];
         let sigCount = await getPDFSignatureCount(entry.file);
         this.queuedFilesNeedsPlacement.delete(id);
-        if (sigCount > 0)
-            this.queuedFilesNeedsPlacement.set(id, true);
+        if (sigCount > 0) this.queuedFilesNeedsPlacement.set(id, true);
     }
 
     storePDFData(event) {
@@ -442,7 +461,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
     hidePDF(event) {
         // reset placement mode to "auto" if no placement was confirmed previously
         if (this.queuedFilesSignaturePlacements[this.currentPreviewQueueKey] === undefined) {
-            this.queuedFilesPlacementModes[this.currentPreviewQueueKey] = "auto";
+            this.queuedFilesPlacementModes[this.currentPreviewQueueKey] = 'auto';
         }
         this.signaturePlacementInProgress = false;
     }
@@ -451,7 +470,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         this.queuedFilesPlacementModes[key] = name;
         console.log(name);
 
-        if (name === "manual") {
+        if (name === 'manual') {
             this.showPreview(key, true);
         } else if (this.currentPreviewQueueKey === key) {
             this.signaturePlacementInProgress = false;
@@ -472,8 +491,6 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         this.queueFile(ev.detail.file);
     }
 
-
-
     /**
      * Re-Upload all failed files
      */
@@ -489,7 +506,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             await this.fileQueueingClickHandler(file.file, id);
         });
 
-        that._("#re-upload-all-button").stop();
+        that._('#re-upload-all-button').stop();
     }
 
     /**
@@ -509,7 +526,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
      * @param key
      * @param withSigBlock
      */
-    async showPreview(key, withSigBlock=false) {
+    async showPreview(key, withSigBlock = false) {
         if (this.signingProcessEnabled) {
             return;
         }
@@ -521,17 +538,17 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         // start signature placement process
         this.signaturePlacementInProgress = true;
         this.withSigBlock = withSigBlock;
-        const previewTag = this.getScopedTagName("dbp-pdf-preview");
+        const previewTag = this.getScopedTagName('dbp-pdf-preview');
         await this._(previewTag).showPDF(
             entry.file,
             withSigBlock, //this.queuedFilesPlacementModes[key] === "manual",
-            this.queuedFilesSignaturePlacements[key]);
+            this.queuedFilesSignaturePlacements[key]
+        );
     }
 
     onLanguageChanged(e) {
         this.lang = e.detail.lang;
     }
-
 
     /**
      * Takes a failed file off of the queue
@@ -544,7 +561,6 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         return file;
     }
 
-
     clearSignedFiles() {
         this.signedFiles = [];
         this.signedFilesCount = 0;
@@ -556,8 +572,11 @@ export default class DBPSignatureLitElement extends BaseLitElement {
     }
 
     isUserInterfaceDisabled() {
-        return this.signaturePlacementInProgress || this.externalAuthInProgress || this.uploadInProgress || this.addAnnotationInProgress;
+        return (
+            this.signaturePlacementInProgress ||
+            this.externalAuthInProgress ||
+            this.uploadInProgress ||
+            this.addAnnotationInProgress
+        );
     }
-
-
 }

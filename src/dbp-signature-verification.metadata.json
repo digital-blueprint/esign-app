@@ -1,18 +1,18 @@
 {
-  "element": "dbp-signature-verification",
-  "module_src": "dbp-signature-verification.js",
-  "routing_name": "signature-verification",
-  "name": {
-    "de": "Signierte Dokumente verifizieren",
-    "en": "Verify signed documents"
-  },
-  "short_name": {
-    "de": "Signierte Dokumente verifizieren",
-    "en": "Verify signed documents"
-  },
-  "description": {
-    "de": "Erlaubt das Verifizieren von signierten PDF-Dokumenten",
-    "en": "Allows verification of signed PDF-documents"
-  },
-  "subscribe": "lang,entry-point-url,auth,html-overrides"
+    "element": "dbp-signature-verification",
+    "module_src": "dbp-signature-verification.js",
+    "routing_name": "signature-verification",
+    "name": {
+        "de": "Signierte Dokumente verifizieren",
+        "en": "Verify signed documents"
+    },
+    "short_name": {
+        "de": "Signierte Dokumente verifizieren",
+        "en": "Verify signed documents"
+    },
+    "description": {
+        "de": "Erlaubt das Verifizieren von signierten PDF-Dokumenten",
+        "en": "Allows verification of signed PDF-documents"
+    },
+    "subscribe": "lang,entry-point-url,auth,html-overrides"
 }

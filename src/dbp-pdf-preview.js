@@ -5,7 +5,7 @@ import {live} from 'lit/directives/live.js';
 import {ScopedElementsMixin} from '@open-wc/scoped-elements';
 import DBPLitElement from '@dbp-toolkit/common/dbp-lit-element';
 import {MiniSpinner, Icon} from '@dbp-toolkit/common';
-import * as commonUtils from "@dbp-toolkit/common/utils";
+import * as commonUtils from '@dbp-toolkit/common/utils';
 import * as commonStyles from '@dbp-toolkit/common/styles';
 import pdfjs from 'pdfjs-dist/legacy/build/pdf.js';
 import {name as pkgName} from './../package.json';
@@ -54,25 +54,25 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
     static get properties() {
         return {
             ...super.properties,
-            lang: { type: String },
-            currentPage: { type: Number, attribute: false },
-            totalPages: { type: Number, attribute: false },
-            isShowPage: { type: Boolean, attribute: false },
-            isPageRenderingInProgress: { type: Boolean, attribute: false },
-            isPageLoaded: { type: Boolean, attribute: false },
-            showErrorMessage: { type: Boolean, attribute: false },
-            isShowPlacement: { type: Boolean, attribute: false },
-            placeholder: { type: String, attribute: 'signature-placeholder-image-src' },
-            signature_width: { type: Number, attribute: 'signature-width' },
-            signature_height: { type: Number, attribute: 'signature-height' },
-            allowSignatureRotation: { type: Boolean, attribute: 'allow-signature-rotation' },
+            lang: {type: String},
+            currentPage: {type: Number, attribute: false},
+            totalPages: {type: Number, attribute: false},
+            isShowPage: {type: Boolean, attribute: false},
+            isPageRenderingInProgress: {type: Boolean, attribute: false},
+            isPageLoaded: {type: Boolean, attribute: false},
+            showErrorMessage: {type: Boolean, attribute: false},
+            isShowPlacement: {type: Boolean, attribute: false},
+            placeholder: {type: String, attribute: 'signature-placeholder-image-src'},
+            signature_width: {type: Number, attribute: 'signature-width'},
+            signature_height: {type: Number, attribute: 'signature-height'},
+            allowSignatureRotation: {type: Boolean, attribute: 'allow-signature-rotation'},
         };
     }
 
     update(changedProperties) {
         changedProperties.forEach((oldValue, propName) => {
             switch (propName) {
-                case "lang":
+                case 'lang':
                     this._i18n.changeLanguage(this.lang);
                     break;
             }
@@ -92,12 +92,15 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
         }
         window.removeEventListener('resize', this._onWindowResize);
         super.disconnectedCallback();
-      }
+    }
 
     connectedCallback() {
         super.connectedCallback();
         const that = this;
-        pdfjs.GlobalWorkerOptions.workerSrc = commonUtils.getAssetURL(pkgName, 'pdfjs/pdf.worker.js');
+        pdfjs.GlobalWorkerOptions.workerSrc = commonUtils.getAssetURL(
+            pkgName,
+            'pdfjs/pdf.worker.js'
+        );
 
         window.addEventListener('resize', this._onWindowResize);
 
@@ -119,9 +122,14 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
             });
 
             // add signature image
-            fabric.Image.fromURL(this.placeholder, function(image) {
+            fabric.Image.fromURL(this.placeholder, function (image) {
                 // add a red border around the signature placeholder
-                image.set({stroke: "#e4154b", strokeWidth: that.border_width, strokeUniform: true, centeredRotation: true});
+                image.set({
+                    stroke: '#e4154b',
+                    strokeWidth: that.border_width,
+                    strokeUniform: true,
+                    centeredRotation: true,
+                });
 
                 // disable controls, we currently don't want resizing and do rotation with a button
                 image.hasControls = false;
@@ -131,12 +139,12 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
             });
 
             this.fabricCanvas.on({
-                'object:moving': function(e) {
-                  e.target.opacity = 0.5;
+                'object:moving': function (e) {
+                    e.target.opacity = 0.5;
                 },
-                'object:modified': function(e) {
-                  e.target.opacity = 1;
-                }
+                'object:modified': function (e) {
+                    e.target.opacity = 1;
+                },
             });
 
             // this.fabricCanvas.on("object:moved", function(opt){ console.log(opt); });
@@ -169,10 +177,24 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
         }
 
         // bottom-right corner
-        if (obj.getBoundingRect().top + obj.getBoundingRect().height > obj.canvas.height ||
-            obj.getBoundingRect().left + obj.getBoundingRect().width > obj.canvas.width) {
-            obj.top = Math.min(obj.top, obj.canvas.height - obj.getBoundingRect().height + obj.top - obj.getBoundingRect().top);
-            obj.left = Math.min(obj.left, obj.canvas.width - obj.getBoundingRect().width + obj.left - obj.getBoundingRect().left);
+        if (
+            obj.getBoundingRect().top + obj.getBoundingRect().height > obj.canvas.height ||
+            obj.getBoundingRect().left + obj.getBoundingRect().width > obj.canvas.width
+        ) {
+            obj.top = Math.min(
+                obj.top,
+                obj.canvas.height -
+                    obj.getBoundingRect().height +
+                    obj.top -
+                    obj.getBoundingRect().top
+            );
+            obj.left = Math.min(
+                obj.left,
+                obj.canvas.width -
+                    obj.getBoundingRect().width +
+                    obj.left -
+                    obj.getBoundingRect().left
+            );
         }
     }
 
@@ -200,20 +222,20 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
 
         // move signature if placementData was set
         if (item !== undefined) {
-            if (placementData["scaleX"] !== undefined) {
-                item.set("scaleX", placementData["scaleX"] * this.canvasToPdfScale);
+            if (placementData['scaleX'] !== undefined) {
+                item.set('scaleX', placementData['scaleX'] * this.canvasToPdfScale);
             }
-            if (placementData["scaleY"] !== undefined) {
-                item.set("scaleY", placementData["scaleY"] * this.canvasToPdfScale);
+            if (placementData['scaleY'] !== undefined) {
+                item.set('scaleY', placementData['scaleY'] * this.canvasToPdfScale);
             }
-            if (placementData["left"] !== undefined) {
-                item.set("left", placementData["left"] * this.canvasToPdfScale);
+            if (placementData['left'] !== undefined) {
+                item.set('left', placementData['left'] * this.canvasToPdfScale);
             }
-            if (placementData["top"] !== undefined) {
-                item.set("top", placementData["top"] * this.canvasToPdfScale);
+            if (placementData['top'] !== undefined) {
+                item.set('top', placementData['top'] * this.canvasToPdfScale);
             }
-            if (placementData["angle"] !== undefined) {
-                item.set("angle", placementData["angle"]);
+            if (placementData['angle'] !== undefined) {
+                item.set('angle', placementData['angle']);
             }
         }
 
@@ -237,7 +259,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
 
         // show the first page
         // if the placementData has no values we want to initialize the signature position
-        await this.showPage(page, placementData["scaleX"] === undefined);
+        await this.showPage(page, placementData['scaleX'] === undefined);
 
         this.isPageLoaded = true;
 
@@ -269,7 +291,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
             // get handle of page
             await this.pdfDoc.getPage(pageNumber).then(async (page) => {
                 // original width of the pdf page at scale 1
-                const originalViewport = page.getViewport({ scale: 1 });
+                const originalViewport = page.getViewport({scale: 1});
                 this.currentPageOriginalHeight = originalViewport.height;
 
                 // set the canvas width to the width of the container (minus the borders)
@@ -280,23 +302,23 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                 const oldScale = this.canvasToPdfScale;
                 this.canvasToPdfScale = this.canvas.width / originalViewport.width;
 
-                console.log("this.canvasToPdfScale: " + this.canvasToPdfScale);
+                console.log('this.canvasToPdfScale: ' + this.canvasToPdfScale);
 
                 // get viewport to render the page at required scale
-                const viewport = page.getViewport({ scale: this.canvasToPdfScale });
+                const viewport = page.getViewport({scale: this.canvasToPdfScale});
 
                 // set canvas height same as viewport height
                 this.fabricCanvas.setHeight(viewport.height);
                 this.canvas.height = viewport.height;
 
                 // setting page loader height for smooth experience
-                this._("#page-loader").style.height =  this.canvas.height + 'px';
-                this._("#page-loader").style.lineHeight = this.canvas.height + 'px';
+                this._('#page-loader').style.height = this.canvas.height + 'px';
+                this._('#page-loader').style.lineHeight = this.canvas.height + 'px';
 
                 // page is rendered on <canvas> element
                 const render_context = {
                     canvasContext: this.canvas.getContext('2d'),
-                    viewport: viewport
+                    viewport: viewport,
                 };
 
                 let signature = this.getSignatureRect();
@@ -315,8 +337,12 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                     };
 
                     const sigSize = signature.getOriginalSize();
-                    const scaleX = (this.canvas.width / sigSize.width) * (sigSizeMM.width / documentSizeMM.width);
-                    const scaleY = (this.canvas.height / sigSize.height) * (sigSizeMM.height / documentSizeMM.height);
+                    const scaleX =
+                        (this.canvas.width / sigSize.width) *
+                        (sigSizeMM.width / documentSizeMM.width);
+                    const scaleY =
+                        (this.canvas.height / sigSize.height) *
+                        (sigSizeMM.height / documentSizeMM.height);
                     const offsetTop = sigPosMM.top * pointsPerMM;
                     const offsetLeft = sigPosMM.left * pointsPerMM;
 
@@ -326,17 +352,17 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                         angle: 0,
                         top: offsetTop,
                         left: offsetLeft,
-                        lockUniScaling: true  // lock aspect ratio when resizing
+                        lockUniScaling: true, // lock aspect ratio when resizing
                     });
                 } else {
                     // adapt signature scale to new scale
                     const scaleAdapt = this.canvasToPdfScale / oldScale;
 
                     signature.set({
-                        scaleX: signature.get("scaleX") * scaleAdapt,
-                        scaleY: signature.get("scaleY") * scaleAdapt,
-                        left: signature.get("left") * scaleAdapt,
-                        top: signature.get("top") * scaleAdapt
+                        scaleX: signature.get('scaleX') * scaleAdapt,
+                        scaleY: signature.get('scaleY') * scaleAdapt,
+                        left: signature.get('left') * scaleAdapt,
+                        top: signature.get('top') * scaleAdapt,
                     });
 
                     signature.setCoords();
@@ -344,66 +370,77 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
 
                 // render the page contents in the canvas
                 try {
-                    await page.render(render_context).promise.then(() => {
-                        console.log('Page rendered');
-                        that.isPageRenderingInProgress = false;
+                    await page
+                        .render(render_context)
+                        .promise.then(() => {
+                            console.log('Page rendered');
+                            that.isPageRenderingInProgress = false;
 
-                        return page.getAnnotations();
-                    }).then(function(annotationData) {
-                        // remove all child nodes
-                        that.annotationLayer.innerHTML = '';
-                        // update size
-                        that.annotationLayer.style.height = that.canvas.height + 'px';
-                        that.annotationLayer.style.width = that.canvas.width + 'px';
+                            return page.getAnnotations();
+                        })
+                        .then(function (annotationData) {
+                            // remove all child nodes
+                            that.annotationLayer.innerHTML = '';
+                            // update size
+                            that.annotationLayer.style.height = that.canvas.height + 'px';
+                            that.annotationLayer.style.width = that.canvas.width + 'px';
 
-                        // create all supported annotations
-                        annotationData.forEach((annotation) => {
-                            const subtype = annotation.subtype;
-                            let text = '';
-                            switch (subtype) {
-                                case 'Text':
-                                case 'FreeText':
-                                    // Annotations by Adobe Acrobat already have an appearance that can be viewed by pdf.js
-                                    if (annotation.hasAppearance) {
+                            // create all supported annotations
+                            annotationData.forEach((annotation) => {
+                                const subtype = annotation.subtype;
+                                let text = '';
+                                switch (subtype) {
+                                    case 'Text':
+                                    case 'FreeText':
+                                        // Annotations by Adobe Acrobat already have an appearance that can be viewed by pdf.js
+                                        if (annotation.hasAppearance) {
+                                            return;
+                                        }
+
+                                        text = annotation.contents;
+                                        break;
+                                    case 'Widget':
+                                        // Annotations by Adobe Acrobat already have an appearance that can be viewed by pdf.js
+                                        if (annotation.hasAppearance) {
+                                            return;
+                                        }
+
+                                        text = annotation.alternativeText;
+                                        break;
+                                    default:
+                                        // we don't support other types
                                         return;
-                                    }
+                                }
 
-                                    text = annotation.contents;
-                                    break;
-                                case 'Widget':
-                                    // Annotations by Adobe Acrobat already have an appearance that can be viewed by pdf.js
-                                    if (annotation.hasAppearance) {
-                                        return;
-                                    }
+                                const annotationDiv = document.createElement('div');
+                                const annotationDivInner = document.createElement('div');
+                                annotationDiv.className = 'annotation annotation-' + subtype;
+                                annotationDiv.style.left =
+                                    annotation.rect[0] * that.canvasToPdfScale + 'px';
+                                annotationDiv.style.bottom =
+                                    annotation.rect[1] * that.canvasToPdfScale + 'px';
+                                annotationDiv.style.width =
+                                    (annotation.rect[2] - annotation.rect[0]) *
+                                        that.canvasToPdfScale +
+                                    'px';
+                                annotationDiv.style.height =
+                                    (annotation.rect[3] - annotation.rect[1]) *
+                                        that.canvasToPdfScale +
+                                    'px';
+                                annotationDivInner.innerText = text === '' ? subtype : text;
 
-                                    text = annotation.alternativeText;
-                                    break;
-                                default:
-                                    // we don't support other types
-                                    return;
-                            }
+                                annotationDiv.appendChild(annotationDivInner);
+                                that.annotationLayer.appendChild(annotationDiv);
+                            });
 
-                            const annotationDiv = document.createElement("div");
-                            const annotationDivInner = document.createElement("div");
-                            annotationDiv.className = 'annotation annotation-' + subtype;
-                            annotationDiv.style.left = (annotation.rect[0] * that.canvasToPdfScale) + 'px';
-                            annotationDiv.style.bottom = (annotation.rect[1] * that.canvasToPdfScale) + 'px';
-                            annotationDiv.style.width = ((annotation.rect[2] - annotation.rect[0]) * that.canvasToPdfScale) + 'px';
-                            annotationDiv.style.height = ((annotation.rect[3] - annotation.rect[1]) * that.canvasToPdfScale) + 'px';
-                            annotationDivInner.innerText = text === '' ? subtype : text;
-
-                            annotationDiv.appendChild(annotationDivInner);
-                            that.annotationLayer.appendChild(annotationDiv);
+                            // console.log("annotationData render", annotationData);
                         });
-
-                        // console.log("annotationData render", annotationData);
-                    });
-                } catch(error) {
+                } catch (error) {
                     console.error(error.message);
                     that.isPageRenderingInProgress = false;
                 }
             });
-        } catch(error) {
+        } catch (error) {
             console.error(error.message);
             that.isPageRenderingInProgress = false;
         }
@@ -411,13 +448,13 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
 
     sendAcceptEvent() {
         const item = this.getSignatureRect();
-        let left = item.get("left");
-        let top = item.get("top");
-        const angle = item.get("angle");
+        let left = item.get('left');
+        let top = item.get('top');
+        const angle = item.get('angle');
 
         // fabricjs includes the stroke in the image position
         // and we have to remove it
-        const border_offset = (this.border_width / 2);
+        const border_offset = this.border_width / 2;
         if (angle === 0) {
             left += border_offset;
             top += border_offset;
@@ -433,24 +470,30 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
         }
 
         const data = {
-            "currentPage": this.currentPage,
-            "scaleX": item.get("scaleX") / this.canvasToPdfScale,
-            "scaleY": item.get("scaleY") / this.canvasToPdfScale,
-            "width": item.get("width") * item.get("scaleX") / this.canvasToPdfScale,
-            "height": item.get("height") * item.get("scaleY") / this.canvasToPdfScale,
-            "left": left / this.canvasToPdfScale,
-            "top": top / this.canvasToPdfScale,
-            "bottom": this.currentPageOriginalHeight - (top / this.canvasToPdfScale),
-            "angle": item.get("angle")
+            currentPage: this.currentPage,
+            scaleX: item.get('scaleX') / this.canvasToPdfScale,
+            scaleY: item.get('scaleY') / this.canvasToPdfScale,
+            width: (item.get('width') * item.get('scaleX')) / this.canvasToPdfScale,
+            height: (item.get('height') * item.get('scaleY')) / this.canvasToPdfScale,
+            left: left / this.canvasToPdfScale,
+            top: top / this.canvasToPdfScale,
+            bottom: this.currentPageOriginalHeight - top / this.canvasToPdfScale,
+            angle: item.get('angle'),
         };
-        const event = new CustomEvent("dbp-pdf-preview-accept",
-            { "detail": data, bubbles: true, composed: true });
+        const event = new CustomEvent('dbp-pdf-preview-accept', {
+            detail: data,
+            bubbles: true,
+            composed: true,
+        });
         this.dispatchEvent(event);
     }
 
     sendCancelEvent() {
-        const event = new CustomEvent("dbp-pdf-preview-cancel",
-            { "detail": {}, bubbles: true, composed: true });
+        const event = new CustomEvent('dbp-pdf-preview-cancel', {
+            detail: {},
+            bubbles: true,
+            composed: true,
+        });
         this.dispatchEvent(event);
     }
 
@@ -459,7 +502,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
      */
     async rotateSignature() {
         let signature = this.getSignatureRect();
-        let angle = (signature.get("angle") + 90) % 360;
+        let angle = (signature.get('angle') + 90) % 360;
         signature.rotate(angle);
         signature.setCoords();
         this.enforceCanvasBoundaries(signature);
@@ -474,12 +517,12 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
             ${commonStyles.getGeneralCSS()}
             ${commonStyles.getButtonCSS()}
 
-            #pdf-meta input[type=number]{
+            #pdf-meta input[type=number] {
                 max-width: 50px;
             }
 
             #page-loader {
-                display:flex;
+                display: flex;
                 align-items: center;
                 justify-content: center;
             }
@@ -546,7 +589,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                 margin: 2px;
             }
 
-            input[type=number] {
+            input[type='number'] {
                 border: var(--dbp-border-dark);
                 padding: 0 0.3em;
             }
@@ -561,15 +604,16 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
             .button.is-cancel {
                 color: var(--dbp-danger-dark);
             }
-            
-            .error-message{
+
+            .error-message {
                 text-align: center;
                 border: 1px solid black;
                 border-top: 0px;
                 padding: 15px;
             }
-            
-            #canvas-wrapper canvas#fabric-canvas, #canvas-wrapper canvas.upper-canvas{
+
+            #canvas-wrapper canvas#fabric-canvas,
+            #canvas-wrapper canvas.upper-canvas {
                 border: unset;
             }
         `;
@@ -580,66 +624,114 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
         const i18n = this._i18n;
 
         return html`
-
-<!--
+            <!--
             <form>
                 <input type="file" name="pdf" id="upload-pdf-input">
             </form>
 -->
             <div id="pdf-main-container" class="${classMap({hidden: !this.isShowPage})}">
-                <dbp-mini-spinner class="${classMap({hidden: this.isPageLoaded || this.showErrorMessage})}"></dbp-mini-spinner>
-                <div class="error-message ${classMap({hidden: !this.showErrorMessage || this.isPageLoaded})}">
+                <dbp-mini-spinner
+                    class="${classMap({
+                        hidden: this.isPageLoaded || this.showErrorMessage,
+                    })}"></dbp-mini-spinner>
+                <div
+                    class="error-message ${classMap({
+                        hidden: !this.showErrorMessage || this.isPageLoaded,
+                    })}">
                     ${i18n.t('pdf-preview.error-message')}
                 </div>
                 <div class="${classMap({hidden: !this.isPageLoaded})}">
                     <div id="pdf-meta">
                         <div class="buttons ${classMap({hidden: !this.isPageLoaded})}">
-                            <button class="button ${classMap({hidden: !this.isShowPlacement || isRotationHidden})}"
-                                    title="${i18n.t('pdf-preview.rotate-signature')}"
-                                    @click="${() => { this.rotateSignature(); } }"
-                                    ?disabled="${this.isPageRenderingInProgress}">&#10227; ${i18n.t('pdf-preview.rotate')}</button>
+                            <button
+                                class="button ${classMap({
+                                    hidden: !this.isShowPlacement || isRotationHidden,
+                                })}"
+                                title="${i18n.t('pdf-preview.rotate-signature')}"
+                                @click="${() => {
+                                    this.rotateSignature();
+                                }}"
+                                ?disabled="${this.isPageRenderingInProgress}">
+                                &#10227; ${i18n.t('pdf-preview.rotate')}
+                            </button>
                             <div class="nav-buttons">
-                                <button class="button"
-                                        title="${i18n.t('pdf-preview.first-page')}"
-                                        @click="${async () => { await this.showPage(1); } }"
-                                        ?disabled="${this.isPageRenderingInProgress || this.currentPage === 1}">
+                                <button
+                                    class="button"
+                                    title="${i18n.t('pdf-preview.first-page')}"
+                                    @click="${async () => {
+                                        await this.showPage(1);
+                                    }}"
+                                    ?disabled="${this.isPageRenderingInProgress ||
+                                    this.currentPage === 1}">
                                     <dbp-icon name="angle-double-left"></dbp-icon>
                                 </button>
-                                <button class="button"
-                                        title="${i18n.t('pdf-preview.previous-page')}"
-                                        @click="${async () => { if (this.currentPage > 1) await this.showPage(--this.currentPage); } }"
-                                        ?disabled="${this.isPageRenderingInProgress || this.currentPage === 1}">
+                                <button
+                                    class="button"
+                                    title="${i18n.t('pdf-preview.previous-page')}"
+                                    @click="${async () => {
+                                        if (this.currentPage > 1)
+                                            await this.showPage(--this.currentPage);
+                                    }}"
+                                    ?disabled="${this.isPageRenderingInProgress ||
+                                    this.currentPage === 1}">
                                     <dbp-icon name="chevron-left"></dbp-icon>
                                 </button>
-                                <input type="number"
+                                <input
+                                    type="number"
                                     min="1"
                                     max="${this.totalPages}"
                                     @input="${this.onPageNumberChanged}"
-                                    .value="${live(this.currentPage)}">
-                                <div class="page-info">${i18n.t('pdf-preview.page-count', {totalPages: this.totalPages, })}</div>
-                                <button class="button"
-                                        title="${i18n.t('pdf-preview.next-page')}"
-                                        @click="${async () => { if (this.currentPage < this.totalPages) await this.showPage(++this.currentPage); } }"
-                                        ?disabled="${this.isPageRenderingInProgress || this.currentPage === this.totalPages}">
+                                    .value="${live(this.currentPage)}" />
+                                <div class="page-info">
+                                    ${i18n.t('pdf-preview.page-count', {
+                                        totalPages: this.totalPages,
+                                    })}
+                                </div>
+                                <button
+                                    class="button"
+                                    title="${i18n.t('pdf-preview.next-page')}"
+                                    @click="${async () => {
+                                        if (this.currentPage < this.totalPages)
+                                            await this.showPage(++this.currentPage);
+                                    }}"
+                                    ?disabled="${this.isPageRenderingInProgress ||
+                                    this.currentPage === this.totalPages}">
                                     <dbp-icon name="chevron-right"></dbp-icon>
                                 </button>
-                                <button class="button"
-                                        title="${i18n.t('pdf-preview.last-page')}"
-                                        @click="${async () => { await this.showPage(this.totalPages); } }"
-                                        ?disabled="${this.isPageRenderingInProgress || this.currentPage === this.totalPages}">
+                                <button
+                                    class="button"
+                                    title="${i18n.t('pdf-preview.last-page')}"
+                                    @click="${async () => {
+                                        await this.showPage(this.totalPages);
+                                    }}"
+                                    ?disabled="${this.isPageRenderingInProgress ||
+                                    this.currentPage === this.totalPages}">
                                     <dbp-icon name="angle-double-right"></dbp-icon>
                                 </button>
                             </div>
-                            <button class="button is-primary ${classMap({hidden: !this.isShowPlacement})}"
-                                    @click="${() => { this.sendAcceptEvent(); } }">${i18n.t('pdf-preview.continue')}</button>
+                            <button
+                                class="button is-primary ${classMap({
+                                    hidden: !this.isShowPlacement,
+                                })}"
+                                @click="${() => {
+                                    this.sendAcceptEvent();
+                                }}">
+                                ${i18n.t('pdf-preview.continue')}
+                            </button>
                         </div>
                     </div>
-                    <div id="canvas-wrapper" class="${classMap({hidden: this.isPageRenderingInProgress})}">
+                    <div
+                        id="canvas-wrapper"
+                        class="${classMap({hidden: this.isPageRenderingInProgress})}">
                         <canvas id="pdf-canvas"></canvas>
                         <div id="annotation-layer"></div>
-                        <canvas id="fabric-canvas" class="${classMap({hidden: !this.isShowPlacement})}"></canvas>
+                        <canvas
+                            id="fabric-canvas"
+                            class="${classMap({hidden: !this.isShowPlacement})}"></canvas>
                     </div>
-                    <div class="${classMap({hidden: !this.isPageRenderingInProgress})}"><dbp-mini-spinner id="page-loader"></dbp-mini-spinner></div>
+                    <div class="${classMap({hidden: !this.isPageRenderingInProgress})}">
+                        <dbp-mini-spinner id="page-loader"></dbp-mini-spinner>
+                    </div>
                 </div>
             </div>
         `;

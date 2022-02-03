@@ -3,7 +3,6 @@ import {css} from 'lit';
 export function getSignatureCss() {
     // language=css
     return css`
-
         #annotation-view .button.is-cancel {
             background: transparent;
             border: none;
@@ -14,19 +13,22 @@ export function getSignatureCss() {
             padding-right: 2px;
         }
 
-        #annotation-view .box-header, #external-auth .box-header {
+        #annotation-view .box-header,
+        #external-auth .box-header {
             display: flex;
             justify-content: space-between;
             align-items: start;
         }
 
-        #annotation-view .box-header .filename, #external-auth .box-header .filename {
+        #annotation-view .box-header .filename,
+        #external-auth .box-header .filename {
             overflow: hidden;
             text-overflow: ellipsis;
             margin-right: 0.5em;
         }
 
-        #pdf-preview, #annotation-view {
+        #pdf-preview,
+        #annotation-view {
             min-width: 320px;
             box-sizing: border-box;
         }
@@ -40,7 +42,8 @@ export function getSignatureCss() {
             font-weight: 600;
         }
 
-        #pdf-preview .box-header, #annotation-view .box-header {
+        #pdf-preview .box-header,
+        #annotation-view .box-header {
             border: var(--dbp-border-dark);
             border-bottom-width: 0;
             padding: 0.5em 0.5em 0 0.5em;
@@ -73,7 +76,6 @@ export function getSignatureCss() {
             vertical-align: middle;
         }
 
-
         .file .info strong {
             font-weight: 600;
         }
@@ -84,7 +86,8 @@ export function getSignatureCss() {
             margin-right: 5px;
         }
 
-        .error, #cancel-signing-process {
+        .error,
+        #cancel-signing-process {
             color: var(--dbp-danger-dark);
         }
 
@@ -94,11 +97,12 @@ export function getSignatureCss() {
         }
 
         /* using dbp-icon doesn't work */
-        button > [name=close], a > [name=close] {
+        button > [name='close'],
+        a > [name='close'] {
             font-size: 0.8em;
         }
 
-        a > [name=close] {
+        a > [name='close'] {
             color: var(--dbp-accent-dark);
         }
 
@@ -119,16 +123,17 @@ export function getSignatureCss() {
             margin-right: 0;
             flex: 1 0;
         }
-        
-        .file-block, .box {
+
+        .file-block,
+        .box {
             border: var(--dbp-border-dark);
             padding: 10px;
         }
 
-        .file-block, .box .file {
+        .file-block,
+        .box .file {
             margin-top: 0;
         }
-
 
         .file-block {
             max-width: 320px;
@@ -171,7 +176,8 @@ export function getSignatureCss() {
             text-align: right;
         }
 
-        .file-block .filename, .file-block div.bottom-line .headline {
+        .file-block .filename,
+        .file-block div.bottom-line .headline {
             text-overflow: ellipsis;
             overflow: hidden;
         }
@@ -183,7 +189,7 @@ export function getSignatureCss() {
         .bold-filename {
             font-weight: bold;
         }
-        
+
         #pdf-preview .button.is-cancel {
             color: var(--dbp-accent-dark);
         }
@@ -202,12 +208,14 @@ export function getSignatureCss() {
             color: inherit;
         }
 
-        .is-disabled, .is-disabled.button[disabled] {
+        .is-disabled,
+        .is-disabled.button[disabled] {
             opacity: 0.2;
             pointer-events: none;
         }
 
-        #pdf-preview, #annotation-view {
+        #pdf-preview,
+        #annotation-view {
             position: sticky;
             top: 0px;
             height: 100vh;
@@ -227,12 +235,12 @@ export function getSignatureCss() {
             margin-right: 0.5em;
         }
 
-        #grid-container{
+        #grid-container {
             margin-top: 2rem;
             /*padding-top: 2rem;*/
         }
 
-        .border{
+        .border {
             border-top: var(--dbp-border-dark);
             margin-top: 2rem;
             padding-top: 2rem;
@@ -243,7 +251,7 @@ export function getSignatureCss() {
             border-radius: var(--dbp-border-radius);
         }
 
-        .subheadline{
+        .subheadline {
             font-style: italic;
             padding-left: 2em;
             margin-top: -1px;
@@ -251,11 +259,9 @@ export function getSignatureCss() {
             margin-bottom: 1.2em;
         }
 
-        @media only screen
-        and (orientation: portrait)
-        and (max-width: 768px) {
+        @media only screen and (orientation: portrait) and (max-width: 768px) {
             /* Modal preview, upload and external auth */
-            div.right-container > *  {
+            div.right-container > * {
                 position: fixed;
                 z-index: 1000;
                 padding: 10px;
@@ -284,14 +290,11 @@ export function getSignatureCss() {
             .file-block {
                 max-width: inherit;
             }
-            
-            #pdf-preview, #annotation-view {
+
+            #pdf-preview,
+            #annotation-view {
                 position: fixed;
             }
         }
-    
-    
     `;
-
-
 }

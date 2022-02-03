@@ -9,8 +9,8 @@ import {html} from 'lit';
  * @param results
  * @param identifierAttribute
  */
-export const findObjectInApiResults = (identifier, results, identifierAttribute = "@id") => {
-    const members = results["hydra:member"];
+export const findObjectInApiResults = (identifier, results, identifierAttribute = '@id') => {
+    const members = results['hydra:member'];
 
     if (members === undefined) {
         return;
@@ -24,7 +24,7 @@ export const findObjectInApiResults = (identifier, results, identifierAttribute 
 };
 
 export const getPDFFileBase64Content = (file) => {
-    return file.contentUrl.replace(/data:\s*application\/pdf;\s*base64,/, "");
+    return file.contentUrl.replace(/data:\s*application\/pdf;\s*base64,/, '');
 };
 
 export const convertDataURIToBinary = (dataURI) => {
@@ -35,7 +35,7 @@ export const convertDataURIToBinary = (dataURI) => {
     const rawLength = raw.length;
     let array = new Uint8Array(rawLength);
 
-    for(let i = 0; i < rawLength; i++) {
+    for (let i = 0; i < rawLength; i++) {
         array[i] = raw.charCodeAt(i);
     }
 
@@ -49,17 +49,15 @@ export const getDataURIContentType = (dataURI) => {
     return dataURI.substring(5, base64Index);
 };
 
-export const baseName = (str) =>
-{
+export const baseName = (str) => {
     let base = String(str).substring(str.lastIndexOf('/') + 1);
 
-    if (base.lastIndexOf(".") !== -1) {
-        base = base.substring(0, base.lastIndexOf("."));
+    if (base.lastIndexOf('.') !== -1) {
+        base = base.substring(0, base.lastIndexOf('.'));
     }
 
     return base;
 };
-
 
 export const fabricjs2pdfasPosition = (data) => {
     let angle = -(data.angle - 360) % 360;
@@ -81,7 +79,7 @@ export const fabricjs2pdfasPosition = (data) => {
         x: Math.round(left),
         r: angle,
         w: Math.round(data.width), // only width, no "height" allowed in PDF-AS
-        p: data.currentPage
+        p: data.currentPage,
     };
 };
 
@@ -134,8 +132,9 @@ export const readArrayBufferFileContent = async (file) => {
  */
 export const getPDFSignatureCount = async (file) => {
     const sigRegex = new RegExp(
-        "/Type\\s*/Sig(.|\\s)*?/SubFilter\\s*(/ETSI\\.CAdES\\.detached|/adbe\\.pkcs7\\.detached)",
-        "g");
+        '/Type\\s*/Sig(.|\\s)*?/SubFilter\\s*(/ETSI\\.CAdES\\.detached|/adbe\\.pkcs7\\.detached)',
+        'g'
+    );
     const content = await readBinaryFileContent(file);
     let matches = 0;
     while (sigRegex.exec(content) !== null) {
@@ -154,7 +153,7 @@ export const getPDFSignatureCount = async (file) => {
 export const writeAnnotationFactoryToFile = (annotationFactory, file) => {
     const blob = annotationFactory.write();
 
-    return new File([blob], file.name, { type: file.type });
+    return new File([blob], file.name, {type: file.type});
 };
 
 /**
@@ -183,8 +182,17 @@ export const getAnnotationFactoryFromFile = async (file) => {
  * @param value
  * @returns {AnnotationFactory} prepared to annotate
  */
-export const addKeyValuePdfAnnotationsToAnnotationFactory = (annotationFactory, activityNameDE, activityNameEN, personName,
-                                                             annotationType, annotationTypeNameDE, annotationTypeNameEN, organizationNumber, value) => {
+export const addKeyValuePdfAnnotationsToAnnotationFactory = (
+    annotationFactory,
+    activityNameDE,
+    activityNameEN,
+    personName,
+    annotationType,
+    annotationTypeNameDE,
+    annotationTypeNameEN,
+    organizationNumber,
+    value
+) => {
     annotationType = annotationType.trim();
     annotationTypeNameDE = annotationTypeNameDE.trim();
     annotationTypeNameEN = annotationTypeNameEN.trim();
@@ -198,12 +206,13 @@ export const addKeyValuePdfAnnotationsToAnnotationFactory = (annotationFactory, 
 
     // add human readable annotation
     let author = personName + ' via  "' + activityNameDE + ' / ' + activityNameEN + '"';
-    let content = annotationTypeNameDE + ': ' + value +"\n" + annotationTypeNameEN + ': ' + value;
+    let content = annotationTypeNameDE + ': ' + value + '\n' + annotationTypeNameEN + ': ' + value;
     annotationFactory = addPdfAnnotationToAnnotationFactory(annotationFactory, author, content);
 
     // add machine readable annotation
     const organizationNumberContent = organizationNumber !== '' ? '_' + organizationNumber : '';
-    author = 'Maschinell aufgebracht, bitte nicht entfernen / Applied automatically, please do not remove';
+    author =
+        'Maschinell aufgebracht, bitte nicht entfernen / Applied automatically, please do not remove';
     content = 'dbp_annotation_' + annotationType + organizationNumberContent + '=' + value;
     annotationFactory = addPdfAnnotationToAnnotationFactory(annotationFactory, author, content);
 
@@ -225,13 +234,16 @@ export const addPdfAnnotationToAnnotationFactory = (annotationFactory, author, c
     // annotationFactory.checkRect(4, rect);
 
     // Create single free text annotation with print flag and 0 font size
-    let annotation = Object.assign(annotationFactory.createBaseAnnotation(page, rect, content, author), {
-        annotation_flag: 4, // enable print to be PDF/A conform
-        color: {r: 1, g: 1, b: 1}, // white to (maybe) hide it better
-        opacity: 0.001, // we can't set to 0 because of "if (opacity) {"
-        defaultAppearance: "/Invalid_font 0 Tf" // font size 0 to (maybe) hide it better
-    });
-    annotation.type = "/FreeText";
+    let annotation = Object.assign(
+        annotationFactory.createBaseAnnotation(page, rect, content, author),
+        {
+            annotation_flag: 4, // enable print to be PDF/A conform
+            color: {r: 1, g: 1, b: 1}, // white to (maybe) hide it better
+            opacity: 0.001, // we can't set to 0 because of "if (opacity) {"
+            defaultAppearance: '/Invalid_font 0 Tf', // font size 0 to (maybe) hide it better
+        }
+    );
+    annotation.type = '/FreeText';
     annotationFactory.annotations.push(annotation);
 
     return annotationFactory;
@@ -245,20 +257,20 @@ export const addPdfAnnotationToAnnotationFactory = (annotationFactory, author, c
  */
 export const getAnnotationTypes = (key = null) => {
     const types = {
-        'bbe3a371': {
-            'name': {
-                'de': 'Geschäftszahl',
-                'en': 'Businessnumber',
+        bbe3a371: {
+            name: {
+                de: 'Geschäftszahl',
+                en: 'Businessnumber',
             },
-            'hasOrganization': true,
+            hasOrganization: true,
         },
         '85a4eb4c': {
-            'name': {
-                'de': 'Verwendungszweck',
-                'en': 'Intended use',
+            name: {
+                de: 'Verwendungszweck',
+                en: 'Intended use',
             },
-            'hasOrganization': false,
-        }
+            hasOrganization: false,
+        },
     };
 
     return key === null ? types : types[key] || {};
