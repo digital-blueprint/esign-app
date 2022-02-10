@@ -66,4 +66,18 @@ suite('pdf signature detection', () => {
         assert((await getPDFSignatureCount(getPDFFile('foobar'))) === 0);
         assert((await getPDFSignatureCount(getPDFFile(''))) === 0);
     });
+
+    test('getPDFSignatureCount real files', async () => {
+
+        async function getRealPDFFile(name) {
+            let url = new URL('test/' + name, import.meta.url).href;
+            let resp = await fetch(url);
+            assert(resp.ok);
+            return getPDFFile(await resp.arrayBuffer());
+        }
+
+        assert.equal((await getPDFSignatureCount(await getRealPDFFile('QPDF-367-0.pdf'))), 1);
+        assert.equal((await getPDFSignatureCount(await getRealPDFFile('qual-sig-simple.pdf'))), 1);
+        assert.equal((await getPDFSignatureCount(await getRealPDFFile('qual-sig-tugraz-multiple.pdf'))), 2);
+    });
 });
