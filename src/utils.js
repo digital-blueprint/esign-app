@@ -132,7 +132,7 @@ export const readArrayBufferFileContent = async (file) => {
  */
 export const getPDFSignatureCount = async (file) => {
     const sigRegex = new RegExp(
-        '/Type\\s*/Sig(.|\\s)*?/SubFilter\\s*(/ETSI\\.CAdES\\.detached|/adbe\\.pkcs7\\.detached)',
+        '/Type\\s*/Sig[\\s\\S]*?/SubFilter\\s*(/ETSI\\.CAdES\\.detached|/adbe\\.pkcs7\\.detached)',
         'g'
     );
     const content = await readBinaryFileContent(file);

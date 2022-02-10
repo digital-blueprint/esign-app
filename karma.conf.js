@@ -9,7 +9,8 @@ module.exports = function (config) {
         },
         files: [
             {pattern: './*.js', included: true, watched: true, served: true, type: 'module'},
-            {pattern: './**/*', included: false, watched: true, served: true},
+            // XXX: nocache is required or karma serves garbage binary data for some reason
+            {pattern: './**/*', included: false, watched: true, served: true, nocache: true},
         ],
         autoWatch: true,
         browsers: ['ChromiumHeadlessNoSandbox', 'FirefoxHeadless'],
