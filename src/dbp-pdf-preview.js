@@ -542,7 +542,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                 position: absolute;
                 top: 0;
                 left: 0;
-                border: var(--dbp-border-dark);
+                border: var(--dbp-border);
             }
 
             #annotation-layer {
@@ -588,21 +588,21 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
             .nav-buttons > * {
                 margin: 2px;
             }
-
+            
             input[type='number'] {
-                border: var(--dbp-border-dark);
+                border: var(--dbp-border);
                 padding: 0 0.3em;
             }
 
             #pdf-meta {
-                border: var(--dbp-border-dark);
+                border: var(--dbp-border);
                 padding: 0.54em;
                 border-bottom-width: 0;
                 border-top-width: 0;
             }
 
             .button.is-cancel {
-                color: var(--dbp-danger-dark);
+                color: var(--dbp-danger);
             }
 
             .error-message {
@@ -616,6 +616,18 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
             #canvas-wrapper canvas.upper-canvas {
                 border: unset;
             }
+
+
+            input[type="number"]{
+                background-color: var(--dbp-background);
+            }
+
+            dbp-mini-spinner{
+                margin: auto;
+                display: block;
+                width: 17px;
+            }
+
         `;
     }
 

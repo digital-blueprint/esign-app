@@ -65,8 +65,8 @@ export class TextSwitch extends LitElement {
             }
 
             .active {
-                background-color: var(--dbp-secondary-dark) !important;
-                color: var(--dbp-text-light) !important;
+                background-color: var(--dbp-secondary-surface) !important;
+                color: var(--dbp-on-secondary-surface) !important;
             }
 
             .button {
@@ -74,8 +74,8 @@ export class TextSwitch extends LitElement {
             }
 
             .button:hover {
-                background-color: var(--dbp-hover-base) !important;
-                color: var(--dbp-hover-text) !important;
+                background-color: var(--dbp-hover-background-color) !important;
+                color: var(--dbp-hover-color) !important;
             }
         `;
     }

@@ -317,6 +317,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             ${commonStyles.getButtonCSS()}
             ${commonStyles.getNotificationCSS()}
             ${SignatureStyles.getSignatureCss()}
+            
         `;
     }
 
@@ -427,8 +428,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                             <span class="bold-filename">${file.name}</span>
                             (${humanFileSize(file.contentSize)})
                         </span>
-                        <button
-                            class="button close"
+                        <button class="button"
                             title="${i18n.t('official-pdf-upload.download-file-button-title')}"
                             @click="${() => {
                                 this.downloadFileClickHandler(file, 'file-block-' + id);
@@ -688,7 +688,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                         this.currentFile !== undefined ? this.currentFile.size : 0
                                     )})
                                 </div>
-                                <button class="button is-cancel" @click="${this.hidePDF}">
+                                <button class="is-cancel" @click="${this.hidePDF}">
                                     <dbp-icon name="close"></dbp-icon>
                                 </button>
                             </div>
@@ -721,8 +721,8 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                             : 0
                                     )})
                                 </div>
-                                <button
-                                    class="button is-cancel annotation"
+                                <button 
+                                    class="is-cancel annotation"
                                     @click="${this.hideAnnotationView}">
                                     <dbp-icon name="close" id="close-icon"></dbp-icon>
                                 </button>

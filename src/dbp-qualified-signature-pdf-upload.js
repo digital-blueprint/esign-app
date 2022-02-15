@@ -437,7 +437,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             }
 
             #external-auth .button.is-cancel {
-                color: var(--dbp-danger-dark);
+                color: var(--dbp-danger);
             }
 
             #iframe {
@@ -555,11 +555,10 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                 <div class="file-block" id="file-block-${id}">
                     <div class="header">
                         <span class="filename">
-                            <span class="bold-filename">${file.name}</span>
+                            <span class="bold-filename">${file.name}</span> 
                             (${humanFileSize(file.contentSize)})
                         </span>
-                        <button
-                            class="button close"
+                        <button class="button"
                             title="${i18n.t('qualified-pdf-upload.download-file-button-title')}"
                             @click="${() => {
                                 this.downloadFileClickHandler(file, 'file-block-' + id);
@@ -841,7 +840,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                         this.currentFile !== undefined ? this.currentFile.size : 0
                                     )})
                                 </div>
-                                <button class="button is-cancel" @click="${this.hidePDF}">
+                                <button class="is-cancel" @click="${this.hidePDF}">
                                     <dbp-icon name="close"></dbp-icon>
                                 </button>
                             </div>
@@ -874,8 +873,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                             : 0
                                     )})
                                 </div>
-                                <button
-                                    class="button is-cancel annotation"
+                                <button 
+                                    class="is-cancel annotation" 
                                     @click="${this.hideAnnotationView}">
                                     <dbp-icon name="close" id="close-icon"></dbp-icon>
                                 </button>
@@ -913,8 +912,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                                 : 0
                                         )})
                                     </div>
-                                    <button
-                                        class="button is-cancel"
+                                    <button 
+                                        class="is-cancel"
                                         title="${i18n.t(
                                             'qualified-pdf-upload.stop-signing-process-button'
                                         )}"

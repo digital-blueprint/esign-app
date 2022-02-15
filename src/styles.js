@@ -3,14 +3,16 @@ import {css} from 'lit';
 export function getSignatureCss() {
     // language=css
     return css`
-        #annotation-view .button.is-cancel {
+
+        #annotation-view button.is-cancel {
             background: transparent;
             border: none;
             font-size: 1.5rem;
-            color: var(--dbp-accent-dark);
+            color: var(--dbp-accent);
             cursor: pointer;
             padding: 0px;
             padding-right: 2px;
+            margin-top: -5px;
         }
 
         #annotation-view .box-header,
@@ -44,7 +46,7 @@ export function getSignatureCss() {
 
         #pdf-preview .box-header,
         #annotation-view .box-header {
-            border: var(--dbp-border-dark);
+            border: var(--dbp-border);
             border-bottom-width: 0;
             padding: 0.5em 0.5em 0 0.5em;
         }
@@ -88,12 +90,12 @@ export function getSignatureCss() {
 
         .error,
         #cancel-signing-process {
-            color: var(--dbp-danger-dark);
+            color: var(--dbp-danger);
         }
 
         #cancel-signing-process:hover {
-            color: var(--dbp-hover-text);
-            background-color: var(--dbp-hover-base);
+            color: var(--dbp-hover-color);
+            background-color: var(--dbp-hover-background-color);
         }
 
         /* using dbp-icon doesn't work */
@@ -101,9 +103,12 @@ export function getSignatureCss() {
         a > [name='close'] {
             font-size: 0.8em;
         }
-
+        
         a > [name='close'] {
-            color: var(--dbp-accent-dark);
+            color: var(--dbp-accent);
+        }
+        .button.close dbp-icon{
+            margin-left: -2px;
         }
 
         .empty-queue {
@@ -126,7 +131,7 @@ export function getSignatureCss() {
 
         .file-block,
         .box {
-            border: var(--dbp-border-dark);
+            border: var(--dbp-border);
             padding: 10px;
         }
 
@@ -165,7 +170,7 @@ export function getSignatureCss() {
 
         .file-block .error-line {
             margin-top: 6px;
-            color: var(--dbp-danger-dark);
+            color: var(--dbp-danger);
         }
 
         .file-block.error div.bottom-line {
@@ -190,8 +195,14 @@ export function getSignatureCss() {
             font-weight: bold;
         }
 
-        #pdf-preview .button.is-cancel {
-            color: var(--dbp-accent-dark);
+        #pdf-preview button.is-cancel {
+            background: transparent;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--dbp-accent);
+            cursor: pointer;
+            padding: 0px 2px ;
+            margin-top: -5px;
         }
 
         .is-right {
@@ -239,15 +250,16 @@ export function getSignatureCss() {
             margin-top: 2rem;
             /*padding-top: 2rem;*/
         }
-
-        .border {
-            border-top: var(--dbp-border-dark);
+        
+        .border{
+            border-top: var(--dbp-border);
             margin-top: 2rem;
             padding-top: 2rem;
         }
 
         .placement-missing {
-            border: solid 2px var(--dbp-danger-dark);
+            border: var(--dbp-danger);
+            border-width: 2px;
             border-radius: var(--dbp-border-radius);
         }
 
@@ -269,8 +281,8 @@ export function getSignatureCss() {
                 left: 0;
                 right: 0;
                 bottom: 0;
-                background-color: var(--dbp-base-light);
-                color: var(--dbp-text-dark);
+                background-color: var(--dbp-background);
+                color: var(--dbp-content);
                 overflow-y: scroll;
             }
 

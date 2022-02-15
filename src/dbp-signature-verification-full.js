@@ -680,7 +680,7 @@ class SignatureVerificationFull extends ScopedElementsMixin(DBPSignatureLitEleme
                                         this.currentFile !== undefined ? this.currentFile.size : 0
                                     )})
                                 </div>
-                                <button class="button is-cancel" @click="${this.hidePDF}">
+                                <button class="is-cancel" @click="${this.hidePDF}">
                                     <dbp-icon name="close"></dbp-icon>
                                 </button>
                             </div>

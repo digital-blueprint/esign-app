@@ -5,6 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="white"/>
 
+    <!-- Meta Data for Search Engines -->
+    <meta title="esign - Der digitale Signaturservice an der Universität | My University">
+    <meta name="description" content="Signieren sie ganz einfach digital ihre Dokumente. Der digitale Signaturservice an der Universität." />
+
+    <!-- Meta Data for open graph(facebook & co) -->
+    <meta property="og:locale" content="de_DE" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="esign - Der digitale Signaturservice an der Universität | My University" />
+    <meta property="og:description" content="Signieren sie ganz einfach digital ihre Dokumente. Der digitale Signaturservice an der Universität." />
+    <meta property="og:url" content="https://esign.my-university.at/" />
+    <meta property="og:site_name" content="esign" />
+
     <!-- Favicons -->
     <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico">
     <link rel="icon" type="image/svg+xml" href="/images/favicon.svg" sizes="any">
@@ -41,38 +53,59 @@
             font-family: 'Source Sans Pro', 'Calibri', 'Arial', 'sans-serif';
             font-weight: 300;
             margin: 0;
-            background-color: var(--dbp-override-base-light, white);
-            color: var(--dbp-override-text-dark, black);
         }
 
         /* style override */
         html {
-            /*--dbp-override-base-light: #ffffff;
-            --dbp-override-base-dark: #000000;
-            --dbp-override-text-light: #ffffff;
-            --dbp-override-text-dark: #000000;
-            --dbp-override-text-muted-light: #adadad;
-            --dbp-override-text-muted-dark: #767676;
-            --dbp-override-accent-light: #c24f68;
-            --dbp-override-accent-dark: #c24f68;
-            --dbp-override-primary-light: #8ca4eb;
-            --dbp-override-primary-dark: #2a4491;
-            --dbp-override-secondary-light: #ffffff;
-            --dbp-override-secondary-dark: #000000;
-            --dbp-override-info-light: #8ca4eb;
-            --dbp-override-info-dark: #2a4491;
-            --dbp-override-success-light: #7acc79;
-            --dbp-override-success-dark: #188018;
-            --dbp-override-warning-light: #f99a41;
-            --dbp-override-warning-dark: #c15500;
-            --dbp-override-danger-light: #ff887a;
-            --dbp-override-danger-dark: #de3535;
-            --dbp-override-border-light: 1px solid #ffffff;
-            --dbp-override-border-dark: 1px solid #000000;
-            --dbp-border-radius: 0px;
-            --dbp-override-hover-base: unset;
-            --dbp-override-hover-text: unset;
-            */
+        }
+
+        .light-theme{
+            --dbp-override-background: white;
+            --dbp-override-content: black;
+
+            --dbp-override-primary: #2a4491;
+            --dbp-override-secondary: black;
+            --dbp-override-secondary-surface: white;
+            --dbp-override-on-secondary-surface: black;
+            --dbp-override-secondary-surface-border-color: black;
+
+            --dbp-override-muted: #767676;
+            --dbp-override-accent: #c24f68;
+            --dbp-override-info: #2a4491;
+            --dbp-override-success: #188018;
+            --dbp-override-warning: #c15500;
+            --dbp-override-warning-surface: #ffad4d;
+            --dbp-override-on-warning-surface: black;
+            --dbp-override-danger: #de3535;
+
+            --dbp-override-border: 1px solid black;
+
+            --dbp-override-hover-background-color: black;
+            --dbp-override-hover-color: white;
+        }
+
+        .dark-theme{
+            --dbp-override-background: #151515;
+            --dbp-override-content: white;
+
+            --dbp-override-primary: #8ca4eb;
+            --dbp-override-secondary: white;
+            --dbp-override-secondary-surface: #151515;
+            --dbp-override-on-secondary-surface: white;
+            --dbp-override-secondary-surface-border-color: #151515;
+
+            --dbp-override-muted: #666666;
+            --dbp-override-accent: #c24f68;
+            --dbp-override-info: #8ca4eb;
+            --dbp-override-success: #7acc79;
+            --dbp-override-warning: #f99a41;
+            --dbp-override-on-warning-surface: black;
+            --dbp-override-danger: #de3535;
+
+            --dbp-override-border: 1px solid white;
+
+            --dbp-override-hover-background-color: white;
+            --dbp-override-hover-color: #151515;
         }
     </style>
 </head>
@@ -87,6 +120,8 @@
     src="/topic.metadata.json"
     base-path="/"
     keycloak-config='{"url": "https://auth-demo.tugraz.at/auth", "realm": "tugraz-vpu", "clientId": "auth-dev-mw-frontend-local", "silentCheckSsoRedirectUri": "/app/silent-check-sso.html"}'
+    themes='[{"class": "light-theme", "icon": "sun", "name": "Light Mode"},
+            {"class": "dark-theme", "icon": "night", "name": "Dark Mode"}]'
 ><dbp-loading-spinner></dbp-loading-spinner>
 <template slot="name">
     DBP<br />

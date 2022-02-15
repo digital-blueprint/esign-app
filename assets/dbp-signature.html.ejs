@@ -5,6 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="white"/>
 
+    <!-- Meta Data for Search Engines -->
+    <meta title="esign - Der elekronische Signaturservice an der Universität | TU Graz">
+    <meta name="description" content="Signieren sie ganz einfach digital ihre Dokumente. Der elekronische Signaturservice an der Technischen Universität Graz." />
+
+    <!-- Meta Data for open graph(facebook & co) -->
+    <meta property="og:locale" content="de_DE" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="esign - Der elekronische Signaturservice an der Universität | TU Graz" />
+    <meta property="og:description" content="Signieren sie ganz einfach digital ihre Dokumente. Der elekronische Signaturservice an der Technischen Universität Graz." />
+    <meta property="og:url" content="https://esign.tugraz.at/" />
+    <meta property="og:site_name" content="esign" />
+
     <!-- Favicons -->
     <link rel="shortcut icon" type="image/x-icon" href="<%= getPrivateUrl('favicon.ico') %>">
     <link rel="icon" type="image/svg+xml" href="<%= getPrivateUrl('favicon.svg') %>" sizes="any">
@@ -41,38 +53,33 @@
             font-family: 'Source Sans Pro', 'Calibri', 'Arial', 'sans-serif';
             font-weight: 300;
             margin: 0;
-            background-color: var(--dbp-override-base-light);
-            color: var(--dbp-override-text-dark);
         }
 
         /* TU-Graz style override */
         html {
-            --dbp-override-base-light: #ffffff;
-            --dbp-override-base-dark: #000000;
-            --dbp-override-text-light: #ffffff;
-            --dbp-override-text-dark: #000000;
-            --dbp-override-text-muted-light: #afaca7;
-            --dbp-override-text-muted-dark: #767676;
-            --dbp-override-accent-light: #e4154b;
-            --dbp-override-accent-dark: #e4154b;
-            --dbp-override-primary-light: #73899e;
-            --dbp-override-primary-dark: #245b78;
-            --dbp-override-secondary-light: #ffffff;
-            --dbp-override-secondary-dark: #000000;
-            --dbp-override-info-light: #73899e;
-            --dbp-override-info-dark: #245b78;
-            --dbp-override-success-light: #75c438;
-            --dbp-override-success-dark: #148800;
-            --dbp-override-warning-light: #ffe183;
-            --dbp-override-warning-dark: #c15500;
-            --dbp-override-danger-light: #ff5d79;
-            --dbp-override-danger-dark: #e4154b;
-            --dbp-override-border-light: 1px solid #ffffff;
-            --dbp-override-border-dark: 1px solid #000000;
+            --dbp-override-background: white;
+            --dbp-override-content: black;
 
+            --dbp-override-primary: #245b78;
+            --dbp-override-secondary: black;
+            --dbp-override-secondary-surface: white;
+            --dbp-override-on-secondary-surface: black;
+            --dbp-override-secondary-surface-border-color: black;
+
+            --dbp-override-muted: #5c5856;
+            --dbp-override-accent: #e4154b;
+            --dbp-override-info: #245b78;
+            --dbp-override-success: #138800;
+            --dbp-override-warning: #af6405;
+            --dbp-override-warning-surface: #ffad4d;
+            --dbp-override-on-warning-surface: black;
+            --dbp-override-danger: #e4154b;
+
+            --dbp-override-border: 1px solid black;
 
             --dbp-override-image-nextcloud: url(<%= getUrl('') %>images/nextcloud.svg);
         }
+
     </style>
 
     <!-- Preloading/Preconnecting -->
@@ -132,19 +139,16 @@
                 }
 
                 .footer-links a {
-                    border-bottom: var(--dbp-border-dark);
+                    border-bottom: var(--dbp-border);
+                    border-color: var(--dbp-content);
                     padding: 0;
                     margin-left: 1em;
                     transition: background-color 0.15s ease 0s, color 0.15s ease 0s;
-                    color: var(--dbp-text-dark);
+                    color: var(--dbp-content);
                     cursor: pointer;
                     text-decoration: none;
                 }
 
-                .footer-links a:hover {
-                    color: var(--dbp-hover-text);
-                    background-color: var(--dbp-hover-base);
-                }
             </style>
             <dbp-translated subscribe="lang">
                 <div slot="de" class="footer-links">
@@ -176,38 +180,25 @@
         <div slot="additional-information">
             <style>
                 .int-link-internal{
-                    transition: background-color 0.15s, color 0.15s;
-                    border-bottom: var(--dbp-border-dark);
-                }
-
-                .int-link-internal:hover{
-                    background-color: var(--dbp-hover-base);
-                    color: var(--dbp-hover-text);
+                    border-bottom: var(--dbp-border);
+                    border-color: var(--dbp-content);
                 }
 
                 .int-link-internal:after{
                     content: "\00a0\00a0\00a0";
-                    background-image: url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3Ardf%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20height%3D%228.6836mm%22%20width%3D%225.2043mm%22%20version%3D%221.1%22%20xmlns%3Acc%3D%22http%3A%2F%2Fcreativecommons.org%2Fns%23%22%20xmlns%3Adc%3D%22http%3A%2F%2Fpurl.org%2Fdc%2Felements%2F1.1%2F%22%20viewBox%3D%220%200%2018.440707%2030.768605%22%3E%3Cg%20transform%3D%22translate(-382.21%20-336.98)%22%3E%3Cpath%20style%3D%22stroke-linejoin%3Around%3Bstroke%3A%23000%3Bstroke-linecap%3Around%3Bstroke-miterlimit%3A10%3Bstroke-width%3A2%3Bfill%3Anone%22%20d%3D%22m383.22%20366.74%2016.43-14.38-16.43-14.37%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E');
-                    background-size: 73%;
-                    background-repeat: no-repeat;
-                    background-position: center center;
-                    margin: 0 0 0 3px;
+                    background-color: var(--dbp-content);
+                    -webkit-mask-image: url('data:image/svg+xml;charset=utf-8,%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22utf-8%22%3F%3E%0A%3Csvg%20version%3D%221.1%22%20id%3D%22Ebene_1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%20x%3D%220px%22%20y%3D%220px%22%0A%09%20viewBox%3D%220%200%2022.7%2062.4%22%20style%3D%22enable-background%3Anew%200%200%2022.7%2062.4%3B%22%20xml%3Aspace%3D%22preserve%22%3E%0A%3Cg%20transform%3D%22translate%28-382.21%20-336.98%29%22%3E%0A%09%3Cg%3E%0A%09%09%3Cpath%20d%3D%22M386.9%2C380.5c-0.2%2C0-0.4-0.1-0.6-0.3c-0.3-0.3-0.3-0.8%2C0.1-1.1l12.5-10.9l-12.5-10.9c-0.3-0.3-0.4-0.8-0.1-1.1%0A%09%09%09c0.3-0.3%2C0.8-0.4%2C1.1-0.1l13.1%2C11.5c0.2%2C0.2%2C0.3%2C0.4%2C0.3%2C0.6s-0.1%2C0.5-0.3%2C0.6l-13.1%2C11.5C387.3%2C380.4%2C387.1%2C380.5%2C386.9%2C380.5z%22%0A%09%09%09%2F%3E%0A%09%3C%2Fg%3E%0A%3C%2Fg%3E%0A%3C%2Fsvg%3E%0A');
+                    mask-image: url('data:image/svg+xml;charset=utf-8,%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22utf-8%22%3F%3E%0A%3Csvg%20version%3D%221.1%22%20id%3D%22Ebene_1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%20x%3D%220px%22%20y%3D%220px%22%0A%09%20viewBox%3D%220%200%2022.7%2062.4%22%20style%3D%22enable-background%3Anew%200%200%2022.7%2062.4%3B%22%20xml%3Aspace%3D%22preserve%22%3E%0A%3Cg%20transform%3D%22translate%28-382.21%20-336.98%29%22%3E%0A%09%3Cg%3E%0A%09%09%3Cpath%20d%3D%22M386.9%2C380.5c-0.2%2C0-0.4-0.1-0.6-0.3c-0.3-0.3-0.3-0.8%2C0.1-1.1l12.5-10.9l-12.5-10.9c-0.3-0.3-0.4-0.8-0.1-1.1%0A%09%09%09c0.3-0.3%2C0.8-0.4%2C1.1-0.1l13.1%2C11.5c0.2%2C0.2%2C0.3%2C0.4%2C0.3%2C0.6s-0.1%2C0.5-0.3%2C0.6l-13.1%2C11.5C387.3%2C380.4%2C387.1%2C380.5%2C386.9%2C380.5z%22%0A%09%09%09%2F%3E%0A%09%3C%2Fg%3E%0A%3C%2Fg%3E%0A%3C%2Fsvg%3E%0A');
+                    -webkit-mask-repeat: no-repeat;
+                    mask-repeat: no-repeat;
+                    -webkit-mask-position: center -2px;
+                    mask-position: center center;
+                    margin: 0 0 0 4px;
                     padding: 0 0 0.25% 0;
-                    animation: 0.15s linkIconOut;
-                    font-size: 103%;
+                    -webkit-mask-size: 100%;
+                    mask-size: 120%;
                 }
 
-                .int-link-internal:hover::after{
-                    content: "\00a0\00a0\00a0";
-                    background-image: url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3Ardf%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20height%3D%228.6836mm%22%20width%3D%225.2043mm%22%20version%3D%221.1%22%20xmlns%3Acc%3D%22http%3A%2F%2Fcreativecommons.org%2Fns%23%22%20xmlns%3Adc%3D%22http%3A%2F%2Fpurl.org%2Fdc%2Felements%2F1.1%2F%22%20viewBox%3D%220%200%2018.440707%2030.768605%22%3E%3Cg%20transform%3D%22translate(-382.21%20-336.98)%22%3E%3Cpath%20style%3D%22stroke-linejoin%3Around%3Bstroke%3A%23FFF%3Bstroke-linecap%3Around%3Bstroke-miterlimit%3A10%3Bstroke-width%3A2%3Bfill%3Anone%22%20d%3D%22m383.22%20366.74%2016.43-14.38-16.43-14.37%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E');
-                    background-size: 73%;
-                    background-repeat: no-repeat;
-                    background-position: center center;
-                    margin: 0 0 0 3px;
-                    padding: 0 0 0.25% 0;
-                    animation: 0s linkIconIn;
-                    font-size: 103%;
-                }
             </style>
             <dbp-translated subscribe="lang">
                 <div slot="de">
