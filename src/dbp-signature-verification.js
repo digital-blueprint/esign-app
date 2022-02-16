@@ -76,7 +76,7 @@ class SignatureVerification extends ScopedElementsMixin(DBPSignatureLitElement) 
             <a
                 target="_blank"
                 rel="noopener"
-                class="int-link-internal"
+                class="link"
                 href="https://www.signaturpruefung.gv.at">
                 ${i18n.t('signature-verification-extern.link-label')}
             </a>
