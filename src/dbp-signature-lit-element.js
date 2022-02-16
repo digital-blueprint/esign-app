@@ -297,7 +297,6 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         // add annotations
         if (annotations.length > 0) {
             file = await this.addAnnotationsToFile(file, annotations);
-            console.log('uploadFile file', file);
 
             // Also send annotations to the server so they get included in the signature block
             let userText = [];
@@ -380,21 +379,32 @@ export default class DBPSignatureLitElement extends BaseLitElement {
     }
 
     /**
-     * Open Filesink for multiple files
+     * Convert files to binary async
      */
-    async zipDownloadClickHandler() {
+    async convertFiles () {
         let files = [];
 
-        // add all signed pdf-files
-        this.signedFiles.forEach((file) => {
+        for (const file of this.signedFiles) {
             const arr = utils.convertDataURIToBinary(file.contentUrl);
             const binaryFile = new File([arr], file.name, {
                 type: utils.getDataURIContentType(file.contentUrl),
             });
             files.push(binaryFile);
-        });
+        }
+        return files;
+    }
+
+
+    /**
+     * Open Filesink for multiple files
+     */
+    async zipDownloadClickHandler() {
+        // add all signed pdf-files
+        const files = await this.convertFiles();
+
+        this._('#file-sink').files = [...files];
         this.signedFilesToDownload = files.length;
-        this._('#file-sink').files = files;
+
         this._('#zip-download-button').stop();
         // mark downloaded files buttons
         const spans = this.shadowRoot.querySelectorAll(
@@ -426,7 +436,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         });
         files.push(binaryFile);
         this.signedFilesToDownload = files.length;
-        this._('#file-sink').files = files;
+        this._('#file-sink').files = [...files];
         // mark downloaded files button
         const span = this.shadowRoot.querySelector(
             '#' + id + ' > div.header > span.filename > span.bold-filename'

@@ -65,8 +65,8 @@ export class TextSwitch extends LitElement {
             }
 
             .active {
-                background-color: var(--dbp-secondary-surface) !important;
-                color: var(--dbp-on-secondary-surface) !important;
+                background-color: var(--dbp-secondary) !important;
+                color: var(--dbp-secondary-surface) !important;
             }
 
             .button {
