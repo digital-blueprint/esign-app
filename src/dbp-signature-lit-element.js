@@ -381,7 +381,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
     /**
      * Convert files to binary async
      */
-    async convertFiles () {
+    async convertFiles() {
         let files = [];
 
         for (const file of this.signedFiles) {
@@ -393,7 +393,6 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         }
         return files;
     }
-
 
     /**
      * Open Filesink for multiple files

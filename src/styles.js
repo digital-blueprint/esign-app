@@ -3,7 +3,6 @@ import {css} from 'lit';
 export function getSignatureCss() {
     // language=css
     return css`
-
         #annotation-view button.is-cancel {
             background: transparent;
             border: none;
@@ -103,11 +102,11 @@ export function getSignatureCss() {
         a > [name='close'] {
             font-size: 0.8em;
         }
-        
+
         a > [name='close'] {
             color: var(--dbp-accent);
         }
-        .button.close dbp-icon{
+        .button.close dbp-icon {
             margin-left: -2px;
         }
 
@@ -201,7 +200,7 @@ export function getSignatureCss() {
             font-size: 1.5rem;
             color: var(--dbp-accent);
             cursor: pointer;
-            padding: 0px 2px ;
+            padding: 0px 2px;
             margin-top: -5px;
         }
 
@@ -250,8 +249,8 @@ export function getSignatureCss() {
             margin-top: 2rem;
             /*padding-top: 2rem;*/
         }
-        
-        .border{
+
+        .border {
             border-top: var(--dbp-border);
             margin-top: 2rem;
             padding-top: 2rem;

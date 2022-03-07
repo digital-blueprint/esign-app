@@ -185,14 +185,15 @@ Dependencies:
                 emitFiles: true,
                 fileName: 'shared/[name].[hash][extname]',
             }),
-            appEnv == 'test' && copy({
-                targets: [
-                    {
-                        src: 'test/data/*',
-                        dest: 'dist/test',
-                    },
-                ]
-            }),
+            appEnv == 'test' &&
+                copy({
+                    targets: [
+                        {
+                            src: 'test/data/*',
+                            dest: 'dist/test',
+                        },
+                    ],
+                }),
             copy({
                 targets: [
                     {

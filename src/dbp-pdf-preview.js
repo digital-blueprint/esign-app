@@ -588,7 +588,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
             .nav-buttons > * {
                 margin: 2px;
             }
-            
+
             input[type='number'] {
                 border: var(--dbp-border);
                 padding: 0 0.3em;
@@ -617,17 +617,15 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                 border: unset;
             }
 
-
-            input[type="number"]{
+            input[type='number'] {
                 background-color: var(--dbp-background);
             }
 
-            dbp-mini-spinner{
+            dbp-mini-spinner {
                 margin: auto;
                 display: block;
                 width: 17px;
             }
-
         `;
     }
 

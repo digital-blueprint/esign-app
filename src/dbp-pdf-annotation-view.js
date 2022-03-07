@@ -248,9 +248,9 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
 
             .border {
                 border-top: var(--dbp-border);
-                padding-bottom: .5em;
+                padding-bottom: 0.5em;
             }
-            
+
             .border-wrapper {
                 border: var(--dbp-border);
                 border-bottom-width: 0;

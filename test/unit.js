@@ -68,7 +68,6 @@ suite('pdf signature detection', () => {
     });
 
     test('getPDFSignatureCount real files', async () => {
-
         async function getRealPDFFile(name) {
             let url = new URL('test/' + name, import.meta.url).href;
             let resp = await fetch(url);
@@ -76,8 +75,11 @@ suite('pdf signature detection', () => {
             return getPDFFile(await resp.arrayBuffer());
         }
 
-        assert.equal((await getPDFSignatureCount(await getRealPDFFile('QPDF-367-0.pdf'))), 1);
-        assert.equal((await getPDFSignatureCount(await getRealPDFFile('qual-sig-simple.pdf'))), 1);
-        assert.equal((await getPDFSignatureCount(await getRealPDFFile('qual-sig-tugraz-multiple.pdf'))), 2);
+        assert.equal(await getPDFSignatureCount(await getRealPDFFile('QPDF-367-0.pdf')), 1);
+        assert.equal(await getPDFSignatureCount(await getRealPDFFile('qual-sig-simple.pdf')), 1);
+        assert.equal(
+            await getPDFSignatureCount(await getRealPDFFile('qual-sig-tugraz-multiple.pdf')),
+            2
+        );
     });
 });

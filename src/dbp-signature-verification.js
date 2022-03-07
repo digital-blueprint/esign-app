@@ -49,7 +49,6 @@ class SignatureVerification extends ScopedElementsMixin(DBPSignatureLitElement) 
                 border-color: var(--dbp-content);
                 padding: 0;
             }
-            
 
             h2:first-child {
                 margin-top: 0;

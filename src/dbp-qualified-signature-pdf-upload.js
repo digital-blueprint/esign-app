@@ -555,10 +555,11 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                 <div class="file-block" id="file-block-${id}">
                     <div class="header">
                         <span class="filename">
-                            <span class="bold-filename">${file.name}</span> 
+                            <span class="bold-filename">${file.name}</span>
                             (${humanFileSize(file.contentSize)})
                         </span>
-                        <button class="button"
+                        <button
+                            class="button"
                             title="${i18n.t('qualified-pdf-upload.download-file-button-title')}"
                             @click="${() => {
                                 this.downloadFileClickHandler(file, 'file-block-' + id);
@@ -873,8 +874,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                             : 0
                                     )})
                                 </div>
-                                <button 
-                                    class="is-cancel annotation" 
+                                <button
+                                    class="is-cancel annotation"
                                     @click="${this.hideAnnotationView}">
                                     <dbp-icon name="close" id="close-icon"></dbp-icon>
                                 </button>
@@ -912,7 +913,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                                 : 0
                                         )})
                                     </div>
-                                    <button 
+                                    <button
                                         class="is-cancel"
                                         title="${i18n.t(
                                             'qualified-pdf-upload.stop-signing-process-button'
