@@ -58,10 +58,12 @@ export class TextSwitch extends LitElement {
 
             .button:first-child {
                 border-radius: var(--dbp-border-radius) 0 0 var(--dbp-border-radius);
+                margin-right: 0px;
             }
 
             .button:last-child {
                 border-radius: 0 var(--dbp-border-radius) var(--dbp-border-radius) 0;
+                margin-left: 0px;
             }
 
             .active {

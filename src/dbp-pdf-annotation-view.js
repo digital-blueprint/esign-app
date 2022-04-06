@@ -341,6 +341,10 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
                     grid-template-rows: auto;
                     column-gap: 3px;
                 }
+                
+                .add-elements .button{
+                    height: 33px;
+                }
             }
         `;
     }
