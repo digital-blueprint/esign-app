@@ -338,6 +338,7 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
                 .add-elements {
                     display: grid;
                     grid-template-columns: auto 42px;
+                    grid-template-rows: auto;
                     column-gap: 3px;
                 }
             }
