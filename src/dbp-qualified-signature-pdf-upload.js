@@ -682,6 +682,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                         </button>
                         <dbp-file-source
                             id="file-source"
+                            subscribe="nextcloud-store-session:nextcloud-store-session"
                             context="${i18n.t('qualified-pdf-upload.file-picker-context')}"
                             allowed-mime-types="application/pdf"
                             enabled-targets="${this.fileHandlingEnabledTargets}"
@@ -953,7 +954,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                     count: this.signedFilesToDownload,
                 })}"
                 filename="signed-documents.zip"
-                subscribe="initial-file-handling-state:initial-file-handling-state"
+                subscribe="initial-file-handling-state:initial-file-handling-state,nextcloud-store-session:nextcloud-store-session"
                 enabled-targets="${this.fileHandlingEnabledTargets}"
                 nextcloud-auth-url="${this.nextcloudWebAppPasswordURL}"
                 nextcloud-web-dav-url="${this.nextcloudWebDavURL}"
