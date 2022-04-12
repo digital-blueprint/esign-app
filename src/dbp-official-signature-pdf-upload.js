@@ -15,7 +15,6 @@ import {TextSwitch} from './textswitch.js';
 import {FileSink} from '@dbp-toolkit/file-handling';
 import {name as pkgName} from './../package.json';
 import {send as notify} from '@dbp-toolkit/common/notification';
-import {OrganizationSelect} from '@dbp-toolkit/organization-select';
 import metadata from './dbp-official-signature-pdf-upload.metadata.json';
 import {Activity} from './activity.js';
 import {PdfAnnotationView} from './dbp-pdf-annotation-view';
@@ -72,7 +71,6 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             'dbp-mini-spinner': MiniSpinner,
             'dbp-button': Button,
             'dbp-textswitch': TextSwitch,
-            'dbp-organization-select': OrganizationSelect,
             'dbp-pdf-annotation-view': PdfAnnotationView,
         };
     }

@@ -4,7 +4,7 @@ import {classMap} from 'lit/directives/class-map.js';
 import {ScopedElementsMixin} from '@open-wc/scoped-elements';
 import DBPLitElement from '@dbp-toolkit/common/dbp-lit-element';
 import {MiniSpinner, Icon} from '@dbp-toolkit/common';
-import {OrganizationSelect} from '@dbp-toolkit/organization-select';
+import {ResourceSelect} from '@dbp-toolkit/resource-select';
 import {send} from '@dbp-toolkit/common/notification';
 import * as commonStyles from '@dbp-toolkit/common/styles';
 import * as utils from './utils';
@@ -28,7 +28,7 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
         return {
             'dbp-mini-spinner': MiniSpinner,
             'dbp-icon': Icon,
-            'dbp-organization-select': OrganizationSelect,
+            'dbp-resource-select': ResourceSelect,
         };
     }
 
@@ -360,6 +360,17 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
         const ids = Object.keys(annotations);
         let results = [];
 
+        let buildUrl = (select, url) => {
+            url += '/' + encodeURIComponent(select.auth['person-id']);
+            url += '/organizations';
+            url += '?' + new URLSearchParams({lang: select.lang}).toString();
+            return url;
+        };
+
+        let formatResource = (select, resource) => {
+            return `${resource['name']}`;
+        };
+
         ids.forEach((id) => {
             const data = this.annotationRows[id] || [];
             const annotationTypeData = utils.getAnnotationTypes(data.annotationType);
@@ -383,18 +394,21 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
                         </button>
                     </div>
 
-                    <dbp-organization-select
+                    <dbp-resource-select
                         subscribe="lang:lang,entry-point-url:entry-point-url,auth:auth"
                         class="${classMap({hidden: !annotationTypeData.hasOrganization})}"
+                        resource-path="base/people"
+                        .buildUrl="${buildUrl}"
+                        .formatResource="${formatResource}"
                         value="${data.organizationValue}"
                         @change=${(e) => {
                             this.updateAnnotation(id, 'organizationValue', e.target.value);
                             this.updateAnnotation(
                                 id,
                                 'organizationNumber',
-                                JSON.parse(e.target.getAttribute('data-object')).alternateName
+                                e.target.valueObject.identifier
                             );
-                        }}></dbp-organization-select>
+                        }}></dbp-resource-select>
 
                     <input
                         type="text"
