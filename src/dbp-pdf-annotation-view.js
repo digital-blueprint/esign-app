@@ -361,9 +361,7 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
         let results = [];
 
         let buildUrl = (select, url) => {
-            url += '/' + encodeURIComponent(select.auth['person-id']);
-            url += '/organizations';
-            url += '?' + new URLSearchParams({lang: select.lang}).toString();
+            url += '?' + new URLSearchParams({lang: select.lang, person: encodeURIComponent(select.auth['person-id'])}).toString();
             return url;
         };
 
@@ -397,7 +395,7 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
                     <dbp-resource-select
                         subscribe="lang:lang,entry-point-url:entry-point-url,auth:auth"
                         class="${classMap({hidden: !annotationTypeData.hasOrganization})}"
-                        resource-path="base/people"
+                        resource-path="base/organizations"
                         .buildUrl="${buildUrl}"
                         .formatResource="${formatResource}"
                         value="${data.organizationValue}"
