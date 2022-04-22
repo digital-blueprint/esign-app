@@ -4,6 +4,12 @@
 [npmjs package](https://www.npmjs.com/package/@dbp-topics/signature) |
 [Unpkg CDN](https://unpkg.com/browse/@dbp-topics/signature/)
 
+## Prerequisites
+
+- You need the [API server](https://gitlab.tugraz.at/dbp/relay/dbp-relay-server-template) running
+- You need the [DbpRelayEsignBundle](https://gitlab.tugraz.at/dbp/esign/dbp-relay-esign-bundle) to allow signing of PDF files
+- For more information please visit the [ESign project documentation](https://dbp-demo.tugraz.at/site/software/esign.html)
+
 ## Local development
 
 ```bash
