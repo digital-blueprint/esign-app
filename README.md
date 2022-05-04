@@ -2,7 +2,9 @@
 
 [GitLab Repository](https://gitlab.tugraz.at/dbp/esign/signature) |
 [npmjs package](https://www.npmjs.com/package/@dbp-topics/signature) |
-[Unpkg CDN](https://unpkg.com/browse/@dbp-topics/signature/)
+[Unpkg CDN](https://unpkg.com/browse/@dbp-topics/signature/) |
+[Esign Bundle](https://gitlab.tugraz.at/dbp/esign/dbp-relay-esign-bundle) |
+[Project documentation](https://dbp-demo.tugraz.at/site/software/esign.html)
 
 ## Prerequisites
 
