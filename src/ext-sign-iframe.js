@@ -14,6 +14,8 @@ export class ExternalSignIFrame extends ScopedElementsMixin(LitElement) {
     constructor() {
         super();
         this._loading = false;
+        this.locationCount = 0;
+        this.loginPageLoaded = false;
         this._onReceiveIframeMessage = this._onReceiveIframeMessage.bind(this);
     }
 
@@ -26,6 +28,8 @@ export class ExternalSignIFrame extends ScopedElementsMixin(LitElement) {
     static get properties() {
         return {
             _loading: {type: Boolean, attribute: false},
+            locationCount: {type: Number, attribute: 'location-count', reflect: true},
+            loginPageLoaded: {type: Boolean, attribute: 'login-page-loaded', reflect: true},
         };
     }
 
@@ -68,10 +72,12 @@ export class ExternalSignIFrame extends ScopedElementsMixin(LitElement) {
         let iframe = this.renderRoot.querySelector('#iframe');
         this._loading = true;
         iframe.src = url;
+        this.locationCount = 0;
     }
 
     reset() {
         this.setUrl('about:blank');
+        this.locationCount = 0;
     }
 
     static get styles() {
@@ -95,8 +101,25 @@ export class ExternalSignIFrame extends ScopedElementsMixin(LitElement) {
         `;
     }
 
+    update(changedProperties) {
+        changedProperties.forEach((oldValue, propName) => {
+            switch (propName) {
+                case 'locationCount':
+                    this.loginPageLoaded = this.locationCount > 1;
+                    break;
+            }
+        });
+
+        super.update(changedProperties);
+    }
+
     render() {
         let onDone = (event) => {
+            this._loading = false;
+            this.locationCount++;
+        };
+
+        let onError = (event) => {
             this._loading = false;
         };
 
@@ -111,7 +134,7 @@ export class ExternalSignIFrame extends ScopedElementsMixin(LitElement) {
                 id="iframe"
                 class=${classMap({hidden: this._loading})}
                 @load="${onDone}"
-                @error="${onDone}"
+                @error="${onError}"
                 scrolling="no"></iframe>
         `;
     }
