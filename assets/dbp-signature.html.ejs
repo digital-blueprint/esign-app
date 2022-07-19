@@ -33,8 +33,9 @@
 
     <!-- Loading spinner -->
     <script type="module">
-        import {Spinner} from '<%= getPrivateUrl('spinner.js') %>';
-        customElements.define('dbp-loading-spinner', Spinner);
+        //import {Spinner} from '@tugraz/web-components';
+        //import {Spinner} from '<%= getPrivateUrl('spinner.js') %>';
+        //customElements.define('dbp-loading-spinner', Spinner);
     </script>
 
     <!-- App bundles-->
@@ -72,6 +73,7 @@
             --dbp-override-success: #138800;
             --dbp-override-warning: #af6405;
             --dbp-override-warning-surface: #ffad4d;
+            --dbp-override-warning-surface-border-color: #ffad4d;
             --dbp-override-on-warning-surface: black;
             --dbp-override-danger: #e4154b;
 
@@ -109,7 +111,7 @@
     build-url='<%= buildInfo.url %>'
     build-time='<%= buildInfo.time %>'
     env='<%= buildInfo.env %>'
-><dbp-loading-spinner></dbp-loading-spinner>
+>
 </<%= name %>>
 
 <template id="global-override">
