@@ -931,6 +931,18 @@
   resolved "https://registry.yarnpkg.com/@colors/colors/-/colors-1.5.0.tgz#bb504579c1cae923e6576a4f5da43d25f97bdbd9"
   integrity sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==
 
+"@dbp-toolkit/theme-switcher@^0.0.4":
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/@dbp-toolkit/theme-switcher/-/theme-switcher-0.0.4.tgz#4cfdb47640ba616d70b6cfca5d18aefb6510dc4d"
+  integrity sha512-9E4aCAQBrpSlr8iipH2FXWD0YFE1gdcZIyLM72mkffY3x/nxhDy+QSRyVuN9xxSf+JaZrek9ANVGe7DfyUURuQ==
+  dependencies:
+    "@dbp-toolkit/common" "^0.3.3"
+    "@open-wc/scoped-elements" "^2.1.0"
+    i18next "^21.4.2"
+    jszip "^3.5.0"
+    lit "^2.0.0"
+    material-design-icons-svg "^3.0.0"
+
 "@digital-blueprint/annotpdf@^1.0.13-a":
   version "1.0.13-a"
   resolved "https://registry.yarnpkg.com/@digital-blueprint/annotpdf/-/annotpdf-1.0.13-a.tgz#f588188a6e745dabcafa7756ca2c8b24a74e43f6"
@@ -5394,14 +5406,6 @@ rollup-plugin-replace@^2.2.0:
   dependencies:
     magic-string "^0.25.2"
     rollup-pluginutils "^2.6.0"
-
-rollup-plugin-serve@^1.0.1:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/rollup-plugin-serve/-/rollup-plugin-serve-1.1.0.tgz#0654a57021a21b903340c69940f7463706e8288d"
-  integrity sha512-pYkSsuA0/psKqhhictkJw1c2klya5b+LlCvipWqI9OE1aG2M97mRumZCbBlry5CMEOzYBBgSDgd1694sNbmyIw==
-  dependencies:
-    mime ">=2.4.6"
-    opener "1"
 
 rollup-plugin-serve@^2.0.0:
   version "2.0.0"
