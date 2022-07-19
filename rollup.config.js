@@ -209,6 +209,7 @@ Dependencies:
                     {src: 'assets/apple-*.png', dest: 'dist/' + (await getDistPath(pkg.name))},
                     {src: 'assets/safari-*.svg', dest: 'dist/' + (await getDistPath(pkg.name))},
                     {src: 'assets/images/*', dest: 'dist/images'},
+                    {src: 'assets/icons/*', dest: 'dist/icons'},
                     {
                         src: 'assets/manifest.json',
                         dest: 'dist',
