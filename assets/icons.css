@@ -1,0 +1,44 @@
+html{
+    --dbp-override-image-nextcloud: url(<%= getUrl('') %>images/nextcloud.svg);
+
+    --dbp-override-angle-double-left: url(<%= getUrl('') %>icons/arrow-left-09.svg);
+    --dbp-override-angle-double-right: url(<%= getUrl('') %>icons/arrow-right-09.svg);
+
+    --dbp-override-arrow-down: url(<%= getUrl('') %>icons/arrow-down-7.svg);
+    --dbp-override-arrow-up: url(<%= getUrl('') %>icons/arrow-up-7.svg);
+
+    --dbp-override-chevron-down: url(<%= getUrl('') %>icons/arrow-down-12.svg);
+    --dbp-override-chevron-up: url(<%= getUrl('') %>icons/arrow-up-12.svg);
+    --dbp-override-chevron-left: url(<%= getUrl('') %>icons/arrow-left-12.svg);
+    --dbp-override-chevron-right: url(<%= getUrl('') %>icons/arrow-right-12.svg);
+
+    --dbp-override-bolt: url(<%= getUrl('') %>icons/flash-1.svg);
+    --dbp-override-clipboard: url(<%= getUrl('') %>icons/task-1.svg);
+    --dbp-override-close: url(<%= getUrl('') %>icons/close.svg);
+    --dbp-override-cloud: url(<%= getUrl('') %>icons/cloud.svg);
+    --dbp-override-cloudnetwork: url(<%= getUrl('') %>icons/hierarchy-3.svg);
+    /* --dbp-override-contrast: url(<%= getUrl('') %>icons/contrast.svg); we want to use dbp style */
+    --dbp-override-cross-circle: url(<%= getUrl('') %>icons/remove-circle-1.svg);
+    --dbp-override-download: url(<%= getUrl('') %>icons/download-2.svg);
+    --dbp-override-empty-file: url(<%= getUrl('') %>icons/file-new-1.svg);
+    --dbp-override-envelope: url(<%= getUrl('') %>icons/email.svg);
+    --dbp-override-folder: url(<%= getUrl('') %>icons/folder-2.svg);
+    --dbp-override-happy: url(<%= getUrl('') %>icons/smiley-smile-1.svg);
+    --dbp-override-home: url(<%= getUrl('') %>icons/tug-home.svg);
+    /* --dbp-override-information: url(<%= getUrl('') %>icons/arrow-up-12.svg); we want to use dbp style */
+    /* --dbp-override-information-circle: url(<%= getUrl('') %>icons/arrow-up-12.svg); we want to use dbp style */
+    --dbp-override-laptop: url(<%= getUrl('') %>icons/computer-notebook-1.svg);
+    /* --dbp-override-menu-dots: url(<%= getUrl('') %>icons/arrow-up-12.svg); we want to use dbp style */
+    /* --dbp-override-nextcloud: url(<%= getUrl('') %>icons/arrow-up-12.svg); we want to use dbp style */
+    --dbp-override-night: url(<%= getUrl('') %>icons/moon-waning-crescent.svg);
+    --dbp-override-reload: url(<%= getUrl('') %>icons/synchronize-3.svg);
+    --dbp-override-search: url(<%= getUrl('') %>icons/search.svg);
+    --dbp-override-source_icons_align-justify: url(<%= getUrl('') %>icons/navigation-drawer-1.svg);
+    --dbp-override-source_icons_eye-empty: url(<%= getUrl('') %>icons/view-2.svg);
+    --dbp-override-source_icons_eye-off: url(<%= getUrl('') %>icons/hide.svg);
+    --dbp-override-sun: url(<%= getUrl('') %>icons/sunny.svg);
+    --dbp-override-trash: url(<%= getUrl('') %>icons/bin-1.svg);
+    --dbp-override-warning-high: url(<%= getUrl('') %>icons/report-problem-triangle.svg);
+    --dbp-override-world: url(<%= getUrl('') %>icons/globe-3.svg);
+
+}
