@@ -194,7 +194,7 @@ export function getSignatureCss() {
             font-weight: bold;
         }
 
-        #pdf-preview button.is-cancel {
+        #pdf-preview button.is-cancel, .box-header .is-cancel {
             background: transparent;
             border: none;
             font-size: 1.5rem;
@@ -203,6 +203,8 @@ export function getSignatureCss() {
             padding: 0px 2px;
             margin-top: -5px;
         }
+        
+        
 
         .is-right {
             float: right;
