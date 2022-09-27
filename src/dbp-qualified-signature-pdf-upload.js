@@ -472,7 +472,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                             (${humanFileSize(file.size)})
                         </span>
                         <button
-                            class="button close"
+                            class="button close is-icon"
                             ?disabled="${this.signingProcessEnabled}"
                             title="${i18n.t(
                                 'qualified-pdf-upload.remove-queued-file-button-title'
@@ -559,7 +559,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                             (${humanFileSize(file.contentSize)})
                         </span>
                         <button
-                            class="button"
+                            class="button is-icon"
                             title="${i18n.t('qualified-pdf-upload.download-file-button-title')}"
                             @click="${() => {
                                 this.downloadFileClickHandler(file, 'file-block-' + id);
@@ -600,7 +600,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                         </span>
                         <div class="buttons">
                             <button
-                                class="button"
+                                class="button is-icon"
                                 title="${i18n.t(
                                     'qualified-pdf-upload.re-upload-file-button-title'
                                 )}"
@@ -610,7 +610,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                 <dbp-icon name="reload"></dbp-icon>
                             </button>
                             <button
-                                class="button"
+                                class="button is-icon"
                                 title="${i18n.t(
                                     'qualified-pdf-upload.remove-failed-file-button-title'
                                 )}"

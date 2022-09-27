@@ -383,7 +383,7 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
                     <div class="inner-grid">
                         <label><strong>${name}</strong></label>
                         <button
-                            class="button close"
+                            class="button close is-icon"
                             title="${i18n.t('annotation-view.remove-field')}"
                             @click="${() => {
                                 this.removeAnnotation(id);

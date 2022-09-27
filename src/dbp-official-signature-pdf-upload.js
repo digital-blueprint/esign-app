@@ -341,7 +341,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                             (${humanFileSize(file.size)})
                         </span>
                         <button
-                            class="button close"
+                            class="button close is-icon"
                             ?disabled="${this.signingProcessEnabled}"
                             title="${i18n.t('official-pdf-upload.remove-queued-file-button-title')}"
                             @click="${() => {
@@ -426,7 +426,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                             (${humanFileSize(file.contentSize)})
                         </span>
                         <button
-                            class="button"
+                            class="button is-icon"
                             title="${i18n.t('official-pdf-upload.download-file-button-title')}"
                             @click="${() => {
                                 this.downloadFileClickHandler(file, 'file-block-' + id);
@@ -467,7 +467,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                         </span>
                         <div class="buttons">
                             <button
-                                class="button"
+                                class="button is-icon"
                                 title="${i18n.t('official-pdf-upload.re-upload-file-button-title')}"
                                 @click="${() => {
                                     this.fileQueueingClickHandler(data.file, id);
@@ -475,7 +475,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                 <dbp-icon name="reload"></dbp-icon>
                             </button>
                             <button
-                                class="button"
+                                class="button is-icon"
                                 title="${i18n.t(
                                     'official-pdf-upload.remove-failed-file-button-title'
                                 )}"

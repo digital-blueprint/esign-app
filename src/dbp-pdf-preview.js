@@ -666,7 +666,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                             </button>
                             <div class="nav-buttons">
                                 <button
-                                    class="button"
+                                    class="button is-icon"
                                     title="${i18n.t('pdf-preview.first-page')}"
                                     @click="${async () => {
                                         await this.showPage(1);
@@ -676,7 +676,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                                     <dbp-icon name="angle-double-left"></dbp-icon>
                                 </button>
                                 <button
-                                    class="button"
+                                    class="button is-icon"
                                     title="${i18n.t('pdf-preview.previous-page')}"
                                     @click="${async () => {
                                         if (this.currentPage > 1)
@@ -698,7 +698,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                                     })}
                                 </div>
                                 <button
-                                    class="button"
+                                    class="button is-icon"
                                     title="${i18n.t('pdf-preview.next-page')}"
                                     @click="${async () => {
                                         if (this.currentPage < this.totalPages)
@@ -709,7 +709,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                                     <dbp-icon name="chevron-right"></dbp-icon>
                                 </button>
                                 <button
-                                    class="button"
+                                    class="button is-icon"
                                     title="${i18n.t('pdf-preview.last-page')}"
                                     @click="${async () => {
                                         await this.showPage(this.totalPages);

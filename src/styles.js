@@ -140,15 +140,19 @@ export function getSignatureCss() {
         }
 
         .file-block {
-            max-width: 320px;
+            width: 320px;
             margin-bottom: 10px;
         }
 
         .file-block .header {
-            display: grid;
+            display: flex;
             align-items: center;
-            grid-template-columns: auto 40px;
+            justify-content: space-between;
             grid-gap: 10px;
+        }
+        
+        .file-block .header button{
+            flex-shrink: 0;
         }
 
         .file-block.error .header {
@@ -301,7 +305,7 @@ export function getSignatureCss() {
             }
 
             .file-block {
-                max-width: inherit;
+                width: inherit;
             }
 
             #pdf-preview,
