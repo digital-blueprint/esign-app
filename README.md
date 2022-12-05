@@ -131,6 +131,6 @@ For frontend design customizations, such as logo, colors, font, favicon, and mor
 
 ## "dbp-signature" slots
 
-These are common slots for the app-shell. You can find the documentation of these slots in the [app-shell documentation](https://gitlab.tugraz.at/dbp/web-components/toolkit/-/tree/master/packages/app-shell).
-For the app specific slots take a look at the [esign activities documentation](https://gitlab.tugraz.at/dbp/esign/signature/-/tree/master/src).
+These are common slots for the app-shell. You can find the documentation of these slots in the [app-shell documentation](https://gitlab.tugraz.at/dbp/web-components/toolkit/-/tree/main/packages/app-shell).
+For the app specific slots take a look at the [esign activities documentation](https://gitlab.tugraz.at/dbp/esign/signature/-/tree/main/src).
 
