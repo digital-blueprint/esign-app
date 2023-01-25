@@ -6,7 +6,7 @@
     "license": "LGPL-2.1-or-later",
     "repository": {
         "type": "git",
-        "url": "https://gitlab.tugraz.at/dbp/esign/signature.git"
+        "url": "https://github.com/digital-blueprint/esign-app.git"
     },
     "private": true,
     "workspaces": [

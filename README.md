@@ -1,6 +1,6 @@
 # Digital Signing Application
 
-[GitLab Repository](https://gitlab.tugraz.at/dbp/esign/signature) |
+[GitHub Repository](https://github.com/digital-blueprint/esign-app) |
 [npmjs package](https://www.npmjs.com/package/@dbp-topics/signature) |
 [Unpkg CDN](https://unpkg.com/browse/@dbp-topics/signature/) |
 [Esign Bundle](https://gitlab.tugraz.at/dbp/esign/dbp-relay-esign-bundle) |
@@ -18,7 +18,7 @@ Esign - The digital signature service at the university.
 
 ```bash
 # get the source
-git clone git@gitlab.tugraz.at:dbp/esign/signature.git
+git clone git@github.com:digital-blueprint/esign-app.git
 cd signature
 git submodule update --init
 
@@ -56,7 +56,7 @@ Also make sure to add all of your resources you are using (like your API and Key
 `Content-Security-Policy` in your `signature-app/public/.htaccess`, so the browser allows access to those sites.
 
 You can also use this app directly from the [Unpkg CDN](https://unpkg.com/browse/@dbp-topics/signature/)
-for example like this: [dbp-signature/index.html](https://gitlab.tugraz.at/dbp/esign/signature/-/tree/master/examples/dbp-signature/index.html)
+for example like this: [dbp-signature/index.html](https://github.com/digital-blueprint/esign-app/-/tree/master/examples/dbp-signature/index.html)
 
 Note that you will need a Keycloak server along with a client id for the domain you are running this html on.
 
@@ -75,7 +75,7 @@ This app has the following activities:
 - `dbp-show-active-tickets`
 - `dbp-show-reference-ticket`
 
-You can find the documentation of these activities in the [esign activities documentation](https://gitlab.tugraz.at/dbp/esign/signature/-/tree/master/src).
+You can find the documentation of these activities in the [esign activities documentation](https://github.com/digital-blueprint/esign-app/-/tree/master/src).
 
 ## Adapt app
 
@@ -106,8 +106,8 @@ You can add multiple attributes to the `<dbp-signature>` tag.
 | `nextcloud-file-url` | String | [file-handling](https://gitlab.tugraz.at/dbp/web-components/toolkit/-/tree/master/packages/file-handling#attributes) |
 | `nextcloud-auth-info` | String | [file-handling](https://gitlab.tugraz.at/dbp/web-components/toolkit/-/tree/master/packages/file-handling#attributes) |
 | `nextcloud-name` | String | [file-handling](https://gitlab.tugraz.at/dbp/web-components/toolkit/-/tree/master/packages/file-handling#attributes) |
-| `allow-annotating` | Boolean | [esign activities](https://gitlab.tugraz.at/dbp/esign/signature/-/tree/master/src) |
-| `file-handling-enabled-targets` | String | [esign activities](https://gitlab.tugraz.at/dbp/esign/signature/-/tree/master/src) |
+| `allow-annotating` | Boolean | [esign activities](https://github.com/digital-blueprint/esign-app/-/tree/master/src) |
+| `file-handling-enabled-targets` | String | [esign activities](https://github.com/digital-blueprint/esign-app/-/tree/master/src) |
 
 #### Mandatory attributes
 
@@ -132,5 +132,5 @@ For frontend design customizations, such as logo, colors, font, favicon, and mor
 ## "dbp-signature" slots
 
 These are common slots for the app-shell. You can find the documentation of these slots in the [app-shell documentation](https://gitlab.tugraz.at/dbp/web-components/toolkit/-/tree/main/packages/app-shell).
-For the app specific slots take a look at the [esign activities documentation](https://gitlab.tugraz.at/dbp/esign/signature/-/tree/main/src).
+For the app specific slots take a look at the [esign activities documentation](https://github.com/digital-blueprint/esign-app/tree/main/src).
 

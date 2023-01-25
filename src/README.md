@@ -1,10 +1,10 @@
 # Digital Signing  activities
 
-Here you can find the individual activities of the `esign` app. If you want to use the whole app look at [esign](https://gitlab.tugraz.at/dbp/esign/signature).
+Here you can find the individual activities of the `esign` app. If you want to use the whole app look at [esign](https://github.com/digital-blueprint/esign-app).
 
 ## Usage of an activity
 
-You can use every activity alone. Take a look at our examples [here](https://gitlab.tugraz.at/dbp/esign/signature/-/tree/main/examples).
+You can use every activity alone. Take a look at our examples [here](https://github.com/digital-blueprint/esign-app/tree/main/examples).
 
 ## Activities
 
@@ -18,7 +18,7 @@ These attributes are available for all activities listed here:
 ### dbp-qualified-signature-pdf-upload
 
 You can use this activity to qualifiedly sign PDF documents like this:
-[dbp-qualified-signature-pdf-upload/index.html](https://gitlab.tugraz.at/dbp/esign/signature/-/tree/main/examples/dbp-qualified-signature-pdf-upload/index.html)
+[dbp-qualified-signature-pdf-upload/index.html](https://github.com/digital-blueprint/esign-app/tree/main/examples/dbp-qualified-signature-pdf-upload/index.html)
 
 Note that you will need a Keycloak server along with a client id for the domain you are running this html on.
 
@@ -51,7 +51,7 @@ Note that you will need a Keycloak server along with a client id for the domain 
 ### dbp-official-signature-pdf-upload
 
 You can use this activity to officially sign PDF documents like this:
-[dbp-official-signature-pdf-upload/index.html](https://gitlab.tugraz.at/dbp/esign/signature/-/tree/main/examples/dbp-official-signature-pdf-upload/index.html)
+[dbp-official-signature-pdf-upload/index.html](https://github.com/digital-blueprint/esign-app/tree/main/examples/dbp-official-signature-pdf-upload/index.html)
 
 Note that you will need a Keycloak server along with a client id for the domain you are running this html on.
 
@@ -72,7 +72,7 @@ Note that you will need a Keycloak server along with a client id for the domain 
 ### dbp-signature-verification
 
 This activity shows an information page where to verify signed documents, you can use it like this:
-[dbp-signature-verification/index.html](https://gitlab.tugraz.at/dbp/esign/signature/-/tree/main/examples/dbp-signature-verification/index.html)
+[dbp-signature-verification/index.html](https://github.com/digital-blueprint/esign-app/tree/main/examples/dbp-signature-verification/index.html)
 
 #### Attributes
 
