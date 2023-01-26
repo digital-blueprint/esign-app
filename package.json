@@ -1,5 +1,5 @@
 {
-    "name": "@dbp-topics/signature",
+    "name": "@digital-blueprint/esign-app",
     "internalName": "dbp-signature",
     "version": "2.1.4",
     "main": "src/dbp-signature.js",

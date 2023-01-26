@@ -1,8 +1,8 @@
 # Digital Signing Application
 
 [GitHub Repository](https://github.com/digital-blueprint/esign-app) |
-[npmjs package](https://www.npmjs.com/package/@dbp-topics/signature) |
-[Unpkg CDN](https://unpkg.com/browse/@dbp-topics/signature/) |
+[npmjs package](https://www.npmjs.com/package/@digital-blueprint/esign-app) |
+[Unpkg CDN](https://unpkg.com/browse/@digital-blueprint/esign-app/) |
 [Esign Bundle](https://gitlab.tugraz.at/dbp/esign/dbp-relay-esign-bundle) |
 [Project documentation](https://dbp-demo.tugraz.at/site/software/esign.html)
 
@@ -55,7 +55,7 @@ Make sure you are allowing `.htaccess` files in your Apache configuration.
 Also make sure to add all of your resources you are using (like your API and Keycloak servers) to the
 `Content-Security-Policy` in your `signature-app/public/.htaccess`, so the browser allows access to those sites.
 
-You can also use this app directly from the [Unpkg CDN](https://unpkg.com/browse/@dbp-topics/signature/)
+You can also use this app directly from the [Unpkg CDN](https://unpkg.com/browse/@digital-blueprint/esign-app/)
 for example like this: [dbp-signature/index.html](https://github.com/digital-blueprint/esign-app/-/tree/master/examples/dbp-signature/index.html)
 
 Note that you will need a Keycloak server along with a client id for the domain you are running this html on.
