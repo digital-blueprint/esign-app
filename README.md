@@ -6,6 +6,8 @@
 [Esign Bundle](https://gitlab.tugraz.at/dbp/esign/dbp-relay-esign-bundle) |
 [Project documentation](https://dbp-demo.tugraz.at/site/software/esign.html)
 
+[![Build and Test](https://github.com/digital-blueprint/esign-app/actions/workflows/build-test-publish.yml/badge.svg)](https://github.com/digital-blueprint/esign-app/actions/workflows/build-test-publish.yml)
+
 Esign - The digital signature service at the university.
 
 ## Prerequisites
