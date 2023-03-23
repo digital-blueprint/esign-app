@@ -6,14 +6,14 @@
     <meta name="theme-color" content="white"/>
 
     <!-- Meta Data for Search Engines -->
-    <meta title="esign - Der elekronische Signaturservice an der Universität | TU Graz">
-    <meta name="description" content="Signieren sie ganz einfach digital ihre Dokumente. Der elekronische Signaturservice an der Technischen Universität Graz." />
+    <meta title="esign - Der elekronische Signaturservice an der Universität | <%= shortName %>">
+    <meta name="description" content="Signieren sie ganz einfach digital ihre Dokumente. Der elekronische Signaturservice an der Universität." />
 
     <!-- Meta Data for open graph(facebook & co) -->
     <meta property="og:locale" content="de_DE" />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="esign - Der elekronische Signaturservice an der Universität | TU Graz" />
-    <meta property="og:description" content="Signieren sie ganz einfach digital ihre Dokumente. Der elekronische Signaturservice an der Technischen Universität Graz." />
+    <meta property="og:title" content="esign - Der elekronische Signaturservice an der Universität | <%= shortName %>" />
+    <meta property="og:description" content="Signieren sie ganz einfach digital ihre Dokumente. Der elekronische Signaturservice an der Universität." />
     <meta property="og:url" content="https://esign.tugraz.at/" />
     <meta property="og:site_name" content="esign" />
 
@@ -30,7 +30,7 @@
 
     <!-- Loading spinner -->
     <script type="module">
-        import {Spinner} from '<%= getPrivateUrl('tug_spinner.js') %>';
+        import {Spinner} from '<%= getPrivateUrl('org_spinner.js') %>';
         customElements.define('tug-spinner', Spinner);
     </script>
 
@@ -42,14 +42,15 @@
 
     <!-- Font related CSS -->
     <style>
-        @import "<%= getPrivateUrl('fonts/source-sans-pro/300.css') %>";
-        @import "<%= getPrivateUrl('fonts/source-sans-pro/400.css') %>";
-        @import "<%= getPrivateUrl('fonts/source-sans-pro/600.css') %>";
+        @import "<%= getPrivateUrl('fonts/nunito-sans/300.css') %>";
+        @import "<%= getPrivateUrl('fonts/nunito-sans/300-italic.css') %>";
+        @import "<%= getPrivateUrl('fonts/nunito-sans/600.css') %>";
+        @import "<%= getPrivateUrl('fonts/nunito-sans/600-italic.css') %>";
 
         body {
-            font-family: 'Source Sans Pro', 'Calibri', 'Arial', 'sans-serif';
-            font-weight: 300;
-            font-size: 16px;
+            font-family: 'Nunito Sans', 'Calibri', 'Arial', 'sans-serif';
+            line-height: 1.4em;
+            font-weight: 400;
             margin: 0;
         }
 
@@ -61,30 +62,51 @@
             align-items: center;
         }
 
-        /* TU-Graz style override */
-        .light-theme {
+        .light-theme{
             --dbp-override-background: white;
-            --dbp-override-content: black;
+            --dbp-override-content: #222120;
 
-            --dbp-override-primary: #245b78;
-            --dbp-override-secondary: black;
+            --dbp-override-primary: #3775c1;
+            --dbp-override-on-primary-surface: white;
+            --dbp-override-secondary: #222120;
             --dbp-override-secondary-surface: white;
-            --dbp-override-on-secondary-surface: black;
-            --dbp-override-secondary-surface-border-color: black;
+            --dbp-override-on-secondary-surface: #222120;
+            --dbp-override-secondary-surface-border-color: #222120;
 
-            --dbp-override-muted: #5c5856;
-            --dbp-override-accent: #e4154b;
-            --dbp-override-info: #245b78;
-            --dbp-override-success: #138800;
-            --dbp-override-warning: #af6405;
-            --dbp-override-warning-surface: #ffad4d;
-            --dbp-override-warning-surface-border-color: #ffad4d;
-            --dbp-override-on-warning-surface: black;
-            --dbp-override-danger: #e4154b;
+            --dbp-override-muted: #767676;
+            --dbp-override-accent: #9e1e4d;
+            --dbp-override-info: #38808a;
+            --dbp-override-success: #338555;
+            --dbp-override-success-surface: #5ec189;
+            --dbp-override-on-success-surface: #222120;
+            --dbp-override-warning: #bf8808;
+            --dbp-override-warning-surface: #f9cc66;
+            --dbp-override-on-warning-surface: #222120;
+            --dbp-override-danger: #cc3232;
 
-            --dbp-override-border: 1px solid black;
+            --dbp-override-border: 1px solid #222120;
+        }
 
-            --dbp-override-image-nextcloud: url(<%= getUrl('') %>images/nextcloud.svg);
+        .dark-theme{
+            --dbp-override-background: #222120;
+            --dbp-override-content: white;
+
+            --dbp-override-primary: #398BDA;
+            --dbp-override-on-primary-surface: white;
+
+            --dbp-override-secondary: white;
+            --dbp-override-secondary-surface: #222120;
+            --dbp-override-on-secondary-surface: white;
+            --dbp-override-secondary-surface-border-color: white;
+
+            --dbp-override-muted: #8D8B8B;
+            --dbp-override-accent: #bc3a62;
+            --dbp-override-info: #3793A5;
+            --dbp-override-success: #5ec189;
+            --dbp-override-warning: #f9cc66;
+            --dbp-override-danger: #EB534E;
+
+            --dbp-override-border: 1px solid white;
         }
 
     </style>
@@ -116,103 +138,39 @@
     build-url='<%= buildInfo.url %>'
     build-time='<%= buildInfo.time %>'
     env='<%= buildInfo.env %>'
-    themes='[{"class": "light-theme", "icon": "sun", "name": "Light Mode"}]'
-><tug-spinner id='spinner'></tug-spinner>
+    themes='[{"class": "light-theme", "icon": "sun", "name": "Light Mode"},
+                {"class": "dark-theme", "icon": "night", "name": "Dark Mode"}]'
+><org-spinner id='spinner'></org-spinner>
 </<%= name %>>
 
 <template id="global-override">
     <template id="<%= name %>">
         <div slot="name">
-            TU Graz<br />
-            <dbp-translated subscribe="lang">
-                <div slot="de">
-                    Technische Universität Graz
-                </div>
-                <div slot="en">
-                    Graz University of Technology
-                </div>
-            </dbp-translated>
+            dbp<br />
+            digital blueprint
         </div>
         <div slot="logo">
             <style>
-                #main-logo {
-                    padding: 0 50px 0 0;
-                }
-            </style>
-            <a href="https://www.tugraz.at" title="TU Graz Home" target="_blank" rel="noopener">
-                <tug-logo id="main-logo" subscribe="lang"></tug-logo>
-            </a>
-        </div>
-        <div slot="footer-links">
-            <style>
-                .footer-links {
-                    margin-top: 0.5em;
-                }
 
-                .footer-links a {
-                    border-bottom: var(--dbp-border);
-                    border-color: var(--dbp-content);
-                    padding: 0;
-                    margin-left: 1em;
-                    transition: background-color 0.15s ease 0s, color 0.15s ease 0s;
-                    color: var(--dbp-content);
-                    cursor: pointer;
-                    text-decoration: none;
-                }
+            .logo-dark, .light-theme .logo-dark, .dark-theme .logo-light{
+                display: none;
+            }
+
+            .logo-light, .light-theme .logo-light, .dark-theme .logo-dark{
+                display: block;
+            }
+
+            .wrapper{
+                float: right;
+                padding: 0 50px 0 0;
+            }
+
 
             </style>
-            <dbp-translated subscribe="lang">
-                <div slot="de" class="footer-links">
-                    <a target="_blank" rel="noopener" href="https://www.tugraz.at/ueber-diese-seite/datenschutzerklaerung/">Datenschutz</a>
-                    <a target="_blank" rel="noopener" href="https://www.tugraz.at/ueber-diese-seite/impressum/">Impressum</a>
-                    <a rel="noopener" href="mailto:it-support@tugraz.at">Kontakt</a>
-                </div>
-                <div slot="en" class="footer-links">
-                    <a target="_blank" rel="noopener" href="https://www.tugraz.at/en/about-this-page/privacy-policy/">Privacy Policy</a>
-                    <a target="_blank" rel="noopener" href="https://www.tugraz.at/en/about-this-page/legal-notice/">Legal Notice</a>
-                    <a rel="noopener" href="mailto:it-support@tugraz.at">Contact</a>
-                </div>
-            </dbp-translated>
-        </div>
-    </template>
-    <template id="dbp-signature-verification">
-        <div slot="additional-information">
-            <style>
-                .int-link-internal{
-                    border-bottom: var(--dbp-border);
-                    border-color: var(--dbp-content);
-                }
-
-                .int-link-internal:after{
-                    content: "\00a0\00a0\00a0";
-                    background-color: var(--dbp-content);
-                    -webkit-mask-image: url('data:image/svg+xml;charset=utf-8,%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22utf-8%22%3F%3E%0A%3Csvg%20version%3D%221.1%22%20id%3D%22Ebene_1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%20x%3D%220px%22%20y%3D%220px%22%0A%09%20viewBox%3D%220%200%2022.7%2062.4%22%20style%3D%22enable-background%3Anew%200%200%2022.7%2062.4%3B%22%20xml%3Aspace%3D%22preserve%22%3E%0A%3Cg%20transform%3D%22translate%28-382.21%20-336.98%29%22%3E%0A%09%3Cg%3E%0A%09%09%3Cpath%20d%3D%22M386.9%2C380.5c-0.2%2C0-0.4-0.1-0.6-0.3c-0.3-0.3-0.3-0.8%2C0.1-1.1l12.5-10.9l-12.5-10.9c-0.3-0.3-0.4-0.8-0.1-1.1%0A%09%09%09c0.3-0.3%2C0.8-0.4%2C1.1-0.1l13.1%2C11.5c0.2%2C0.2%2C0.3%2C0.4%2C0.3%2C0.6s-0.1%2C0.5-0.3%2C0.6l-13.1%2C11.5C387.3%2C380.4%2C387.1%2C380.5%2C386.9%2C380.5z%22%0A%09%09%09%2F%3E%0A%09%3C%2Fg%3E%0A%3C%2Fg%3E%0A%3C%2Fsvg%3E%0A');
-                    mask-image: url('data:image/svg+xml;charset=utf-8,%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22utf-8%22%3F%3E%0A%3Csvg%20version%3D%221.1%22%20id%3D%22Ebene_1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%20x%3D%220px%22%20y%3D%220px%22%0A%09%20viewBox%3D%220%200%2022.7%2062.4%22%20style%3D%22enable-background%3Anew%200%200%2022.7%2062.4%3B%22%20xml%3Aspace%3D%22preserve%22%3E%0A%3Cg%20transform%3D%22translate%28-382.21%20-336.98%29%22%3E%0A%09%3Cg%3E%0A%09%09%3Cpath%20d%3D%22M386.9%2C380.5c-0.2%2C0-0.4-0.1-0.6-0.3c-0.3-0.3-0.3-0.8%2C0.1-1.1l12.5-10.9l-12.5-10.9c-0.3-0.3-0.4-0.8-0.1-1.1%0A%09%09%09c0.3-0.3%2C0.8-0.4%2C1.1-0.1l13.1%2C11.5c0.2%2C0.2%2C0.3%2C0.4%2C0.3%2C0.6s-0.1%2C0.5-0.3%2C0.6l-13.1%2C11.5C387.3%2C380.4%2C387.1%2C380.5%2C386.9%2C380.5z%22%0A%09%09%09%2F%3E%0A%09%3C%2Fg%3E%0A%3C%2Fg%3E%0A%3C%2Fsvg%3E%0A');
-                    -webkit-mask-repeat: no-repeat;
-                    mask-repeat: no-repeat;
-                    -webkit-mask-position: center -2px;
-                    mask-position: center center;
-                    margin: 0 0 0 4px;
-                    padding: 0 0 0.25% 0;
-                    -webkit-mask-size: 100%;
-                    mask-size: 120%;
-                }
-
-            </style>
-            <dbp-translated subscribe="lang">
-                <div slot="de">
-                    <a target="_blank" rel="noopener" class="int-link-internal"
-                       href="https://security.tugraz.at/zertifikate/pruefung/adobe.shtml">
-                        Weitere Information zur Verifikation mit Adobe Reader
-                    </a>
-                </div>
-                <div slot="en">
-                    <a target="_blank" rel="noopener" class="int-link-internal"
-                       href="https://security.tugraz.at/zertifikate/pruefung/adobe.shtml">
-                        More information about verification with Adobe Reader
-                    </a>
-                </div>
-            </dbp-translated>
+            <div class="wrapper">
+                <img class="logo-light" style="height: 80px" src="<%= getPrivateUrl('dbp_logo_small_on_white.svg') %>" alt="Digital Blueprint - A University toolbox logo">
+                <img class="logo-dark" style="height: 80px" src="<%= getPrivateUrl('dbp_logo_small_on_black.svg') %>" alt="Digital Blueprint - A University toolbox logo">
+            </div>
         </div>
     </template>
 </template>

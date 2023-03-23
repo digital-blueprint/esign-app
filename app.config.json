@@ -1,0 +1,18 @@
+{
+  "local": {
+    "basePath": "/dist/",
+    "entryPointURL": "http://127.0.0.1:8000",
+    "keyCloakBaseURL": "",
+    "keyCloakRealm": "",
+    "keyCloakClientId": "",
+    "matomoUrl": "",
+    "matomoSiteId": 0,
+    "nextcloudBaseURL": "",
+    "nextcloudName": "dbp cloud",
+    "pdfAsQualifiedlySigningServer": "",
+    "hiddenActivities": [""],
+    "enableAnnotations": true,
+    "shortName": "dbp",
+    "appDomain": ""
+  }
+}

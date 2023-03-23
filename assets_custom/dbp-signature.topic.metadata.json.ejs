@@ -1,0 +1,26 @@
+{
+  "name": {
+    "de": "Elektronisches Signaturservice",
+    "en": "Electronic Signatures"
+  },
+  "short_name": {
+    "de": "Elektronisches Signaturservice",
+    "en": "Electronic Signatures"
+  },
+  "description": {
+    "de": "Mit dieser Applikation können Sie PDF-Dokumente signieren",
+    "en": "With this application you can sign PDF documents"
+  },
+  "routing_name": "signature",
+  "activities": [
+    {"path": "dbp-qualified-signature-pdf-upload.metadata.json",
+     "visible": <%= isVisible("dbp-qualified-signature-pdf-upload") %>},
+     {"path": "dbp-signature-verification.metadata.json",
+     "visible": <%= isVisible("dbp-signature-verification") %>},
+     {"path": "dbp-official-signature-pdf-upload.metadata.json",
+     "visible": <%= isVisible("dbp-official-signature-pdf-upload") %>},
+    {"path": "dbp-signature-verification-full.metadata.json",
+     "visible": <%= isVisible("dbp-signature-verification-full") %>}
+  ],
+  "attributes": []
+}
