@@ -178,7 +178,6 @@ export const getAnnotationFactoryFromFile = async (file) => {
  * @param annotationType
  * @param annotationTypeNameDE
  * @param annotationTypeNameEN
- * @param organizationNumber
  * @param value
  * @returns {AnnotationFactory} prepared to annotate
  */
@@ -190,13 +189,11 @@ export const addKeyValuePdfAnnotationsToAnnotationFactory = (
     annotationType,
     annotationTypeNameDE,
     annotationTypeNameEN,
-    organizationNumber,
     value
 ) => {
     annotationType = annotationType.trim();
     annotationTypeNameDE = annotationTypeNameDE.trim();
     annotationTypeNameEN = annotationTypeNameEN.trim();
-    organizationNumber = organizationNumber.trim();
     value = value.trim();
 
     // don't annotate if key or value are empty
@@ -210,10 +207,9 @@ export const addKeyValuePdfAnnotationsToAnnotationFactory = (
     annotationFactory = addPdfAnnotationToAnnotationFactory(annotationFactory, author, content);
 
     // add machine readable annotation
-    const organizationNumberContent = organizationNumber !== '' ? '_' + organizationNumber : '';
     author =
         'Maschinell aufgebracht, bitte nicht entfernen / Applied automatically, please do not remove';
-    content = 'dbp_annotation_' + annotationType + organizationNumberContent + '=' + value;
+    content = 'dbp_annotation_' + annotationType + '=' + value;
     annotationFactory = addPdfAnnotationToAnnotationFactory(annotationFactory, author, content);
 
     return annotationFactory;
@@ -262,14 +258,14 @@ export const getAnnotationTypes = (key = null) => {
                 de: 'Geschäftszahl',
                 en: 'Businessnumber',
             },
-            hasOrganization: true,
+            placeholderTextId: 'annotation-view.businessnumber-placeholder',
         },
         '85a4eb4c': {
             name: {
                 de: 'Verwendungszweck',
                 en: 'Intended use',
             },
-            hasOrganization: false,
+            placeholderTextId: 'annotation-view.intended-use-placeholder',
         },
     };
 

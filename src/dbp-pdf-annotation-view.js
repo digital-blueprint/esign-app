@@ -90,24 +90,6 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
         for (let annotation of this.annotationRows) {
             const annotationTypeData = utils.getAnnotationTypes(annotation['annotationType']);
 
-            if (annotationTypeData['hasOrganization']) {
-                let organization = annotation.organizationValue;
-
-                if (
-                    typeof organization === 'undefined' ||
-                    organization === null ||
-                    organization === ''
-                ) {
-                    send({
-                        summary: i18n.t('annotation-view.empty-organization-title'),
-                        body: i18n.t('annotation-view.empty-organization-message'),
-                        type: 'danger',
-                        timeout: 5,
-                    });
-                    return false;
-                }
-            }
-
             if (annotation['value'] === null || annotation['value'] === '') {
                 send({
                     summary: i18n.t('annotation-view.empty-annotation-title', {
@@ -360,15 +342,6 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
         const ids = Object.keys(annotations);
         let results = [];
 
-        let buildUrl = (select, url) => {
-            url += '?' + new URLSearchParams({lang: select.lang, person: encodeURIComponent(select.auth['person-id'])}).toString();
-            return url;
-        };
-
-        let formatResource = (select, resource) => {
-            return `${resource['name']}`;
-        };
-
         ids.forEach((id) => {
             const data = this.annotationRows[id] || [];
             const annotationTypeData = utils.getAnnotationTypes(data.annotationType);
@@ -377,7 +350,6 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
             results.push(html`
                 <div
                     class="${classMap({
-                        'with-organization': annotationTypeData.hasOrganization,
                         'annotation-block': true,
                     })}">
                     <div class="inner-grid">
@@ -392,30 +364,12 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
                         </button>
                     </div>
 
-                    <dbp-resource-select
-                        subscribe="lang:lang,entry-point-url:entry-point-url,auth:auth"
-                        class="${classMap({hidden: !annotationTypeData.hasOrganization})}"
-                        resource-path="base/organizations"
-                        .buildUrl="${buildUrl}"
-                        .formatResource="${formatResource}"
-                        value="${data.organizationValue}"
-                        @change=${(e) => {
-                            this.updateAnnotation(id, 'organizationValue', e.target.value);
-                            this.updateAnnotation(
-                                id,
-                                'organizationNumber',
-                                e.target.valueObject.identifier
-                            );
-                        }}></dbp-resource-select>
-
                     <input
                         type="text"
                         .value="${data.value}"
                         class="input"
                         pattern="[A-Za-z0-9ÄäÖöÜüß*\\/! &@()=+_-]*"
-                        placeholder="${annotationTypeData.hasOrganization
-                            ? i18n.t('annotation-view.businessnumber-placeholder')
-                            : i18n.t('annotation-view.intended-use-placeholder')}"
+                        placeholder="${i18n.t(annotationTypeData.placeholderTextId)}"
                         @change=${(e) => {
                             this.updateAnnotation(id, 'value', e.target.value);
                         }} />

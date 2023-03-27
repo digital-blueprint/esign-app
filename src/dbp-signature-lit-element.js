@@ -156,7 +156,6 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             console.log('annotation', annotation);
 
             const annotationType = (annotation.annotationType || '').trim();
-            const organizationNumber = (annotation.organizationNumber || '').trim();
             const value = (annotation.value || '').trim();
 
             if (annotationType === '' || value === '') {
@@ -173,7 +172,6 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                 annotationType,
                 annotationTypeData.name.de,
                 annotationTypeData.name.en,
-                organizationNumber,
                 value
             );
         });
@@ -302,15 +300,12 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             let userText = [];
             for (let annotation of annotations) {
                 const annotationTypeData = utils.getAnnotationTypes(annotation['annotationType']);
-                const organizationNumberText = annotation['organizationNumber']
-                    ? ` (${annotation['organizationNumber']})`
-                    : '';
 
                 userText.push({
                     description: `${annotationTypeData.name.de || ''} / ${
                         annotationTypeData.name.en || ''
                     }`,
-                    value: annotation['value'] + organizationNumberText,
+                    value: annotation['value'],
                 });
             }
             formData.append('user_text', JSON.stringify(userText));
