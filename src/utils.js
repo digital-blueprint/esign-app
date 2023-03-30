@@ -201,12 +201,12 @@ export const addKeyValuePdfAnnotationsToAnnotationFactory = (
         return annotationFactory;
     }
 
-    // add human readable annotation
+    // add human-readable annotation
     let author = personName + ' via  "' + activityNameDE + ' / ' + activityNameEN + '"';
     let content = annotationTypeNameDE + ': ' + value + '\n' + annotationTypeNameEN + ': ' + value;
     annotationFactory = addPdfAnnotationToAnnotationFactory(annotationFactory, author, content);
 
-    // add machine readable annotation
+    // add machine-readable annotation
     author =
         'Maschinell aufgebracht, bitte nicht entfernen / Applied automatically, please do not remove';
     content = 'dbp_annotation_' + annotationType + '=' + value;
