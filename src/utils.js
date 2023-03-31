@@ -256,9 +256,9 @@ export const getAnnotationTypes = (key = null) => {
         bbe3a371: {
             name: {
                 de: 'Geschäftszahl',
-                en: 'Businessnumber',
+                en: 'Reference number',
             },
-            placeholderTextId: 'annotation-view.businessnumber-placeholder',
+            placeholderTextId: 'annotation-view.reference-number-placeholder',
         },
         '85a4eb4c': {
             name: {

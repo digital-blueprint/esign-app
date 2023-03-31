@@ -1,6 +1,6 @@
 {
     "annotation-view": {
-        "businessnumber-placeholder": "Fügen Sie hier die Geschäftszahl ein (z.B. 247/1/2020-S)",
+        "reference-number-placeholder": "Fügen Sie hier die Geschäftszahl ein (z.B. 247/1/2020-S)",
         "delete-all-button-text": "Alle entfernen",
         "delete-all-button-title": "Alle entfernen",
         "empty-annotation-message": "Bitte tragen Sie einen Wert für die gewählte Anmerkung ein.",

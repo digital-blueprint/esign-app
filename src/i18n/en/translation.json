@@ -1,6 +1,6 @@
 {
     "annotation-view": {
-        "businessnumber-placeholder": "Insert business number here (e.g. 247/1/2020-S)",
+        "reference-number-placeholder": "Insert reference number here (e.g. 247/1/2020-S)",
         "delete-all-button-text": "Clear all",
         "delete-all-button-title": "Clear all",
         "empty-annotation-message": "Please enter a value for the selected annotation.",
