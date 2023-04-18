@@ -67,14 +67,14 @@
         "universal-router": "^9.0.1"
     },
     "scripts": {
-        "format": "yarn run format:eslint && yarn run format:prettier",
+        "format": "npm run format:eslint && npm run format:prettier",
         "format:eslint": "eslint \"**/*.{js,ts}\" --fix",
         "format:prettier": "prettier \"**/*.{js,json,ts}\" --write",
         "build": "rollup --bundleConfigAsCjs -c",
         "build-custom": "rollup --bundleConfigAsCjs -c --environment APP_ENV:localCustom",
         "i18next": "i18next",
         "watch": "rollup --bundleConfigAsCjs -c --watch",
-        "watch-local": "yarn run watch",
+        "watch-local": "npm run watch",
         "watch-full": "rollup --bundleConfigAsCjs -c --watch --environment FORCE_FULL",
         "watch-custom": "rollup --bundleConfigAsCjs -c --watch --environment APP_ENV:localCustom",
         "watch-bs": "rollup --bundleConfigAsCjs -c --watch --environment APP_ENV:bs",
