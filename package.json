@@ -60,7 +60,7 @@
         "@webcomponents/scoped-custom-element-registry": "^0.0.9",
         "fabric": "^5.0.0",
         "file-saver": "^2.0.2",
-        "i18next": "^22.0.0",
+        "i18next": "^23.0.0",
         "jszip": "^3.5.0",
         "lit": "^2.0.0",
         "pdfjs-dist": "^2.12.313",
