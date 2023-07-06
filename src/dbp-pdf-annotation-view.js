@@ -102,7 +102,7 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
                 return false;
             }
 
-            const pattern = new RegExp('[A-Za-z0-9ÄäÖöÜüß*\\/?! &@()=+_-]*');
+            const pattern = new RegExp('[A-Za-z0-9ÄäÖöÜüß*\\/?! &@()=+_\\-\\:]*');
             let matchResult = annotation['value'].match(pattern);
 
             if (
@@ -368,7 +368,7 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
                         type="text"
                         .value="${data.value}"
                         class="input"
-                        pattern="[A-Za-z0-9ÄäÖöÜüß*\\/! &@()=+_-]*"
+                        pattern="[A-Za-z0-9ÄäÖöÜüß*\\/! &@()=+_\\-\\:]*"
                         placeholder="${i18n.t(annotationTypeData.placeholderTextId)}"
                         @change=${(e) => {
                             this.updateAnnotation(id, 'value', e.target.value);
