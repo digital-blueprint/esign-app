@@ -10,7 +10,7 @@ import {Button, Icon, MiniSpinner} from '@dbp-toolkit/common';
 import * as commonStyles from '@dbp-toolkit/common/styles';
 import {classMap} from 'lit/directives/class-map.js';
 import {FileSource} from '@dbp-toolkit/file-handling';
-import JSONLD from '@dbp-toolkit/common/jsonld';
+import {combineURLs} from '@dbp-toolkit/common';
 import {TextSwitch} from './textswitch.js';
 import {FileSink} from '@dbp-toolkit/file-handling';
 import {name as pkgName} from './../package.json';
@@ -269,17 +269,9 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                     this._i18n.changeLanguage(this.lang);
                     break;
                 case 'entryPointUrl':
-                    JSONLD.getInstance(this.entryPointUrl).then((jsonld) => {
-                        let apiUrlBase;
-                        try {
-                            apiUrlBase = jsonld.getApiUrlForEntityName(
-                                'EsignAdvancedlySignedDocument'
-                            );
-                        } catch (error) {
-                            apiUrlBase = jsonld.getApiUrlForEntityName('AdvancedlySignedDocument');
-                        }
-                        this.fileSourceUrl = apiUrlBase;
-                    });
+                    if (this.entryPointUrl) {
+                        this.fileSourceUrl = combineURLs(this.entryPointUrl, '/esign/advancedly-signed-documents');
+                    }
                     break;
             }
         });

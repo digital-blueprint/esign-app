@@ -5,11 +5,10 @@ import {ScopedElementsMixin} from '@open-wc/scoped-elements';
 import DBPSignatureLitElement from './dbp-signature-lit-element';
 import {PdfPreview} from './dbp-pdf-preview';
 import * as commonUtils from '@dbp-toolkit/common/utils';
-import {Icon, MiniSpinner, Button} from '@dbp-toolkit/common';
+import {Icon, MiniSpinner, Button, combineURLs} from '@dbp-toolkit/common';
 import * as commonStyles from '@dbp-toolkit/common/styles';
 import {classMap} from 'lit/directives/class-map.js';
 import {FileSource} from '@dbp-toolkit/file-handling';
-import JSONLD from '@dbp-toolkit/common/jsonld';
 import {name as pkgName} from './../package.json';
 import metadata from './dbp-signature-verification-full.metadata.json';
 import {Activity} from './activity.js';
@@ -221,19 +220,9 @@ class SignatureVerificationFull extends ScopedElementsMixin(DBPSignatureLitEleme
                     this._i18n.changeLanguage(this.lang);
                     break;
                 case 'entryPointUrl':
-                    JSONLD.getInstance(this.entryPointUrl).then((jsonld) => {
-                        let apiUrlBase;
-                        try {
-                            apiUrlBase = jsonld.getApiUrlForEntityName(
-                                'EsignElectronicSignatureVerificationReport'
-                            );
-                        } catch (error) {
-                            apiUrlBase = jsonld.getApiUrlForEntityName(
-                                'ElectronicSignatureVerificationReport'
-                            );
-                        }
-                        this.fileSourceUrl = apiUrlBase;
-                    });
+                    if (this.entryPointUrl) {
+                        this.fileSourceUrl = combineURLs(this.entryPointUrl, '/esign/electronic-signature-verification-reports');
+                    }
                     break;
             }
 

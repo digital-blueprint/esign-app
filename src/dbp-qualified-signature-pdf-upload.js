@@ -6,11 +6,10 @@ import DBPSignatureLitElement from './dbp-signature-lit-element';
 import {PdfPreview} from './dbp-pdf-preview';
 import * as commonUtils from '@dbp-toolkit/common/utils';
 import * as utils from './utils';
-import {Button, Icon, MiniSpinner} from '@dbp-toolkit/common';
+import {Button, Icon, MiniSpinner, combineURLs} from '@dbp-toolkit/common';
 import * as commonStyles from '@dbp-toolkit/common/styles';
 import {classMap} from 'lit/directives/class-map.js';
 import {FileSource} from '@dbp-toolkit/file-handling';
-import JSONLD from '@dbp-toolkit/common/jsonld';
 import {TextSwitch} from './textswitch.js';
 import {FileSink} from '@dbp-toolkit/file-handling';
 import {name as pkgName} from './../package.json';
@@ -284,62 +283,50 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         // get correct file name
         const fileName = this.currentFileName === '' ? 'mydoc.pdf' : this.currentFileName;
 
-        // fetch pdf from api gateway with sessionId
-        JSONLD.getInstance(this.entryPointUrl).then(
-            (jsonld) => {
-                let apiUrlBase;
-                try {
-                    apiUrlBase = jsonld.getApiUrlForEntityName('EsignQualifiedlySignedDocument');
-                } catch (error) {
-                    apiUrlBase = jsonld.getApiUrlForEntityName('QualifiedlySignedDocument');
-                }
+        let apiUrlBase = combineURLs(this.entryPointUrl, '/esign/qualifiedly-signed-documents');
 
-                const apiUrl =
-                    apiUrlBase +
-                    '/' +
-                    encodeURIComponent(sessionId) +
-                    '?fileName=' +
-                    encodeURIComponent(fileName);
+        const apiUrl =
+            apiUrlBase +
+            '/' +
+            encodeURIComponent(sessionId) +
+            '?fileName=' +
+            encodeURIComponent(fileName);
 
-                fetch(apiUrl, {
-                    headers: {
-                        'Content-Type': 'application/ld+json',
-                        Authorization: 'Bearer ' + that.auth.token,
-                    },
-                })
-                    .then((result) => {
-                        // hide iframe
-                        that.externalAuthInProgress = false;
-                        this._('#iframe').reset();
-                        this.endSigningProcessIfQueueEmpty();
-
-                        if (!result.ok) throw result;
-
-                        return result.json();
-                    })
-                    .then((document) => {
-                        // this doesn't seem to trigger an update() execution
-                        that.signedFiles.push(document);
-                        // this triggers the correct update() execution
-                        that.signedFilesCount++;
-
-                        this.sendSetPropertyEvent('analytics-event', {
-                            category: 'QualifiedlySigning',
-                            action: 'DocumentSigned',
-                            name: document.contentSize,
-                        });
-                    })
-                    .catch((error) => {
-                        let file = this.currentFile;
-                        // let's override the json to inject an error message
-                        file.json = {'hydra:description': 'Download failed!'};
-
-                        this.addToErrorFiles(file);
-                    });
+        fetch(apiUrl, {
+            headers: {
+                'Content-Type': 'application/ld+json',
+                Authorization: 'Bearer ' + that.auth.token,
             },
-            {},
-            that.lang
-        );
+        })
+        .then((result) => {
+            // hide iframe
+            that.externalAuthInProgress = false;
+            this._('#iframe').reset();
+            this.endSigningProcessIfQueueEmpty();
+
+            if (!result.ok) throw result;
+
+            return result.json();
+        })
+        .then((document) => {
+            // this doesn't seem to trigger an update() execution
+            that.signedFiles.push(document);
+            // this triggers the correct update() execution
+            that.signedFilesCount++;
+
+            this.sendSetPropertyEvent('analytics-event', {
+                category: 'QualifiedlySigning',
+                action: 'DocumentSigned',
+                name: document.contentSize,
+            });
+        })
+        .catch((error) => {
+            let file = this.currentFile;
+            // let's override the json to inject an error message
+            file.json = {'hydra:description': 'Download failed!'};
+
+            this.addToErrorFiles(file);
+        });
     }
 
     _onIFrameError(event) {
@@ -398,17 +385,9 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                     this._i18n.changeLanguage(this.lang);
                     break;
                 case 'entryPointUrl':
-                    JSONLD.getInstance(this.entryPointUrl).then((jsonld) => {
-                        let apiUrlBase;
-                        try {
-                            apiUrlBase = jsonld.getApiUrlForEntityName(
-                                'EsignQualifiedSigningRequest'
-                            );
-                        } catch (error) {
-                            apiUrlBase = jsonld.getApiUrlForEntityName('QualifiedSigningRequest');
-                        }
-                        this.fileSourceUrl = apiUrlBase;
-                    });
+                    if (this.entryPointUrl) {
+                        this.fileSourceUrl = combineURLs(this.entryPointUrl, '/esign/qualified-signing-requests');
+                    }
                     break;
             }
         });
