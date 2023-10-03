@@ -21,7 +21,7 @@ Esign - The digital signature service at the university.
 ```bash
 # get the source
 git clone git@github.com:digital-blueprint/esign-app.git
-cd signature
+cd sesign-app
 git submodule update --init
 
 # install dependencies
