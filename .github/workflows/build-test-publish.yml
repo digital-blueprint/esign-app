@@ -14,9 +14,9 @@ jobs:
         with:
           submodules: true
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version: 18
           cache: 'npm'
 
       - name: Restore playwright cache
@@ -55,9 +55,9 @@ jobs:
         with:
           submodules: true
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version: 18
           cache: 'npm'
 
       - name: Publish to NPM
