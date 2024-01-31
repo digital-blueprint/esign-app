@@ -13,8 +13,8 @@ Esign - The digital signature service at the university.
 ## Prerequisites
 
 - You need the [API server](https://gitlab.tugraz.at/dbp/relay/dbp-relay-server-template) running
-- You need the [DbpRelayEsignBundle](https://gitlab.tugraz.at/dbp/esign/dbp-relay-esign-bundle) to allow signing of PDF files
-- For more information please visit the [ESign project documentation](https://dbp-demo.tugraz.at/site/software/esign.html)
+- You need the [DbpRelayEsignBundle](https://github.com/digital-blueprint/relay-esign-bundle) to allow signing of PDF files
+- For more information please visit the [ESign project documentation](https://handbook.digital-blueprint.org/blueprints/esign/)
 
 ## Local development
 
