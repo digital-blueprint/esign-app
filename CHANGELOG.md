@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.2.1
+
+* Various dependency updates
+
 ## 2.2.0
 
 * Drop support for old esign bundle versions providing old API endpoints
