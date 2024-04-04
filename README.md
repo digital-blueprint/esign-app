@@ -27,7 +27,7 @@ git submodule update --init
 # install dependencies
 npm install
 
-# constantly build dist/bundle.js and run a local web-server on port 8001 
+# constantly build dist/bundle.js and run a local web-server on port 8001
 npm run watch
 
 # constantly build dist/bundle.js and run a local web-server on port 8001 using a custom assets directory assets_custom/
@@ -40,8 +40,8 @@ npm test
 Jump to <http://localhost:8001> and you should get a Single Sign On login page.
 
 To use the Nextcloud functionality you need a running Nextcloud server with the
-[webapppassword](https://gitlab.tugraz.at/DBP/Middleware/Nextcloud/webapppassword) Nextcloud app like this
-[Nextcloud Development Environment](https://gitlab.tugraz.at/DBP/Middleware/Nextcloud/webapppassword/-/tree/master/docker).
+[webapppassword](https://github.com/digital-blueprint/webapppassword) Nextcloud app like this
+[Nextcloud Development Environment](https://github.com/digital-blueprint/webapppassword/tree/main/docker).
 
 ## Using this app as pre-built package
 
@@ -90,29 +90,29 @@ You can add multiple attributes to the `<dbp-signature>` tag.
 
 | attribute name | value | Link to description |
 |----------------|-------| ------------|
-| `provider-root` | Boolean | [app-shell](https://gitlab.tugraz.at/dbp/web-components/toolkit/-/tree/master/packages/app-shell#attributes) |
-| `lang`         | String | [language-select](https://gitlab.tugraz.at/dbp/web-components/toolkit/-/tree/master/packages/language-select#attributes) | 
-| `entry-point-url` | String | [app-shell](https://gitlab.tugraz.at/dbp/web-components/toolkit/-/tree/master/packages/app-shell#attributes) |
-| `keycloak-config` | Object | [app-shell](https://gitlab.tugraz.at/dbp/web-components/toolkit/-/tree/master/packages/app-shell#attributes) |
-| `base-path` | String | [app-shell](https://gitlab.tugraz.at/dbp/web-components/toolkit/-/tree/master/packages/app-shell#attributes) |
-| `src` | String | [app-shell](https://gitlab.tugraz.at/dbp/web-components/toolkit/-/tree/master/packages/app-shell#attributes) |
-| `html-overrides` | String | [common](https://gitlab.tugraz.at/dbp/web-components/toolkit/-/tree/master/packages/common#overriding-slots-in-nested-web-components) |
-| `themes` | Array | [theme-switcher](https://gitlab.tugraz.at/dbp/web-components/toolkit/-/tree/master/packages/theme-switcher#themes-attribute) |
-| `darkModeThemeOverride` | String | [theme-switcher](https://gitlab.tugraz.at/dbp/web-components/toolkit/-/tree/master/packages/theme-switcher#themes-attribute) |
-| `gp-search-hash-string` | String | [greenlight activities](https://gitlab.tugraz.at/dbp/greenlight/greenlight/-/tree/main/src) |
-| `gp-search-self-test-string-array` | String | [greenlight activities](https://gitlab.tugraz.at/dbp/greenlight/greenlight/-/tree/main/src) |
-| `gp-self-test-valid` | Boolean | [greenlight activities](https://gitlab.tugraz.at/dbp/greenlight/greenlight/-/tree/main/src) |
-| `ticket-types` | Object | [greenlight activities](https://gitlab.tugraz.at/dbp/greenlight/greenlight/-/tree/main/src#shared-attributes) |
-| `show-preselected` | Boolean | [greenlight activities](https://gitlab.tugraz.at/dbp/greenlight/greenlight/-/tree/main/src) |
-| `preselected-option` | String | [greenlight activities](https://gitlab.tugraz.at/dbp/greenlight/greenlight/-/tree/main/src) |
-| `file-handling-enabled-targets` | String | [file-handling](https://gitlab.tugraz.at/dbp/web-components/toolkit/-/tree/master/packages/file-handling#attributes) |
-| `nextcloud-web-app-password-url` | String | [file-handling](https://gitlab.tugraz.at/dbp/web-components/toolkit/-/tree/master/packages/file-handling#attributes) |
-| `nextcloud-web-dav-url` | String | [file-handling](https://gitlab.tugraz.at/dbp/web-components/toolkit/-/tree/master/packages/file-handling#attributes) |
-| `nextcloud-file-url` | String | [file-handling](https://gitlab.tugraz.at/dbp/web-components/toolkit/-/tree/master/packages/file-handling#attributes) |
-| `nextcloud-auth-info` | String | [file-handling](https://gitlab.tugraz.at/dbp/web-components/toolkit/-/tree/master/packages/file-handling#attributes) |
-| `nextcloud-name` | String | [file-handling](https://gitlab.tugraz.at/dbp/web-components/toolkit/-/tree/master/packages/file-handling#attributes) |
-| `allow-annotating` | Boolean | [esign activities](https://github.com/digital-blueprint/esign-app/-/tree/master/src) |
-| `file-handling-enabled-targets` | String | [esign activities](https://github.com/digital-blueprint/esign-app/-/tree/master/src) |
+| `provider-root` | Boolean | [app-shell](https://github.com/digital-blueprint/toolkit/tree/main/packages/app-shell#attributes) |
+| `lang`         | String | [language-select](https://github.com/digital-blueprint/toolkit/tree/main/packages/language-select#attributes) |
+| `entry-point-url` | String | [app-shell](https://github.com/digital-blueprint/toolkit/tree/main/packages/app-shell#attributes) |
+| `keycloak-config` | Object | [app-shell](https://github.com/digital-blueprint/toolkit/tree/main/packages/app-shell#attributes) |
+| `base-path` | String | [app-shell](https://github.com/digital-blueprint/toolkit/tree/main/packages/app-shell#attributes) |
+| `src` | String | [app-shell](https://github.com/digital-blueprint/toolkit/tree/main/packages/app-shell#attributes) |
+| `html-overrides` | String | [common](https://github.com/digital-blueprint/toolkit/tree/main/packages/common#overriding-slots-in-nested-web-components) |
+| `themes` | Array | [theme-switcher](https://github.com/digital-blueprint/toolkit/tree/main/packages/theme-switcher#themes-attribute) |
+| `darkModeThemeOverride` | String | [theme-switcher](https://github.com/digital-blueprint/toolkit/tree/main/packages/theme-switcher#themes-attribute) |
+| `gp-search-hash-string` | String | [greenlight activities](https://github.com/digital-blueprint/greenlight-app/tree/main/src) |
+| `gp-search-self-test-string-array` | String | [greenlight activities](https://github.com/digital-blueprint/greenlight-app/tree/main/src) |
+| `gp-self-test-valid` | Boolean | [greenlight activities](https://github.com/digital-blueprint/greenlight-app/tree/main/src) |
+| `ticket-types` | Object | [greenlight activities](https://github.com/digital-blueprint/greenlight-app/tree/main/src#shared-attributes) |
+| `show-preselected` | Boolean | [greenlight activities](https://github.com/digital-blueprint/greenlight-app/tree/main/src) |
+| `preselected-option` | String | [greenlight activities](https://github.com/digital-blueprint/greenlight-app/tree/main/src) |
+| `file-handling-enabled-targets` | String | [file-handling](https://github.com/digital-blueprint/toolkit/tree/main/packages/file-handling#attributes) |
+| `nextcloud-web-app-password-url` | String | [file-handling](https://github.com/digital-blueprint/toolkit/tree/main/packages/file-handling#attributes) |
+| `nextcloud-web-dav-url` | String | [file-handling](https://github.com/digital-blueprint/toolkit/tree/main/packages/file-handling#attributes) |
+| `nextcloud-file-url` | String | [file-handling](https://github.com/digital-blueprint/toolkit/tree/main/packages/file-handling#attributes) |
+| `nextcloud-auth-info` | String | [file-handling](https://github.com/digital-blueprint/toolkit/tree/main/packages/file-handling#attributes) |
+| `nextcloud-name` | String | [file-handling](https://github.com/digital-blueprint/toolkit/tree/main/packages/file-handling#attributes) |
+| `allow-annotating` | Boolean | [esign activities](https://github.com/digital-blueprint/esign-app/tree/main/src) |
+| `file-handling-enabled-targets` | String | [esign activities](https://github.com/digital-blueprint/esign-app/tree/main/src) |
 
 #### Mandatory attributes
 
@@ -132,10 +132,10 @@ you need to manually add these attributes so that the topic will work properly:
 
 ### Design
 
-For frontend design customizations, such as logo, colors, font, favicon, and more, take a look at the [theming documentation](https://dbp-demo.tugraz.at/dev-guide/frontend/theming/).
+For frontend design customizations, such as logo, colors, font, favicon, and more, take a look at the [theming documentation](https://handbook.digital-blueprint.org/frameworks/frontend/theming/).
 
 ## "dbp-signature" slots
 
-These are common slots for the app-shell. You can find the documentation of these slots in the [app-shell documentation](https://gitlab.tugraz.at/dbp/web-components/toolkit/-/tree/main/packages/app-shell).
+These are common slots for the app-shell. You can find the documentation of these slots in the [app-shell documentation](https://github.com/digital-blueprint/toolkit/tree/main/packages/app-shell).
 For the app specific slots take a look at the [esign activities documentation](https://github.com/digital-blueprint/esign-app/tree/main/src).
 
