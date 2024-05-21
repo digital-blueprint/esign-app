@@ -246,7 +246,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
 
         // get handle of pdf document
         try {
-            this.pdfDoc = await pdfjs.getDocument({data: data}).promise;
+            this.pdfDoc = await pdfjs.getDocument({data: data, isEvalSupported: false}).promise;
         } catch (error) {
             console.error(error);
             this.showErrorMessage = true;
