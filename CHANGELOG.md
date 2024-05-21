@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.2.2
+
+* Disallow unsafe-eval via CSP to protect against CVE-2024-4367.
+  A pdf.js update will follow.
+* Fix broken/missing form validation for PDF annotations with newer browsers.
+
 ## 2.2.1
 
 * Various dependency updates
