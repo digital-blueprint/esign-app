@@ -668,23 +668,25 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                                 <button
                                     class="button is-icon"
                                     title="${i18n.t('pdf-preview.first-page')}"
+                                    aria-label="${i18n.t('pdf-preview.first-page')}"
                                     @click="${async () => {
                                         await this.showPage(1);
                                     }}"
                                     ?disabled="${this.isPageRenderingInProgress ||
                                     this.currentPage === 1}">
-                                    <dbp-icon name="angle-double-left"></dbp-icon>
+                                    <dbp-icon name="angle-double-left" aria-hidden="true"></dbp-icon>
                                 </button>
                                 <button
                                     class="button is-icon"
                                     title="${i18n.t('pdf-preview.previous-page')}"
+                                    aria-label="${i18n.t('pdf-preview.previous-page')}"
                                     @click="${async () => {
                                         if (this.currentPage > 1)
                                             await this.showPage(--this.currentPage);
                                     }}"
                                     ?disabled="${this.isPageRenderingInProgress ||
                                     this.currentPage === 1}">
-                                    <dbp-icon name="chevron-left"></dbp-icon>
+                                    <dbp-icon name="chevron-left" aria-hidden="true"></dbp-icon>
                                 </button>
                                 <input
                                     type="number"
@@ -700,23 +702,25 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                                 <button
                                     class="button is-icon"
                                     title="${i18n.t('pdf-preview.next-page')}"
+                                    aria-label="${i18n.t('pdf-preview.next-page')}"
                                     @click="${async () => {
                                         if (this.currentPage < this.totalPages)
                                             await this.showPage(++this.currentPage);
                                     }}"
                                     ?disabled="${this.isPageRenderingInProgress ||
                                     this.currentPage === this.totalPages}">
-                                    <dbp-icon name="chevron-right"></dbp-icon>
+                                    <dbp-icon name="chevron-right" aria-hidden="true"></dbp-icon>
                                 </button>
                                 <button
                                     class="button is-icon"
                                     title="${i18n.t('pdf-preview.last-page')}"
+                                    aria-label="${i18n.t('pdf-preview.last-page')}"
                                     @click="${async () => {
                                         await this.showPage(this.totalPages);
                                     }}"
                                     ?disabled="${this.isPageRenderingInProgress ||
                                     this.currentPage === this.totalPages}">
-                                    <dbp-icon name="angle-double-right"></dbp-icon>
+                                    <dbp-icon name="angle-double-right" aria-hidden="true"></dbp-icon>
                                 </button>
                             </div>
                             <button

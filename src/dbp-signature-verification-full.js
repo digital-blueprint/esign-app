@@ -318,8 +318,8 @@ class SignatureVerificationFull extends ScopedElementsMixin(DBPSignatureLitEleme
             ${commonStyles.getButtonCSS()}
             ${commonStyles.getNotificationCSS()}
             ${SignatureStyles.getSignatureCss()}
-            
-            
+
+
 
             .file-block {
                 max-width: 320px;
@@ -365,10 +365,13 @@ class SignatureVerificationFull extends ScopedElementsMixin(DBPSignatureLitEleme
                             title="${i18n.t(
                                 'signature-verification.remove-queued-file-button-title'
                             )}"
+                            aria-label="${i18n.t(
+                                'signature-verification.remove-queued-file-button-title'
+                            )}"
                             @click="${() => {
                                 this.takeFileFromQueue(id);
                             }}">
-                            <dbp-icon name="trash"></dbp-icon>
+                            <dbp-icon name="trash" aria-hidden="true"></dbp-icon>
                         </button>
                     </div>
                     <div class="bottom-line">
@@ -478,20 +481,26 @@ class SignatureVerificationFull extends ScopedElementsMixin(DBPSignatureLitEleme
                                 title="${i18n.t(
                                     'signature-verification.re-upload-file-button-title'
                                 )}"
+                                aria-label="${i18n.t(
+                                    'signature-verification.re-upload-file-button-title'
+                                )}"
                                 @click="${() => {
                                     this.fileQueueingClickHandler(data.file, id);
                                 }}">
-                                <dbp-icon name="reload"></dbp-icon>
+                                <dbp-icon name="reload" aria-hidden="true"></dbp-icon>
                             </button>
                             <button
                                 class="button"
                                 title="${i18n.t(
                                     'signature-verification.remove-failed-file-button-title'
                                 )}"
+                                aria-label="${i18n.t(
+                                    'signature-verification.remove-failed-file-button-title'
+                                )}"
                                 @click="${() => {
                                     this.takeFailedFileFromQueue(id);
                                 }}">
-                                <dbp-icon name="trash"></dbp-icon>
+                                <dbp-icon name="trash" aria-hidden="true"></dbp-icon>
                             </button>
                         </div>
                     </div>
@@ -669,8 +678,8 @@ class SignatureVerificationFull extends ScopedElementsMixin(DBPSignatureLitEleme
                                         this.currentFile !== undefined ? this.currentFile.size : 0
                                     )})
                                 </div>
-                                <button class="is-cancel" @click="${this.hidePDF}">
-                                    <dbp-icon name="close"></dbp-icon>
+                                <button class="is-cancel" @click="${this.hidePDF}" title="${i18n.t('button-close-text')}" aria-label="${i18n.t('button-close-text')}">
+                                    <dbp-icon name="close" aria-hidden="true"></dbp-icon>
                                 </button>
                             </div>
                             <dbp-pdf-preview

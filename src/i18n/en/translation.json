@@ -22,6 +22,7 @@
     "error-permission-message": "You need have permissions to use the official signature to use this function!",
     "error-rights-message": "Abort due to insufficient rights of your account.",
     "label-manual-positioning-missing": "Existing signature present, please select its positioning manually.",
+    "button-close-text": "Close",
     "official-pdf-upload": {
         "annotation": "Annotations",
         "annotation-no": "No",

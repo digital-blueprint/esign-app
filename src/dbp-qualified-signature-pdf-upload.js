@@ -410,7 +410,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             ${commonStyles.getNotificationCSS()}
             ${SignatureStyles.getSignatureCss()}
 
-            
+
             #external-auth #iframe {
                 margin-top: 0.5em;
             }
@@ -456,10 +456,13 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                             title="${i18n.t(
                                 'qualified-pdf-upload.remove-queued-file-button-title'
                             )}"
+                            aria-label="${i18n.t(
+                                'qualified-pdf-upload.remove-queued-file-button-title'
+                            )}"
                             @click="${() => {
                                 this.takeFileFromQueue(id);
                             }}">
-                            <dbp-icon name="trash"></dbp-icon>
+                            <dbp-icon name="trash" aria-hidden="true"></dbp-icon>
                         </button>
                     </div>
                     <div class="bottom-line">
@@ -540,10 +543,11 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                         <button
                             class="button is-icon"
                             title="${i18n.t('qualified-pdf-upload.download-file-button-title')}"
+                            aria-label="${i18n.t('qualified-pdf-upload.download-file-button-title')}"
                             @click="${() => {
                                 this.downloadFileClickHandler(file, 'file-block-' + id);
                             }}">
-                            <dbp-icon name="download"></dbp-icon>
+                            <dbp-icon name="download" aria-hidden="true"></dbp-icon>
                         </button>
                     </div>
                 </div>
@@ -583,20 +587,26 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                 title="${i18n.t(
                                     'qualified-pdf-upload.re-upload-file-button-title'
                                 )}"
+                                aria-label="${i18n.t(
+                                    'qualified-pdf-upload.re-upload-file-button-title'
+                                )}"
                                 @click="${() => {
                                     this.fileQueueingClickHandler(data.file, id);
                                 }}">
-                                <dbp-icon name="reload"></dbp-icon>
+                                <dbp-icon name="reload" aria-hidden="true"></dbp-icon>
                             </button>
                             <button
                                 class="button is-icon"
                                 title="${i18n.t(
                                     'qualified-pdf-upload.remove-failed-file-button-title'
                                 )}"
+                                aria-label="${i18n.t(
+                                    'qualified-pdf-upload.remove-failed-file-button-title'
+                                )}"
                                 @click="${() => {
                                     this.takeFailedFileFromQueue(id);
                                 }}">
-                                <dbp-icon name="trash"></dbp-icon>
+                                <dbp-icon name="trash" aria-hidden="true"></dbp-icon>
                             </button>
                         </div>
                     </div>
@@ -821,8 +831,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                         this.currentFile !== undefined ? this.currentFile.size : 0
                                     )})
                                 </div>
-                                <button class="is-cancel" @click="${this.hidePDF}">
-                                    <dbp-icon name="close"></dbp-icon>
+                                <button class="is-cancel" @click="${this.hidePDF}" title="${i18n.t('button-close-text')}" aria-label="${i18n.t('button-close-text')}">
+                                    <dbp-icon name="close" aria-hidden="true"></dbp-icon>
                                 </button>
                             </div>
                             <dbp-pdf-preview
@@ -856,8 +866,9 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                 </div>
                                 <button
                                     class="is-cancel annotation"
+                                    title="${i18n.t('button-close-text')}" aria-label="${i18n.t('button-close-text')}"
                                     @click="${this.hideAnnotationView}">
-                                    <dbp-icon name="close" id="close-icon"></dbp-icon>
+                                    <dbp-icon name="close" id="close-icon" aria-hidden="true"></dbp-icon>
                                 </button>
                             </div>
                             <dbp-pdf-annotation-view
@@ -898,8 +909,11 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                         title="${i18n.t(
                                             'qualified-pdf-upload.stop-signing-process-button'
                                         )}"
+                                        aria-label="${i18n.t(
+                                            'qualified-pdf-upload.stop-signing-process-button'
+                                        )}"
                                         @click="${this.stopSigningProcess}">
-                                        <dbp-icon name="close"></dbp-icon>
+                                        <dbp-icon name="close" aria-hidden="true"></dbp-icon>
                                     </button>
                                 </div>
                                 <external-sign-iframe

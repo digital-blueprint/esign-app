@@ -323,7 +323,7 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
                     grid-template-rows: auto;
                     column-gap: 3px;
                 }
-                
+
                 .add-elements .button{
                     height: 33px;
                 }
@@ -357,10 +357,11 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
                         <button
                             class="button close is-icon"
                             title="${i18n.t('annotation-view.remove-field')}"
+                            aria-label="${i18n.t('annotation-view.remove-field')}"
                             @click="${() => {
                                 this.removeAnnotation(id);
                             }}">
-                            <dbp-icon name="trash"></dbp-icon>
+                            <dbp-icon name="trash" aria-hidden="true"></dbp-icon>
                         </button>
                     </div>
 
@@ -386,7 +387,7 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
             <div id="pdf-main-container">
                 <div id="pdf-meta">
                     <div class="nav-buttons">
-                        
+
                         <div class="add-elements">
                             <select id="additional-select" @change="${() => {
                                 this.isSelected = true;
@@ -397,12 +398,13 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
                                 )}</option>
                             </select>
                             <button class="button"
-                                    title="${i18n.t('annotation-view.insert-field')}" 
+                                    title="${i18n.t('annotation-view.insert-field')}"
+                                    aria-label="${i18n.t('annotation-view.insert-field')}"
                                     @click="${() => {
                                         this.addAnnotation();
-                                    }}" 
+                                    }}"
                                     ?disabled="${!this.isSelected}">
-                                <dbp-icon name="checkmark-circle"></dbp-icon></button>
+                                <dbp-icon name="checkmark-circle" aria-hidden="true"></dbp-icon></button>
                             </button>
                         </div>
 
