@@ -1,5 +1,6 @@
 import {AnnotationFactory} from '@digital-blueprint/annotpdf/_bundles/pdfAnnotate.js';
 import {html} from 'lit';
+import {createInstance} from './i18n.js';
 //import {humanFileSize} from "@dbp-toolkit/common/i18next";
 
 /**
@@ -252,6 +253,11 @@ export const addPdfAnnotationToAnnotationFactory = (annotationFactory, author, c
  * @returns {object} describing the annotation type named key
  */
 export const getAnnotationTypes = (key = null) => {
+    // for i18next-parser
+    let i18n = createInstance();
+    i18n.t('annotation-view.reference-number-placeholder');
+    i18n.t('annotation-view.intended-use-placeholder');
+
     const types = {
         bbe3a371: {
             name: {
