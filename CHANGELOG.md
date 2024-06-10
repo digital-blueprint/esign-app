@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+* Disable eval() usage in pdf.js to protect against CVE-2024-4367 even without a CSP active.
+* Update pdf.js to v3.0.279 (latest version working with Safari 13.1)
+* Fix file selection in the cloud file picker
+* Enhance the application metadata that is used by search engines.
+* Add various aria labels to improve accessibility.
+
 ## 2.2.2
 
 * Disallow unsafe-eval via CSP to protect against CVE-2024-4367.
