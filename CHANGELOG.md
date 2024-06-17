@@ -1,5 +1,9 @@
 # Changelog
 
+## Next
+
+* Update welcome text
+
 ## 2.2.3
 
 * Disable eval() usage in pdf.js to protect against CVE-2024-4367 even without a CSP active.
