@@ -301,7 +301,7 @@ Dependencies:
                     {src: 'assets/silent-check-sso.html', dest: 'dist'},
                     {src: 'assets/dbp-signature-maintenance.html', dest: 'dist'},
                     {
-                        src: await getPackagePath('pdfjs-dist', 'legacy/build/pdf.worker.js'),
+                        src: await getPackagePath('pdfjs-dist', 'legacy/build/pdf.worker.mjs'),
                         dest: 'dist/' + (await getDistPath(pkg.name, 'pdfjs')),
                     },
                     {
@@ -353,7 +353,7 @@ Dependencies:
                     {src: customAssetsPath + 'silent-check-sso.html', dest: 'dist'},
                     {src: customAssetsPath + 'dbp-signature-maintenance.html', dest: 'dist'},
                     {
-                        src: await getPackagePath('pdfjs-dist', 'legacy/build/pdf.worker.js'),
+                        src: await getPackagePath('pdfjs-dist', 'legacy/build/pdf.worker.mjs'),
                         dest: 'dist/' + (await getDistPath(pkg.name, 'pdfjs')),
                     },
                     {
