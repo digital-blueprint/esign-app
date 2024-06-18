@@ -397,7 +397,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                                             return;
                                         }
 
-                                        text = annotation.contents;
+                                        text = annotation.contentsObj.str;
                                         break;
                                     case 'Widget':
                                         // Annotations by Adobe Acrobat already have an appearance that can be viewed by pdf.js
