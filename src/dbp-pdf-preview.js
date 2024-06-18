@@ -28,7 +28,6 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
         this.isPageRenderingInProgress = false;
         this.isShowPlacement = true;
         this.canvas = null;
-        this.annotationLayer = null;
         this.fabricCanvas = null;
         this.canvasToPdfScale = 1.0;
         this.currentPageOriginalHeight = 0;
@@ -105,7 +104,6 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
         window.addEventListener('resize', this._onWindowResize);
 
         this.updateComplete.then(async () => {
-            that.annotationLayer = that._('#annotation-layer');
             const fabric = (await import('fabric')).fabric;
             that.canvas = that._('#pdf-canvas');
 
@@ -370,73 +368,10 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
 
                 // render the page contents in the canvas
                 try {
-                    await page
-                        .render(render_context)
-                        .promise.then(() => {
-                            console.log('Page rendered');
-                            that.isPageRenderingInProgress = false;
-
-                            return page.getAnnotations();
-                        })
-                        .then(function (annotationData) {
-                            // remove all child nodes
-                            that.annotationLayer.innerHTML = '';
-                            // update size
-                            that.annotationLayer.style.height = that.canvas.height + 'px';
-                            that.annotationLayer.style.width = that.canvas.width + 'px';
-
-                            // create all supported annotations
-                            annotationData.forEach((annotation) => {
-                                const subtype = annotation.subtype;
-                                let text = '';
-                                switch (subtype) {
-                                    case 'Text':
-                                    case 'FreeText':
-                                        // Annotations by Adobe Acrobat already have an appearance that can be viewed by pdf.js
-                                        if (annotation.hasAppearance) {
-                                            return;
-                                        }
-
-                                        text = annotation.contentsObj.str;
-                                        break;
-                                    case 'Widget':
-                                        // Annotations by Adobe Acrobat already have an appearance that can be viewed by pdf.js
-                                        if (annotation.hasAppearance) {
-                                            return;
-                                        }
-
-                                        text = annotation.alternativeText;
-                                        break;
-                                    default:
-                                        // we don't support other types
-                                        return;
-                                }
-
-                                const annotationDiv = document.createElement('div');
-                                const annotationDivInner = document.createElement('div');
-                                annotationDiv.className = 'annotation annotation-' + subtype;
-                                annotationDiv.style.left =
-                                    annotation.rect[0] * that.canvasToPdfScale + 'px';
-                                annotationDiv.style.bottom =
-                                    annotation.rect[1] * that.canvasToPdfScale + 'px';
-                                annotationDiv.style.width =
-                                    (annotation.rect[2] - annotation.rect[0]) *
-                                        that.canvasToPdfScale +
-                                    'px';
-                                annotationDiv.style.height =
-                                    (annotation.rect[3] - annotation.rect[1]) *
-                                        that.canvasToPdfScale +
-                                    'px';
-                                annotationDivInner.innerText = text === '' ? subtype : text;
-
-                                annotationDiv.appendChild(annotationDivInner);
-                                that.annotationLayer.appendChild(annotationDiv);
-                            });
-
-                            // console.log("annotationData render", annotationData);
-                        });
+                    await page.render(render_context).promise;
                 } catch (error) {
                     console.error(error.message);
+                } finally {
                     that.isPageRenderingInProgress = false;
                 }
             });
@@ -543,26 +478,6 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                 top: 0;
                 left: 0;
                 border: var(--dbp-border);
-            }
-
-            #annotation-layer {
-                position: absolute;
-                top: 0;
-                left: 0;
-                overflow: hidden;
-            }
-
-            #annotation-layer > div {
-                position: absolute;
-                border: dashed 2px red;
-                padding: 6px;
-                background-color: rgba(255, 255, 255, 0.5);
-            }
-
-            #annotation-layer > div > div {
-                overflow: hidden;
-                font-size: 0.8em;
-                height: 100%;
             }
 
             .buttons {
@@ -738,7 +653,6 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                         id="canvas-wrapper"
                         class="${classMap({hidden: this.isPageRenderingInProgress})}">
                         <canvas id="pdf-canvas"></canvas>
-                        <div id="annotation-layer"></div>
                         <canvas
                             id="fabric-canvas"
                             class="${classMap({hidden: !this.isShowPlacement})}"></canvas>
