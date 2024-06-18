@@ -1,8 +1,9 @@
 # Changelog
 
-## Next
+## 2.3.0
 
 * Update welcome text
+* Update pdf.js to v4.3.136 (bumps the minimum required Safari version to 15 and Firefox to 114)
 
 ## 2.2.3
 
