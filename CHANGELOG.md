@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.3.1
+
+* Fix certain PDF annotations breaking the PDF viewer since 2.3.0
+* Fix certain PDF annotations being displayed twice since 2.2.3
+
 ## 2.3.0
 
 * Update welcome text
