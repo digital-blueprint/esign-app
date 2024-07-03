@@ -48,7 +48,7 @@
     "appDomain": ""
   },
   "development": {
-    "basePath": "/apps/signature/",
+    "basePath": "/apps/esign/",
     "entryPointURL": "https://api-dev.tugraz.at",
     "keyCloakBaseURL": "https://auth-dev.tugraz.at/auth",
     "keyCloakRealm": "tugraz-vpu",
@@ -64,7 +64,7 @@
     "appDomain": ""
   },
   "developmentCustom": {
-    "basePath": "/tugapps/signature/",
+    "basePath": "/tugapps/esign/",
     "entryPointURL": "https://api-dev.tugraz.at",
     "keyCloakBaseURL": "https://auth-dev.tugraz.at/auth",
     "keyCloakRealm": "tugraz-vpu",
@@ -80,7 +80,7 @@
     "appDomain": ""
   },
   "demo": {
-    "basePath": "/apps/signature/",
+    "basePath": "/apps/esign/",
     "entryPointURL": "https://api-demo.tugraz.at",
     "keyCloakBaseURL": "https://auth-demo.tugraz.at/auth",
     "keyCloakRealm": "tugraz-vpu",
@@ -96,7 +96,7 @@
     "appDomain": ""
   },
   "demoCustom": {
-    "basePath": "/tugapps/signature/",
+    "basePath": "/tugapps/esign/",
     "entryPointURL": "https://api-demo.tugraz.at",
     "keyCloakBaseURL": "https://auth-demo.tugraz.at/auth",
     "keyCloakRealm": "tugraz-vpu",
