@@ -4,7 +4,7 @@ import globals from "globals";
 
 export default [
     {
-        ignores: ['dist/', 'vendor/', '*.js'],
+        ignores: ['dist/', 'vendor/', '*.js', '*.cjs'],
     },
     js.configs.recommended,
     jsdoc.configs["flat/recommended"],
