@@ -104,7 +104,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
         window.addEventListener('resize', this._onWindowResize);
 
         this.updateComplete.then(async () => {
-            const fabric = (await import('fabric')).fabric;
+            const fabric = await import('fabric');
             that.canvas = that._('#pdf-canvas');
 
             // this._('#upload-pdf-input').addEventListener('change', function() {
@@ -114,27 +114,28 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
             // add fabric.js canvas for signature positioning
             // , {stateful : true}
             // selection is turned off because it makes troubles on mobile devices
-            this.fabricCanvas = new fabric.Canvas(this._('#fabric-canvas'), {
+            let fabricCanvas = /** @type {HTMLCanvasElement} */ (this._('#fabric-canvas'));
+            this.fabricCanvas = new fabric.Canvas(fabricCanvas, {
                 selection: false,
                 allowTouchScrolling: true,
             });
 
             // add signature image
-            fabric.Image.fromURL(this.placeholder, function (image) {
-                // add a red border around the signature placeholder
-                image.set({
-                    stroke: '#e4154b',
-                    strokeWidth: that.border_width,
-                    strokeUniform: true,
-                    centeredRotation: true,
-                });
+            let image = await fabric.FabricImage.fromURL(this.placeholder);
 
-                // disable controls, we currently don't want resizing and do rotation with a button
-                image.hasControls = false;
-
-                // we will resize the image when the initial pdf page is loaded
-                that.fabricCanvas.add(image);
+            // add a red border around the signature placeholder
+            image.set({
+                stroke: '#e4154b',
+                strokeWidth: that.border_width,
+                strokeUniform: true,
+                centeredRotation: true,
             });
+
+            // disable controls, we currently don't want resizing and do rotation with a button
+            image.hasControls = false;
+
+            // we will resize the image when the initial pdf page is loaded
+            that.fabricCanvas.add(image);
 
             this.fabricCanvas.on({
                 'object:moving': function (e) {
@@ -265,8 +266,11 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
         await this.showPage(page);
     }
 
+    /**
+     * @returns {import('fabric').FabricImage}
+     */
     getSignatureRect() {
-        return this.fabricCanvas.item(0);
+        return /** @type {import('fabric').FabricImage} */ (this.fabricCanvas.item(0));
     }
 
     /**
@@ -293,8 +297,9 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                 this.currentPageOriginalHeight = originalViewport.height;
 
                 // set the canvas width to the width of the container (minus the borders)
-                this.fabricCanvas.setWidth(this._('#pdf-main-container').clientWidth - 2);
-                this.canvas.width = this._('#pdf-main-container').clientWidth - 2;
+                let width = this._('#pdf-main-container').clientWidth - 2;
+                this.fabricCanvas.setDimensions({width: width});
+                this.canvas.width = width;
 
                 // as the canvas is of a fixed width we need to adjust the scale of the viewport where page is rendered
                 const oldScale = this.canvasToPdfScale;
@@ -306,7 +311,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                 const viewport = page.getViewport({scale: this.canvasToPdfScale});
 
                 // set canvas height same as viewport height
-                this.fabricCanvas.setHeight(viewport.height);
+                this.fabricCanvas.setDimensions({height: viewport.height});
                 this.canvas.height = viewport.height;
 
                 // setting page loader height for smooth experience
