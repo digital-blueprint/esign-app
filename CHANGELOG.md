@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+* Update to pdf.js v4.4.168
+* Port package build to ESM
+* Port to fabric v6
+
 ## 2.3.1
 
 * Fix certain PDF annotations breaking the PDF viewer since 2.3.0
