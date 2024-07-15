@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 2.3.2
 
 * Update to pdf.js v4.4.168
 * Port package build to ESM
