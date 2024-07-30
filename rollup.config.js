@@ -16,7 +16,7 @@ import {
     getBuildInfo,
     generateTLSConfig,
     getDistPath,
-} from './vendor/toolkit/rollup.utils.js';
+} from '@dbp-toolkit/dev-utils';
 import { createRequire } from "module";
 
 const require = createRequire(import.meta.url);
