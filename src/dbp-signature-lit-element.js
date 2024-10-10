@@ -72,7 +72,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
 
             this.addAnnotationInProgress = true;
 
-            const viewTag = this.getScopedTagName('dbp-pdf-annotation-view');
+            const viewTag = 'dbp-pdf-annotation-view';
             this._(viewTag).setAttribute('key', key);
             this._(viewTag).setAnnotationRows(this.queuedFilesAnnotations[key]);
 
@@ -542,8 +542,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         // start signature placement process
         this.signaturePlacementInProgress = true;
         this.withSigBlock = withSigBlock;
-        const previewTag = this.getScopedTagName('dbp-pdf-preview');
-        await this._(previewTag).showPDF(
+        await this._('dbp-pdf-preview').showPDF(
             entry.file,
             withSigBlock, //this.queuedFilesPlacementModes[key] === "manual",
             this.queuedFilesSignaturePlacements[key]
