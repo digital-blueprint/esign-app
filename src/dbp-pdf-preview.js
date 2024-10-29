@@ -511,6 +511,8 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
 
             input[type='number'] {
                 border: var(--dbp-border);
+                color: var(--dbp-content);
+                background-color: var(--dbp-background);
                 padding: 0 0.3em;
             }
 
