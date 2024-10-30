@@ -10,6 +10,7 @@ import * as commonStyles from '@dbp-toolkit/common/styles';
 import * as pdfjs from 'pdfjs-dist/legacy/build/pdf.mjs';
 import {name as pkgName} from './../package.json';
 import {readBinaryFileContent} from './utils.js';
+import {send} from '@dbp-toolkit/common/notification';
 
 /**
  * PdfPreview web component
@@ -376,6 +377,12 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                     await page.render(render_context).promise;
                 } catch (error) {
                     console.error(error.message);
+                    send({
+                        summary: 'Error!',
+                        body: error.message,
+                        type: 'danger',
+                        timeout: 15,
+                    });
                 } finally {
                     that.isPageRenderingInProgress = false;
                 }
@@ -500,6 +507,16 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
             .action-buttons-container {
                 display: flex;
                 gap: 10px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .action-buttons-container .profile-type-select,
+            .action-buttons-container .positioning-type-select {
+                padding-right: 2em;
+                padding-left: .75em;
+                background-size: 18px;
+                background-position: calc(100% - 0.4rem) center;
             }
 
             .nav-buttons {
@@ -560,10 +577,6 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                 border: unset;
             }
 
-            input[type='number'] {
-                background-color: var(--dbp-background);
-            }
-
             dbp-mini-spinner {
                 margin: auto;
                 display: block;
@@ -573,15 +586,9 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
     }
 
     render() {
-        const isRotationHidden = !this.allowSignatureRotation;
         const i18n = this._i18n;
 
         return html`
-            <!--
-            <form>
-                <input type="file" name="pdf" id="upload-pdf-input">
-            </form>
--->
             <div id="pdf-main-container" class="${classMap({hidden: !this.isShowPage})}">
                 <dbp-mini-spinner
                     class="${classMap({
@@ -597,9 +604,23 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                     <div id="pdf-meta">
                         <div class="buttons ${classMap({hidden: !this.isPageLoaded})}">
                             <div class="action-buttons-container">
+                                <select id="profile-type" class="profile-type-select ${classMap({
+                                    hidden: !this.isShowPlacement
+                                })}">
+                                    <option value="">Select profile type</option>
+                                    <option value="corporate">Corporate</option>
+                                    <option value="personal">Personal</option>
+                                </select>
+                                <select id="positioning-type" class="positioning-type-select ${classMap({
+                                    hidden: !this.isShowPlacement
+                                })}">
+                                    <option value="">Select positioning type</option>
+                                    <option value="manual">Manual</option>
+                                    <option value="auto">Auto</option>
+                                </select>
                                 <button
                                     class="button ${classMap({
-                                        hidden: !this.isShowPlacement || isRotationHidden,
+                                        hidden: !this.isShowPlacement
                                     })}"
                                     title="${i18n.t('pdf-preview.rotate-signature')}"
                                     @click="${() => {
@@ -615,7 +636,15 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                                     @click="${() => {
                                         this.sendAcceptEvent();
                                     }}">
-                                    ${i18n.t('pdf-preview.continue')}
+                                    ${i18n.t('pdf-preview.save')}
+                                </button>
+                                <button
+                                    class="button is-cancel ${classMap({
+                                        hidden: !this.isShowPlacement
+                                    })}"
+                                    @click="${this.sendCancelEvent}"
+                                    title="${i18n.t('button-close-text')}"
+                                    aria-label="${i18n.t('button-close-text')}">Cancel
                                 </button>
                             </div>
                             <div class="nav-buttons">

@@ -116,17 +116,17 @@ export function getSignatureCss() {
 
         #grid-container {
             display: flex;
-            flex-flow: row wrap;
+            flex-direction: column;
         }
 
-        #grid-container > div {
+        /*#grid-container > div {
             margin-right: 20px;
         }
 
         #grid-container > div:last-child {
             margin-right: 0;
             flex: 1 0;
-        }
+        }*/
 
         .file-block,
         .box {
@@ -150,7 +150,7 @@ export function getSignatureCss() {
             justify-content: space-between;
             grid-gap: 10px;
         }
-        
+
         .file-block .header button{
             flex-shrink: 0;
         }
@@ -207,8 +207,6 @@ export function getSignatureCss() {
             padding: 0px 2px;
             margin-top: -5px;
         }
-        
-        
 
         .is-right {
             float: right;
@@ -274,6 +272,12 @@ export function getSignatureCss() {
             margin-top: -1px;
             /*line-height: 1.8;*/
             margin-bottom: 1.2em;
+        }
+
+        .tabulator-actions {
+            display: flex;
+            gap: 1em;
+            justify-content: space-between;
         }
 
         @media only screen and (orientation: portrait) and (max-width: 768px) {

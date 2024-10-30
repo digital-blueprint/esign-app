@@ -56,7 +56,7 @@
         "upload-text": "Die Amtssignatur des \"Elektronische Signaturservice\" ist eine Applikation, mit der Sie PDF-Dateien mit einer elektronischen Amtssignatur versehen können."
     },
     "pdf-preview": {
-        "continue": "Platzierung bestätigen",
+        "save": "Speichern",
         "error-message": "Fehler: Dieses Dokument ist beschädigt.",
         "first-page": "Erste Seite",
         "last-page": "Letzte Seite",
@@ -101,7 +101,13 @@
         "upload-area-text": "Sie können in diesem Bereich PDF-Dokumente mit einer Maximalgröße von bis zu 32MB pro Dokument per Drag & Drop oder per Direktauswahl hochladen. Die PDF-Dokumente dürfen sich auch in ZIP-Dateien befinden.",
         "upload-button-label": "PDF-Dokumente auswählen",
         "upload-status-file-text": "({{fileSize}}) wird hochgeladen und verarbeitet...",
-        "upload-text": "Das \"Elektronische Signaturservice\" ist eine Applikation, mit der Sie PDF-Dateien mit einer persönlichen, elektronischen (qualifizierten) Signatur versehen können. Eine qualifizierte Signatur ist Ihre persönliche Unterschrift im Internet und der eigenhändigen Unterschrift rechtlich gleichgestellt."
+        "upload-text": "Das \"Elektronische Signaturservice\" ist eine Applikation, mit der Sie PDF-Dateien mit einer persönlichen, elektronischen (qualifizierten) Signatur versehen können. Eine qualifizierte Signatur ist Ihre persönliche Unterschrift im Internet und der eigenhändigen Unterschrift rechtlich gleichgestellt.",
+        "table-header-file-name": "File name",
+        "table-header-file-size": "File Size",
+        "table-header-profile": "Profile",
+        "table-header-positioning": "Positioning",
+        "table-header-warning": "Warning",
+        "table-header-buttons": "Actions"
     },
     "signature-verification": {
         "clear-all": "Alle entfernen",
