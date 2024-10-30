@@ -487,10 +487,19 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
 
             .buttons {
                 display: flex;
+                flex-direction: column;
                 flex-wrap: wrap;
+                gap: 10px;
                 width: 100%;
                 justify-content: center;
                 align-items: center;
+                container-type: inline-size;
+                container-name: action-buttons;
+            }
+
+            .action-buttons-container {
+                display: flex;
+                gap: 10px;
             }
 
             .nav-buttons {
@@ -498,6 +507,18 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                 justify-content: center;
                 flex-grow: 1;
                 flex-wrap: wrap;
+            }
+
+            @container action-buttons (max-width: 350px) {
+                .action-buttons-container {
+                    flex-direction: column;
+                    width: 100%;
+                }
+
+                .nav-buttons {
+                    width: 100%;
+                    justify-content: space-between;
+                }
             }
 
             .buttons .page-info {
@@ -511,6 +532,8 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
 
             input[type='number'] {
                 border: var(--dbp-border);
+                color: var(--dbp-content);
+                background-color: var(--dbp-background);
                 padding: 0 0.3em;
             }
 
@@ -573,17 +596,28 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                 <div class="${classMap({hidden: !this.isPageLoaded})}">
                     <div id="pdf-meta">
                         <div class="buttons ${classMap({hidden: !this.isPageLoaded})}">
-                            <button
-                                class="button ${classMap({
-                                    hidden: !this.isShowPlacement || isRotationHidden,
-                                })}"
-                                title="${i18n.t('pdf-preview.rotate-signature')}"
-                                @click="${() => {
-                                    this.rotateSignature();
-                                }}"
-                                ?disabled="${this.isPageRenderingInProgress}">
-                                &#10227; ${i18n.t('pdf-preview.rotate')}
-                            </button>
+                            <div class="action-buttons-container">
+                                <button
+                                    class="button ${classMap({
+                                        hidden: !this.isShowPlacement || isRotationHidden,
+                                    })}"
+                                    title="${i18n.t('pdf-preview.rotate-signature')}"
+                                    @click="${() => {
+                                        this.rotateSignature();
+                                    }}"
+                                    ?disabled="${this.isPageRenderingInProgress}">
+                                    &#10227; ${i18n.t('pdf-preview.rotate')}
+                                </button>
+                                <button
+                                    class="button is-primary ${classMap({
+                                        hidden: !this.isShowPlacement,
+                                    })}"
+                                    @click="${() => {
+                                        this.sendAcceptEvent();
+                                    }}">
+                                    ${i18n.t('pdf-preview.continue')}
+                                </button>
+                            </div>
                             <div class="nav-buttons">
                                 <button
                                     class="button is-icon"
@@ -643,15 +677,6 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                                     <dbp-icon name="angle-double-right" aria-hidden="true"></dbp-icon>
                                 </button>
                             </div>
-                            <button
-                                class="button is-primary ${classMap({
-                                    hidden: !this.isShowPlacement,
-                                })}"
-                                @click="${() => {
-                                    this.sendAcceptEvent();
-                                }}">
-                                ${i18n.t('pdf-preview.continue')}
-                            </button>
                         </div>
                     </div>
                     <div

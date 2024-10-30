@@ -284,6 +284,11 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
                 padding-bottom: 1em;
             }
 
+            #pdf-meta option {
+                color: var(--dbp-content);
+                background-color: var(--dbp-background);
+            }
+
             .input {
                 padding-left: 8px;
                 font-weight: 300;

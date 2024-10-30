@@ -273,6 +273,7 @@ Dependencies:
                 }),
             commonjs({
                 include: 'node_modules/**',
+                strictRequires: 'auto',
             }),
             json(),
             urlPlugin({
