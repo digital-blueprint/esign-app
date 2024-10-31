@@ -405,6 +405,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             switch (propName) {
                 case 'lang':
                     this._i18n.changeLanguage(this.lang);
+                    this.updateTableData();
                     break;
                 case 'entryPointUrl':
                     if (this.entryPointUrl) {
@@ -667,8 +668,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             // btnEditSignature.setAttribute('disabled', 'disabled');
         }
         btnEditSignature.addEventListener("click", async (event) => {
-            // const button  = /** @type {IconButton} */ (event.target);
-            // const placement = button.getAttribute('data-placement');
             this.queuePlacementSwitch(id, 'manual');
         });
         controlDiv.appendChild(btnEditSignature);

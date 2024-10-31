@@ -95,6 +95,8 @@
         "re-upload-file-button-title": "Erneut in die Warteschlange stellen",
         "remove-failed-file-button-title": "Fehlgeschlagenes Dokument entfernen",
         "remove-queued-file-button-title": "Dokument aus der Warteschlange entfernen",
+        "edit-signature-button-title": "Unterschrift bearbeiten",
+        "preview-file-button-title": "Vorschau Datei",
         "save-field-label_one": "{{count}} Datei speichern",
         "save-field-label_other": "{{count}} Dateien speichern",
         "show-preview": "Dokument anzeigen",
