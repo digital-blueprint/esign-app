@@ -65,6 +65,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         this._onReceiveBeforeUnload = this.onReceiveBeforeUnload.bind(this);
         this.queuedFilesOptions = {};
         this.queuedFilesTableExpanded = false;
+        this.queuedFilesTableAllSelected = false;
+        this.queuedFilesTableCollapsible = false;
     }
 
     static get scopedElements() {
@@ -97,7 +99,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             signedFiles: {type: Array, attribute: false},
             signedFilesCount: {type: Number, attribute: false},
             signedFilesToDownload: {type: Number, attribute: false},
-            // queuedFiles: {type: Array, attribute: false},s
             queuedFilesCount: {type: Number, attribute: false},
             errorFiles: {type: Array, attribute: false},
             errorFilesCount: {type: Number, attribute: false},
@@ -122,6 +123,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             queuedFilesAnnotationSaved: {type: Array, attribute: false},
             fileHandlingEnabledTargets: {type: String, attribute: 'file-handling-enabled-targets'},
             queuedFilesTableExpanded: {type: Boolean, attribute: false},
+            queuedFilesTableAllSelected: {type: Boolean, attribute: false},
+            queuedFilesTableCollapsible: {type: Boolean, attribute: false},
         };
     }
 
@@ -136,6 +139,9 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         window.addEventListener('beforeunload', this._onReceiveBeforeUnload);
 
         window.addEventListener('dbp-pdf-preview-accept', this.updateTableData.bind(this));
+        window.addEventListener('dbp-tabulator-table-collapsible-event', (tableEvent) => {
+            this.tabulatorTableHandleCollapse(tableEvent);
+        });
     }
 
     disconnectedCallback() {
@@ -448,6 +454,15 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                 max-width: 575px;
             }
         `;
+    }
+
+
+    tabulatorTableHandleCollapse(event) {
+        if (event.detail.isCollapsible === true) {
+            this.queuedFilesTableCollapsible = true;
+        } else {
+            this.queuedFilesTableCollapsible = false;
+        }
     }
 
     /**
@@ -949,24 +964,48 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                             <div class="control field tabulator-actions">
                                 <div class="table-actions">
                                     <dbp-loading-button id="expand-all-btn"
-                                        class="${classMap({hidden: this.queuedFilesTableExpanded || this.queuedFilesCount === 0})}"
-                                        value="${i18n.t('expand-all')}"
+                                        class="${classMap({hidden: this.queuedFilesTableExpanded})}"
+                                        ?disabled="${this.queuedFilesCount === 0 || this.queuedFilesTableCollapsible === false}"
+                                        value="${i18n.t('qualified-pdf-upload.expand-all')}"
                                         @click="${() => {
                                             this.tableQueuedFilesTable.expandAll();
                                             this.queuedFilesTableExpanded = true;
                                         }}"
-                                        title="${i18n.t('expand-all')}"
-                                        >${i18n.t('expand-all')}</dbp-loading-button>
+                                        title="${i18n.t('qualified-pdf-upload.expand-all')}"
+                                        >${i18n.t('qualified-pdf-upload.expand-all')}</dbp-loading-button>
 
                                     <dbp-loading-button id="collapse-all-btn"
-                                        class="${classMap({hidden: !this.queuedFilesTableExpanded || this.queuedFilesCount === 0})}"
-                                        value="${i18n.t('collapse-all')}"
+                                        class="${classMap({hidden: !this.queuedFilesTableExpanded})}"
+                                        ?disabled="${this.queuedFilesCount === 0 || this.queuedFilesTableCollapsible === false}"
+                                        value="${i18n.t('qualified-pdf-upload.collapse-all')}"
                                         @click="${() => {
                                             this.tableQueuedFilesTable.collapseAll();
                                             this.queuedFilesTableExpanded = false;
                                         }}"
-                                        title="${i18n.t('collapse-all')}"
-                                        >${i18n.t('collapse-all')}</dbp-loading-button>
+                                        title="${i18n.t('qualified-pdf-upload.collapse-all')}"
+                                        >${i18n.t('qualified-pdf-upload.collapse-all')}</dbp-loading-button>
+
+                                    <dbp-loading-button id="select-all-btn"
+                                        class="${classMap({hidden: this.queuedFilesTableAllSelected})}"
+                                        ?disabled="${this.queuedFilesCount === 0}"
+                                        value="${i18n.t('qualified-pdf-upload.select-all')}"
+                                        @click="${() => {
+                                            this.queuedFilesTableAllSelected = true;
+                                            this.tableQueuedFilesTable.selectAllRows();
+                                        }}"
+                                        title="${i18n.t('qualified-pdf-upload.select-all')}"
+                                        >${i18n.t('qualified-pdf-upload.select-all')}</dbp-loading-button>
+
+                                    <dbp-loading-button id="deselect-all-btn"
+                                        class="${classMap({hidden: !this.queuedFilesTableAllSelected})}"
+                                        ?disabled="${this.queuedFilesCount === 0}"
+                                        value="${i18n.t('qualified-pdf-upload.deselect-all')}"
+                                        @click="${() => {
+                                            this.queuedFilesTableAllSelected = false;
+                                            this.tableQueuedFilesTable.deselectAllRows();
+                                        }}"
+                                        title="${i18n.t('qualified-pdf-upload.deselect-all')}"
+                                        >${i18n.t('qualified-pdf-upload.deselect-all')}</dbp-loading-button>
                                 </div>
                                 <div class="sign-actions">
                                     <!-- Buttons to start/stop signing process and clear queue -->
