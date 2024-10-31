@@ -278,6 +278,34 @@ export function getSignatureCss() {
             display: flex;
             gap: 1em;
             justify-content: space-between;
+            flex-wrap: wrap;
+            container: tabulator-actions / inline-size;
+        }
+
+        .table-actions,
+        .sign-actions {
+            display: flex;
+            gap: 1em;
+            flex-wrap: wrap;
+        }
+
+        @container tabulator-actions (max-width: 660px) {
+            .table-actions,
+            .sign-actions {
+                width: 100%;
+            }
+
+            .table-actions > dbp-loading-button:not(.hidden),
+            .sign-actions > button {
+                flex-basis: calc(50% - 1em);
+            }
+        }
+
+        @container tabulator-actions (max-width: 420px) {
+            .table-actions,
+            .sign-actions {
+                flex-direction: column;
+            }
         }
 
         @media only screen and (orientation: portrait) and (max-width: 768px) {
