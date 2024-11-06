@@ -472,13 +472,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
 
     queuePlacementSwitch(key, name) {
         this.queuedFilesPlacementModes[key] = name;
-        // console.log(name);
-
-        if (name === 'manual') {
-            this.showPreview(key, true);
-        } else if (this.currentPreviewQueueKey === key) {
-            this.signaturePlacementInProgress = false;
-        }
+        this.showPreview(key, true);
         this.requestUpdate();
     }
 

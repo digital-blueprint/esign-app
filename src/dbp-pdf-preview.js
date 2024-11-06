@@ -222,6 +222,10 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
         this.isPageLoaded = false; // prevent redisplay of previous pdf
         this.showErrorMessage = false;
 
+        if (placementData && placementData.signaturePlacementMode) {
+            this.setPositionTypeSelect(placementData.signaturePlacementMode);
+        }
+
         // move signature if placementData was set
         if (item !== undefined) {
             if (placementData['scaleX'] !== undefined) {
@@ -445,8 +449,6 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
             composed: true,
         });
         this.dispatchEvent(event);
-
-        this.setPositionTypeSelect('auto');
     }
 
     /**
