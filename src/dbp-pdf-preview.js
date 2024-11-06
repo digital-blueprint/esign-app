@@ -37,6 +37,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
         this.signature_height = 42;
         this.border_width = 2;
         this.allowSignatureRotation = false;
+        this.signaturePlacementMode = 'auto';
 
         this._onWindowResize = this._onWindowResize.bind(this);
     }
@@ -144,6 +145,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                 },
                 'object:modified': function (e) {
                     e.target.opacity = 1;
+                    that.setPositionTypeSelect('manual');
                 },
             });
 
@@ -418,6 +420,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
 
         const data = {
             currentPage: this.currentPage,
+            signaturePlacementMode: this.signaturePlacementMode,
             scaleX: item.get('scaleX') / this.canvasToPdfScale,
             scaleY: item.get('scaleY') / this.canvasToPdfScale,
             width: (item.get('width') * item.get('scaleX')) / this.canvasToPdfScale,
@@ -442,6 +445,8 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
             composed: true,
         });
         this.dispatchEvent(event);
+
+        this.setPositionTypeSelect('auto');
     }
 
     /**
@@ -456,6 +461,14 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
 
         // update page to show rotated signature
         await this.showPage(this.currentPage);
+        // Set manual positioning
+        this.setPositionTypeSelect('manual');
+    }
+
+    setPositionTypeSelect(value) {
+        const selectElement = /** @type {HTMLSelectElement} */ (this._('#positioning-type'));
+        selectElement.value = value;
+        selectElement.dispatchEvent(new Event('change'));
     }
 
     static get styles() {
@@ -463,6 +476,10 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
         return css`
             ${commonStyles.getGeneralCSS()}
             ${commonStyles.getButtonCSS()}
+
+            .hidden {
+                display: none !important;
+            }
 
             #pdf-meta input[type=number] {
                 max-width: 50px;
@@ -519,11 +536,29 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                 background-position: calc(100% - 0.4rem) center;
             }
 
+            label[for="profile-type"],
+            label[for="positioning-type"] {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .action-buttons-container label {
+                flex-basis: calc(45% - 6px);
+            }
+
+            .action-buttons-container .button {
+                flex-basis: calc(30% - 10px);
+            }
+
             .nav-buttons {
                 display: flex;
                 justify-content: center;
                 flex-grow: 1;
                 flex-wrap: wrap;
+            }
+
+            @container action-buttons (max-width: 530px) {
+
             }
 
             @container action-buttons (max-width: 350px) {
@@ -604,48 +639,59 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                     <div id="pdf-meta">
                         <div class="buttons ${classMap({hidden: !this.isPageLoaded})}">
                             <div class="action-buttons-container">
-                                <select id="profile-type" class="profile-type-select ${classMap({
-                                    hidden: !this.isShowPlacement
-                                })}">
-                                    <option value="">Select profile type</option>
-                                    <option value="corporate">Corporate</option>
-                                    <option value="personal">Personal</option>
-                                </select>
-                                <select id="positioning-type" class="positioning-type-select ${classMap({
-                                    hidden: !this.isShowPlacement
-                                })}">
-                                    <option value="">Select positioning type</option>
-                                    <option value="manual">Manual</option>
-                                    <option value="auto">Auto</option>
-                                </select>
-                                <button
-                                    class="button ${classMap({
-                                        hidden: !this.isShowPlacement
-                                    })}"
-                                    title="${i18n.t('pdf-preview.rotate-signature')}"
-                                    @click="${() => {
-                                        this.rotateSignature();
-                                    }}"
-                                    ?disabled="${this.isPageRenderingInProgress}">
-                                    &#10227; ${i18n.t('pdf-preview.rotate')}
-                                </button>
-                                <button
-                                    class="button is-primary ${classMap({
-                                        hidden: !this.isShowPlacement,
-                                    })}"
-                                    @click="${() => {
-                                        this.sendAcceptEvent();
-                                    }}">
-                                    ${i18n.t('pdf-preview.save')}
-                                </button>
-                                <button
-                                    class="button is-cancel ${classMap({
-                                        hidden: !this.isShowPlacement
-                                    })}"
-                                    @click="${this.sendCancelEvent}"
-                                    title="${i18n.t('button-close-text')}"
-                                    aria-label="${i18n.t('button-close-text')}">Cancel
-                                </button>
+                                    <label for="profile-type" class="${classMap({
+                                            hidden: !this.isShowPlacement
+                                        })}">Profile type
+                                        <select id="profile-type" class="profile-type-select">
+                                            <option value="personal">Personal</option>
+                                            <option value="corporate">Corporate</option>
+                                        </select>
+                                    </label>
+                                    <label for="positioning-type" class="${classMap({
+                                            hidden: !this.isShowPlacement
+                                        })}">Positioning type
+                                        <select id="positioning-type"
+                                            class="positioning-type-select"
+                                            @change="${(event) => {
+                                                if (event.target.value === 'auto') {
+                                                    this.signaturePlacementMode = 'auto';
+                                                    this.showPage(this.currentPage, true);
+                                                } else {
+                                                    this.signaturePlacementMode = 'manual';
+                                                }
+                                            }}">
+                                            <option value="auto">Auto</option>
+                                            <option value="manual">Manual</option>
+                                        </select>
+                                    </label>
+                                    <button
+                                        class="button ${classMap({
+                                            hidden: !this.isShowPlacement
+                                        })}"
+                                        title="${i18n.t('pdf-preview.rotate-signature')}"
+                                        @click="${() => {
+                                            this.rotateSignature();
+                                        }}"
+                                        ?disabled="${this.isPageRenderingInProgress}">
+                                        &#10227; ${i18n.t('pdf-preview.rotate')}
+                                    </button>
+                                    <button
+                                        class="button is-primary ${classMap({
+                                            hidden: !this.isShowPlacement,
+                                        })}"
+                                        @click="${() => {
+                                            this.sendAcceptEvent();
+                                        }}">
+                                        ${i18n.t('pdf-preview.save')}
+                                    </button>
+                                    <button
+                                        class="button is-cancel ${classMap({
+                                            hidden: !this.isShowPlacement
+                                        })}"
+                                        @click="${this.sendCancelEvent}"
+                                        title="${i18n.t('button-close-text')}"
+                                        aria-label="${i18n.t('button-close-text')}">Cancel
+                                    </button>
                             </div>
                             <div class="nav-buttons">
                                 <button

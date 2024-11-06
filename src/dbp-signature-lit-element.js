@@ -449,7 +449,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
 
     storePDFData(event) {
         let placement = event.detail;
-        let placementMode = 'manual';
+        let placementMode = placement.signaturePlacementMode;
 
         let key = this.currentPreviewQueueKey;
         this.queuedFilesSignaturePlacements[key] = placement;
@@ -472,7 +472,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
 
     queuePlacementSwitch(key, name) {
         this.queuedFilesPlacementModes[key] = name;
-        console.log(name);
+        // console.log(name);
 
         if (name === 'manual') {
             this.showPreview(key, true);
