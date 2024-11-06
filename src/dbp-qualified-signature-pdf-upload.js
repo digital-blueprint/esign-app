@@ -164,6 +164,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
     async queueFile(file) {
         let id = await super.queueFile(file);
         await this._updateNeedsPlacementStatus(id);
+        this.setQueuedFilesTabulatorTable();
         this.requestUpdate();
         return id;
     }
@@ -660,7 +661,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                 const isManual = this.queuedFilesPlacementModes[id] === 'manual';
                 const placementMissing = this.queuedFilesNeedsPlacement.get(id) && !isManual;
                 const warning = placementMissing
-                    ? html`${i18n.t('label-manual-positioning-missing')}`
+                    ? i18n.t('label-manual-positioning-missing')
                     : '';
                 let fileData = {
                     index: id,
