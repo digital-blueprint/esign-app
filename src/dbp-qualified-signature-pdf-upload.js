@@ -67,6 +67,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         this.queuedFilesTableExpanded = false;
         this.queuedFilesTableAllSelected = false;
         this.queuedFilesTableCollapsible = false;
+        this.signedFilesOptions = {};
+        this.failedFilesOptions = {};
         this.selectedFiles = [];
         this.selectedFilesProcessing = false;
     }
@@ -159,6 +161,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
     firstUpdated(changedProperties) {
         super.firstUpdated(changedProperties);
         this.tableQueuedFilesTable =  /** @type {TabulatorTable} */ (this._('#table-queued-files'));
+        this.tableSignedFilesTable =  /** @type {TabulatorTable} */ (this._('#table-signed-files'));
+        this.tableFailedFilesTable =  /** @type {TabulatorTable} */ (this._('#table-failed-files'));
       }
 
     async queueFile(file) {
@@ -465,7 +469,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
     }
 
     update(changedProperties) {
-        // console.log('changedProperties', changedProperties);
+        console.log('changedProperties', changedProperties);
         changedProperties.forEach((oldValue, propName) => {
             switch (propName) {
                 case 'lang':
@@ -479,6 +483,12 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                     break;
                 case 'queuedFilesCount':
                     this.setQueuedFilesTabulatorTable();
+                    break;
+                case 'signedFilesCount':
+                    this.setSignedFilesTabulatorTable();
+                    break;
+                case 'errorFilesCount':
+                    this.setFailedFilesTabulatorTable();
                     break;
             }
         });
@@ -531,7 +541,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
     }
 
     /**
-     * Create tabulator table
+     * Create tabulator table for queued files
      *
      */
     setQueuedFilesTabulatorTable() {
@@ -735,103 +745,271 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
     }
 
     /**
-     * Returns the list of successfully signed files
-     *
-     * @returns {*[]} Array of html templates
+     * Create tabulator table for signed files
      */
-    getSignedFilesHtml() {
-        const ids = Object.keys(this.signedFiles);
+    setSignedFilesTabulatorTable() {
         const i18n = this._i18n;
-        let results = [];
+        let langs  = {
+            'en': {
+                columns: {
+                    'fileName': i18n.t('qualified-pdf-upload.table-header-file-name', {lng: 'en'}),
+                    'fileSize': i18n.t('qualified-pdf-upload.table-header-file-size', {lng: 'en'}),
+                    'downloadButton': i18n.t('qualified-pdf-upload.table-header-download', {lng: 'en'}),
+                },
+            },
+            'de': {
+                columns: {
+                    'fileName': i18n.t('qualified-pdf-upload.table-header-file-name', {lng: 'de'}),
+                    'fileSize': i18n.t('qualified-pdf-upload.table-header-file-size', {lng: 'de'}),
+                    'downloadButton': i18n.t('qualified-pdf-upload.table-header-download', {lng: 'de'}),
+                },
+            },
+        };
 
-        ids.forEach((id) => {
-            const file = this.signedFiles[id];
+        const signedFilesOptions = {
+            local: 'en',
+            langs: langs,
+            layout: 'fitColumns',
+            responsiveLayout: 'collapse',
+            responsiveLayoutCollapseStartOpen: false,
+            index: 'index',
+            columns: [
+                {
+                    title: 'id',
+                    field: 'index',
+                    hozAlign: 'center',
+                    headerHozAlign:"center",
+                    width: 40,
+                    visible: false
+                },
+                {
+                    title: '',
+                    field: 'toggle',
+                    hozAlign: 'center',
+                    width: 65,
+                    formatter:"responsiveCollapse",
+                    headerHozAlign:"center",
+                    headerSort:false,
+                    responsive: 0
+                },
+                {
+                    title: 'fileName',
+                    field: 'fileName',
+                    sorter:"string",
+                    minWidth: 200,
+                    widthGrow: 3,
+                    widthShrink: 1,
+                    hozAlign: 'left',
+                    formatter: 'html',
+                    responsive: 0
+                },
+                {
+                    title: 'fileSize',
+                    field: 'fileSize',
+                    sorter:"string",
+                    width: 100,
+                    hozAlign: 'right',
+                    headerHozAlign: 'right',
+                    formatter: 'plaintext',
+                    responsive: 1
+                },
+                {
+                    title: 'download',
+                    field: 'downloadButton',
+                    sorter: false,
+                    minWidth: 60,
+                    hozAlign: 'center',
+                    headerHozAlign: 'center',
+                    formatter: 'html',
+                    responsive: 0
+                },
+            ],
+            columnDefaults: {
+                vertAlign: 'middle',
+                resizable: false,
+            },
+        };
 
-            results.push(html`
-                <div class="file-block" id="file-block-${id}">
-                    <div class="header">
-                        <span class="filename">
-                            <span class="bold-filename">${file.name}</span>
-                            (${humanFileSize(file.contentSize)})
-                        </span>
-                        <button
-                            class="button is-icon"
-                            title="${i18n.t('qualified-pdf-upload.download-file-button-title')}"
-                            aria-label="${i18n.t('qualified-pdf-upload.download-file-button-title')}"
-                            @click="${() => {
-                                this.downloadFileClickHandler(file, 'file-block-' + id);
-                            }}">
-                            <dbp-icon name="download" aria-hidden="true"></dbp-icon>
-                        </button>
-                    </div>
-                </div>
-            `);
+        let tableFiles = [];
+
+        const ids = Object.keys(this.signedFiles);
+        if(this.tableSignedFilesTable) {
+            ids.forEach((id) => {
+                const file = this.signedFiles[id];
+                let fileData = {
+                    index: id,
+                    fileName: `<span id="file-download-${id}" style="font-weight: bold;">${file.name}</span>`,
+                    fileSize: humanFileSize(file.contentSize),
+                    downloadButton: this.getDownloadButtonHtml(id, file),
+                };
+                tableFiles.push(fileData);
+            });
+
+            signedFilesOptions.data = tableFiles;
+            this.signedFilesOptions = signedFilesOptions;
+            this.tableSignedFilesTable.setData(tableFiles);
+        }
+    }
+
+    getDownloadButtonHtml(id, file) {
+        const i18n = this._i18n;
+        let controlDiv = this.createScopedElement('div');
+        controlDiv.classList.add('tabulator-download-button');
+        // Download button
+        const btnDownload = this.createScopedElement('dbp-icon-button');
+        btnDownload.setAttribute('icon-name', 'download');
+        btnDownload.classList.add('download-button');
+        btnDownload.setAttribute('aria-label', i18n.t('qualified-pdf-upload.download-file-button-title'));
+        btnDownload.setAttribute('title', i18n.t('qualified-pdf-upload.download-file-button-title'));
+        btnDownload.addEventListener("click", async (event) => {
+            event.stopPropagation();
+            this.downloadFileClickHandler(file, 'file-download-' + id);
+            this.tableSignedFilesTable.tabulatorTable.updateData([{index: id, fileName: `<span id="file-download-${id}">${file.name}</span>`}]);
         });
+        controlDiv.appendChild(btnDownload);
 
-        return results;
+        return controlDiv;
     }
 
     /**
-     * Returns the list of files of failed signature processes
-     *
-     * @returns {*[]} Array of html templates
+     * Create tabulator table for failed files
      */
-    getErrorFilesHtml() {
-        const ids = Object.keys(this.errorFiles);
+    setFailedFilesTabulatorTable() {
         const i18n = this._i18n;
-        let results = [];
+        let langs  = {
+            'en': {
+                columns: {
+                    'fileName': i18n.t('qualified-pdf-upload.table-header-file-name', {lng: 'en'}),
+                    'fileSize': i18n.t('qualified-pdf-upload.table-header-file-size', {lng: 'en'}),
+                    'buttons': i18n.t('qualified-pdf-upload.table-header-buttons', {lng: 'en'}),
+                },
+            },
+            'de': {
+                columns: {
+                    'fileName': i18n.t('qualified-pdf-upload.table-header-file-name', {lng: 'de'}),
+                    'fileSize': i18n.t('qualified-pdf-upload.table-header-file-size', {lng: 'de'}),
+                    'buttons': i18n.t('qualified-pdf-upload.table-header-buttons', {lng: 'de'}),
+                },
+            },
+        };
 
-        ids.forEach((id) => {
-            const data = this.errorFiles[id];
+        const failedFilesOptions = {
+            local: 'en',
+            langs: langs,
+            layout: 'fitColumns',
+            responsiveLayout: 'collapse',
+            responsiveLayoutCollapseStartOpen: false,
+            index: 'index',
+            columns: [
+                {
+                    title: 'id',
+                    field: 'index',
+                    hozAlign: 'center',
+                    headerHozAlign:"center",
+                    width: 40,
+                    visible: false
+                },
+                {
+                    title: '',
+                    field: 'toggle',
+                    hozAlign: 'center',
+                    width: 65,
+                    formatter:"responsiveCollapse",
+                    headerHozAlign:"center",
+                    headerSort:false,
+                    responsive: 0
+                },
+                {
+                    title: 'fileName',
+                    field: 'fileName',
+                    sorter:"string",
+                    minWidth: 200,
+                    widthGrow: 3,
+                    widthShrink: 1,
+                    hozAlign: 'left',
+                    formatter: 'html',
+                    responsive: 0
+                },
+                {
+                    title: 'fileSize',
+                    field: 'fileSize',
+                    sorter:"string",
+                    width: 100,
+                    hozAlign: 'right',
+                    headerHozAlign: 'right',
+                    formatter: 'plaintext',
+                    responsive: 1
+                },
+                {
+                    title: 'buttons',
+                    field: 'buttons',
+                    sorter: false,
+                    minWidth: 90,
+                    hozAlign: 'center',
+                    headerHozAlign: 'center',
+                    formatter: 'html',
+                    responsive: 0
+                },
+            ],
+            columnDefaults: {
+                vertAlign: 'middle',
+                resizable: false,
+            },
+        };
 
-            if (data.file === undefined) {
-                return;
-            }
+        let tableFiles = [];
 
-            results.push(html`
-                <div class="file-block error">
-                    <div class="header">
-                        <span class="filename">
-                            <strong>${data.file.name}</strong>
-                            (${humanFileSize(data.file.size)})
-                        </span>
-                        <div class="buttons">
-                            <button
-                                class="button is-icon"
-                                title="${i18n.t(
-                                    'qualified-pdf-upload.re-upload-file-button-title'
-                                )}"
-                                aria-label="${i18n.t(
-                                    'qualified-pdf-upload.re-upload-file-button-title'
-                                )}"
-                                @click="${() => {
-                                    this.fileQueueingClickHandler(data.file, id);
-                                }}">
-                                <dbp-icon name="reload" aria-hidden="true"></dbp-icon>
-                            </button>
-                            <button
-                                class="button is-icon"
-                                title="${i18n.t(
-                                    'qualified-pdf-upload.remove-failed-file-button-title'
-                                )}"
-                                aria-label="${i18n.t(
-                                    'qualified-pdf-upload.remove-failed-file-button-title'
-                                )}"
-                                @click="${() => {
-                                    this.takeFailedFileFromQueue(id);
-                                }}">
-                                <dbp-icon name="trash" aria-hidden="true"></dbp-icon>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="bottom-line">
-                        <strong class="error">${data.json['hydra:description']}</strong>
-                    </div>
-                </div>
-            `);
+        const ids = Object.keys(this.errorFiles);
+        if(this.tableFailedFilesTable) {
+            ids.forEach((id) => {
+                const data = this.errorFiles[id];
+                if (data.file === undefined) {
+                    return;
+                }
+                let fileData = {
+                    index: id,
+                    fileName: `<span id="file-download-${id}" style="font-weight: bold;">${data.file.name}</span>`,
+                    fileSize: humanFileSize(data.file.size),
+                    buttons: this.getFailedButtonsHtml(id, data),
+                };
+                tableFiles.push(fileData);
+            });
+
+            failedFilesOptions.data = tableFiles;
+            this.failedFilesOptions = failedFilesOptions;
+            this.tableFailedFilesTable.setData(tableFiles);
+        }
+    }
+
+    getFailedButtonsHtml(id, data) {
+        const i18n = this._i18n;
+        let controlDiv = this.createScopedElement('div');
+        controlDiv.classList.add('tabulator-failed-buttons');
+        // Re upload button
+        const btnReupload = this.createScopedElement('dbp-icon-button');
+        btnReupload.setAttribute('icon-name', 'reload');
+        btnReupload.classList.add('re-upload-button');
+        btnReupload.setAttribute('aria-label', i18n.t('qualified-pdf-upload.re-upload-file-button-title'));
+        btnReupload.setAttribute('title', i18n.t('qualified-pdf-upload.re-upload-file-button-title'));
+        btnReupload.addEventListener("click", async (event) => {
+            event.stopPropagation();
+            this.fileQueueingClickHandler(data.file, id);
         });
+        controlDiv.appendChild(btnReupload);
 
-        return results;
+        // Delete button
+        const btnDelete = this.createScopedElement('dbp-icon-button');
+        btnDelete.setAttribute('icon-name', 'trash');
+        btnDelete.classList.add('re-upload-button');
+        btnDelete.setAttribute('aria-label', i18n.t('qualified-pdf-upload.remove-failed-file-button-title'));
+        btnDelete.setAttribute('title', i18n.t('qualified-pdf-upload.remove-failed-file-button-title'));
+        btnDelete.addEventListener("click", async (event) => {
+            event.stopPropagation();
+            this.takeFailedFileFromQueue(id);
+        });
+        controlDiv.appendChild(btnDelete);
+
+        return controlDiv;
     }
 
     hasSignaturePermissions() {
@@ -1046,11 +1224,27 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                             'qualified-pdf-upload.download-zip-button-tooltip'
                                         )}"
                                         class="is-right"
-                                        @click="${this.zipDownloadClickHandler}"
+                                        @click="${() => {
+                                            this.zipDownloadClickHandler();
+                                            let id = 0;
+                                            for (const file of this.signedFiles) {
+                                                this.tableSignedFilesTable.tabulatorTable.updateData([
+                                                    {
+                                                        index: id,
+                                                        fileName: `<span id="file-download-${id}">${file.name}</span>`
+                                                    }
+                                                ]);
+                                                id++;
+                                            }
+                                        }}"
                                         type="is-primary"></dbp-button>
                                 </div>
                             </div>
-                            <div class="control">${this.getSignedFilesHtml()}</div>
+                            <dbp-tabulator-table
+                                id="table-signed-files"
+                                class="table-signed-files"
+                                lang="${this.lang}"
+                                .options="${this.signedFilesOptions}"></dbp-tabulator-table>
                         </div>
                         <!-- List of errored files -->
                         <div
@@ -1079,7 +1273,11 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                         type="is-primary"></dbp-button>
                                 </div>
                             </div>
-                            <div class="control">${this.getErrorFilesHtml()}</div>
+                            <dbp-tabulator-table
+                                id="table-failed-files"
+                                class="table-failed-files"
+                                lang="${this.lang}"
+                                .options="${this.failedFilesOptions}"></dbp-tabulator-table>
                         </div>
                     </div>
                     <div class="right-container">
