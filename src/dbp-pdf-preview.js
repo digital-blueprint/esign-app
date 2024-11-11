@@ -145,7 +145,6 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                 },
                 'object:modified': function (e) {
                     e.target.opacity = 1;
-                    that.setPositionTypeSelect('manual');
                 },
             });
 
@@ -224,6 +223,8 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
 
         if (placementData && placementData.signaturePlacementMode) {
             this.setPositionTypeSelect(placementData.signaturePlacementMode);
+        } else {
+            this.setPositionTypeSelect('auto');
         }
 
         // move signature if placementData was set
@@ -463,8 +464,6 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
 
         // update page to show rotated signature
         await this.showPage(this.currentPage);
-        // Set manual positioning
-        this.setPositionTypeSelect('manual');
     }
 
     setPositionTypeSelect(value) {
@@ -641,24 +640,16 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                     <div id="pdf-meta">
                         <div class="buttons ${classMap({hidden: !this.isPageLoaded})}">
                             <div class="action-buttons-container">
-                                    <label for="profile-type" class="${classMap({
-                                            hidden: !this.isShowPlacement
-                                        })}">Profile type
-                                        <select id="profile-type" class="profile-type-select">
-                                            <option value="personal">Personal</option>
-                                            <option value="corporate">Corporate</option>
-                                        </select>
-                                    </label>
-                                    <label for="positioning-type" class="${classMap({
-                                            hidden: !this.isShowPlacement
-                                        })}">Positioning type
+                                    <label for="positioning-type">Positioning type
                                         <select id="positioning-type"
                                             class="positioning-type-select"
                                             @change="${(event) => {
                                                 if (event.target.value === 'auto') {
+                                                    this.isShowPlacement = false;
                                                     this.signaturePlacementMode = 'auto';
-                                                    this.showPage(this.currentPage, true);
+                                                    this.showPage(this.currentPage, false);
                                                 } else {
+                                                    this.isShowPlacement = true;
                                                     this.signaturePlacementMode = 'manual';
                                                 }
                                             }}">

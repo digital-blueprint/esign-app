@@ -733,7 +733,12 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             event.stopPropagation();
             const editButton = /** @type {HTMLElement} */ (event.target);
             const placement  = editButton.getAttribute('data-placement');
-            this.queuePlacementSwitch(id, placement);
+            if (this.queuedFilesPlacementModes[id] !== "manual") {
+                this.queuePlacement(id, placement, false);
+            } else {
+                this.queuePlacement(id, placement);
+            }
+
         });
         controlDiv.appendChild(btnEditSignature);
 

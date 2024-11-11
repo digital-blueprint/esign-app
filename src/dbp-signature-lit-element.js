@@ -489,6 +489,12 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         this.requestUpdate();
     }
 
+    queuePlacement(key, name, showSignature = true) {
+        this.queuedFilesPlacementModes[key] = name;
+        this.showPreview(key, showSignature);
+        this.requestUpdate();
+    }
+
     endSigningProcessIfQueueEmpty() {
         if (this.queuedFilesCount === 0 && this.signingProcessActive) {
             this.signingProcessActive = false;
