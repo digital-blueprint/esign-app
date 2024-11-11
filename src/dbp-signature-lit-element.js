@@ -3,6 +3,7 @@ import * as commonUtils from '@dbp-toolkit/common/utils';
 import {BaseLitElement} from './base-element.js';
 import {SignatureEntry} from './signature-entry.js';
 import {getPDFSignatureCount} from './utils';
+import { send } from '@dbp-toolkit/common/notification';
 
 export default class DBPSignatureLitElement extends BaseLitElement {
     constructor() {
@@ -332,7 +333,15 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             })
             .catch((response) => {
                 /* Error. Inform the user */
-                console.log(`Error status: ${response.status} for file ${file.name}`);
+                if (response.message) {
+                    send({
+                        summary: 'Error!',
+                        body: response.message,
+                        type: 'danger',
+                        timeout: 15,
+                    });
+                    console.log(`Error message: ${response.message}`);
+                }
                 this.sendFinishedEvent(response, file);
             });
 
@@ -349,6 +358,10 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             status: response.status,
             json: {'hydra:description': ''},
         };
+
+        if (response.status !== 201 && response.message) {
+            data.json = { 'hydra:description': response.message};
+        }
 
         try {
             await response.json().then((json) => {
