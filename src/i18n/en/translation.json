@@ -17,7 +17,8 @@
     "button-close-text": "Close",
     "error-cancel-message": "The signature process was manually aborted.",
     "error-login-message": "You need to be logged in to use this function!",
-    "error-manual-positioning-missing": "One or more signatures in the queue must be positioned manually.",
+    "error-manual-positioning-missing-title":"Signature error",
+    "error-manual-positioning-missing": "Signatures in file {{file}} must be positioned manually.",
     "error-permission-message": "You need have permissions to use the official signature to use this function!",
     "error-rights-message": "Abort due to insufficient rights of your account.",
     "label-manual-positioning-missing": "Existing signature present, please select its positioning manually.",
@@ -97,6 +98,7 @@
         "remove-queued-file-button-title": "Remove document from queue",
         "edit-signature-button-title": "Edit signature",
         "preview-file-button-title": "Preview file",
+        "annotation-button-title": "Add annotation",
         "save-field-label_one": "Save {{count}} file",
         "save-field-label_other": "Save {{count}} files",
         "show-preview": "Show document",
@@ -113,6 +115,7 @@
         "table-header-profile": "Profile",
         "table-header-positioning": "Positioning",
         "table-header-warning": "Warning",
+        "table-header-annotation": "Annotation",
         "table-header-buttons": "Actions"
     },
     "signature-verification": {
