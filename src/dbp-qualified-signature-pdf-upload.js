@@ -557,9 +557,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                 columns: {
                     'fileName': i18n.t('qualified-pdf-upload.table-header-file-name', {lng: 'en'}),
                     'fileSize': i18n.t('qualified-pdf-upload.table-header-file-size', {lng: 'en'}),
-                    'profile': i18n.t('qualified-pdf-upload.table-header-profile', {lng: 'en'}),
                     'positioning': i18n.t('qualified-pdf-upload.table-header-positioning', {lng: 'en'}),
-                    'warning': i18n.t('qualified-pdf-upload.table-header-warning', {lng: 'en'}),
+                    'annotation': i18n.t('qualified-pdf-upload.table-header-annotation', {lng: 'en'}),
                     'buttons': i18n.t('qualified-pdf-upload.table-header-buttons', {lng: 'en'}),
                 },
             },
@@ -567,9 +566,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                 columns: {
                     'fileName': i18n.t('qualified-pdf-upload.table-header-file-name', {lng: 'de'}),
                     'fileSize': i18n.t('qualified-pdf-upload.table-header-file-size', {lng: 'de'}),
-                    'profile': i18n.t('qualified-pdf-upload.table-header-profile', {lng: 'de'}),
                     'positioning': i18n.t('qualified-pdf-upload.table-header-positioning', {lng: 'de'}),
-                    'warning': i18n.t('qualified-pdf-upload.table-header-warning', {lng: 'de'}),
+                    'annotation': i18n.t('qualified-pdf-upload.table-header-annotation', {lng: 'de'}),
                     'buttons': i18n.t('qualified-pdf-upload.table-header-buttons', {lng: 'de'}),
                 },
             },
@@ -589,6 +587,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                     hozAlign: 'center',
                     headerHozAlign:"center",
                     width: 40,
+                    visible: false
                 },
                 {
                     title: '',
@@ -608,7 +607,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                     widthGrow: 3,
                     widthShrink: 1,
                     hozAlign: 'left',
-                    formatter: 'plaintext',
+                    formatter: 'html',
                     responsive: 0
                 },
                 {
@@ -621,32 +620,32 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                     formatter: 'plaintext',
                     responsive: 2
                 },
-                {
-                    title: 'profile',
-                    field: 'profile',
-                    sorter: false,
-                    minWidth: 140,
-                    hozAlign: 'center',
-                    headerHozAlign: 'center',
-                    formatter: 'html',
-                    responsive: 2
-                },
+                // {
+                //     title: 'profile',
+                //     field: 'profile',
+                //     sorter: false,
+                //     width: 120,
+                //     hozAlign: 'center',
+                //     headerHozAlign: 'center',
+                //     formatter: 'html',
+                //     // visible: false
+                //     responsive: 2
+                // },
                 {
                     title: 'positioning',
                     field: 'positioning',
-                    minWidth: 120,
+                    minWidth: 100,
                     hozAlign: 'center',
                     headerHozAlign: 'center',
                     formatter: 'html',
                     responsive: 2
                 },
                 {
-                    title: 'warning',
-                    field: 'warning',
+                    title: 'annotation',
+                    field: 'annotation',
                     sorter: false,
-                    minWidth: 140,
-                    widthGrow: 2,
-                    hozAlign: 'left',
+                    width: 60,
+                    hozAlign: 'center',
                     headerHozAlign: 'center',
                     formatter: 'html',
                     responsive: 2
@@ -655,7 +654,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                     title: 'buttons',
                     field: 'buttons',
                     sorter: false,
-                    minWidth: 140,
+                    minWidth: 160,
                     hozAlign: 'right',
                     headerHozAlign: 'center',
                     formatter: 'html',
@@ -677,15 +676,27 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                 const isManual = this.queuedFilesPlacementModes[id] === 'manual';
                 const placementMissing = this.queuedFilesNeedsPlacement.get(id) && !isManual;
                 const warning = placementMissing
-                    ? i18n.t('label-manual-positioning-missing')
+                    ? `<dbp-icon name="warning-high"
+                        title="${i18n.t('label-manual-positioning-missing')}"
+                        aria-label="${i18n.t('label-manual-positioning-missing')}"
+                        style="font-size:24px;color:red;margin-bottom:4px;margin-left:10px;"></dbp-icon>`
+                    : '';
+                const annotationCount = Array.isArray(this.queuedFilesAnnotations[id])
+                    ? this.queuedFilesAnnotations[id].length
+                    : 0;
+                const annotationIcon = (annotationCount > 0)
+                    ? `<span style="border:solid 1px var(--dbp-content);border-radius: 100%;width:24px;height:24px;;"
+                        title="Document has ${annotationCount} annotations"
+                        aria-label="Document has ${annotationCount} annotations"
+                        >${annotationCount}</span>`
                     : '';
                 let fileData = {
                     index: id,
-                    fileName: file.name,
+                    fileName: `${file.name} ${warning}`,
                     fileSize: humanFileSize(file.size),
-                    profile: 'Personal',
+                    // profile: 'Personal',
                     positioning: isManual ? 'manual' : 'auto',
-                    warning: warning,
+                    annotation: annotationIcon,
                     buttons: this.getActionButtonsHtml(id),
                 };
 
@@ -710,17 +721,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         const i18n = this._i18n;
         let controlDiv = this.createScopedElement('div');
         controlDiv.classList.add('tabulator-icon-buttons');
-        // Delete button
-        const btnDelete = this.createScopedElement('dbp-icon-button');
-        btnDelete.setAttribute('icon-name', 'trash');
-        btnDelete.classList.add('delete-button');
-        btnDelete.setAttribute('aria-label', i18n.t('qualified-pdf-upload.remove-queued-file-button-title'));
-        btnDelete.setAttribute('title', i18n.t('qualified-pdf-upload.remove-queued-file-button-title'));
-        btnDelete.addEventListener("click", async (event) => {
-            event.stopPropagation();
-            this.takeFileFromQueue(id);
-        });
-        controlDiv.appendChild(btnDelete);
+
         // Edit signature button
         const btnEditSignature = this.createScopedElement('dbp-icon-button');
         btnEditSignature.setAttribute('icon-name', 'pencil');
@@ -735,6 +736,19 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             this.queuePlacementSwitch(id, placement);
         });
         controlDiv.appendChild(btnEditSignature);
+
+        // Add annotation button
+        const btnAnnotation = this.createScopedElement('dbp-icon-button');
+        btnAnnotation.setAttribute('icon-name', 'bubble');
+        btnAnnotation.classList.add('annotation-button');
+        btnAnnotation.setAttribute('aria-label', i18n.t('qualified-pdf-upload.annotation-button-title'));
+        btnAnnotation.setAttribute('title', i18n.t('qualified-pdf-upload.annotation-button-title'));
+        btnAnnotation.addEventListener("click", async (event) => {
+            event.stopPropagation();
+            this.showAnnotationView(id, 'text-selected');
+        });
+        controlDiv.appendChild(btnAnnotation);
+
         // Show preview button
         const btnPreview = this.createScopedElement('dbp-icon-button');
         btnPreview.setAttribute('icon-name', 'keyword-research');
@@ -746,6 +760,18 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             this.showPreview(id);
         });
         controlDiv.appendChild(btnPreview);
+
+        // Delete button
+        const btnDelete = this.createScopedElement('dbp-icon-button');
+        btnDelete.setAttribute('icon-name', 'trash');
+        btnDelete.classList.add('delete-button');
+        btnDelete.setAttribute('aria-label', i18n.t('qualified-pdf-upload.remove-queued-file-button-title'));
+        btnDelete.setAttribute('title', i18n.t('qualified-pdf-upload.remove-queued-file-button-title'));
+        btnDelete.addEventListener("click", async (event) => {
+            event.stopPropagation();
+            this.takeFileFromQueue(id);
+        });
+        controlDiv.appendChild(btnDelete);
 
         return controlDiv;
     }
@@ -929,7 +955,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                     title: 'fileName',
                     field: 'fileName',
                     sorter:"string",
-                    minWidth: 200,
+                    minWidth: 100,
                     widthGrow: 3,
                     widthShrink: 1,
                     hozAlign: 'left',
@@ -943,6 +969,17 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                     width: 100,
                     hozAlign: 'right',
                     headerHozAlign: 'right',
+                    formatter: 'plaintext',
+                    responsive: 1
+                },
+                {
+                    title: 'Error Message',
+                    field: 'errorMessage',
+                    sorter:"string",
+                    minWidth: 100,
+                    widthGrow: 2,
+                    hozAlign: 'left',
+                    headerHozAlign: 'left',
                     formatter: 'plaintext',
                     responsive: 1
                 },
@@ -969,6 +1006,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         if(this.tableFailedFilesTable) {
             ids.forEach((id) => {
                 const data = this.errorFiles[id];
+                const errorMessage = data.json['hydra:description'];
                 if (data.file === undefined) {
                     return;
                 }
@@ -976,6 +1014,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                     index: id,
                     fileName: `<span id="file-download-${id}" style="font-weight: bold;">${data.file.name}</span>`,
                     fileSize: humanFileSize(data.file.size),
+                    errorMessage: errorMessage,
                     buttons: this.getFailedButtonsHtml(id, data),
                 };
                 tableFiles.push(fileData);
