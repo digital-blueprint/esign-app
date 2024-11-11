@@ -234,13 +234,13 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         let errorInPositioning = false;
         for (const key of Object.keys(this.queuedFiles)) {
             const isManual = this.queuedFilesPlacementModes[key] === 'manual';
-            if (this.queuedFilesNeedsPlacement.get(key) && !isManual) {
+            if (this.queuedFilesNeedsPlacement.get(key) && !isManual && (this.selectedFiles.length === 0 || this.fileIsSelectedFile(key))) {
                 const file = this.queuedFiles[key].file;
                 const fileName = file.name;
                 // Some have a signature but are not "manual", stop everything
                 notify({
-                    summary: fileName,
-                    body: i18n.t('error-manual-positioning-missing'),
+                    summary: i18n.t('error-manual-positioning-missing-title'),
+                    body: i18n.t('error-manual-positioning-missing', { file: fileName}),
                     type: 'danger',
                 });
                 errorInPositioning = true;
@@ -258,7 +258,9 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             // If we have selected files in the table use the selected file
             const selectedFile = this.selectedFiles.shift();
             key = Object.keys(this.queuedFiles).find(
-                key => this.queuedFiles[key].file.name === selectedFile.filename
+                (index) => {
+                    return this.queuedFiles[index].file.name.trim() === selectedFile.filename.trim();
+                }
             );
             this.selectedFilesProcessing = true;
         } else {
@@ -302,6 +304,10 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             this.selectedFilesProcessing = false;
             await this.stopSigningProcess();
         }
+    }
+
+    fileIsSelectedFile(key){
+        return this.selectedFiles.some((file) => file.key === key);
     }
 
     /**
