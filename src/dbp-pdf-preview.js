@@ -670,6 +670,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                                         class="button ${classMap({
                                             hidden: !this.isShowPlacement
                                         })}"
+                                        id="rotate-signature-button"
                                         title="${i18n.t('pdf-preview.rotate-signature')}"
                                         @click="${() => {
                                             this.rotateSignature();
@@ -678,18 +679,16 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                                         &#10227; ${i18n.t('pdf-preview.rotate')}
                                     </button>
                                     <button
-                                        class="button is-primary ${classMap({
-                                            hidden: !this.isShowPlacement,
-                                        })}"
+                                        class="button is-primary"
+                                        id="save-signature-button"
                                         @click="${() => {
                                             this.sendAcceptEvent();
                                         }}">
                                         ${i18n.t('pdf-preview.save')}
                                     </button>
                                     <button
-                                        class="button is-cancel ${classMap({
-                                            hidden: !this.isShowPlacement
-                                        })}"
+                                        class="button is-cancel"
+                                        id="cancel-signature-button"
                                         @click="${this.sendCancelEvent}"
                                         title="${i18n.t('button-close-text')}"
                                         aria-label="${i18n.t('button-close-text')}">Cancel

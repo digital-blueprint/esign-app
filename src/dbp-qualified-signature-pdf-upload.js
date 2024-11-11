@@ -1000,7 +1000,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         // Delete button
         const btnDelete = this.createScopedElement('dbp-icon-button');
         btnDelete.setAttribute('icon-name', 'trash');
-        btnDelete.classList.add('re-upload-button');
+        btnDelete.classList.add('delete-button');
         btnDelete.setAttribute('aria-label', i18n.t('qualified-pdf-upload.remove-failed-file-button-title'));
         btnDelete.setAttribute('title', i18n.t('qualified-pdf-upload.remove-failed-file-button-title'));
         btnDelete.addEventListener("click", async (event) => {
@@ -1058,7 +1058,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                 this._('#file-source').setAttribute('dialog-open', '');
                             }}"
                             ?disabled="${this.signingProcessActive}"
-                            class="button is-primary">
+                            class="button is-primary"
+                            id="upload-pdf-button">
                             ${i18n.t('qualified-pdf-upload.upload-button-label')}
                         </button>
                         <dbp-file-source
@@ -1156,6 +1157,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                 <div class="sign-actions">
                                     <!-- Buttons to start/stop signing process and clear queue -->
                                     <button
+                                        id="clear-queue-button"
                                         @click="${this.clearQueuedFiles}"
                                         ?disabled="${this.queuedFilesCount === 0 ||
                                         this.signingProcessActive ||
@@ -1166,6 +1168,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                         ${i18n.t('qualified-pdf-upload.clear-all')}
                                     </button>
                                     <button
+                                        id="start-signing-button"
                                         @click="${() => {
                                             this.signingProcessEnabled = true;
                                             this.signingProcessActive = true;
@@ -1204,7 +1207,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                         </div>
                         <!-- List of signed PDFs -->
                         <div
-                            class="files-block field ${classMap({
+                            class="files-block signed-files field ${classMap({
                                 hidden: this.signedFilesCount === 0,
                                 'is-disabled': this.isUserInterfaceDisabled(),
                             })}">
@@ -1212,7 +1215,9 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                             <!-- Button to download all signed PDFs -->
                             <div class="field ${classMap({hidden: this.signedFilesCount === 0})}">
                                 <div class="control">
-                                    <button @click="${this.clearSignedFiles}" class="button">
+                                    <button id="clear-signed-files"
+                                        class="clear-signed-files button"
+                                        @click="${this.clearSignedFiles}" class="button">
                                         ${i18n.t('qualified-pdf-upload.clear-all')}
                                     </button>
                                     <dbp-button
@@ -1223,7 +1228,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                         title="${i18n.t(
                                             'qualified-pdf-upload.download-zip-button-tooltip'
                                         )}"
-                                        class="is-right"
+                                        class="zip-download-button"
                                         @click="${() => {
                                             this.zipDownloadClickHandler();
                                             let id = 0;
