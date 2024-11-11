@@ -143,18 +143,18 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         // we want to be able to cancel the leaving of the page
         window.addEventListener('beforeunload', this._onReceiveBeforeUnload);
         window.addEventListener('dbp-pdf-preview-accept', this.setQueuedFilesTabulatorTable.bind(this));
-        window.addEventListener('dbp-tabulator-table-collapsible-event', (tableEvent) => {
-            this.tabulatorTableHandleCollapse(tableEvent);
-        });
-        window.addEventListener('dbp-tabulator-table-row-selection-changed-event', (tableEvent) => {
-            this.handleTableSelection(tableEvent);
-        });
+        window.addEventListener('dbp-pdf-annotations-save', this.setQueuedFilesTabulatorTable.bind(this));
+        window.addEventListener('dbp-tabulator-table-collapsible-event', this.tabulatorTableHandleCollapse.bind(this));
+        window.addEventListener('dbp-tabulator-table-row-selection-changed-event', this.handleTableSelection.bind(this));
     }
 
     disconnectedCallback() {
         // remove event listeners
         window.removeEventListener('beforeunload', this._onReceiveBeforeUnload);
         window.removeEventListener('dbp-pdf-preview-accept', this.setQueuedFilesTabulatorTable);
+        window.removeEventListener('dbp-pdf-annotations-save', this.setQueuedFilesTabulatorTable);
+        window.removeEventListener('dbp-tabulator-table-collapsible-event', this.tabulatorTableHandleCollapse);
+        window.removeEventListener('dbp-tabulator-table-row-selection-changed-event', this.handleTableSelection);
         super.disconnectedCallback();
     }
 
