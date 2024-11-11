@@ -30,8 +30,9 @@ export function getSignatureCss() {
 
         #pdf-preview,
         #annotation-view {
-            min-width: 320px;
+            min-width: 75vw;
             box-sizing: border-box;
+            background-color: var(--dbp-background);
         }
 
         h2:first-child {
@@ -198,6 +199,14 @@ export function getSignatureCss() {
             font-weight: bold;
         }
 
+        .error-files .control,
+        .signed-files .control {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 1em;
+        }
+
         #pdf-preview button.is-cancel, .box-header .is-cancel {
             background: transparent;
             border: none;
@@ -230,11 +239,13 @@ export function getSignatureCss() {
 
         #pdf-preview,
         #annotation-view {
-            position: sticky;
-            top: 0px;
-            height: 100vh;
+            position: absolute;
+            top: 100px;
+            height: 90vh;
             overflow: auto;
             padding-bottom: 30px;
+            right: 8vw;
+            max-width: 75vw;
         }
 
         #pdf-preview .box-header {
