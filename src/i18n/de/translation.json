@@ -78,6 +78,8 @@
         "select-all": "Alle auswählen",
         "deselect-all": "Alle abwählen",
         "confirm-page-leave": "Sind Sie sicher, dass Sie die Seite verlassen wollen? Es stehen signierte Dokumente zum Download bereit.",
+        "confirm-delete-file": "Sind Sie sicher, dass Sie die {{file}} löschen möchten?",
+        "this-file": "Datei",
         "current-signing-process-label": "Aktueller Signaturprozess",
         "download-file-button-title": "Signiertes PDF Dokument speichern",
         "download-zip-button": "Alle speichern unter",

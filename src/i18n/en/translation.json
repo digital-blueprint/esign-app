@@ -78,6 +78,8 @@
         "select-all": "Select all",
         "deselect-all": "Deselect all",
         "confirm-page-leave": "Are you sure you want to leave this page? There are still signed documents ready to be downloaded.",
+        "confirm-delete-file": "Are you sure you want to delete {{file}}?",
+        "this-file": "this file",
         "current-signing-process-label": "Current signing process",
         "download-file-button-title": "Save signed PDF",
         "download-zip-button": "Save all",

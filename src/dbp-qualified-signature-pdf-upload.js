@@ -772,9 +772,19 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         btnDelete.classList.add('delete-button');
         btnDelete.setAttribute('aria-label', i18n.t('qualified-pdf-upload.remove-queued-file-button-title'));
         btnDelete.setAttribute('title', i18n.t('qualified-pdf-upload.remove-queued-file-button-title'));
+        const fileName = this.queuedFiles[id].file.name;
+        if (fileName) {
+            btnDelete.setAttribute('data-filename', fileName);
+        }
         btnDelete.addEventListener("click", async (event) => {
             event.stopPropagation();
-            this.takeFileFromQueue(id);
+            const editButton = /** @type {HTMLElement} */ (event.target);
+            const fileName  = editButton.getAttribute('data-filename') || i18n.t('qualified-pdf-upload.this-file');
+            const result = confirm(i18n.t('qualified-pdf-upload.confirm-delete-file', { file: fileName}));
+
+            if (result) {
+                this.takeFileFromQueue(id);
+            }
         });
         controlDiv.appendChild(btnDelete);
 
