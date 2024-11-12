@@ -924,8 +924,8 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                     : 0;
                 const annotationIcon = (annotationCount > 0)
                     ? `<span style="border:solid 1px var(--dbp-content);border-radius: 100%;width:24px;height:24px;display:block;text-align:center;"
-                        title="Document has ${annotationCount} annotations"
-                        aria-label="Document has ${annotationCount} annotations"
+                        title="${i18n.t('annotations-count-text', {annotationCount: annotationCount})}"
+                        aria-label="${i18n.t('annotations-count-text', {annotationCount: annotationCount})}"
                         >${annotationCount}</span>`
                     : '';
                 let fileData = {

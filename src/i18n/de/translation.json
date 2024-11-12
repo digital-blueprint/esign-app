@@ -41,6 +41,7 @@
     "download-file-completed": "Datei heruntergeladen",
     "re-upload-all-button-title": "Alle fehlgeschlagen Signaturvorgänge erneut in die Warteschlange stellen",
     "remove-failed-file-button-title": "Fehlgeschlagenes Dokument entfernen",
+    "annotations-count-text": "Dokument hat {{annotationCount}} Anmerkungen",
 
     "official-pdf-upload": {
         "annotation": "Anmerkungen",

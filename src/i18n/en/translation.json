@@ -22,7 +22,7 @@
     "error-permission-message": "You need have permissions to use the official signature to use this function!",
     "error-rights-message": "Abort due to insufficient rights of your account.",
     "label-manual-positioning-missing": "Existing signature present, please select its positioning manually.",
-
+    "annotations-count-text": "Document has {{annotationCount}} annotations",
     "edit-signature-button-title": "Edit signature",
     "annotation-button-title": "Add annotation",
     "preview-file-button-title": "Preview file",
