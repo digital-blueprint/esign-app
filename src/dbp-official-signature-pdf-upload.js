@@ -6,12 +6,10 @@ import DBPSignatureLitElement from './dbp-signature-lit-element';
 import {PdfPreview} from './dbp-pdf-preview';
 import * as commonUtils from '@dbp-toolkit/common/utils';
 import * as utils from './utils';
-import {Button, Icon, MiniSpinner} from '@dbp-toolkit/common';
+import {Button, Icon, IconButton, LoadingButton, MiniSpinner, combineURLs} from '@dbp-toolkit/common';
 import * as commonStyles from '@dbp-toolkit/common/styles';
 import {classMap} from 'lit/directives/class-map.js';
 import {FileSource} from '@dbp-toolkit/file-handling';
-import {combineURLs} from '@dbp-toolkit/common';
-import {TextSwitch} from './textswitch.js';
 import {FileSink} from '@dbp-toolkit/file-handling';
 import {name as pkgName} from './../package.json';
 import {send as notify} from '@dbp-toolkit/common/notification';
@@ -19,6 +17,7 @@ import metadata from './dbp-official-signature-pdf-upload.metadata.json';
 import {Activity} from './activity.js';
 import {PdfAnnotationView} from './dbp-pdf-annotation-view';
 import * as SignatureStyles from './styles';
+import {TabulatorTable} from '@dbp-toolkit/tabulator-table';
 
 class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElement) {
     constructor() {
@@ -60,6 +59,14 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         this.addAnnotationInProgress = false;
         this.activity = new Activity(metadata);
         this.fileHandlingEnabledTargets = 'local';
+        this.queuedFilesOptions = {};
+        this.queuedFilesTableExpanded = false;
+        this.queuedFilesTableAllSelected = false;
+        this.queuedFilesTableCollapsible = false;
+        this.signedFilesOptions = {};
+        this.failedFilesOptions = {};
+        this.selectedFiles = [];
+        this.selectedFilesProcessing = false;
     }
 
     static get scopedElements() {
@@ -70,8 +77,10 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             'dbp-pdf-preview': PdfPreview,
             'dbp-mini-spinner': MiniSpinner,
             'dbp-button': Button,
-            'dbp-textswitch': TextSwitch,
+            'dbp-icon-button': IconButton,
+            'dbp-loading-button': LoadingButton,
             'dbp-pdf-annotation-view': PdfAnnotationView,
+            'dbp-tabulator-table': TabulatorTable,
         };
     }
 
@@ -110,6 +119,10 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             queuedFilesAnnotationModes: {type: Array, attribute: false},
             queuedFilesAnnotationSaved: {type: Array, attribute: false},
             fileHandlingEnabledTargets: {type: String, attribute: 'file-handling-enabled-targets'},
+            queuedFilesTableExpanded: {type: Boolean, attribute: false},
+            queuedFilesTableAllSelected: {type: Boolean, attribute: false},
+            queuedFilesTableCollapsible: {type: Boolean, attribute: false},
+            selectedFiles: {type: Array, attribute: false},
         };
     }
 
@@ -119,11 +132,33 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         setInterval(() => {
             this.handleQueuedFiles();
         }, 1000);
+
+        window.addEventListener('dbp-pdf-preview-accept', this.setQueuedFilesTabulatorTable.bind(this));
+        window.addEventListener('dbp-pdf-annotations-save', this.setQueuedFilesTabulatorTable.bind(this));
+        window.addEventListener('dbp-tabulator-table-collapsible-event', this.tabulatorTableHandleCollapse.bind(this));
+        window.addEventListener('dbp-tabulator-table-row-selection-changed-event', this.handleTableSelection.bind(this));
+    }
+
+    disconnectedCallback() {
+        // remove event listeners
+        window.removeEventListener('dbp-pdf-preview-accept', this.setQueuedFilesTabulatorTable);
+        window.removeEventListener('dbp-pdf-annotations-save', this.setQueuedFilesTabulatorTable);
+        window.removeEventListener('dbp-tabulator-table-collapsible-event', this.tabulatorTableHandleCollapse);
+        window.removeEventListener('dbp-tabulator-table-row-selection-changed-event', this.handleTableSelection);
+        super.disconnectedCallback();
+    }
+
+    firstUpdated(changedProperties) {
+        super.firstUpdated(changedProperties);
+        this.tableQueuedFilesTable =  /** @type {TabulatorTable} */ (this._('#table-queued-files'));
+        this.tableSignedFilesTable =  /** @type {TabulatorTable} */ (this._('#table-signed-files'));
+        this.tableFailedFilesTable =  /** @type {TabulatorTable} */ (this._('#table-failed-files'));
     }
 
     async queueFile(file) {
         let id = await super.queueFile(file);
         await this._updateNeedsPlacementStatus(id);
+        this.setQueuedFilesTabulatorTable();
         this.requestUpdate();
         return id;
     }
@@ -140,29 +175,51 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             return;
         }
 
-        if (!this.signingProcessEnabled || this.uploadInProgress || this.addAnnotationInProgress) {
+        if (!this.signingProcessEnabled ||
+            this.uploadInProgress ||
+            this.addAnnotationInProgress) {
             return;
         }
         this.signaturePlacementInProgress = false;
 
         // Validate that all PDFs with a signature have manual placement
+        let errorInPositioning = false;
         for (const key of Object.keys(this.queuedFiles)) {
             const isManual = this.queuedFilesPlacementModes[key] === 'manual';
-            if (this.queuedFilesNeedsPlacement.get(key) && !isManual) {
+            if (this.queuedFilesNeedsPlacement.get(key) && !isManual && (this.selectedFiles.length === 0 || this.fileIsSelectedFile(key))) {
+                const file = this.queuedFiles[key].file;
+                const fileName = file.name;
                 // Some have a signature but are not "manual", stop everything
                 notify({
-                    body: i18n.t('error-manual-positioning-missing'),
+                    summary: i18n.t('error-manual-positioning-missing-title'),
+                    body: i18n.t('error-manual-positioning-missing', { file: fileName}),
                     type: 'danger',
-                    timeout: 5,
                 });
-                this.signingProcessEnabled = false;
-                this.signingProcessActive = false;
-                return;
+                errorInPositioning = true;
             }
         }
+        if (errorInPositioning) {
+            this.signingProcessEnabled = false;
+            this.signingProcessActive = false;
+            await this.stopSigningProcess();
+            return;
+        }
 
-        // take the file off the queue
-        const key = Object.keys(this.queuedFiles)[0];
+        let key = null;
+        if (this.selectedFiles.length > 0) {
+            // If we have selected files in the table use the selected file
+            const selectedFile = this.selectedFiles.shift();
+            key = Object.keys(this.queuedFiles).find(
+                (index) => {
+                    return this.queuedFiles[index].file.name.trim() === selectedFile.filename.trim();
+                }
+            );
+            this.selectedFilesProcessing = true;
+        } else {
+            // Process all queued files
+            key = Object.keys(this.queuedFiles)[0];
+        }
+
         const entry = this.takeFileFromQueue(key);
         const file = entry.file;
         this.currentFile = file;
@@ -192,6 +249,13 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         const annotations = this.takeAnnotationsFromQueue(key);
         await this.uploadFile(file, params, annotationsEnabled ? annotations : []);
         this.uploadInProgress = false;
+        // Stop processing if no more selected file exists
+        if (this.selectedFilesProcessing && this.selectedFiles.length === 0) {
+            this.signingProcessEnabled = false;
+            this.signingProcessActive = false;
+            this.selectedFilesProcessing = false;
+            await this.stopSigningProcess();
+        }
     }
 
     /**
@@ -267,11 +331,21 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             switch (propName) {
                 case 'lang':
                     this._i18n.changeLanguage(this.lang);
+                    this.setQueuedFilesTabulatorTable();
                     break;
                 case 'entryPointUrl':
                     if (this.entryPointUrl) {
                         this.fileSourceUrl = combineURLs(this.entryPointUrl, '/esign/advancedly-signed-documents');
                     }
+                    break;
+                case 'queuedFilesCount':
+                    this.setQueuedFilesTabulatorTable();
+                    break;
+                case 'signedFilesCount':
+                    this.setSignedFilesTabulatorTable();
+                    break;
+                case 'errorFilesCount':
+                    this.setFailedFilesTabulatorTable();
                     break;
             }
         });
@@ -282,6 +356,8 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         this.queuedFilesSignaturePlacements = [];
         this.queuedFilesPlacementModes = [];
         this.queuedFilesNeedsPlacement.clear();
+        // Clear Tabulator Table rows
+        this.tableQueuedFilesTable.setData();
         super.clearQueuedFiles();
     }
 
@@ -310,188 +386,549 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         `;
     }
 
+    tabulatorTableHandleCollapse(event) {
+        if (event.detail.isCollapsible === true) {
+            this.queuedFilesTableCollapsible = true;
+        } else {
+            this.queuedFilesTableCollapsible = false;
+        }
+    }
+
     /**
-     * Returns the list of queued files
+     * Create tabulator table for queued files
      *
-     * @returns {*[]} Array of html templates
      */
-    getQueuedFilesHtml() {
+    setQueuedFilesTabulatorTable() {
         const i18n = this._i18n;
+        let langs  = {
+            'en': {
+                columns: {
+                    'fileName': i18n.t('official-pdf-upload.table-header-file-name', {lng: 'en'}),
+                    'fileSize': i18n.t('official-pdf-upload.table-header-file-size', {lng: 'en'}),
+                    'positioning': i18n.t('official-pdf-upload.table-header-positioning', {lng: 'en'}),
+                    'annotation': i18n.t('official-pdf-upload.table-header-annotation', {lng: 'en'}),
+                    'buttons': i18n.t('official-pdf-upload.table-header-buttons', {lng: 'en'}),
+                },
+            },
+            'de': {
+                columns: {
+                    'fileName': i18n.t('official-pdf-upload.table-header-file-name', {lng: 'de'}),
+                    'fileSize': i18n.t('official-pdf-upload.table-header-file-size', {lng: 'de'}),
+                    'positioning': i18n.t('official-pdf-upload.table-header-positioning', {lng: 'de'}),
+                    'annotation': i18n.t('official-pdf-upload.table-header-annotation', {lng: 'de'}),
+                    'buttons': i18n.t('official-pdf-upload.table-header-buttons', {lng: 'de'}),
+                },
+            },
+        };
+
+        const queuedFilesOptions = {
+            local: 'en',
+            langs: langs,
+            layout: 'fitColumns',
+            responsiveLayout: 'collapse',
+            responsiveLayoutCollapseStartOpen: false,
+            index: 'index',
+            columns: [
+                {
+                    title: '#',
+                    field: 'index',
+                    hozAlign: 'center',
+                    headerHozAlign:"center",
+                    width: 40,
+                    visible: false
+                },
+                {
+                    title: '',
+                    field: 'toggle',
+                    hozAlign: 'center',
+                    width: 65,
+                    formatter:"responsiveCollapse",
+                    headerHozAlign:"center",
+                    headerSort:false,
+                    responsive: 0
+                },
+                {
+                    title: 'fileName',
+                    field: 'fileName',
+                    sorter:"string",
+                    minWidth: 320,
+                    widthGrow: 3,
+                    hozAlign: 'left',
+                    formatter: 'html',
+                    responsive: 0
+                },
+                {
+                    title: 'fileSize',
+                    field: 'fileSize',
+                    sorter:"string",
+                    width: 100,
+                    hozAlign: 'right',
+                    headerHozAlign: 'right',
+                    formatter: 'plaintext',
+                    responsive: 2
+                },
+                // {
+                //     title: 'profile',
+                //     field: 'profile',
+                //     sorter: false,
+                //     width: 120,
+                //     hozAlign: 'center',
+                //     headerHozAlign: 'center',
+                //     formatter: 'html',
+                //     // visible: false
+                //     responsive: 2
+                // },
+                {
+                    title: 'positioning',
+                    field: 'positioning',
+                    width: 100,
+                    hozAlign: 'center',
+                    headerHozAlign: 'center',
+                    formatter: 'html',
+                    responsive: 2
+                },
+                {
+                    title: 'annotation',
+                    field: 'annotation',
+                    sorter: false,
+                    width: 60,
+                    hozAlign: 'center',
+                    headerHozAlign: 'center',
+                    formatter: 'html',
+                    responsive: 2
+                },
+                {
+                    title: 'buttons',
+                    field: 'buttons',
+                    sorter: false,
+                    width: 165,
+                    hozAlign: 'right',
+                    headerHozAlign: 'center',
+                    formatter: 'html',
+                    responsive: 0
+                },
+            ],
+            columnDefaults: {
+                vertAlign: 'middle',
+                resizable: false,
+            },
+        };
+
+        let tableFiles = [];
+
         const ids = Object.keys(this.queuedFiles);
-        let results = [];
+        if(this.tableQueuedFilesTable) {
+            ids.forEach((id) => {
+                const file = this.queuedFiles[id].file;
+                const isManual = this.queuedFilesPlacementModes[id] === 'manual';
+                const placementMissing = this.queuedFilesNeedsPlacement.get(id) && !isManual;
+                const warning = placementMissing
+                    ? `<dbp-icon name="warning-high"
+                        title="${i18n.t('label-manual-positioning-missing')}"
+                        aria-label="${i18n.t('label-manual-positioning-missing')}"
+                        style="font-size:24px;color:red;margin-bottom:4px;margin-left:10px;"></dbp-icon>`
+                    : '';
+                const annotationCount = Array.isArray(this.queuedFilesAnnotations[id])
+                    ? this.queuedFilesAnnotations[id].length
+                    : 0;
+                const annotationIcon = (annotationCount > 0)
+                    ? `<span style="border:solid 1px var(--dbp-content);border-radius: 100%;width:24px;height:24px;display:block;text-align:center;"
+                        title="Document has ${annotationCount} annotations"
+                        aria-label="Document has ${annotationCount} annotations"
+                        >${annotationCount}</span>`
+                    : '';
+                let fileData = {
+                    index: id,
+                    fileName: `${file.name} ${warning}`,
+                    fileSize: humanFileSize(file.size),
+                    // profile: 'Personal',
+                    positioning: isManual ? 'manual' : 'auto',
+                    annotation: annotationIcon,
+                    buttons: this.getActionButtonsHtml(id),
+                };
 
-        ids.forEach((id) => {
-            const file = this.queuedFiles[id].file;
-            const isManual = this.queuedFilesPlacementModes[id] === 'manual';
-            const placementMissing = this.queuedFilesNeedsPlacement.get(id) && !isManual;
+                tableFiles.push(fileData);
+            });
 
-            results.push(html`
-                <div class="file-block">
-                    <div class="header">
-                        <span class="filename">
-                            <strong>${file.name}</strong>
-                            (${humanFileSize(file.size)})
-                        </span>
-                        <button
-                            class="button close is-icon"
-                            ?disabled="${this.signingProcessEnabled}"
-                            title="${i18n.t('official-pdf-upload.remove-queued-file-button-title')}"
-                            aria-label="${i18n.t('official-pdf-upload.remove-queued-file-button-title')}"
-                            @click="${() => {
-                                this.takeFileFromQueue(id);
-                            }}">
-                            <dbp-icon name="trash" aria-hidden="true"></dbp-icon>
-                        </button>
-                    </div>
-                    <div class="bottom-line">
-                        <div></div>
-                        <button
-                            class="button"
-                            ?disabled="${this.signingProcessEnabled}"
-                            @click="${() => {
-                                this.showPreview(id);
-                            }}">
-                            ${i18n.t('official-pdf-upload.show-preview')}
-                        </button>
-                        <span class="headline">${i18n.t('official-pdf-upload.positioning')}:</span>
-                        <dbp-textswitch
-                            name1="auto"
-                            name2="manual"
-                            name="${this.queuedFilesPlacementModes[id] || 'auto'}"
-                            class="${classMap({
-                                'placement-missing': placementMissing,
-                                switch: true,
-                            })}"
-                            value1="${i18n.t('official-pdf-upload.positioning-automatic')}"
-                            value2="${i18n.t('official-pdf-upload.positioning-manual')}"
-                            ?disabled="${this.signingProcessEnabled}"
-                            @change=${(e) =>
-                                this.queuePlacementSwitch(id, e.target.name)}></dbp-textswitch>
-                        <span class="headline ${classMap({hidden: !this.allowAnnotating})}">
-                            ${i18n.t('official-pdf-upload.annotation')}:
-                        </span>
-                        <div class="${classMap({hidden: !this.allowAnnotating})}">
-                            <dbp-textswitch
-                                id="annotation-switch"
-                                name1="no-text"
-                                name2="text-selected"
-                                name="${this.queuedFilesAnnotationModes[id] || 'no-text'}"
-                                class="${classMap({switch: true})}"
-                                value1="${i18n.t('official-pdf-upload.annotation-no')}"
-                                value2="${i18n.t('official-pdf-upload.annotation-yes')}"
-                                ?disabled="${this.signingProcessEnabled}"
-                                @change=${(e) =>
-                                    this.showAnnotationView(id, e.target.name)}></dbp-textswitch>
-                        </div>
-                    </div>
-                    <div class="error-line">
-                        ${placementMissing
-                            ? html`
-                                  ${i18n.t('label-manual-positioning-missing')}
-                              `
-                            : ''}
-                    </div>
-                </div>
-            `);
-        });
-
-        return results;
+            queuedFilesOptions.data = tableFiles;
+            this.queuedFilesOptions = queuedFilesOptions;
+            this.tableQueuedFilesTable.setData(tableFiles);
+            // Set selected rows
+            if (this.selectedFiles.length > 0) {
+                let selectedRows = [];
+                for (const fileObj of Object.values(this.selectedFiles)) {
+                    selectedRows.push(fileObj.key);
+                }
+                this.tableQueuedFilesTable.tabulatorTable.selectRow(selectedRows);
+            }
+        }
     }
 
-    /**
-     * Returns the list of successfully signed files
-     *
-     * @returns {*[]} Array of html templates
-     */
-    getSignedFilesHtml() {
-        const ids = Object.keys(this.signedFiles);
+    getActionButtonsHtml(id) {
+        console.log(`getActionButtonsHtml(${id})`);
         const i18n = this._i18n;
-        let results = [];
+        let controlDiv = this.createScopedElement('div');
+        controlDiv.classList.add('tabulator-icon-buttons');
 
-        ids.forEach((id) => {
-            const file = this.signedFiles[id];
-
-            results.push(html`
-                <div class="file-block" id="file-block-${id}">
-                    <div class="header">
-                        <span class="filename">
-                            <span class="bold-filename">${file.name}</span>
-                            (${humanFileSize(file.contentSize)})
-                        </span>
-                        <button
-                            class="button is-icon"
-                            title="${i18n.t('official-pdf-upload.download-file-button-title')}"
-                            aria-label="${i18n.t('official-pdf-upload.download-file-button-title')}"
-                            @click="${() => {
-                                this.downloadFileClickHandler(file, 'file-block-' + id);
-                            }}">
-                            <dbp-icon name="download" aria-hidden="true"></dbp-icon>
-                        </button>
-                    </div>
-                </div>
-            `);
-        });
-
-        return results;
-    }
-
-    /**
-     * Returns the list of files of failed signature processes
-     *
-     * @returns {*[]} Array of html templates
-     */
-    getErrorFilesHtml() {
-        const ids = Object.keys(this.errorFiles);
-        const i18n = this._i18n;
-        let results = [];
-
-        ids.forEach((id) => {
-            const data = this.errorFiles[id];
-
-            if (data.file === undefined) {
-                return;
+        // Edit signature button
+        const btnEditSignature = this.createScopedElement('dbp-icon-button');
+        btnEditSignature.setAttribute('icon-name', 'pencil');
+        btnEditSignature.classList.add('edit-signature-button');
+        btnEditSignature.setAttribute('aria-label', i18n.t('official-pdf-upload.edit-signature-button-title'));
+        btnEditSignature.setAttribute('title', i18n.t('official-pdf-upload.edit-signature-button-title'));
+        btnEditSignature.setAttribute('data-placement', this.queuedFilesPlacementModes[id] || 'auto');
+        btnEditSignature.addEventListener("click", async (event) => {
+            event.stopPropagation();
+            const editButton = /** @type {HTMLElement} */ (event.target);
+            const placement  = editButton.getAttribute('data-placement');
+            this._('#pdf-preview dbp-pdf-preview').removeAttribute('don-t-show-buttons');
+            if (this.queuedFilesPlacementModes[id] === "manual") {
+                this.queuePlacement(id, placement);
+            } else {
+                // Hide signature when auto placement is active
+                this.queuePlacement(id, placement, false);
             }
 
-            results.push(html`
-                <div class="file-block error">
-                    <div class="header">
-                        <span class="filename">
-                            <strong>${data.file.name}</strong>
-                            (${humanFileSize(data.file.size)})
-                        </span>
-                        <div class="buttons">
-                            <button
-                                class="button is-icon"
-                                title="${i18n.t('official-pdf-upload.re-upload-file-button-title')}"
-                                aria-label="${i18n.t('official-pdf-upload.re-upload-file-button-title')}"
-                                @click="${() => {
-                                    this.fileQueueingClickHandler(data.file, id);
-                                }}">
-                                <dbp-icon name="reload" aria-hidden="true"></dbp-icon>
-                            </button>
-                            <button
-                                class="button is-icon"
-                                title="${i18n.t(
-                                    'official-pdf-upload.remove-failed-file-button-title'
-                                )}"
-                                aria-label="${i18n.t(
-                                    'official-pdf-upload.remove-failed-file-button-title'
-                                )}"
-                                @click="${() => {
-                                    this.takeFailedFileFromQueue(id);
-                                }}">
-                                <dbp-icon name="trash" aria-hidden="true"></dbp-icon>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="bottom-line">
-                        <strong class="error">${data.json['hydra:description']}</strong>
-                    </div>
-                </div>
-            `);
         });
+        controlDiv.appendChild(btnEditSignature);
 
-        return results;
+        // Add annotation button
+        const btnAnnotation = this.createScopedElement('dbp-icon-button');
+        btnAnnotation.setAttribute('icon-name', 'bubble');
+        btnAnnotation.classList.add('annotation-button');
+        btnAnnotation.setAttribute('aria-label', i18n.t('official-pdf-upload.annotation-button-title'));
+        btnAnnotation.setAttribute('title', i18n.t('official-pdf-upload.annotation-button-title'));
+        btnAnnotation.addEventListener("click", async (event) => {
+            event.stopPropagation();
+            this.showAnnotationView(id, 'text-selected');
+        });
+        controlDiv.appendChild(btnAnnotation);
+
+        // Show preview button
+        const btnPreview = this.createScopedElement('dbp-icon-button');
+        btnPreview.setAttribute('icon-name', 'keyword-research');
+        btnPreview.classList.add('preview-button');
+        btnPreview.setAttribute('aria-label', i18n.t('official-pdf-upload.preview-file-button-title'));
+        btnPreview.setAttribute('title', i18n.t('official-pdf-upload.preview-file-button-title'));
+        btnPreview.addEventListener("click", async (event) => {
+            event.stopPropagation();
+            this._('#pdf-preview dbp-pdf-preview').setAttribute('don-t-show-buttons', true);
+            this.showPreview(id);
+        });
+        controlDiv.appendChild(btnPreview);
+
+        // Delete button
+        const btnDelete = this.createScopedElement('dbp-icon-button');
+        btnDelete.setAttribute('icon-name', 'trash');
+        btnDelete.classList.add('delete-button');
+        btnDelete.setAttribute('aria-label', i18n.t('official-pdf-upload.remove-queued-file-button-title'));
+        btnDelete.setAttribute('title', i18n.t('official-pdf-upload.remove-queued-file-button-title'));
+        const fileName = this.queuedFiles[id].file.name;
+        if (fileName) {
+            btnDelete.setAttribute('data-filename', fileName);
+        }
+        btnDelete.addEventListener("click", async (event) => {
+            event.stopPropagation();
+            const editButton = /** @type {HTMLElement} */ (event.target);
+            const fileName  = editButton.getAttribute('data-filename') || i18n.t('official-pdf-upload.this-file');
+            const result = confirm(i18n.t('official-pdf-upload.confirm-delete-file', { file: fileName}));
+
+            if (result) {
+                this.takeFileFromQueue(id);
+            }
+        });
+        controlDiv.appendChild(btnDelete);
+
+        return controlDiv;
+    }
+
+    /**
+     * Create tabulator table for signed files
+     */
+    setSignedFilesTabulatorTable() {
+        const i18n = this._i18n;
+        let langs  = {
+            'en': {
+                columns: {
+                    'fileName': i18n.t('official-pdf-upload.table-header-file-name', {lng: 'en'}),
+                    'fileSize': i18n.t('official-pdf-upload.table-header-file-size', {lng: 'en'}),
+                    'downloadButton': i18n.t('official-pdf-upload.table-header-download', {lng: 'en'}),
+                },
+            },
+            'de': {
+                columns: {
+                    'fileName': i18n.t('official-pdf-upload.table-header-file-name', {lng: 'de'}),
+                    'fileSize': i18n.t('official-pdf-upload.table-header-file-size', {lng: 'de'}),
+                    'downloadButton': i18n.t('official-pdf-upload.table-header-download', {lng: 'de'}),
+                },
+            },
+        };
+
+        const signedFilesOptions = {
+            local: 'en',
+            langs: langs,
+            layout: 'fitColumns',
+            responsiveLayout: 'collapse',
+            responsiveLayoutCollapseStartOpen: false,
+            index: 'index',
+            columns: [
+                {
+                    title: 'id',
+                    field: 'index',
+                    hozAlign: 'center',
+                    headerHozAlign: 'center',
+                    width: 40,
+                    visible: false
+                },
+                {
+                    title: '',
+                    field: 'toggle',
+                    hozAlign: 'center',
+                    width: 65,
+                    formatter: 'responsiveCollapse',
+                    headerHozAlign: 'center',
+                    headerSort: false,
+                    responsive: 0
+                },
+                {
+                    title: 'fileName',
+                    field: 'fileName',
+                    sorter: 'html',
+                    minWidth: 200,
+                    widthGrow: 3,
+                    widthShrink: 1,
+                    hozAlign: 'left',
+                    formatter: 'html',
+                    responsive: 0
+                },
+                {
+                    title: 'fileSize',
+                    field: 'fileSize',
+                    sorter: 'string',
+                    width: 100,
+                    hozAlign: 'right',
+                    headerHozAlign: 'right',
+                    formatter: 'plaintext',
+                    responsive: 1
+                },
+                {
+                    title: 'download',
+                    field: 'downloadButton',
+                    sorter: false,
+                    minWidth: 60,
+                    hozAlign: 'center',
+                    headerHozAlign: 'center',
+                    formatter: 'html',
+                    responsive: 0
+                },
+            ],
+            columnDefaults: {
+                vertAlign: 'middle',
+                resizable: false,
+            },
+        };
+
+        let tableFiles = [];
+
+        const ids = Object.keys(this.signedFiles);
+        if(this.tableSignedFilesTable) {
+            ids.forEach((id) => {
+                const file = this.signedFiles[id];
+                let fileData = {
+                    index: id,
+                    fileName: `<span id="file-download-${id}">${file.name}</span>`,
+                    fileSize: humanFileSize(file.contentSize),
+                    downloadButton: this.getDownloadButtonHtml(id, file),
+                };
+                tableFiles.push(fileData);
+            });
+
+            signedFilesOptions.data = tableFiles;
+            this.signedFilesOptions = signedFilesOptions;
+            this.tableSignedFilesTable.setData(tableFiles);
+        }
+    }
+
+    getDownloadButtonHtml(id, file) {
+        const i18n = this._i18n;
+        let controlDiv = this.createScopedElement('div');
+        controlDiv.classList.add('tabulator-download-button');
+        // Download button
+        const btnDownload = this.createScopedElement('dbp-icon-button');
+        btnDownload.setAttribute('icon-name', 'download');
+        btnDownload.classList.add('download-button');
+        btnDownload.setAttribute('aria-label', i18n.t('official-pdf-upload.download-file-button-title'));
+        btnDownload.setAttribute('title', i18n.t('official-pdf-upload.download-file-button-title'));
+        btnDownload.addEventListener("click", async (event) => {
+            event.stopPropagation();
+            this.downloadFileClickHandler(file, 'file-download-' + id);
+            this.tableSignedFilesTable.tabulatorTable.updateData([{
+                index: id,
+                fileName: `<span id="file-download-${id}">${file.name}</span>
+                    <dbp-icon name="download-complete"
+                        style="font-size: 24px;margin-bottom:8px;margin-left:24px;"
+                        title="${i18n.t('official-pdf-upload.download-file-completed')}"
+                        aria-label="${i18n.t('official-pdf-upload.download-file-completed')}">`
+                }]
+            );
+        });
+        controlDiv.appendChild(btnDownload);
+
+        return controlDiv;
+    }
+
+    /**
+     * Create tabulator table for failed files
+     */
+    setFailedFilesTabulatorTable() {
+        const i18n = this._i18n;
+        let langs  = {
+            'en': {
+                columns: {
+                    'fileName': i18n.t('official-pdf-upload.table-header-file-name', {lng: 'en'}),
+                    'fileSize': i18n.t('official-pdf-upload.table-header-file-size', {lng: 'en'}),
+                    'buttons': i18n.t('official-pdf-upload.table-header-buttons', {lng: 'en'}),
+                },
+            },
+            'de': {
+                columns: {
+                    'fileName': i18n.t('official-pdf-upload.table-header-file-name', {lng: 'de'}),
+                    'fileSize': i18n.t('official-pdf-upload.table-header-file-size', {lng: 'de'}),
+                    'buttons': i18n.t('official-pdf-upload.table-header-buttons', {lng: 'de'}),
+                },
+            },
+        };
+
+        const failedFilesOptions = {
+            local: 'en',
+            langs: langs,
+            layout: 'fitColumns',
+            responsiveLayout: 'collapse',
+            responsiveLayoutCollapseStartOpen: false,
+            index: 'index',
+            columns: [
+                {
+                    title: 'id',
+                    field: 'index',
+                    hozAlign: 'center',
+                    headerHozAlign:"center",
+                    width: 40,
+                    visible: false
+                },
+                {
+                    title: '',
+                    field: 'toggle',
+                    hozAlign: 'center',
+                    width: 65,
+                    formatter:"responsiveCollapse",
+                    headerHozAlign:"center",
+                    headerSort:false,
+                    responsive: 0
+                },
+                {
+                    title: 'fileName',
+                    field: 'fileName',
+                    sorter:"string",
+                    minWidth: 100,
+                    widthGrow: 3,
+                    widthShrink: 1,
+                    hozAlign: 'left',
+                    formatter: 'html',
+                    responsive: 0
+                },
+                {
+                    title: 'fileSize',
+                    field: 'fileSize',
+                    sorter:"string",
+                    width: 100,
+                    hozAlign: 'right',
+                    headerHozAlign: 'right',
+                    formatter: 'plaintext',
+                    responsive: 1
+                },
+                {
+                    title: 'Error Message',
+                    field: 'errorMessage',
+                    sorter:"string",
+                    minWidth: 100,
+                    widthGrow: 2,
+                    hozAlign: 'left',
+                    headerHozAlign: 'left',
+                    formatter: 'plaintext',
+                    responsive: 1
+                },
+                {
+                    title: 'buttons',
+                    field: 'buttons',
+                    sorter: false,
+                    minWidth: 90,
+                    hozAlign: 'center',
+                    headerHozAlign: 'center',
+                    formatter: 'html',
+                    responsive: 0
+                },
+            ],
+            columnDefaults: {
+                vertAlign: 'middle',
+                resizable: false,
+            },
+        };
+
+        let tableFiles = [];
+
+        const ids = Object.keys(this.errorFiles);
+        if(this.tableFailedFilesTable) {
+            ids.forEach((id) => {
+                const data = this.errorFiles[id];
+                const errorMessage = data.json['hydra:description'];
+                if (data.file === undefined) {
+                    return;
+                }
+                let fileData = {
+                    index: id,
+                    fileName: `<span id="file-download-${id}" style="font-weight: bold;">${data.file.name}</span>`,
+                    fileSize: humanFileSize(data.file.size),
+                    errorMessage: errorMessage,
+                    buttons: this.getFailedButtonsHtml(id, data),
+                };
+                tableFiles.push(fileData);
+            });
+
+            failedFilesOptions.data = tableFiles;
+            this.failedFilesOptions = failedFilesOptions;
+            this.tableFailedFilesTable.setData(tableFiles);
+        }
+    }
+
+    getFailedButtonsHtml(id, data) {
+        const i18n = this._i18n;
+        let controlDiv = this.createScopedElement('div');
+        controlDiv.classList.add('tabulator-failed-buttons');
+        // Re upload button
+        const btnReupload = this.createScopedElement('dbp-icon-button');
+        btnReupload.setAttribute('icon-name', 'reload');
+        btnReupload.classList.add('re-upload-button');
+        btnReupload.setAttribute('aria-label', i18n.t('official-pdf-upload.re-upload-file-button-title'));
+        btnReupload.setAttribute('title', i18n.t('official-pdf-upload.re-upload-file-button-title'));
+        btnReupload.addEventListener("click", async (event) => {
+            event.stopPropagation();
+            this.fileQueueingClickHandler(data.file, id);
+        });
+        controlDiv.appendChild(btnReupload);
+
+        // Delete button
+        const btnDelete = this.createScopedElement('dbp-icon-button');
+        btnDelete.setAttribute('icon-name', 'trash');
+        btnDelete.classList.add('delete-button');
+        btnDelete.setAttribute('aria-label', i18n.t('official-pdf-upload.remove-failed-file-button-title'));
+        btnDelete.setAttribute('title', i18n.t('official-pdf-upload.remove-failed-file-button-title'));
+        btnDelete.addEventListener("click", async (event) => {
+            event.stopPropagation();
+            this.takeFailedFileFromQueue(id);
+        });
+        controlDiv.appendChild(btnDelete);
+
+        return controlDiv;
     }
 
     hasSignaturePermissions() {
@@ -511,7 +948,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                     hidden:
                         !this.isLoggedIn() || !this.hasSignaturePermissions() || this.isLoading(),
                 })}">
-                <div class="field">
+                <div class="field ${classMap({'is-disabled': this.isUserInterfaceDisabled()})}">
                     <h2>${this.activity.getName(this.lang)}</h2>
                     <p class="subheadline">${this.activity.getDescription(this.lang)}</p>
                     <div class="control">
@@ -521,7 +958,8 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                 this._('#file-source').setAttribute('dialog-open', '');
                             }}"
                             ?disabled="${this.signingProcessActive}"
-                            class="button is-primary">
+                            class="button is-primary"
+                            id="upload-pdf-button">
                             ${i18n.t('official-pdf-upload.upload-button-label')}
                         </button>
                         <dbp-file-source
@@ -559,47 +997,113 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                 })}">
                                 ${i18n.t('official-pdf-upload.queued-files-label')}
                             </h3>
-                            <!-- Buttons to start/stop signing process and clear queue -->
-                            <div class="control field">
-                                <button
-                                    @click="${this.clearQueuedFiles}"
-                                    ?disabled="${this.queuedFilesCount === 0 ||
-                                    this.signingProcessActive ||
-                                    this.isUserInterfaceDisabled()}"
-                                    class="button ${classMap({
-                                        'is-disabled': this.isUserInterfaceDisabled(),
-                                    })}">
-                                    ${i18n.t('official-pdf-upload.clear-all')}
-                                </button>
-                                <button
-                                    @click="${() => {
-                                        this.signingProcessEnabled = true;
-                                        this.signingProcessActive = true;
-                                    }}"
-                                    ?disabled="${this.queuedFilesCount === 0}"
-                                    class="button is-right is-primary ${classMap({
-                                        'is-disabled': this.isUserInterfaceDisabled(),
-                                        hidden: this.signingProcessActive,
-                                    })}">
-                                    ${i18n.t('official-pdf-upload.start-signing-process-button')}
-                                </button>
-                                <!-- -->
-                                <button
-                                    @click="${this.stopSigningProcess}"
-                                    id="cancel-signing-process"
-                                    class="button is-right ${classMap({
-                                        hidden: !this.signingProcessActive,
-                                    })}">
-                                    ${i18n.t('official-pdf-upload.stop-signing-process-button')}
-                                </button>
-                                <!-- -->
+                            <div class="control field tabulator-actions">
+                                <div class="table-actions">
+                                    <dbp-loading-button id="expand-all-btn"
+                                        class="${classMap({
+                                            hidden: this.queuedFilesTableExpanded,
+                                            'is-disabled': this.isUserInterfaceDisabled()
+                                        })}"
+                                        ?disabled="${this.queuedFilesCount === 0 || this.queuedFilesTableCollapsible === false || this.isUserInterfaceDisabled()}"
+                                        value="${i18n.t('qualified-pdf-upload.expand-all')}"
+                                        @click="${() => {
+                                            this.tableQueuedFilesTable.expandAll();
+                                            this.queuedFilesTableExpanded = true;
+                                        }}"
+                                        title="${i18n.t('qualified-pdf-upload.expand-all')}"
+                                        >${i18n.t('qualified-pdf-upload.expand-all')}</dbp-loading-button>
+
+                                    <dbp-loading-button id="collapse-all-btn"
+                                        class="${classMap({
+                                            hidden: !this.queuedFilesTableExpanded,
+                                            'is-disabled': this.isUserInterfaceDisabled()
+                                        })}"
+                                        ?disabled="${this.queuedFilesCount === 0 || this.queuedFilesTableCollapsible === false || this.isUserInterfaceDisabled()}"
+                                        value="${i18n.t('qualified-pdf-upload.collapse-all')}"
+                                        @click="${() => {
+                                            this.tableQueuedFilesTable.collapseAll();
+                                            this.queuedFilesTableExpanded = false;
+                                        }}"
+                                        title="${i18n.t('qualified-pdf-upload.collapse-all')}"
+                                        >${i18n.t('qualified-pdf-upload.collapse-all')}</dbp-loading-button>
+
+                                    <dbp-loading-button id="select-all-btn"
+                                        class="${classMap({
+                                            hidden: this.queuedFilesTableAllSelected,
+                                            'is-disabled': this.isUserInterfaceDisabled()
+                                        })}"
+                                        ?disabled="${this.queuedFilesCount === 0 || this.isUserInterfaceDisabled()}"
+                                        value="${i18n.t('qualified-pdf-upload.select-all')}"
+                                        @click="${() => {
+                                            this.queuedFilesTableAllSelected = true;
+                                            this.tableQueuedFilesTable.selectAllRows();
+                                        }}"
+                                        title="${i18n.t('qualified-pdf-upload.select-all')}"
+                                        >${i18n.t('qualified-pdf-upload.select-all')}</dbp-loading-button>
+
+                                    <dbp-loading-button id="deselect-all-btn"
+                                        class="${classMap({
+                                            hidden: !this.queuedFilesTableAllSelected,
+                                            'is-disabled': this.isUserInterfaceDisabled()
+                                        })}"
+                                        ?disabled="${this.queuedFilesCount === 0 || this.isUserInterfaceDisabled()}"
+                                        value="${i18n.t('qualified-pdf-upload.deselect-all')}"
+                                        @click="${() => {
+                                            this.queuedFilesTableAllSelected = false;
+                                            this.tableQueuedFilesTable.deselectAllRows();
+                                        }}"
+                                        title="${i18n.t('qualified-pdf-upload.deselect-all')}"
+                                        >${i18n.t('qualified-pdf-upload.deselect-all')}</dbp-loading-button>
+                                </div>
+                                <div class="sign-actions">
+                                    <!-- Buttons to start/stop signing process and clear queue -->
+                                    <button
+                                        id="clear-queue-button"
+                                        @click="${this.clearQueuedFiles}"
+                                        ?disabled="${this.queuedFilesCount === 0 ||
+                                        this.signingProcessActive ||
+                                        this.isUserInterfaceDisabled()}"
+                                        class="button ${classMap({
+                                            'is-disabled': this.isUserInterfaceDisabled(),
+                                        })}">
+                                        ${i18n.t('official-pdf-upload.clear-all')}
+                                    </button>
+                                    <button
+                                        id="start-signing-button"
+                                        @click="${() => {
+                                            this.signingProcessEnabled = true;
+                                            this.signingProcessActive = true;
+                                        }}"
+                                        ?disabled="${this.queuedFilesCount === 0}"
+                                        class="button is-right is-primary ${classMap({
+                                            'is-disabled': this.isUserInterfaceDisabled(),
+                                            hidden: this.signingProcessActive,
+                                        })}">
+                                        ${i18n.t('official-pdf-upload.start-signing-process-button')}
+                                    </button>
+                                    <!-- -->
+                                    <button
+                                        @click="${this.stopSigningProcess}"
+                                        id="cancel-signing-process"
+                                        class="button is-right ${classMap({
+                                            hidden: !this.signingProcessActive,
+                                        })}">
+                                        ${i18n.t('official-pdf-upload.stop-signing-process-button')}
+                                    </button>
+                                </div>
                             </div>
                             <!-- List of queued files -->
                             <div
                                 class="control file-list ${classMap({
                                     'is-disabled': this.isUserInterfaceDisabled(),
                                 })}">
-                                ${this.getQueuedFilesHtml()}
+                                <dbp-tabulator-table
+                                    id="table-queued-files"
+                                    class="table-queued-files"
+                                    lang="${this.lang}"
+                                    select-rows-enabled
+                                    .options="${this.queuedFilesOptions}">
+                                </dbp-tabulator-table>
                             </div>
                             <!-- Text "queue empty" -->
                             <div
@@ -614,7 +1118,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                         </div>
                         <!-- List of signed PDFs -->
                         <div
-                            class="files-block field ${classMap({
+                            class="files-block signed-files field ${classMap({
                                 hidden: this.signedFilesCount === 0,
                                 'is-disabled': this.isUserInterfaceDisabled(),
                             })}">
@@ -622,7 +1126,9 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                             <!-- Button to download all signed PDFs -->
                             <div class="field ${classMap({hidden: this.signedFilesCount === 0})}">
                                 <div class="control">
-                                    <button @click="${this.clearSignedFiles}" class="button">
+                                    <button id="clear-signed-files"
+                                        class="clear-signed-files button"
+                                        @click="${this.clearSignedFiles}" class="button">
                                         ${i18n.t('official-pdf-upload.clear-all')}
                                     </button>
                                     <dbp-button
@@ -631,12 +1137,16 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                         title="${i18n.t(
                                             'official-pdf-upload.download-zip-button-tooltip'
                                         )}"
-                                        class="is-right"
+                                        class="zip-download-button"
                                         @click="${this.zipDownloadClickHandler}"
                                         type="is-primary"></dbp-button>
                                 </div>
                             </div>
-                            <div class="control">${this.getSignedFilesHtml()}</div>
+                            <dbp-tabulator-table
+                                id="table-signed-files"
+                                class="table-signed-files"
+                                lang="${this.lang}"
+                                .options="${this.signedFilesOptions}"></dbp-tabulator-table>
                         </div>
                         <!-- List of errored files -->
                         <div
@@ -665,7 +1175,11 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                         type="is-primary"></dbp-button>
                                 </div>
                             </div>
-                            <div class="control">${this.getErrorFilesHtml()}</div>
+                            <dbp-tabulator-table
+                                id="table-failed-files"
+                                class="table-failed-files"
+                                lang="${this.lang}"
+                                .options="${this.failedFilesOptions}"></dbp-tabulator-table>
                         </div>
                     </div>
                     <div class="right-container">
@@ -720,7 +1234,8 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                 </div>
                                 <button
                                     class="is-cancel annotation"
-                                    @click="${this.hideAnnotationView}" title="${i18n.t('button-close-text')}" aria-label="${i18n.t('button-close-text')}">
+                                    title="${i18n.t('button-close-text')}" aria-label="${i18n.t('button-close-text')}"
+                                    @click="${this.hideAnnotationView}">
                                     <dbp-icon name="close" id="close-icon" aria-hidden="true"></dbp-icon>
                                 </button>
                             </div>
@@ -761,7 +1276,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             </div>
             <dbp-file-sink
                 id="file-sink"
-                context="${i18n.t('qualified-pdf-upload.save-field-label', {
+                context="${i18n.t('official-pdf-upload.save-field-label', {
                     count: this.signedFilesToDownload,
                 })}"
                 filename="signed-documents.zip"
