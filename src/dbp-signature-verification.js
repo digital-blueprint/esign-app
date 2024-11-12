@@ -1,13 +1,13 @@
 import {createInstance} from './i18n.js';
 import {css, html} from 'lit';
 import {ScopedElementsMixin} from '@open-wc/scoped-elements';
-import DBPSignatureLitElement from './dbp-signature-lit-element';
+import DBPLitElement from '@dbp-toolkit/common/dbp-lit-element';
 import * as commonUtils from '@dbp-toolkit/common/utils';
 import * as commonStyles from '@dbp-toolkit/common/styles';
 import metadata from './dbp-signature-verification.metadata.json';
 import {Activity} from './activity.js';
 
-class SignatureVerification extends ScopedElementsMixin(DBPSignatureLitElement) {
+class SignatureVerification extends ScopedElementsMixin(DBPLitElement) {
     constructor() {
         super();
         this._i18n = createInstance();
@@ -43,7 +43,7 @@ class SignatureVerification extends ScopedElementsMixin(DBPSignatureLitElement) 
             ${commonStyles.getThemeCSS()}
             ${commonStyles.getGeneralCSS(false)}
             ${commonStyles.getLinkCss()}
-            
+
             a {
                 border-bottom: var(--dbp-border);
                 border-color: var(--dbp-content);

@@ -17,24 +17,98 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         this.queueBlockEnabled = false;
         this._queueKey = 0;
 
+        this.queuedFilesAnnotationModes = [];
+        this.signingProcessEnabled = false;
+        this.queuedFilesAnnotationSaved = [];
+        this.queuedFilesEnabledAnnotations = [];
+        this.queuedFilesNeedsPlacement = new Map();
+        this.queuedFilesSignaturePlacements = [];
+        this.queuedFilesPlacementModes = [];
+        this.externalAuthInProgress = false;
+        this.tableQueuedFilesTable = null;
+        this.tableSignedFilesTable = null;
+        this.tableFailedFilesTable = null;
+        this.queuedFilesOptions = {};
+        this.signedFilesOptions = {};
+        this.failedFilesOptions = {};
+        this.queuedFilesTableExpanded = false;
+        this.queuedFilesTableAllSelected = false;
+        this.queuedFilesTableCollapsible = false;
+        this.currentFile = {};
+        this.currentFileName = '';
+        this.currentFilePlacementMode = '';
+        this.currentFileSignaturePlacement = {};
+        this.queuedFilesAnnotations = [];
+        this.queuedFilesAnnotationsCount = 0;
+        this.uploadStatusFileName = '';
+        this.uploadStatusText = '';
+        this.signingProcessActive = false;
+        this.signaturePlacementInProgress = false;
+        this.signedFilesToDownload = 0;
+        this.withSigBlock = false;
+        this.currentPreviewQueueKey = '';
+        this.allowAnnotating = false;
+        this.isAnnotationViewVisible = false;
+        this.addAnnotationInProgress = false;
         // will be set in function update
         this.fileSourceUrl = '';
-
         this.fileSource = '';
         this.nextcloudDefaultDir = '';
+        this.signedFiles = [];
+        this.signedFilesCount = 0;
+        this.errorFiles = [];
+        this.errorFilesCount = 0;
+        this.selectedFiles = [];
+        this.selectedFilesProcessing = false;
     }
 
     static get properties() {
         return {
             ...super.properties,
+            lang: {type: String},
+            entryPointUrl: {type: String, attribute: 'entry-point-url'},
+            nextcloudWebAppPasswordURL: {type: String, attribute: 'nextcloud-web-app-password-url'},
+            nextcloudWebDavURL: {type: String, attribute: 'nextcloud-webdav-url'},
+            nextcloudName: {type: String, attribute: 'nextcloud-name'},
+            nextcloudFileURL: {type: String, attribute: 'nextcloud-file-url'},
+            nextcloudAuthInfo: {type: String, attribute: 'nextcloud-auth-info'},
+            signedFiles: {type: Array, attribute: false},
+            signedFilesCount: {type: Number, attribute: false},
+            signedFilesToDownload: {type: Number, attribute: false},
+            queuedFilesCount: {type: Number, attribute: false},
+            errorFiles: {type: Array, attribute: false},
+            errorFilesCount: {type: Number, attribute: false},
+            uploadInProgress: {type: Boolean, attribute: false},
+            uploadStatusFileName: {type: String, attribute: false},
+            uploadStatusText: {type: String, attribute: false},
+            signingProcessEnabled: {type: Boolean, attribute: false},
+            signingProcessActive: {type: Boolean, attribute: false},
+            queueBlockEnabled: {type: Boolean, attribute: false},
+            currentFile: {type: Object, attribute: false},
+            currentFileName: {type: String, attribute: false},
+            signaturePlacementInProgress: {type: Boolean, attribute: false},
+            withSigBlock: {type: Boolean, attribute: false},
+            isSignaturePlacement: {type: Boolean, attribute: false},
+            allowAnnotating: {type: Boolean, attribute: 'allow-annotating'},
+            isAnnotationViewVisible: {type: Boolean, attribute: false},
+            queuedFilesAnnotations: {type: Array, attribute: false},
+            queuedFilesAnnotationsCount: {type: Number, attribute: false},
+            addAnnotationInProgress: {type: Boolean, attribute: false},
+            queuedFilesAnnotationModes: {type: Array, attribute: false},
+            queuedFilesAnnotationSaved: {type: Array, attribute: false},
+            fileHandlingEnabledTargets: {type: String, attribute: 'file-handling-enabled-targets'},
+            queuedFilesTableExpanded: {type: Boolean, attribute: false},
+            queuedFilesTableAllSelected: {type: Boolean, attribute: false},
+            queuedFilesTableCollapsible: {type: Boolean, attribute: false},
+            selectedFiles: {type: Array, attribute: false},
         };
     }
 
     /**
      * @param file
-     * @returns {string} key of the queued item
+     * @returns {Promise<string>} key of the queued item
      */
-    queueFile(file) {
+    async queueFile(file) {
         this._queueKey++;
         const key = String(this._queueKey);
         this.queuedFiles[key] = new SignatureEntry(key, file);
@@ -147,7 +221,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
      *
      * @param file
      * @param annotations
-     * @returns {File} file given as parameter, but with annotations
+     * @returns {Promise<File>} file given as parameter, but with annotations
      */
     async addAnnotationsToFile(file, annotations) {
         // We need to work with the AnnotationFactory because the pdf file is broken if

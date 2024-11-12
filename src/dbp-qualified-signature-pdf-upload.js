@@ -31,45 +31,9 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         this.nextcloudName = '';
         this.nextcloudFileURL = '';
         this.nextcloudAuthInfo = '';
-        this.externalAuthInProgress = false;
-        this.signedFiles = [];
-        this.signedFilesCount = 0;
-        this.signedFilesToDownload = 0;
-        this.errorFiles = [];
-        this.errorFilesCount = 0;
-        this.uploadStatusFileName = '';
-        this.uploadStatusText = '';
-        this.currentFile = {};
-        this.currentFileName = '';
-        this.currentFilePlacementMode = '';
-        this.currentFileSignaturePlacement = {};
-        this.signingProcessEnabled = false;
-        this.signingProcessActive = false;
-        this.signaturePlacementInProgress = false;
-        this.withSigBlock = false;
-        this.queuedFilesSignaturePlacements = [];
-        this.queuedFilesPlacementModes = [];
-        this.queuedFilesNeedsPlacement = new Map();
-        this.currentPreviewQueueKey = '';
-        this.allowAnnotating = false;
-        this.queuedFilesAnnotations = [];
-        this.queuedFilesAnnotationModes = [];
-        this.queuedFilesAnnotationsCount = 0;
-        this.queuedFilesAnnotationSaved = [];
-        this.queuedFilesEnabledAnnotations = [];
-        this.isAnnotationViewVisible = false;
-        this.addAnnotationInProgress = false;
         this.activity = new Activity(metadata);
         this.fileHandlingEnabledTargets = 'local';
         this._onReceiveBeforeUnload = this.onReceiveBeforeUnload.bind(this);
-        this.queuedFilesOptions = {};
-        this.queuedFilesTableExpanded = false;
-        this.queuedFilesTableAllSelected = false;
-        this.queuedFilesTableCollapsible = false;
-        this.signedFilesOptions = {};
-        this.failedFilesOptions = {};
-        this.selectedFiles = [];
-        this.selectedFilesProcessing = false;
     }
 
     static get scopedElements() {
@@ -91,43 +55,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
     static get properties() {
         return {
             ...super.properties,
-            lang: {type: String},
-            entryPointUrl: {type: String, attribute: 'entry-point-url'},
-            nextcloudWebAppPasswordURL: {type: String, attribute: 'nextcloud-web-app-password-url'},
-            nextcloudWebDavURL: {type: String, attribute: 'nextcloud-webdav-url'},
-            nextcloudName: {type: String, attribute: 'nextcloud-name'},
-            nextcloudFileURL: {type: String, attribute: 'nextcloud-file-url'},
-            nextcloudAuthInfo: {type: String, attribute: 'nextcloud-auth-info'},
-            signedFiles: {type: Array, attribute: false},
-            signedFilesCount: {type: Number, attribute: false},
-            signedFilesToDownload: {type: Number, attribute: false},
-            queuedFilesCount: {type: Number, attribute: false},
-            errorFiles: {type: Array, attribute: false},
-            errorFilesCount: {type: Number, attribute: false},
-            uploadInProgress: {type: Boolean, attribute: false},
-            uploadStatusFileName: {type: String, attribute: false},
-            uploadStatusText: {type: String, attribute: false},
             externalAuthInProgress: {type: Boolean, attribute: false},
-            signingProcessEnabled: {type: Boolean, attribute: false},
-            signingProcessActive: {type: Boolean, attribute: false},
-            queueBlockEnabled: {type: Boolean, attribute: false},
-            currentFile: {type: Object, attribute: false},
-            currentFileName: {type: String, attribute: false},
-            signaturePlacementInProgress: {type: Boolean, attribute: false},
-            withSigBlock: {type: Boolean, attribute: false},
-            isSignaturePlacement: {type: Boolean, attribute: false},
-            allowAnnotating: {type: Boolean, attribute: 'allow-annotating'},
-            isAnnotationViewVisible: {type: Boolean, attribute: false},
-            queuedFilesAnnotations: {type: Array, attribute: false},
-            queuedFilesAnnotationsCount: {type: Number, attribute: false},
-            addAnnotationInProgress: {type: Boolean, attribute: false},
-            queuedFilesAnnotationModes: {type: Array, attribute: false},
-            queuedFilesAnnotationSaved: {type: Array, attribute: false},
-            fileHandlingEnabledTargets: {type: String, attribute: 'file-handling-enabled-targets'},
-            queuedFilesTableExpanded: {type: Boolean, attribute: false},
-            queuedFilesTableAllSelected: {type: Boolean, attribute: false},
-            queuedFilesTableCollapsible: {type: Boolean, attribute: false},
-            selectedFiles: {type: Array, attribute: false},
         };
     }
 
