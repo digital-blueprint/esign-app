@@ -354,6 +354,8 @@ export function getSignatureCss() {
             #pdf-preview,
             #annotation-view {
                 position: fixed;
+                max-width: initial;
+                width: 100%;
             }
         }
     `;

@@ -544,7 +544,8 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
             }
 
             .action-buttons-container label {
-                flex-basis: calc(45% - 6px);
+                flex-basis: 98%;
+                min-width: fit-content;
             }
 
             .action-buttons-container .button {
@@ -645,9 +646,9 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                                             class="positioning-type-select"
                                             @change="${(event) => {
                                                 if (event.target.value === 'auto') {
-                                                    this.isShowPlacement = false;
+                                                    this.isShowPlacement = true;
+                                                    // @TODO separate showButtons and showSignature
                                                     this.signaturePlacementMode = 'auto';
-                                                    this.showPage(this.currentPage, false);
                                                 } else {
                                                     this.isShowPlacement = true;
                                                     this.signaturePlacementMode = 'manual';
@@ -670,7 +671,9 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                                         &#10227; ${i18n.t('pdf-preview.rotate')}
                                     </button>
                                     <button
-                                        class="button is-primary"
+                                        class="button is-primary ${classMap({
+                                            hidden: !this.isShowPlacement
+                                        })}"
                                         id="save-signature-button"
                                         @click="${() => {
                                             this.sendAcceptEvent();
@@ -678,7 +681,9 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                                         ${i18n.t('pdf-preview.save')}
                                     </button>
                                     <button
-                                        class="button is-cancel"
+                                        class="button is-cancel ${classMap({
+                                            hidden: !this.isShowPlacement
+                                        })}"
                                         id="cancel-signature-button"
                                         @click="${this.sendCancelEvent}"
                                         title="${i18n.t('button-close-text')}"
