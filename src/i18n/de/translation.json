@@ -110,13 +110,16 @@
         "upload-button-label": "PDF-Dokumente auswählen",
         "upload-status-file-text": "({{fileSize}}) wird hochgeladen und verarbeitet...",
         "upload-text": "Das \"Elektronische Signaturservice\" ist eine Applikation, mit der Sie PDF-Dateien mit einer persönlichen, elektronischen (qualifizierten) Signatur versehen können. Eine qualifizierte Signatur ist Ihre persönliche Unterschrift im Internet und der eigenhändigen Unterschrift rechtlich gleichgestellt.",
-        "table-header-file-name": "File name",
-        "table-header-file-size": "File Size",
-        "table-header-profile": "Profile",
-        "table-header-positioning": "Positioning",
-        "table-header-warning": "Warning",
+        "table-header-file-name": "Filename",
+        "table-header-file-size": "Dateigröße",
+        "table-header-profile": "Profil",
+        "table-header-positioning": "Positionierung",
+        "table-header-warning": "Warnung",
         "table-header-annotation": "Bemerkung",
-        "table-header-buttons": "Actions"
+        "table-header-buttons": "Aktionen",
+        "table-header-download": "Herunterladen",
+        "table-header-file-downloaded": "Heruntergeladen",
+        "download-file-completed": "Datei heruntergeladen"
     },
     "signature-verification": {
         "clear-all": "Alle entfernen",

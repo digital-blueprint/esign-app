@@ -815,7 +815,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                     title: 'id',
                     field: 'index',
                     hozAlign: 'center',
-                    headerHozAlign:"center",
+                    headerHozAlign: 'center',
                     width: 40,
                     visible: false
                 },
@@ -824,15 +824,15 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                     field: 'toggle',
                     hozAlign: 'center',
                     width: 65,
-                    formatter:"responsiveCollapse",
-                    headerHozAlign:"center",
-                    headerSort:false,
+                    formatter: 'responsiveCollapse',
+                    headerHozAlign: 'center',
+                    headerSort: false,
                     responsive: 0
                 },
                 {
                     title: 'fileName',
                     field: 'fileName',
-                    sorter:"string",
+                    sorter: 'html',
                     minWidth: 200,
                     widthGrow: 3,
                     widthShrink: 1,
@@ -843,7 +843,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                 {
                     title: 'fileSize',
                     field: 'fileSize',
-                    sorter:"string",
+                    sorter: 'string',
                     width: 100,
                     hozAlign: 'right',
                     headerHozAlign: 'right',
@@ -875,7 +875,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                 const file = this.signedFiles[id];
                 let fileData = {
                     index: id,
-                    fileName: `<span id="file-download-${id}" style="font-weight: bold;">${file.name}</span>`,
+                    fileName: `<span id="file-download-${id}">${file.name}</span>`,
                     fileSize: humanFileSize(file.contentSize),
                     downloadButton: this.getDownloadButtonHtml(id, file),
                 };
@@ -901,7 +901,15 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         btnDownload.addEventListener("click", async (event) => {
             event.stopPropagation();
             this.downloadFileClickHandler(file, 'file-download-' + id);
-            this.tableSignedFilesTable.tabulatorTable.updateData([{index: id, fileName: `<span id="file-download-${id}">${file.name}</span>`}]);
+            this.tableSignedFilesTable.tabulatorTable.updateData([{
+                index: id,
+                fileName: `<span id="file-download-${id}">${file.name}</span>
+                    <dbp-icon name="download-complete"
+                        style="font-size: 24px;margin-bottom:8px;margin-left:24px;"
+                        title="${i18n.t('qualified-pdf-upload.download-file-completed')}"
+                        aria-label="${i18n.t('qualified-pdf-upload.download-file-completed')}">`
+                }]
+            );
         });
         controlDiv.appendChild(btnDownload);
 
