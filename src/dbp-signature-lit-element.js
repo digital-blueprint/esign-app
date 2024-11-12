@@ -1,13 +1,16 @@
+import {createInstance} from './i18n.js';
 import * as utils from './utils';
 import * as commonUtils from '@dbp-toolkit/common/utils';
 import {BaseLitElement} from './base-element.js';
 import {SignatureEntry} from './signature-entry.js';
 import {getPDFSignatureCount} from './utils';
 import { send } from '@dbp-toolkit/common/notification';
+import { humanFileSize } from '@dbp-toolkit/common/i18next';
 
 export default class DBPSignatureLitElement extends BaseLitElement {
     constructor() {
         super();
+        this._i18n = createInstance();
         this.queuedFiles = [];
         this.queuedFilesCount = 0;
         this.uploadInProgress = false;
@@ -593,5 +596,593 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             this.uploadInProgress ||
             this.addAnnotationInProgress
         );
+    }
+
+    /**
+     * Return true if the key of the file is in the selectedFiles
+     * @param {string} key
+     * @returns {boolean}
+     */
+    fileIsSelectedFile(key){
+        return this.selectedFiles.some((file) => file.key === key);
+    }
+
+    tabulatorTableHandleCollapse(event) {
+        if (event.detail.isCollapsible === true) {
+            this.queuedFilesTableCollapsible = true;
+        } else {
+            this.queuedFilesTableCollapsible = false;
+        }
+    }
+
+    /**
+     * Update selectedRows on selection changes
+     * @param {object} tableEvent
+     */
+    handleTableSelection(tableEvent) {
+        const selectedRows = tableEvent.detail.selected;
+        const deSelectedRows = tableEvent.detail.deselected;
+
+        // Add selected files
+        if (Array.isArray(selectedRows) && selectedRows.length > 0) {
+            selectedRows.forEach(selectedRow => {
+                const rowIndex = String(selectedRow.getIndex());
+                const rowData = selectedRow.getData();
+                const fileName = rowData.fileName;
+                const existingIndex = this.selectedFiles.findIndex(row => row.key === rowIndex);
+                if (existingIndex === -1) {
+                    this.selectedFiles.push({
+                        key: rowIndex,
+                        filename: fileName
+                    });
+                }
+            });
+        }
+
+        // Remove selected files
+        if (Array.isArray(deSelectedRows) && deSelectedRows.length > 0) {
+            deSelectedRows.forEach(deSelectedRow => {
+                const rowIndex = String(deSelectedRow.getIndex());
+                const deselectedIndex = this.selectedFiles.findIndex(row => row.key === rowIndex);
+                this.selectedFiles.splice(deselectedIndex, 1);
+            });
+        }
+    }
+
+    getActionButtonsHtml(id) {
+        const i18n = this._i18n;
+        let controlDiv = document.createElement('div');
+        controlDiv.classList.add('tabulator-icon-buttons');
+
+        // Edit signature button
+        const btnEditSignature = document.createElement('dbp-icon-button');
+        btnEditSignature.setAttribute('icon-name', 'pencil');
+        btnEditSignature.classList.add('edit-signature-button');
+        btnEditSignature.setAttribute('aria-label', i18n.t('edit-signature-button-title'));
+        btnEditSignature.setAttribute('title', i18n.t('edit-signature-button-title'));
+        btnEditSignature.setAttribute('data-placement', this.queuedFilesPlacementModes[id] || 'auto');
+        btnEditSignature.addEventListener("click", async (event) => {
+            event.stopPropagation();
+            const editButton = /** @type {HTMLElement} */ (event.target);
+            const placement  = editButton.getAttribute('data-placement');
+            this._('#pdf-preview dbp-pdf-preview').removeAttribute('don-t-show-buttons');
+            if (this.queuedFilesPlacementModes[id] === "manual") {
+                this.queuePlacement(id, placement);
+            } else {
+                // Hide signature when auto placement is active
+                this.queuePlacement(id, placement, false);
+            }
+
+        });
+        controlDiv.appendChild(btnEditSignature);
+
+        // Add annotation button
+        const btnAnnotation = document.createElement('dbp-icon-button');
+        btnAnnotation.setAttribute('icon-name', 'bubble');
+        btnAnnotation.classList.add('annotation-button');
+        btnAnnotation.setAttribute('aria-label', i18n.t('annotation-button-title'));
+        btnAnnotation.setAttribute('title', i18n.t('annotation-button-title'));
+        btnAnnotation.addEventListener("click", async (event) => {
+            event.stopPropagation();
+            this.showAnnotationView(id, 'text-selected');
+        });
+        controlDiv.appendChild(btnAnnotation);
+
+        // Show preview button
+        const btnPreview = document.createElement('dbp-icon-button');
+        btnPreview.setAttribute('icon-name', 'keyword-research');
+        btnPreview.classList.add('preview-button');
+        btnPreview.setAttribute('aria-label', i18n.t('preview-file-button-title'));
+        btnPreview.setAttribute('title', i18n.t('preview-file-button-title'));
+        btnPreview.addEventListener("click", async (event) => {
+            event.stopPropagation();
+            this._('#pdf-preview dbp-pdf-preview').setAttribute('don-t-show-buttons', true);
+            this.showPreview(id);
+        });
+        controlDiv.appendChild(btnPreview);
+
+        // Delete button
+        const btnDelete = document.createElement('dbp-icon-button');
+        btnDelete.setAttribute('icon-name', 'trash');
+        btnDelete.classList.add('delete-button');
+        btnDelete.setAttribute('aria-label', i18n.t('remove-queued-file-button-title'));
+        btnDelete.setAttribute('title', i18n.t('remove-queued-file-button-title'));
+        const fileName = this.queuedFiles[id].file.name;
+        if (fileName) {
+            btnDelete.setAttribute('data-filename', fileName);
+        }
+        btnDelete.addEventListener("click", async (event) => {
+            event.stopPropagation();
+            const editButton = /** @type {HTMLElement} */ (event.target);
+            const fileName  = editButton.getAttribute('data-filename') || i18n.t('this-file');
+            const result = confirm(i18n.t('confirm-delete-file', { file: fileName}));
+
+            if (result) {
+                this.takeFileFromQueue(id);
+            }
+        });
+        controlDiv.appendChild(btnDelete);
+
+        return controlDiv;
+    }
+
+    getDownloadButtonHtml(id, file) {
+        const i18n = this._i18n;
+        let controlDiv = document.createElement('div');
+        controlDiv.classList.add('tabulator-download-button');
+        // Download button
+        const btnDownload = document.createElement('dbp-icon-button');
+        btnDownload.setAttribute('icon-name', 'download');
+        btnDownload.classList.add('download-button');
+        btnDownload.setAttribute('aria-label', i18n.t('download-file-button-title'));
+        btnDownload.setAttribute('title', i18n.t('download-file-button-title'));
+        btnDownload.addEventListener("click", async (event) => {
+            event.stopPropagation();
+            this.downloadFileClickHandler(file, 'file-download-' + id);
+            this.tableSignedFilesTable.tabulatorTable.updateData([{
+                index: id,
+                fileName: `<span id="file-download-${id}">${file.name}</span>
+                    <dbp-icon name="download-complete"
+                        style="font-size: 24px;margin-bottom:8px;margin-left:24px;"
+                        title="${i18n.t('download-file-completed')}"
+                        aria-label="${i18n.t('download-file-completed')}">`
+                }]
+            );
+        });
+        controlDiv.appendChild(btnDownload);
+
+        return controlDiv;
+    }
+
+    getFailedButtonsHtml(id, data) {
+        const i18n = this._i18n;
+        let controlDiv = document.createElement('div');
+        controlDiv.classList.add('tabulator-failed-buttons');
+        // Re upload button
+        const btnReupload = document.createElement('dbp-icon-button');
+        btnReupload.setAttribute('icon-name', 'reload');
+        btnReupload.classList.add('re-upload-button');
+        btnReupload.setAttribute('aria-label', i18n.t('re-upload-file-button-title'));
+        btnReupload.setAttribute('title', i18n.t('re-upload-file-button-title'));
+        btnReupload.addEventListener("click", async (event) => {
+            event.stopPropagation();
+            this.fileQueueingClickHandler(data.file, id);
+        });
+        controlDiv.appendChild(btnReupload);
+
+        // Delete button
+        const btnDelete = document.createElement('dbp-icon-button');
+        btnDelete.setAttribute('icon-name', 'trash');
+        btnDelete.classList.add('delete-button');
+        btnDelete.setAttribute('aria-label', i18n.t('remove-failed-file-button-title'));
+        btnDelete.setAttribute('title', i18n.t('remove-failed-file-button-title'));
+        btnDelete.addEventListener("click", async (event) => {
+            event.stopPropagation();
+            this.takeFailedFileFromQueue(id);
+        });
+        controlDiv.appendChild(btnDelete);
+
+        return controlDiv;
+    }
+
+    /**
+     * Create tabulator table for queued files
+     *
+     */
+    setQueuedFilesTabulatorTable() {
+        const i18n = this._i18n;
+        let langs  = {
+            'en': {
+                columns: {
+                    'fileName': i18n.t('table-header-file-name', {lng: 'en'}),
+                    'fileSize': i18n.t('table-header-file-size', {lng: 'en'}),
+                    'positioning': i18n.t('table-header-positioning', {lng: 'en'}),
+                    'annotation': i18n.t('table-header-annotation', {lng: 'en'}),
+                    'buttons': i18n.t('table-header-buttons', {lng: 'en'}),
+                },
+            },
+            'de': {
+                columns: {
+                    'fileName': i18n.t('table-header-file-name', {lng: 'de'}),
+                    'fileSize': i18n.t('table-header-file-size', {lng: 'de'}),
+                    'positioning': i18n.t('table-header-positioning', {lng: 'de'}),
+                    'annotation': i18n.t('table-header-annotation', {lng: 'de'}),
+                    'buttons': i18n.t('table-header-buttons', {lng: 'de'}),
+                },
+            },
+        };
+
+        const queuedFilesOptions = {
+            local: 'en',
+            langs: langs,
+            layout: 'fitColumns',
+            responsiveLayout: 'collapse',
+            responsiveLayoutCollapseStartOpen: false,
+            index: 'index',
+            columns: [
+                {
+                    title: '#',
+                    field: 'index',
+                    hozAlign: 'center',
+                    headerHozAlign:"center",
+                    width: 40,
+                    visible: false
+                },
+                {
+                    title: '',
+                    field: 'toggle',
+                    hozAlign: 'center',
+                    width: 65,
+                    formatter:"responsiveCollapse",
+                    headerHozAlign:"center",
+                    headerSort:false,
+                    responsive: 0
+                },
+                {
+                    title: 'fileName',
+                    field: 'fileName',
+                    sorter:"string",
+                    minWidth: 320,
+                    widthGrow: 3,
+                    hozAlign: 'left',
+                    formatter: 'html',
+                    responsive: 0
+                },
+                {
+                    title: 'fileSize',
+                    field: 'fileSize',
+                    sorter:"string",
+                    width: 100,
+                    hozAlign: 'right',
+                    headerHozAlign: 'right',
+                    formatter: 'plaintext',
+                    responsive: 2
+                },
+                // {
+                //     title: 'profile',
+                //     field: 'profile',
+                //     sorter: false,
+                //     width: 120,
+                //     hozAlign: 'center',
+                //     headerHozAlign: 'center',
+                //     formatter: 'html',
+                //     // visible: false
+                //     responsive: 2
+                // },
+                {
+                    title: 'positioning',
+                    field: 'positioning',
+                    width: 100,
+                    hozAlign: 'center',
+                    headerHozAlign: 'center',
+                    formatter: 'html',
+                    responsive: 2
+                },
+                {
+                    title: 'annotation',
+                    field: 'annotation',
+                    sorter: false,
+                    width: 60,
+                    hozAlign: 'center',
+                    headerHozAlign: 'center',
+                    formatter: 'html',
+                    responsive: 2
+                },
+                {
+                    title: 'buttons',
+                    field: 'buttons',
+                    sorter: false,
+                    width: 165,
+                    hozAlign: 'right',
+                    headerHozAlign: 'center',
+                    formatter: 'html',
+                    responsive: 0
+                },
+            ],
+            columnDefaults: {
+                vertAlign: 'middle',
+                resizable: false,
+            },
+        };
+
+        let tableFiles = [];
+
+        const ids = Object.keys(this.queuedFiles);
+        if(this.tableQueuedFilesTable) {
+            ids.forEach((id) => {
+                const file = this.queuedFiles[id].file;
+                const isManual = this.queuedFilesPlacementModes[id] === 'manual';
+                const placementMissing = this.queuedFilesNeedsPlacement.get(id) && !isManual;
+                const warning = placementMissing
+                    ? `<dbp-icon name="warning-high"
+                        title="${i18n.t('label-manual-positioning-missing')}"
+                        aria-label="${i18n.t('label-manual-positioning-missing')}"
+                        style="font-size:24px;color:red;margin-bottom:4px;margin-left:10px;"></dbp-icon>`
+                    : '';
+                const annotationCount = Array.isArray(this.queuedFilesAnnotations[id])
+                    ? this.queuedFilesAnnotations[id].length
+                    : 0;
+                const annotationIcon = (annotationCount > 0)
+                    ? `<span style="border:solid 1px var(--dbp-content);border-radius: 100%;width:24px;height:24px;display:block;text-align:center;"
+                        title="Document has ${annotationCount} annotations"
+                        aria-label="Document has ${annotationCount} annotations"
+                        >${annotationCount}</span>`
+                    : '';
+                let fileData = {
+                    index: id,
+                    fileName: `${file.name} ${warning}`,
+                    fileSize: humanFileSize(file.size),
+                    // profile: 'Personal',
+                    positioning: isManual ? 'manual' : 'auto',
+                    annotation: annotationIcon,
+                    buttons: this.getActionButtonsHtml(id),
+                };
+
+                tableFiles.push(fileData);
+            });
+
+            queuedFilesOptions.data = tableFiles;
+            this.queuedFilesOptions = queuedFilesOptions;
+            this.tableQueuedFilesTable.setData(tableFiles);
+            // Set selected rows
+            if (this.selectedFiles.length > 0) {
+                let selectedRows = [];
+                for (const fileObj of Object.values(this.selectedFiles)) {
+                    selectedRows.push(fileObj.key);
+                }
+                this.tableQueuedFilesTable.tabulatorTable.selectRow(selectedRows);
+            }
+        }
+    }
+
+    /**
+     * Create tabulator table for signed files
+     */
+    setSignedFilesTabulatorTable() {
+        const i18n = this._i18n;
+        let langs  = {
+            'en': {
+                columns: {
+                    'fileName': i18n.t('table-header-file-name', {lng: 'en'}),
+                    'fileSize': i18n.t('table-header-file-size', {lng: 'en'}),
+                    'downloadButton': i18n.t('table-header-download', {lng: 'en'}),
+                },
+            },
+            'de': {
+                columns: {
+                    'fileName': i18n.t('table-header-file-name', {lng: 'de'}),
+                    'fileSize': i18n.t('table-header-file-size', {lng: 'de'}),
+                    'downloadButton': i18n.t('table-header-download', {lng: 'de'}),
+                },
+            },
+        };
+
+        const signedFilesOptions = {
+            local: 'en',
+            langs: langs,
+            layout: 'fitColumns',
+            responsiveLayout: 'collapse',
+            responsiveLayoutCollapseStartOpen: false,
+            index: 'index',
+            columns: [
+                {
+                    title: 'id',
+                    field: 'index',
+                    hozAlign: 'center',
+                    headerHozAlign: 'center',
+                    width: 40,
+                    visible: false
+                },
+                {
+                    title: '',
+                    field: 'toggle',
+                    hozAlign: 'center',
+                    width: 65,
+                    formatter: 'responsiveCollapse',
+                    headerHozAlign: 'center',
+                    headerSort: false,
+                    responsive: 0
+                },
+                {
+                    title: 'fileName',
+                    field: 'fileName',
+                    sorter: 'html',
+                    minWidth: 200,
+                    widthGrow: 3,
+                    widthShrink: 1,
+                    hozAlign: 'left',
+                    formatter: 'html',
+                    responsive: 0
+                },
+                {
+                    title: 'fileSize',
+                    field: 'fileSize',
+                    sorter: 'string',
+                    width: 100,
+                    hozAlign: 'right',
+                    headerHozAlign: 'right',
+                    formatter: 'plaintext',
+                    responsive: 1
+                },
+                {
+                    title: 'download',
+                    field: 'downloadButton',
+                    sorter: false,
+                    minWidth: 60,
+                    hozAlign: 'center',
+                    headerHozAlign: 'center',
+                    formatter: 'html',
+                    responsive: 0
+                },
+            ],
+            columnDefaults: {
+                vertAlign: 'middle',
+                resizable: false,
+            },
+        };
+
+        let tableFiles = [];
+
+        const ids = Object.keys(this.signedFiles);
+        if(this.tableSignedFilesTable) {
+            ids.forEach((id) => {
+                const file = this.signedFiles[id];
+                let fileData = {
+                    index: id,
+                    fileName: `<span id="file-download-${id}">${file.name}</span>`,
+                    fileSize: humanFileSize(file.contentSize),
+                    downloadButton: this.getDownloadButtonHtml(id, file),
+                };
+                tableFiles.push(fileData);
+            });
+
+            signedFilesOptions.data = tableFiles;
+            this.signedFilesOptions = signedFilesOptions;
+            this.tableSignedFilesTable.setData(tableFiles);
+        }
+    }
+
+
+    /**
+     * Create tabulator table for failed files
+     */
+    setFailedFilesTabulatorTable() {
+        const i18n = this._i18n;
+        let langs  = {
+            'en': {
+                columns: {
+                    'fileName': i18n.t('table-header-file-name', {lng: 'en'}),
+                    'fileSize': i18n.t('table-header-file-size', {lng: 'en'}),
+                    'buttons': i18n.t('table-header-buttons', {lng: 'en'}),
+                },
+            },
+            'de': {
+                columns: {
+                    'fileName': i18n.t('table-header-file-name', {lng: 'de'}),
+                    'fileSize': i18n.t('table-header-file-size', {lng: 'de'}),
+                    'buttons': i18n.t('table-header-buttons', {lng: 'de'}),
+                },
+            },
+        };
+
+        const failedFilesOptions = {
+            local: 'en',
+            langs: langs,
+            layout: 'fitColumns',
+            responsiveLayout: 'collapse',
+            responsiveLayoutCollapseStartOpen: false,
+            index: 'index',
+            columns: [
+                {
+                    title: 'id',
+                    field: 'index',
+                    hozAlign: 'center',
+                    headerHozAlign:"center",
+                    width: 40,
+                    visible: false
+                },
+                {
+                    title: '',
+                    field: 'toggle',
+                    hozAlign: 'center',
+                    width: 65,
+                    formatter:"responsiveCollapse",
+                    headerHozAlign:"center",
+                    headerSort:false,
+                    responsive: 0
+                },
+                {
+                    title: 'fileName',
+                    field: 'fileName',
+                    sorter:"string",
+                    minWidth: 100,
+                    widthGrow: 3,
+                    widthShrink: 1,
+                    hozAlign: 'left',
+                    formatter: 'html',
+                    responsive: 0
+                },
+                {
+                    title: 'fileSize',
+                    field: 'fileSize',
+                    sorter:"string",
+                    width: 100,
+                    hozAlign: 'right',
+                    headerHozAlign: 'right',
+                    formatter: 'plaintext',
+                    responsive: 1
+                },
+                {
+                    title: 'Error Message',
+                    field: 'errorMessage',
+                    sorter:"string",
+                    minWidth: 100,
+                    widthGrow: 2,
+                    hozAlign: 'left',
+                    headerHozAlign: 'left',
+                    formatter: 'plaintext',
+                    responsive: 1
+                },
+                {
+                    title: 'buttons',
+                    field: 'buttons',
+                    sorter: false,
+                    minWidth: 90,
+                    hozAlign: 'center',
+                    headerHozAlign: 'center',
+                    formatter: 'html',
+                    responsive: 0
+                },
+            ],
+            columnDefaults: {
+                vertAlign: 'middle',
+                resizable: false,
+            },
+        };
+
+        let tableFiles = [];
+
+        const ids = Object.keys(this.errorFiles);
+        if(this.tableFailedFilesTable) {
+            ids.forEach((id) => {
+                const data = this.errorFiles[id];
+                const errorMessage = data.json['hydra:description'];
+                if (data.file === undefined) {
+                    return;
+                }
+                let fileData = {
+                    index: id,
+                    fileName: `<span id="file-download-${id}" style="font-weight: bold;">${data.file.name}</span>`,
+                    fileSize: humanFileSize(data.file.size),
+                    errorMessage: errorMessage,
+                    buttons: this.getFailedButtonsHtml(id, data),
+                };
+                tableFiles.push(fileData);
+            });
+
+            failedFilesOptions.data = tableFiles;
+            this.failedFilesOptions = failedFilesOptions;
+            this.tableFailedFilesTable.setData(tableFiles);
+        }
     }
 }
