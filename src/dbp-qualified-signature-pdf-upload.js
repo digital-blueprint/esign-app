@@ -599,9 +599,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                     title: 'fileName',
                     field: 'fileName',
                     sorter:"string",
-                    minWidth: 200,
+                    minWidth: 320,
                     widthGrow: 3,
-                    widthShrink: 1,
                     hozAlign: 'left',
                     formatter: 'html',
                     responsive: 0
@@ -630,7 +629,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                 {
                     title: 'positioning',
                     field: 'positioning',
-                    minWidth: 100,
+                    width: 100,
                     hozAlign: 'center',
                     headerHozAlign: 'center',
                     formatter: 'html',
@@ -650,11 +649,11 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                     title: 'buttons',
                     field: 'buttons',
                     sorter: false,
-                    minWidth: 160,
+                    width: 165,
                     hozAlign: 'right',
                     headerHozAlign: 'center',
                     formatter: 'html',
-                    responsive: 1
+                    responsive: 0
                 },
             ],
             columnDefaults: {
