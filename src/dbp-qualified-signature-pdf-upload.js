@@ -10,7 +10,6 @@ import {Button, Icon, IconButton, LoadingButton, MiniSpinner, combineURLs} from 
 import * as commonStyles from '@dbp-toolkit/common/styles';
 import {classMap} from 'lit/directives/class-map.js';
 import {FileSource} from '@dbp-toolkit/file-handling';
-import {TextSwitch} from './textswitch.js';
 import {FileSink} from '@dbp-toolkit/file-handling';
 import {name as pkgName} from './../package.json';
 import {send as notify} from '@dbp-toolkit/common/notification';
@@ -83,7 +82,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             'dbp-button': Button,
             'dbp-icon-button': IconButton,
             'dbp-loading-button': LoadingButton,
-            'dbp-textswitch': TextSwitch,
             'dbp-pdf-annotation-view': PdfAnnotationView,
             'external-sign-iframe': ExternalSignIFrame,
             'dbp-tabulator-table': TabulatorTable,
@@ -163,7 +161,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         this.tableQueuedFilesTable =  /** @type {TabulatorTable} */ (this._('#table-queued-files'));
         this.tableSignedFilesTable =  /** @type {TabulatorTable} */ (this._('#table-signed-files'));
         this.tableFailedFilesTable =  /** @type {TabulatorTable} */ (this._('#table-failed-files'));
-      }
+    }
 
     async queueFile(file) {
         let id = await super.queueFile(file);
@@ -264,10 +262,10 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             );
             this.selectedFilesProcessing = true;
         } else {
+            // Process all queued files
             key = Object.keys(this.queuedFiles)[0];
         }
 
-        // Process all queued files
         const entry = this.takeFileFromQueue(key);
         const file = entry.file;
         this.currentFile = file;
@@ -475,7 +473,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
     }
 
     update(changedProperties) {
-        console.log('changedProperties', changedProperties);
         changedProperties.forEach((oldValue, propName) => {
             switch (propName) {
                 case 'lang':
@@ -536,7 +533,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             }
         `;
     }
-
 
     tabulatorTableHandleCollapse(event) {
         if (event.detail.isCollapsible === true) {
