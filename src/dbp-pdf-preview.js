@@ -529,6 +529,10 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                 justify-content: center;
             }
 
+            :host([don-t-show-buttons]) .action-buttons-container {
+                display: none !important;
+            }
+
             .action-buttons-container .profile-type-select,
             .action-buttons-container .positioning-type-select {
                 padding-right: 2em;

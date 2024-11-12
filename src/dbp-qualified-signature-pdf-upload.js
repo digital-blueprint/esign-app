@@ -733,6 +733,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             event.stopPropagation();
             const editButton = /** @type {HTMLElement} */ (event.target);
             const placement  = editButton.getAttribute('data-placement');
+            this._('#pdf-preview dbp-pdf-preview').removeAttribute('don-t-show-buttons');
             if (this.queuedFilesPlacementModes[id] === "manual") {
                 this.queuePlacement(id, placement);
             } else {
@@ -763,6 +764,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         btnPreview.setAttribute('title', i18n.t('qualified-pdf-upload.preview-file-button-title'));
         btnPreview.addEventListener("click", async (event) => {
             event.stopPropagation();
+            this._('#pdf-preview dbp-pdf-preview').setAttribute('don-t-show-buttons', true);
             this.showPreview(id);
         });
         controlDiv.appendChild(btnPreview);
