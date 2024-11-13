@@ -675,6 +675,15 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                                         &#10227; ${i18n.t('pdf-preview.rotate')}
                                     </button>
                                     <button
+                                        class="button is-cancel ${classMap({
+                                            hidden: !this.isShowPlacement
+                                        })}"
+                                        id="cancel-signature-button"
+                                        @click="${this.sendCancelEvent}"
+                                        title="${i18n.t('button-close-text')}"
+                                        aria-label="${i18n.t('button-close-text')}">Cancel
+                                    </button>
+                                    <button
                                         class="button is-primary ${classMap({
                                             hidden: !this.isShowPlacement
                                         })}"
@@ -683,15 +692,6 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                                             this.sendAcceptEvent();
                                         }}">
                                         ${i18n.t('pdf-preview.save')}
-                                    </button>
-                                    <button
-                                        class="button is-cancel ${classMap({
-                                            hidden: !this.isShowPlacement
-                                        })}"
-                                        id="cancel-signature-button"
-                                        @click="${this.sendCancelEvent}"
-                                        title="${i18n.t('button-close-text')}"
-                                        aria-label="${i18n.t('button-close-text')}">Cancel
                                     </button>
                             </div>
                             <div class="nav-buttons">
