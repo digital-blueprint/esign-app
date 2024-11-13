@@ -8,6 +8,7 @@ import * as commonUtils from '@dbp-toolkit/common/utils';
 import * as utils from './utils';
 import {Button, Icon, IconButton, LoadingButton, MiniSpinner, combineURLs} from '@dbp-toolkit/common';
 import * as commonStyles from '@dbp-toolkit/common/styles';
+import {TooltipElement} from '@dbp-toolkit/tooltip';
 import {classMap} from 'lit/directives/class-map.js';
 import {FileSource} from '@dbp-toolkit/file-handling';
 import {FileSink} from '@dbp-toolkit/file-handling';
@@ -37,6 +38,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
     }
 
     static get scopedElements() {
+
         return {
             'dbp-icon': Icon,
             'dbp-file-source': FileSource,
@@ -49,6 +51,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             'dbp-pdf-annotation-view': PdfAnnotationView,
             'external-sign-iframe': ExternalSignIFrame,
             'dbp-tabulator-table': TabulatorTable,
+            'dbp-tooltip': TooltipElement,
         };
     }
 
@@ -404,7 +407,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             ${commonStyles.getButtonCSS()}
             ${commonStyles.getNotificationCSS()}
             ${SignatureStyles.getSignatureCss()}
-
 
             #external-auth #iframe {
                 margin-top: 0.5em;

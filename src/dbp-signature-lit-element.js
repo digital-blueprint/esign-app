@@ -988,10 +988,11 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                 const isManual = this.queuedFilesPlacementModes[id] === 'manual';
                 const placementMissing = this.queuedFilesNeedsPlacement.get(id) && !isManual;
                 const warning = placementMissing
-                    ? `<dbp-icon name="warning-high"
-                        title="${i18n.t('label-manual-positioning-missing')}"
+                    ? `<dbp-tooltip
+                        text-content="${i18n.t('label-manual-positioning-missing')}"
+                        icon-name="warning-high"
                         aria-label="${i18n.t('label-manual-positioning-missing')}"
-                        style="font-size:24px;color:red;margin-bottom:4px;margin-left:10px;"></dbp-icon>`
+                        style="font-size:24px;color:red;margin-bottom:4px;margin-left:10px;"></dbp-tooltip>`
                     : '';
                 const annotationCount = Array.isArray(this.queuedFilesAnnotations[id])
                     ? this.queuedFilesAnnotations[id].length

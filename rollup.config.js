@@ -17,6 +17,7 @@ import {
     generateTLSConfig,
     getDistPath,
 } from '@dbp-toolkit/dev-utils';
+import replace from '@rollup/plugin-replace';
 import { createRequire } from "module";
 
 const require = createRequire(import.meta.url);
@@ -278,7 +279,10 @@ Dependencies:
             json(),
             urlPlugin({
                 limit: 0,
-                include: [await getPackagePath('select2', '**/*.css')],
+                include: [
+                    await getPackagePath('select2', '**/*.css'),
+                    await getPackagePath('tippy.js', '**/*.css'),
+                ],
                 emitFiles: true,
                 fileName: 'shared/[name].[hash][extname]',
             }),
@@ -398,6 +402,10 @@ Dependencies:
                             (await getDistPath('@dbp-toolkit/file-handling', 'tabulator-tables')),
                     },
                 ],
+            }),
+            replace({
+                'process.env.NODE_ENV': JSON.stringify('production'),
+                'preventAssignment': true,
             }),
             useBabel &&
                 getBabelOutputPlugin({

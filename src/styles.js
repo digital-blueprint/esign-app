@@ -300,6 +300,17 @@ export function getSignatureCss() {
             flex-wrap: wrap;
         }
 
+        #table-queued-files,
+        #table-signed-files,
+        #table-failed-files {
+            --dbp-tabulator-collapse-padding-left: 68px;
+            --dbp-tooltip-icon-color: red;
+        }
+
+        #table-queued-files {
+            --dbp-tabulator-cell-overflow: visible;
+        }
+
         @container tabulator-actions (max-width: 660px) {
             .table-actions,
             .sign-actions {

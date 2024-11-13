@@ -8,6 +8,7 @@ import * as commonUtils from '@dbp-toolkit/common/utils';
 import * as utils from './utils';
 import {Button, Icon, IconButton, LoadingButton, MiniSpinner, combineURLs} from '@dbp-toolkit/common';
 import * as commonStyles from '@dbp-toolkit/common/styles';
+import {TooltipElement} from '@dbp-toolkit/tooltip';
 import {classMap} from 'lit/directives/class-map.js';
 import {FileSource} from '@dbp-toolkit/file-handling';
 import {FileSink} from '@dbp-toolkit/file-handling';
@@ -46,6 +47,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             'dbp-loading-button': LoadingButton,
             'dbp-pdf-annotation-view': PdfAnnotationView,
             'dbp-tabulator-table': TabulatorTable,
+            'dbp-tooltip': TooltipElement,
         };
     }
 
