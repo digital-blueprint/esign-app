@@ -728,6 +728,19 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         let controlDiv = document.createElement('div');
         controlDiv.classList.add('tabulator-icon-buttons');
 
+        // Show preview button
+        const btnPreview = document.createElement('dbp-icon-button');
+        btnPreview.setAttribute('icon-name', 'keyword-research');
+        btnPreview.classList.add('preview-button');
+        btnPreview.setAttribute('aria-label', i18n.t('preview-file-button-title'));
+        btnPreview.setAttribute('title', i18n.t('preview-file-button-title'));
+        btnPreview.addEventListener("click", async (event) => {
+            event.stopPropagation();
+            this._('#pdf-preview dbp-pdf-preview').setAttribute('don-t-show-buttons', true);
+            this.showPreview(id);
+        });
+        controlDiv.appendChild(btnPreview);
+
         // Edit signature button
         const btnEditSignature = document.createElement('dbp-icon-button');
         btnEditSignature.setAttribute('icon-name', 'pencil');
@@ -761,19 +774,6 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             this.showAnnotationView(id, 'text-selected');
         });
         controlDiv.appendChild(btnAnnotation);
-
-        // Show preview button
-        const btnPreview = document.createElement('dbp-icon-button');
-        btnPreview.setAttribute('icon-name', 'keyword-research');
-        btnPreview.classList.add('preview-button');
-        btnPreview.setAttribute('aria-label', i18n.t('preview-file-button-title'));
-        btnPreview.setAttribute('title', i18n.t('preview-file-button-title'));
-        btnPreview.addEventListener("click", async (event) => {
-            event.stopPropagation();
-            this._('#pdf-preview dbp-pdf-preview').setAttribute('don-t-show-buttons', true);
-            this.showPreview(id);
-        });
-        controlDiv.appendChild(btnPreview);
 
         // Delete button
         const btnDelete = document.createElement('dbp-icon-button');
