@@ -3,6 +3,7 @@ import {css} from 'lit';
 export function getSignatureCss() {
     // language=css
     return css`
+
         #annotation-view button.is-cancel {
             background: transparent;
             border: none;
@@ -107,6 +108,7 @@ export function getSignatureCss() {
         a > [name='close'] {
             color: var(--dbp-accent);
         }
+
         .button.close dbp-icon {
             margin-left: -2px;
         }
@@ -119,15 +121,6 @@ export function getSignatureCss() {
             display: flex;
             flex-direction: column;
         }
-
-        /*#grid-container > div {
-            margin-right: 20px;
-        }
-
-        #grid-container > div:last-child {
-            margin-right: 0;
-            flex: 1 0;
-        }*/
 
         .file-block,
         .box {
@@ -217,10 +210,6 @@ export function getSignatureCss() {
             margin-top: -5px;
         }
 
-        .is-right {
-            float: right;
-        }
-
         .error-files .header {
             color: black;
         }
@@ -305,6 +294,7 @@ export function getSignatureCss() {
         #table-failed-files {
             --dbp-tabulator-collapse-padding-left: 68px;
             --dbp-tooltip-icon-color: red;
+            --dbp-button-size: 50px;
         }
 
         #table-queued-files {

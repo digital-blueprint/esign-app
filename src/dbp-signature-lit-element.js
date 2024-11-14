@@ -725,6 +725,8 @@ export default class DBPSignatureLitElement extends BaseLitElement {
 
     getActionButtonsHtml(id) {
         const i18n = this._i18n;
+        const ICON_SIZE = '24px';
+
         let controlDiv = document.createElement('div');
         controlDiv.classList.add('tabulator-icon-buttons');
 
@@ -734,6 +736,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         btnPreview.classList.add('preview-button');
         btnPreview.setAttribute('aria-label', i18n.t('preview-file-button-title'));
         btnPreview.setAttribute('title', i18n.t('preview-file-button-title'));
+        btnPreview.style['font-size'] = ICON_SIZE;
         btnPreview.addEventListener("click", async (event) => {
             event.stopPropagation();
             this._('#pdf-preview dbp-pdf-preview').setAttribute('don-t-show-buttons', true);
@@ -747,6 +750,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         btnEditSignature.classList.add('edit-signature-button');
         btnEditSignature.setAttribute('aria-label', i18n.t('edit-signature-button-title'));
         btnEditSignature.setAttribute('title', i18n.t('edit-signature-button-title'));
+        btnEditSignature.style['font-size'] = ICON_SIZE;
         btnEditSignature.setAttribute('data-placement', this.queuedFilesPlacementModes[id] || 'auto');
         btnEditSignature.addEventListener("click", async (event) => {
             event.stopPropagation();
@@ -763,17 +767,69 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         });
         controlDiv.appendChild(btnEditSignature);
 
-        // Add annotation button
+        // Add annotation buttons
+        const annotationWrapper = document.createElement('span');
+        annotationWrapper.classList.add('annotation-wrapper');
+        const annotationWrapperStyles = {
+            'display': 'inline-grid',
+            'grid-template-columns': '27px 23px',
+            'grid-template-rows': '23px 27px',
+            'width': '50px',
+            'height': '50px',
+        };
+        Object.assign(annotationWrapper.style, annotationWrapperStyles);
+
         const btnAnnotation = document.createElement('dbp-icon-button');
         btnAnnotation.setAttribute('icon-name', 'bubble');
         btnAnnotation.classList.add('annotation-button');
         btnAnnotation.setAttribute('aria-label', i18n.t('annotation-button-title'));
         btnAnnotation.setAttribute('title', i18n.t('annotation-button-title'));
+        btnAnnotation.style['font-size'] = ICON_SIZE;
+        const btnAnnotationStyles = {
+            'grid-column': '1 / 3',
+            'grid-row': '1 / 3',
+            'justify-self': 'center',
+            'align-self': 'center',
+        };
+        Object.assign(btnAnnotation.style, btnAnnotationStyles);
         btnAnnotation.addEventListener("click", async (event) => {
             event.stopPropagation();
             this.showAnnotationView(id, 'text-selected');
         });
-        controlDiv.appendChild(btnAnnotation);
+        annotationWrapper.appendChild(btnAnnotation);
+
+        const annotationCount = Array.isArray(this.queuedFilesAnnotations[id])
+            ? this.queuedFilesAnnotations[id].length
+            : 0;
+        if (annotationCount > 0) {
+            const annotationBadge = document.createElement('span');
+            annotationBadge.setAttribute('title', i18n.t('annotations-count-text', {annotationCount: annotationCount}));
+            annotationBadge.setAttribute('aria-label', i18n.t('annotations-count-text', {annotationCount: annotationCount}));
+            const annotationBadgeStyles = {
+                'grid-column': '2 / 3',
+                'grid-row': '1 / 2',
+                'justify-self': 'start',
+                'align-self': 'end',
+                'background': 'var(--dbp-primary)',
+                'color': 'var(--dbp-background)',
+                'border': '1px solid var(--dbp-background)',
+                'border-radius': '100%',
+                'display': 'block',
+                'width': '21px',
+                'height': '21px',
+                'text-align': 'center',
+                'line-height': '21px',
+                'font-size': '14px',
+                'font-weight': 'bold',
+                'z-index': '3',
+            };
+            Object.assign(annotationBadge.style, annotationBadgeStyles);
+            annotationBadge.textContent = String(annotationCount);
+            annotationWrapper.appendChild(annotationBadge);
+        }
+
+        controlDiv.appendChild(annotationWrapper);
+
 
         // Delete button
         const btnDelete = document.createElement('dbp-icon-button');
@@ -781,6 +837,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         btnDelete.classList.add('delete-button');
         btnDelete.setAttribute('aria-label', i18n.t('remove-queued-file-button-title'));
         btnDelete.setAttribute('title', i18n.t('remove-queued-file-button-title'));
+        btnDelete.style['font-size'] = ICON_SIZE;
         const fileName = this.queuedFiles[id].file.name;
         if (fileName) {
             btnDelete.setAttribute('data-filename', fileName);
@@ -802,14 +859,18 @@ export default class DBPSignatureLitElement extends BaseLitElement {
 
     getDownloadButtonHtml(id, file) {
         const i18n = this._i18n;
+        const ICON_SIZE = '24px';
+
         let controlDiv = document.createElement('div');
         controlDiv.classList.add('tabulator-download-button');
+
         // Download button
         const btnDownload = document.createElement('dbp-icon-button');
         btnDownload.setAttribute('icon-name', 'download');
         btnDownload.classList.add('download-button');
         btnDownload.setAttribute('aria-label', i18n.t('download-file-button-title'));
         btnDownload.setAttribute('title', i18n.t('download-file-button-title'));
+        btnDownload.style['font-size'] = ICON_SIZE;
         btnDownload.addEventListener("click", async (event) => {
             event.stopPropagation();
             this.downloadFileClickHandler(file, 'file-download-' + id);
@@ -830,14 +891,18 @@ export default class DBPSignatureLitElement extends BaseLitElement {
 
     getFailedButtonsHtml(id, data) {
         const i18n = this._i18n;
+        const ICON_SIZE = '24px';
+
         let controlDiv = document.createElement('div');
         controlDiv.classList.add('tabulator-failed-buttons');
+
         // Re upload button
         const btnReupload = document.createElement('dbp-icon-button');
         btnReupload.setAttribute('icon-name', 'reload');
         btnReupload.classList.add('re-upload-button');
         btnReupload.setAttribute('aria-label', i18n.t('re-upload-file-button-title'));
         btnReupload.setAttribute('title', i18n.t('re-upload-file-button-title'));
+        btnReupload.style['font-size'] = ICON_SIZE;
         btnReupload.addEventListener("click", async (event) => {
             event.stopPropagation();
             this.fileQueueingClickHandler(data.file, id);
@@ -953,20 +1018,10 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                     responsive: 2
                 },
                 {
-                    title: 'annotation',
-                    field: 'annotation',
-                    sorter: false,
-                    width: 60,
-                    hozAlign: 'center',
-                    headerHozAlign: 'center',
-                    formatter: 'html',
-                    responsive: 2
-                },
-                {
                     title: 'buttons',
                     field: 'buttons',
                     sorter: false,
-                    width: 165,
+                    width: 200,
                     hozAlign: 'right',
                     headerHozAlign: 'center',
                     formatter: 'html',
@@ -994,22 +1049,12 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                         aria-label="${i18n.t('label-manual-positioning-missing')}"
                         style="font-size:24px;color:red;margin-bottom:4px;margin-left:10px;"></dbp-tooltip>`
                     : '';
-                const annotationCount = Array.isArray(this.queuedFilesAnnotations[id])
-                    ? this.queuedFilesAnnotations[id].length
-                    : 0;
-                const annotationIcon = (annotationCount > 0)
-                    ? `<span style="border:solid 1px var(--dbp-content);border-radius: 100%;width:24px;height:24px;display:block;text-align:center;"
-                        title="${i18n.t('annotations-count-text', {annotationCount: annotationCount})}"
-                        aria-label="${i18n.t('annotations-count-text', {annotationCount: annotationCount})}"
-                        >${annotationCount}</span>`
-                    : '';
                 let fileData = {
                     index: id,
                     fileName: `${file.name} ${warning}`,
                     fileSize: humanFileSize(file.size),
                     // profile: 'Personal',
                     positioning: isManual ? 'manual' : 'auto',
-                    annotation: annotationIcon,
                     buttons: this.getActionButtonsHtml(id),
                 };
 
