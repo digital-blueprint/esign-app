@@ -34,6 +34,10 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         this.queuedFilesTableExpanded = false;
         this.queuedFilesTableAllSelected = false;
         this.queuedFilesTableCollapsible = false;
+        this.signedFilesTableExpanded = false;
+        this.signedFilesTableCollapsible = false;
+        this.failedFilesTableExpanded = false;
+        this.failedFilesTableCollapsible = false;
         this.currentFile = {};
         this.currentFileName = '';
         this.currentFilePlacementMode = '';
@@ -100,6 +104,10 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             queuedFilesTableExpanded: {type: Boolean, attribute: false},
             queuedFilesTableAllSelected: {type: Boolean, attribute: false},
             queuedFilesTableCollapsible: {type: Boolean, attribute: false},
+            signedFilesTableExpanded: {type: Boolean, attribute: false},
+            signedFilesTableCollapsible: {type: Boolean, attribute: false},
+            failedFilesTableExpanded: {type: Boolean, attribute: false},
+            failedFilesTableCollapsible: {type: Boolean, attribute: false},
             selectedFiles: {type: Array, attribute: false},
         };
     }
@@ -682,11 +690,9 @@ export default class DBPSignatureLitElement extends BaseLitElement {
     }
 
     tabulatorTableHandleCollapse(event) {
-        if (event.detail.isCollapsible === true) {
-            this.queuedFilesTableCollapsible = true;
-        } else {
-            this.queuedFilesTableCollapsible = false;
-        }
+        event.detail.tableId === 'table-queued-files' ? this.queuedFilesTableCollapsible = event.detail.isCollapsible : null;
+        event.detail.tableId === 'table-signed-files' ? this.signedFilesTableCollapsible = event.detail.isCollapsible : null;
+        event.detail.tableId === 'table-failed-files' ? this.failedFilesTableCollapsible = event.detail.isCollapsible : null;
     }
 
     /**
@@ -963,7 +969,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                     title: '#',
                     field: 'index',
                     hozAlign: 'center',
-                    headerHozAlign:"center",
+                    headerHozAlign: 'center',
                     width: 40,
                     visible: false
                 },
@@ -972,16 +978,16 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                     field: 'toggle',
                     hozAlign: 'center',
                     width: 65,
-                    formatter:"responsiveCollapse",
-                    headerHozAlign:"center",
+                    formatter: 'responsiveCollapse',
+                    headerHozAlign: 'center',
                     headerSort:false,
                     responsive: 0
                 },
                 {
                     title: 'fileName',
                     field: 'fileName',
-                    sorter:"string",
-                    minWidth: 320,
+                    sorter: 'string',
+                    minWidth: 200,
                     widthGrow: 3,
                     hozAlign: 'left',
                     formatter: 'html',
@@ -990,7 +996,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                 {
                     title: 'fileSize',
                     field: 'fileSize',
-                    sorter:"string",
+                    sorter: 'string',
                     width: 100,
                     hozAlign: 'right',
                     headerHozAlign: 'right',
@@ -1126,10 +1132,10 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                 {
                     title: 'fileName',
                     field: 'fileName',
-                    sorter: 'html',
+                    sorter: 'string',
                     minWidth: 200,
                     widthGrow: 3,
-                    widthShrink: 1,
+                    // widthShrink: 1,
                     hozAlign: 'left',
                     formatter: 'html',
                     responsive: 0
@@ -1142,13 +1148,13 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                     hozAlign: 'right',
                     headerHozAlign: 'right',
                     formatter: 'plaintext',
-                    responsive: 1
+                    responsive: 2
                 },
                 {
                     title: 'download',
                     field: 'downloadButton',
                     sorter: false,
-                    minWidth: 60,
+                    width: 60,
                     hozAlign: 'center',
                     headerHozAlign: 'center',
                     formatter: 'html',
@@ -1217,7 +1223,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                     title: 'id',
                     field: 'index',
                     hozAlign: 'center',
-                    headerHozAlign:"center",
+                    headerHozAlign: 'center',
                     width: 40,
                     visible: false
                 },
@@ -1226,18 +1232,17 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                     field: 'toggle',
                     hozAlign: 'center',
                     width: 65,
-                    formatter:"responsiveCollapse",
-                    headerHozAlign:"center",
+                    formatter: 'responsiveCollapse',
+                    headerHozAlign: 'center',
                     headerSort:false,
                     responsive: 0
                 },
                 {
                     title: 'fileName',
                     field: 'fileName',
-                    sorter:"string",
-                    minWidth: 100,
+                    sorter: 'string',
+                    minWidth: 200,
                     widthGrow: 3,
-                    widthShrink: 1,
                     hozAlign: 'left',
                     formatter: 'html',
                     responsive: 0
@@ -1245,18 +1250,18 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                 {
                     title: 'fileSize',
                     field: 'fileSize',
-                    sorter:"string",
+                    sorter: 'string',
                     width: 100,
                     hozAlign: 'right',
                     headerHozAlign: 'right',
                     formatter: 'plaintext',
-                    responsive: 1
+                    responsive: 2
                 },
                 {
                     title: 'Error Message',
                     field: 'errorMessage',
-                    sorter:"string",
-                    minWidth: 100,
+                    sorter: 'string',
+                    minWidth: 300,
                     widthGrow: 2,
                     hozAlign: 'left',
                     headerHozAlign: 'left',
@@ -1267,7 +1272,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                     title: 'buttons',
                     field: 'buttons',
                     sorter: false,
-                    minWidth: 90,
+                    width: 115,
                     hozAlign: 'center',
                     headerHozAlign: 'center',
                     formatter: 'html',

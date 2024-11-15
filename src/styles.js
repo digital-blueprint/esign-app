@@ -4,6 +4,11 @@ export function getSignatureCss() {
     // language=css
     return css`
 
+        .section-title {
+            font-size: 1.4em;
+            margin-bottom: 1em;
+        }
+
         #annotation-view button.is-cancel {
             background: transparent;
             border: none;
@@ -192,14 +197,6 @@ export function getSignatureCss() {
             font-weight: bold;
         }
 
-        .error-files .control,
-        .signed-files .control {
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            gap: 1em;
-        }
-
         #pdf-preview button.is-cancel, .box-header .is-cancel {
             background: transparent;
             border: none;
@@ -283,7 +280,9 @@ export function getSignatureCss() {
         }
 
         .table-actions,
-        .sign-actions {
+        .sign-actions,
+        .signed-actions,
+        .failed-actions {
             display: flex;
             gap: 1em;
             flex-wrap: wrap;
@@ -303,20 +302,62 @@ export function getSignatureCss() {
 
         @container tabulator-actions (max-width: 660px) {
             .table-actions,
-            .sign-actions {
+            .sign-actions,
+            .signed-actions,
+            .failed-actions {
                 width: 100%;
             }
 
-            .table-actions > dbp-loading-button:not(.hidden),
-            .sign-actions > button {
+            .queued-files .table-actions > dbp-loading-button:not(.hidden),
+            .queued-files .sign-actions > button,
+            .signed-files .signed-actions > :is(button, dbp-loading-button),
+            .error-files .failed-actions > :is(button, dbp-loading-button) {
                 flex-basis: calc(50% - 1em);
+            }
+
+            :is(.signed-files, .error-files) .table-actions {
+                flex-basis: calc(33%);
+            }
+
+            :is(.signed-files, .error-files) .table-actions > dbp-loading-button:not(.hidden) {
+                width: 100%;
+            }
+
+            .signed-files .signed-actions,
+            .error-files .failed-actions {
+                flex-basis: calc(66% - 1em);
             }
         }
 
         @container tabulator-actions (max-width: 420px) {
             .table-actions,
-            .sign-actions {
+            .sign-actions,
+            .signed-actions,
+            .failed-actions {
+                display: flex;
                 flex-direction: column;
+            }
+
+            .signed-files,
+            .error-files {
+                .tabulator-actions {
+                    flex-direction: column;
+                    flex-wrap: nowrap;
+                }
+            }
+
+            .signed-files {
+                .table-actions,
+                .signed-actions {
+                    flex-basis: 100%;
+                }
+            }
+
+            .error-files {
+                .table-actions,
+                .failed-actions {
+                    flex-basis: 100%;
+                }
             }
         }
 
