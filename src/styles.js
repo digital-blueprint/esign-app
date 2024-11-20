@@ -149,6 +149,12 @@ export function getSignatureCss() {
             --dbp-modal-min-width: min(75vw, 600px);
         }
 
+        .modal--external-auth {
+            --dbp-modal-max-width: 600px;
+            --dbp-modal-min-width: min(75vw, 600px);
+        }
+
+
         .tabulator-actions {
             display: flex;
             gap: 1em;

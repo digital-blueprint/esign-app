@@ -74,6 +74,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         window.addEventListener('beforeunload', this._onReceiveBeforeUnload);
         window.addEventListener('dbp-pdf-preview-accept', this.setQueuedFilesTabulatorTable.bind(this));
         window.addEventListener('dbp-pdf-annotations-save', this.setQueuedFilesTabulatorTable.bind(this));
+        window.addEventListener('dbp-pdf-annotations-cancel', this.setQueuedFilesTabulatorTable.bind(this));
         window.addEventListener('dbp-tabulator-table-collapsible-event', this.tabulatorTableHandleCollapse.bind(this));
         window.addEventListener('dbp-tabulator-table-row-selection-changed-event', this.handleTableSelection.bind(this));
         window.addEventListener('dbp-modal-closed', this.handleModalClosed.bind(this));
@@ -88,6 +89,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         window.removeEventListener('beforeunload', this._onReceiveBeforeUnload);
         window.removeEventListener('dbp-pdf-preview-accept', this.setQueuedFilesTabulatorTable);
         window.removeEventListener('dbp-pdf-annotations-save', this.setQueuedFilesTabulatorTable);
+        window.removeEventListener('dbp-pdf-annotations-cancel', this.setQueuedFilesTabulatorTable);
         window.removeEventListener('dbp-tabulator-table-collapsible-event', this.tabulatorTableHandleCollapse);
         window.removeEventListener('dbp-tabulator-table-row-selection-changed-event', this.handleTableSelection);
         window.removeEventListener('dbp-modal-closed', this.handleModalClosed);
@@ -323,6 +325,10 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             file.json = {'hydra:description': 'Download failed!'};
 
             this.addToErrorFiles(file);
+        })
+        .finally(() => {
+            // Close the external auth modal
+            that._('#external-auth').close();
         });
     }
 
@@ -334,6 +340,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         this._('#iframe').reset();
         this.externalAuthInProgress = false;
         this.endSigningProcessIfQueueEmpty();
+        // Close the external auth modal
+        this._('#external-auth').close();
     }
 
     addToErrorFiles(file) {
@@ -589,6 +597,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                         @click="${() => {
                                             this.signingProcessEnabled = true;
                                             this.signingProcessActive = true;
+                                            this._('#external-auth').open();
                                         }}"
                                         ?disabled="${this.queuedFilesCount === 0}"
                                         class="button is-primary">
@@ -660,7 +669,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                             @click="${this.clearSignedFiles}" class="button">
                                             ${i18n.t('qualified-pdf-upload.clear-all')}
                                         </button>
-                                        <dbp-button
+                                        <dbp-loading-button
                                             id="zip-download-button"
                                             value="${i18n.t(
                                                 'qualified-pdf-upload.download-zip-button'
@@ -682,7 +691,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                                     id++;
                                                 }
                                             }}"
-                                            type="is-primary"></dbp-button>
+                                            type="is-primary"></dbp-loading-button>
                                     </div>
                                 </div>
                             </div>
@@ -786,38 +795,31 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                             </div>
                         </dbp-modal>
                         <!-- Annotation view -->
-                        <div
-                            id="annotation-view"
-                            class="field ${classMap({
+                        <dbp-modal id="annotation-view"
+                            modal-id="annotation-view-modal"
+                            class="modal--annotation-view ${classMap({
                                 hidden: !this.isAnnotationViewVisible || !this.allowAnnotating,
-                            })}">
-                            <h2>${i18n.t('qualified-pdf-upload.annotation-view-label')}</h2>
-                            <div class="box-header">
+                            })}"
+                            title="${i18n.t('qualified-pdf-upload.annotation-view-label')}">
+                            <div slot="header" class="header">
+                                <div class="modal-notification">
+                                    <dbp-notification id="dbp-modal-notification-annotation" inline lang="${this.lang}"></dbp-notification>
+                                </div>
                                 <div class="filename">
-                                    <strong>
-                                        ${this.currentFile.file !== undefined
-                                            ? this.currentFile.file.name
-                                            : ''}
-                                    </strong>
+                                    <strong>${this.currentFile.file !== undefined ? this.currentFile.file.name : ''}</strong>
                                     (${humanFileSize(
-                                        this.currentFile.file !== undefined
-                                            ? this.currentFile.file.size
-                                            : 0
+                                        this.currentFile.file !== undefined ? this.currentFile.file.size : 0
                                     )})
                                 </div>
-                                <button
-                                    class="is-cancel annotation"
-                                    title="${i18n.t('button-close-text')}" aria-label="${i18n.t('button-close-text')}"
-                                    @click="${this.hideAnnotationView}">
-                                    <dbp-icon name="close" id="close-icon" aria-hidden="true"></dbp-icon>
-                                </button>
                             </div>
-                            <dbp-pdf-annotation-view
-                                lang="${this.lang}"
-                                @dbp-pdf-annotations-save="${this.processAnnotationEvent}"
-                                @dbp-pdf-annotations-cancel="${this
-                                    .processAnnotationCancelEvent}"></dbp-pdf-annotation-view>
-                        </div>
+                            <div slot="content">
+                                <dbp-pdf-annotation-view
+                                    lang="${this.lang}"
+                                    @dbp-pdf-annotations-save="${this.processAnnotationEvent}"
+                                    @dbp-pdf-annotations-cancel="${this.processAnnotationCancelEvent}">
+                                </dbp-pdf-annotation-view>
+                            </div>
+                        </dbp-modal>
                         <!-- File upload progress -->
                         <div
                             id="upload-progress"
@@ -829,40 +831,30 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                             ${this.uploadStatusText}
                         </div>
                         <!-- External auth -->
-                        <div
-                            id="external-auth"
-                            class="files-block field ${classMap({
+                        <dbp-modal id="external-auth"
+                            modal-id="external-auth-modal"
+                            class="modal--external-auth ${classMap({
                                 hidden: !this.externalAuthInProgress,
-                            })}">
-                            <h3>${i18n.t('qualified-pdf-upload.current-signing-process-label')}</h3>
-                            <div class="box">
-                                <div class="box-header">
-                                    <div class="filename">
-                                        <strong>${this.currentFileName}</strong>
+                            })}"
+                            title="${i18n.t('qualified-pdf-upload.current-signing-process-label')}">
+                            <div slot="header" class="header">
+                                <div class="filename">
+                                    <strong>${this.currentFileName}</strong>
                                         (${humanFileSize(
                                             this.currentFile.file !== undefined
                                                 ? this.currentFile.file.size
                                                 : 0
                                         )})
-                                    </div>
-                                    <button
-                                        class="is-cancel"
-                                        title="${i18n.t(
-                                            'qualified-pdf-upload.stop-signing-process-button'
-                                        )}"
-                                        aria-label="${i18n.t(
-                                            'qualified-pdf-upload.stop-signing-process-button'
-                                        )}"
-                                        @click="${this.stopSigningProcess}">
-                                        <dbp-icon name="close" aria-hidden="true"></dbp-icon>
-                                    </button>
                                 </div>
+                            </div>
+                            <div slot="content">
                                 <external-sign-iframe
                                     id="iframe"
                                     @signature-error="${this._onIFrameError}"
-                                    @signature-done="${this._onIFrameDone}"></external-sign-iframe>
+                                    @signature-done="${this._onIFrameDone}">
+                                </external-sign-iframe>
                             </div>
-                        </div>
+                        </dbp-modal>
                     </div>
                 </div>
             </div>

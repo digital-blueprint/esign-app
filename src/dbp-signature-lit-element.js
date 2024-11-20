@@ -704,9 +704,13 @@ export default class DBPSignatureLitElement extends BaseLitElement {
     }
 
     handleModalClosed(event) {
-        // if (event.detail.id === 'pdf-preview-modal') {
+        if (event.detail.id === 'pdf-preview-modal') {
             this.hidePDF();
-        // }
+        }
+
+        if (event.detail.id === 'external-auth-modal') {
+            this.stopSigningProcess();
+        }
     }
 
     /**
