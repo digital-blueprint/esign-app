@@ -695,6 +695,20 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         event.detail.tableId === 'table-failed-files' ? this.failedFilesTableCollapsible = event.detail.isCollapsible : null;
     }
 
+    handlePdfModalClosing() {
+        this._('#pdf-preview').close();
+    }
+
+    handleAnnotationModalClosing() {
+        this._('#annotation-view').close();
+    }
+
+    handleModalClosed(event) {
+        // if (event.detail.id === 'pdf-preview-modal') {
+            this.hidePDF();
+        // }
+    }
+
     /**
      * Update selectedRows on selection changes
      * @param {object} tableEvent
@@ -743,8 +757,9 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         btnPreview.setAttribute('aria-label', i18n.t('preview-file-button-title'));
         btnPreview.setAttribute('title', i18n.t('preview-file-button-title'));
         btnPreview.style['font-size'] = ICON_SIZE;
-        btnPreview.addEventListener("click", async (event) => {
+        btnPreview.addEventListener("click", (event) => {
             event.stopPropagation();
+            this._('#pdf-preview').open();
             this._('#pdf-preview dbp-pdf-preview').setAttribute('don-t-show-buttons', true);
             this.showPreview(id);
         });
@@ -758,10 +773,11 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         btnEditSignature.setAttribute('title', i18n.t('edit-signature-button-title'));
         btnEditSignature.style['font-size'] = ICON_SIZE;
         btnEditSignature.setAttribute('data-placement', this.queuedFilesPlacementModes[id] || 'auto');
-        btnEditSignature.addEventListener("click", async (event) => {
+        btnEditSignature.addEventListener("click", (event) => {
             event.stopPropagation();
             const editButton = /** @type {HTMLElement} */ (event.target);
             const placement  = editButton.getAttribute('data-placement');
+            this._('#pdf-preview').open();
             this._('#pdf-preview dbp-pdf-preview').removeAttribute('don-t-show-buttons');
             if (this.queuedFilesPlacementModes[id] === "manual") {
                 this.queuePlacement(id, placement);
@@ -798,8 +814,9 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             'align-self': 'center',
         };
         Object.assign(btnAnnotation.style, btnAnnotationStyles);
-        btnAnnotation.addEventListener("click", async (event) => {
+        btnAnnotation.addEventListener("click", (event) => {
             event.stopPropagation();
+            this._('#annotation-view').open();
             this.showAnnotationView(id, 'text-selected');
         });
         annotationWrapper.appendChild(btnAnnotation);
@@ -848,7 +865,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         if (fileName) {
             btnDelete.setAttribute('data-filename', fileName);
         }
-        btnDelete.addEventListener("click", async (event) => {
+        btnDelete.addEventListener("click", (event) => {
             event.stopPropagation();
             const editButton = /** @type {HTMLElement} */ (event.target);
             const fileName  = editButton.getAttribute('data-filename') || i18n.t('this-file');

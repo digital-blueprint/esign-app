@@ -11,7 +11,6 @@ import * as pdfjs from 'pdfjs-dist/legacy/build/pdf.mjs';
 import {name as pkgName} from './../package.json';
 import {readBinaryFileContent} from './utils.js';
 import {send} from '@dbp-toolkit/common/notification';
-
 /**
  * PdfPreview web component
  */
@@ -86,6 +85,21 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
         this.showPage(this.currentPage);
     }
 
+    _onMouseUp(event) {
+        // Re-dispatch the event over the shadowRoot.
+        // Firefox block events in dialog opened with showModal().
+        // Fabric add event listeners to the document, so we need to re-dispatch the event over the shadowRoot.
+        const clonedEvent = new event.constructor(
+            event.type,
+            {
+              bubbles: true,
+              composed: true,
+              cancelable: event.cancelable,
+            }
+        );
+        this.shadowRoot.dispatchEvent(clonedEvent);
+    }
+
     disconnectedCallback() {
         if (this.fabricCanvas !== null) {
             this.fabricCanvas.removeListeners();
@@ -109,14 +123,14 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
             const fabric = await import('fabric');
             that.canvas = that._('#pdf-canvas');
 
-            // this._('#upload-pdf-input').addEventListener('change', function() {
-            //     that.showPDF(this.files[0]);
-            // });
-
             // add fabric.js canvas for signature positioning
             // , {stateful : true}
             // selection is turned off because it makes troubles on mobile devices
             let fabricCanvas = /** @type {HTMLCanvasElement} */ (this._('#fabric-canvas'));
+
+            this._('#pdf-main-container').addEventListener('mouseup', this._onMouseUp.bind(this));
+
+
             this.fabricCanvas = new fabric.Canvas(fabricCanvas, {
                 selection: false,
                 allowTouchScrolling: true,
@@ -679,7 +693,9 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                                             hidden: !this.isShowPlacement
                                         })}"
                                         id="cancel-signature-button"
-                                        @click="${this.sendCancelEvent}"
+                                        @click="${() => {
+                                            this.sendCancelEvent();
+                                        }}"
                                         title="${i18n.t('button-close-text')}"
                                         aria-label="${i18n.t('button-close-text')}">Cancel
                                     </button>
