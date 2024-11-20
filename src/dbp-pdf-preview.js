@@ -610,7 +610,6 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
             }
 
             #pdf-meta {
-                border: var(--dbp-border);
                 padding: 0.54em;
                 border-bottom-width: 0;
                 border-top-width: 0;

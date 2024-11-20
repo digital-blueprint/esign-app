@@ -814,7 +814,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             'align-self': 'center',
         };
         Object.assign(btnAnnotation.style, btnAnnotationStyles);
-        btnAnnotation.addEventListener("click", (event) => {
+        annotationWrapper.addEventListener("click", (event) => {
             event.stopPropagation();
             this._('#annotation-view').open();
             this.showAnnotationView(id, 'text-selected');

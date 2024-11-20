@@ -279,16 +279,9 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
                 row-gap: 1em;
             }
 
-            .delete-elements {
-                padding-top: 1em;
-                margin-left: 2px;
-                margin-right: 2px;
+            .action-buttons-wrapper {
                 display: flex;
-                justify-content: flex-end;
-            }
-
-            .delete-elements .button {
-                margin-left: 0.5em;
+                gap: 1em;
             }
 
             .form-wrapper {
@@ -431,14 +424,26 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
                             </button>
                         </div>
 
-                        <button class="button is-primary save-all-button"
-                            title="${i18n.t('annotation-view.save-all-button-title')}"
-                            @click="${() => {
-                                this.saveAll();
-                            }}"
-                            ?disabled="${this.annotationRows.length === 0}">
-                            ${i18n.t('annotation-view.save-all-button-text')}
-                        </button>
+                        <div class="action-buttons-wrapper">
+                                <button class="button clear-all-button ${classMap({
+                                        hidden: !this.isTextHidden && this.annotationRows.length === 0,
+                                    })}"
+                                    title="${i18n.t('annotation-view.delete-all-button-title')}"
+                                    @click="${() => {
+                                        this.deleteAll();
+                                    }}"
+                                    ?disabled="${this.annotationRows.length === 0}">
+                                    ${i18n.t('annotation-view.delete-all-button-text')}
+                                </button>
+                            <button class="button is-primary save-all-button"
+                                title="${i18n.t('annotation-view.save-all-button-title')}"
+                                @click="${() => {
+                                    this.saveAll();
+                                }}"
+                                ?disabled="${this.annotationRows.length === 0}">
+                                ${i18n.t('annotation-view.save-all-button-text')}
+                            </button>
+                            </div>
                     </div>
                 </div>
                 <div class="form-wrapper">
@@ -451,18 +456,6 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
                         <div class="form-fields">
                             ${this.getAnnotationsHtml()}
                         </div>
-                    </div>
-                    <div class="delete-elements">
-                        <button class="button clear-all-button ${classMap({
-                                hidden: !this.isTextHidden && this.annotationRows.length === 0,
-                            })}"
-                            title="${i18n.t('annotation-view.delete-all-button-title')}"
-                            @click="${() => {
-                                this.deleteAll();
-                            }}"
-                            ?disabled="${this.annotationRows.length === 0}">
-                            ${i18n.t('annotation-view.delete-all-button-text')}
-                        </button>
                     </div>
                 </div>
             </div>

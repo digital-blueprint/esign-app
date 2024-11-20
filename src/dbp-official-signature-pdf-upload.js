@@ -67,6 +67,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
 
         window.addEventListener('dbp-pdf-preview-accept', this.setQueuedFilesTabulatorTable.bind(this));
         window.addEventListener('dbp-pdf-annotations-save', this.setQueuedFilesTabulatorTable.bind(this));
+        window.addEventListener('dbp-pdf-annotations-cancel', this.setQueuedFilesTabulatorTable.bind(this));
         window.addEventListener('dbp-tabulator-table-collapsible-event', this.tabulatorTableHandleCollapse.bind(this));
         window.addEventListener('dbp-tabulator-table-row-selection-changed-event', this.handleTableSelection.bind(this));
         window.addEventListener('dbp-modal-closed', this.handleModalClosed.bind(this));
@@ -81,6 +82,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         // remove event listeners
         window.removeEventListener('dbp-pdf-preview-accept', this.setQueuedFilesTabulatorTable);
         window.removeEventListener('dbp-pdf-annotations-save', this.setQueuedFilesTabulatorTable);
+        window.removeEventListener('dbp-pdf-annotations-cancel', this.setQueuedFilesTabulatorTable);
         window.removeEventListener('dbp-tabulator-table-collapsible-event', this.tabulatorTableHandleCollapse);
         window.removeEventListener('dbp-tabulator-table-row-selection-changed-event', this.handleTableSelection);
         window.removeEventListener('dbp-modal-closed', this.handleModalClosed);
