@@ -662,6 +662,9 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                             })}"
                             title="${i18n.t('official-pdf-upload.annotation-view-label')}">
                             <div slot="header" class="header">
+                                <div class="modal-notification">
+                                    <dbp-notification id="dbp-modal-notification-annotation" inline lang="${this.lang}"></dbp-notification>
+                                </div>
                                 <div class="filename">
                                     <strong>${this.currentFile.file !== undefined ? this.currentFile.file.name : ''}</strong>
                                     (${humanFileSize(

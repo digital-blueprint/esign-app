@@ -97,6 +97,7 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
                     }),
                     body: i18n.t('annotation-view.empty-annotation-message'),
                     type: 'danger',
+                    targetNotificationId: 'dbp-modal-notification-annotation',
                     timeout: 5,
                 });
                 return false;
