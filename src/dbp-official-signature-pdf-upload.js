@@ -381,7 +381,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                     </div>
                 </div>
                 <div id="grid-container">
-                    <div class="left-container">
+                    <div class="table-container">
                         <div
                             class="files-block queued-files field ${classMap({
                                 hidden: !this.queueBlockEnabled,
@@ -625,7 +625,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                 .options="${this.failedFilesOptions}"></dbp-tabulator-table>
                         </div>
                     </div>
-                    <div class="right-container">
+                    <div class="modal-container">
                         <!-- PDF preview -->
                         <dbp-modal id="pdf-preview"
                             modal-id="pdf-preview-modal"
