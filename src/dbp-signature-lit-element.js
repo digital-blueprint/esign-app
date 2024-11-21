@@ -693,6 +693,8 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         event.detail.tableId === 'table-queued-files' ? this.queuedFilesTableCollapsible = event.detail.isCollapsible : null;
         event.detail.tableId === 'table-signed-files' ? this.signedFilesTableCollapsible = event.detail.isCollapsible : null;
         event.detail.tableId === 'table-failed-files' ? this.failedFilesTableCollapsible = event.detail.isCollapsible : null;
+        // Update table data when collapsing or expanding rows otherwise action buttons will not be shown
+        this.setQueuedFilesTabulatorTable();
     }
 
     handlePdfModalClosing() {
@@ -789,7 +791,6 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                 // Hide signature when auto placement is active
                 this.queuePlacement(id, placement, false);
             }
-
         });
         controlDiv.appendChild(btnEditSignature);
 
@@ -1052,7 +1053,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                     hozAlign: 'right',
                     headerHozAlign: 'center',
                     formatter: 'html',
-                    responsive: 0
+                    responsive: 1
                 },
             ],
             columnDefaults: {
@@ -1076,13 +1077,14 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                         aria-label="${i18n.t('label-manual-positioning-missing')}"
                         style="font-size:24px;color:red;margin-bottom:4px;margin-left:10px;"></dbp-tooltip>`
                     : '';
+                const actionButtons = this.getActionButtonsHtml(id);
                 let fileData = {
                     index: id,
                     fileName: `${file.name} ${warning}`,
                     fileSize: humanFileSize(file.size),
                     // profile: 'Personal',
                     positioning: isManual ? 'manual' : 'auto',
-                    buttons: this.getActionButtonsHtml(id),
+                    buttons: actionButtons,
                 };
 
                 tableFiles.push(fileData);
@@ -1297,7 +1299,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                     hozAlign: 'center',
                     headerHozAlign: 'center',
                     formatter: 'html',
-                    responsive: 0
+                    responsive: 1
                 },
             ],
             columnDefaults: {
