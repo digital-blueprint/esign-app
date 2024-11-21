@@ -85,21 +85,23 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
         this.dispatchEvent(event);
     }
 
-    validateValues() {
+    validateValues(quiet = false) {
         const i18n = this._i18n;
         for (let annotation of this.annotationRows) {
             const annotationTypeData = utils.getAnnotationTypes(annotation['annotationType']);
 
             if (annotation['value'] === null || annotation['value'] === '') {
-                send({
-                    summary: i18n.t('annotation-view.empty-annotation-title', {
-                        annotationType: annotationTypeData.name[this.lang],
-                    }),
-                    body: i18n.t('annotation-view.empty-annotation-message'),
-                    type: 'danger',
-                    targetNotificationId: 'dbp-modal-notification-annotation',
-                    timeout: 5,
-                });
+                if (!quiet) {
+                    send({
+                        summary: i18n.t('annotation-view.empty-annotation-title', {
+                            annotationType: annotationTypeData.name[this.lang],
+                        }),
+                        body: i18n.t('annotation-view.empty-annotation-message'),
+                        type: 'danger',
+                        targetNotificationId: 'dbp-modal-notification-annotation',
+                        timeout: 5,
+                    });
+                }
                 return false;
             }
 
@@ -110,12 +112,15 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
                 matchResult[0] === undefined ||
                 annotation['value'].length !== matchResult[0].length
             ) {
-                send({
-                    summary: i18n.t('annotation-view.invalid-annotation-text-title'),
-                    body: i18n.t('annotation-view.invalid-annotation-text-message'),
-                    type: 'danger',
-                    timeout: 5,
-                });
+                if (!quiet) {
+                    send({
+                        summary: i18n.t('annotation-view.invalid-annotation-text-title'),
+                        body: i18n.t('annotation-view.invalid-annotation-text-message'),
+                        type: 'danger',
+                        targetNotificationId: 'dbp-modal-notification-annotation',
+                        timeout: 5,
+                    });
+                }
                 return false;
             }
         }

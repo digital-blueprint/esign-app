@@ -713,6 +713,17 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         if (event.detail.id === 'external-auth-modal') {
             this.stopSigningProcess();
         }
+
+        if (event.detail.id === 'annotation-view-modal') {
+            this.setQueuedFilesTabulatorTable();
+            const annotationModal = this._('#annotation-view');
+            const pdfAnnotationView = this._('dbp-pdf-annotation-view');
+            // Don't allow closing the modal if the annotation is not valid
+            if (!pdfAnnotationView.validateValues(true)) {
+                annotationModal.open();
+                pdfAnnotationView.validateValues();
+            }
+        }
     }
 
     /**
