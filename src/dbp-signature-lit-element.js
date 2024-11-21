@@ -739,7 +739,9 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             selectedRows.forEach(selectedRow => {
                 const rowIndex = String(selectedRow.getIndex());
                 const rowData = selectedRow.getData();
-                const fileName = rowData.fileName;
+                const fileNameCell = rowData.fileName;
+                // Remove html tags from filename (the warning tooltip)
+                const fileName = fileNameCell.replace(/<[^>]*>/g, '').trim();
                 const existingIndex = this.selectedFiles.findIndex(row => row.key === rowIndex);
                 if (existingIndex === -1) {
                     this.selectedFiles.push({
