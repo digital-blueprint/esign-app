@@ -175,6 +175,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             key = Object.keys(this.queuedFiles)[0];
         }
 
+        this._('#external-auth').open();
+
         const entry = this.takeFileFromQueue(key);
         const file = entry.file;
         this.currentFile = file;
@@ -597,7 +599,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                         @click="${() => {
                                             this.signingProcessEnabled = true;
                                             this.signingProcessActive = true;
-                                            this._('#external-auth').open();
                                         }}"
                                         ?disabled="${this.queuedFilesCount === 0}"
                                         class="button is-primary">
