@@ -255,5 +255,13 @@ export function getSignatureCss() {
                 bottom: inherit;
             }
         }
+
+        @media (max-width: 400px) {
+            #table-queued-files,
+            #table-signed-files,
+            #table-failed-files {
+                --dbp-tabulator-collapse-padding-left: 10px;
+            }
+        }
     `;
 }

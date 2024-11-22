@@ -690,11 +690,21 @@ export default class DBPSignatureLitElement extends BaseLitElement {
     }
 
     tabulatorTableHandleCollapse(event) {
-        event.detail.tableId === 'table-queued-files' ? this.queuedFilesTableCollapsible = event.detail.isCollapsible : null;
-        event.detail.tableId === 'table-signed-files' ? this.signedFilesTableCollapsible = event.detail.isCollapsible : null;
-        event.detail.tableId === 'table-failed-files' ? this.failedFilesTableCollapsible = event.detail.isCollapsible : null;
-        // Update table data when collapsing or expanding rows otherwise action buttons will not be shown
-        this.setQueuedFilesTabulatorTable();
+        if (event.detail.tableId === 'table-queued-files') {
+            this.queuedFilesTableCollapsible = event.detail.isCollapsible;
+            // Update table data when collapsing or expanding rows otherwise action buttons will not be shown
+            this.setQueuedFilesTabulatorTable();
+        }
+        if (event.detail.tableId === 'table-signed-files') {
+            this.signedFilesTableCollapsible = event.detail.isCollapsible;
+            // Update table data when collapsing or expanding rows
+            this.setSignedFilesTabulatorTable();
+        }
+        if (event.detail.tableId === 'table-failed-files') {
+            this.failedFilesTableCollapsible = event.detail.isCollapsible;
+            // Update table data when collapsing or expanding rows
+            this.setFailedFilesTabulatorTable();
+        }
     }
 
     handlePdfModalClosing() {
@@ -1194,7 +1204,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                     hozAlign: 'center',
                     headerHozAlign: 'center',
                     formatter: 'html',
-                    responsive: 0
+                    responsive: 1
                 },
             ],
             columnDefaults: {
