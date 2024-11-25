@@ -128,6 +128,9 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
             // selection is turned off because it makes troubles on mobile devices
             let fabricCanvas = /** @type {HTMLCanvasElement} */ (this._('#fabric-canvas'));
 
+            // Re-dispatch the event over the shadowRoot.
+            // Firefox block events in dialog opened with showModal().
+            // Fabric add event listeners to the document, so we need to re-dispatch the event over the shadowRoot.
             this._('#pdf-main-container').addEventListener('mouseup', this._onMouseUp.bind(this));
 
 
@@ -658,56 +661,56 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                     <div id="pdf-meta">
                         <div class="buttons ${classMap({hidden: !this.isPageLoaded})}">
                             <div class="action-buttons-container">
-                                    <label for="positioning-type">Positioning type
-                                        <select id="positioning-type"
-                                            class="positioning-type-select"
-                                            @change="${(event) => {
-                                                if (event.target.value === 'auto') {
-                                                    this.isShowPlacement = true;
-                                                    // @TODO separate showButtons and showSignature
-                                                    this.signaturePlacementMode = 'auto';
-                                                } else {
-                                                    this.isShowPlacement = true;
-                                                    this.signaturePlacementMode = 'manual';
-                                                }
-                                            }}">
-                                            <option value="auto">Auto</option>
-                                            <option value="manual">Manual</option>
-                                        </select>
-                                    </label>
-                                    <button
-                                        class="button ${classMap({
-                                            hidden: !this.isShowPlacement
-                                        })}"
-                                        id="rotate-signature-button"
-                                        title="${i18n.t('pdf-preview.rotate-signature')}"
-                                        @click="${() => {
-                                            this.rotateSignature();
-                                        }}"
-                                        ?disabled="${this.isPageRenderingInProgress}">
-                                        &#10227; ${i18n.t('pdf-preview.rotate')}
-                                    </button>
-                                    <button
-                                        class="button is-cancel ${classMap({
-                                            hidden: !this.isShowPlacement
-                                        })}"
-                                        id="cancel-signature-button"
-                                        @click="${() => {
-                                            this.sendCancelEvent();
-                                        }}"
-                                        title="${i18n.t('button-close-text')}"
-                                        aria-label="${i18n.t('button-close-text')}">Cancel
-                                    </button>
-                                    <button
-                                        class="button is-primary ${classMap({
-                                            hidden: !this.isShowPlacement
-                                        })}"
-                                        id="save-signature-button"
-                                        @click="${() => {
-                                            this.sendAcceptEvent();
+                                <label for="positioning-type">Positioning type
+                                    <select id="positioning-type"
+                                        class="positioning-type-select"
+                                        @change="${(event) => {
+                                            if (event.target.value === 'auto') {
+                                                this.isShowPlacement = true;
+                                                // @TODO separate showButtons and showSignature
+                                                this.signaturePlacementMode = 'auto';
+                                            } else {
+                                                this.isShowPlacement = true;
+                                                this.signaturePlacementMode = 'manual';
+                                            }
                                         }}">
-                                        ${i18n.t('pdf-preview.save')}
-                                    </button>
+                                        <option value="auto">Auto</option>
+                                        <option value="manual">Manual</option>
+                                    </select>
+                                </label>
+                                <button
+                                    class="button ${classMap({
+                                        hidden: !this.isShowPlacement
+                                    })}"
+                                    id="rotate-signature-button"
+                                    title="${i18n.t('pdf-preview.rotate-signature')}"
+                                    @click="${() => {
+                                        this.rotateSignature();
+                                    }}"
+                                    ?disabled="${this.isPageRenderingInProgress}">
+                                    &#10227; ${i18n.t('pdf-preview.rotate')}
+                                </button>
+                                <button
+                                    class="button is-cancel ${classMap({
+                                        hidden: !this.isShowPlacement
+                                    })}"
+                                    id="cancel-signature-button"
+                                    @click="${() => {
+                                        this.sendCancelEvent();
+                                    }}"
+                                    title="${i18n.t('button-close-text')}"
+                                    aria-label="${i18n.t('button-close-text')}">Cancel
+                                </button>
+                                <button
+                                    class="button is-primary ${classMap({
+                                        hidden: !this.isShowPlacement
+                                    })}"
+                                    id="save-signature-button"
+                                    @click="${() => {
+                                        this.sendAcceptEvent();
+                                    }}">
+                                    ${i18n.t('pdf-preview.save')}
+                                </button>
                             </div>
                             <div class="nav-buttons">
                                 <button
