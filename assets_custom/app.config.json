@@ -10,7 +10,7 @@
     "nextcloudBaseURL": "https://cloud-dev.tugraz.at",
     "nextcloudName": "dbp cloud",
     "pdfAsQualifiedlySigningServer": "https://sig-dev.tugraz.at",
-    "hiddenActivities": ["dbp-signature-verification-full"],
+    "hiddenActivities": [],
     "enableAnnotations": true,
     "shortName": "dbp",
     "appDomain": ""
@@ -26,7 +26,7 @@
     "nextcloudBaseURL": "https://cloud-dev.tugraz.at",
     "nextcloudName": "TU Graz cloud",
     "pdfAsQualifiedlySigningServer": "https://sig-dev.tugraz.at",
-    "hiddenActivities": ["dbp-signature-verification-full"],
+    "hiddenActivities": [],
     "enableAnnotations": true,
     "shortName": "TU Graz",
     "appDomain": ""
@@ -58,7 +58,7 @@
     "nextcloudBaseURL": "https://cloud-dev.tugraz.at",
     "nextcloudName": "dbp cloud",
     "pdfAsQualifiedlySigningServer": "https://sig-dev.tugraz.at",
-    "hiddenActivities": ["dbp-signature-verification-full"],
+    "hiddenActivities": [],
     "enableAnnotations": true,
     "shortName": "dbp",
     "appDomain": ""
@@ -74,7 +74,7 @@
     "nextcloudBaseURL": "https://cloud-dev.tugraz.at",
     "nextcloudName": "TU Graz cloud",
     "pdfAsQualifiedlySigningServer": "https://sig-dev.tugraz.at",
-    "hiddenActivities": ["dbp-signature-verification-full"],
+    "hiddenActivities": [],
     "enableAnnotations": true,
     "shortName": "TU Graz",
     "appDomain": ""
@@ -90,7 +90,7 @@
     "nextcloudBaseURL": "https://cloud-demo.tugraz.at",
     "nextcloudName": "dbp cloud",
     "pdfAsQualifiedlySigningServer": "https://sig-demo.tugraz.at",
-    "hiddenActivities": ["dbp-signature-verification-full"],
+    "hiddenActivities": [],
     "enableAnnotations": false,
     "shortName": "dbp",
     "appDomain": ""
@@ -106,7 +106,7 @@
     "nextcloudBaseURL": "https://cloud-demo.tugraz.at",
     "nextcloudName": "TU Graz cloud",
     "pdfAsQualifiedlySigningServer": "https://sig-demo.tugraz.at",
-    "hiddenActivities": ["dbp-signature-verification-full"],
+    "hiddenActivities": [],
     "enableAnnotations": false,
     "shortName": "TU Graz",
     "appDomain": ""
@@ -122,7 +122,7 @@
     "nextcloudBaseURL": "https://cloud.tugraz.at",
     "nextcloudName": "TU Graz cloud",
     "pdfAsQualifiedlySigningServer": "https://sig.tugraz.at",
-    "hiddenActivities": ["dbp-signature-verification-full"],
+    "hiddenActivities": [],
     "enableAnnotations": false,
     "shortName": "TU Graz",
     "appDomain": ""
