@@ -7,6 +7,7 @@ import {getPDFSignatureCount} from './utils';
 import { send } from '@dbp-toolkit/common/notification';
 import { humanFileSize } from '@dbp-toolkit/common/i18next';
 
+
 export default class DBPSignatureLitElement extends BaseLitElement {
     constructor() {
         super();

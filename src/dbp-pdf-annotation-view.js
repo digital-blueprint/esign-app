@@ -161,7 +161,7 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
             this.queuedFilesAnnotationsCount = 0;
         }
 
-        let e = this._('#additional-select');
+        let e = /** @type {HTMLSelectElement} */ (this._('#additional-select'));
         let type = e?.options[e?.selectedIndex]?.value;
         this.annotationRows.push({annotationType: type, value: ''});
 

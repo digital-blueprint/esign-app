@@ -69,7 +69,7 @@ export class ExternalSignIFrame extends ScopedElementsMixin(LitElement) {
     }
 
     setUrl(url) {
-        let iframe = this.renderRoot.querySelector('#iframe');
+        let iframe = /** @type {HTMLIFrameElement} */ (this.renderRoot.querySelector('#iframe'));
         this._loading = true;
         iframe.src = url;
         this.locationCount = 0;
