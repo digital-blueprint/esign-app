@@ -29,7 +29,7 @@ let useTerser = buildFull;
 let useBabel = buildFull;
 let checkLicenses = buildFull;
 let treeshake = buildFull;
-let useHTTPS = false;
+let useHTTPS = true;
 
 // if true, app assets and configs are whitelabel
 let whitelabel;
