@@ -7,7 +7,7 @@ import terser from '@rollup/plugin-terser';
 import json from '@rollup/plugin-json';
 import serve from 'rollup-plugin-serve';
 import urlPlugin from '@rollup/plugin-url';
-// import license from 'rollup-plugin-license';
+import license from 'rollup-plugin-license';
 import del from 'rollup-plugin-delete';
 import emitEJS from 'rollup-plugin-emit-ejs';
 import {getBabelOutputPlugin} from '@rollup/plugin-babel';
@@ -27,7 +27,7 @@ const watch = process.env.ROLLUP_WATCH === 'true';
 const buildFull = (!watch && appEnv !== 'test') || process.env.FORCE_FULL !== undefined;
 let useTerser = buildFull;
 let useBabel = buildFull;
-// let checkLicenses = buildFull;
+let checkLicenses = buildFull;
 let treeshake = buildFull;
 let useHTTPS = true;
 
@@ -246,30 +246,30 @@ export default (async () => {
                 browser: true,
                 preferBuiltins: true,
             }),
-//             checkLicenses &&
-//                 license({
-//                     banner: {
-//                         commentStyle: 'ignored',
-//                         content: `
-// License: <%= pkg.license %>
-// Dependencies:
-// <% _.forEach(dependencies, function (dependency) { if (dependency.name) { %>
-// <%= dependency.name %>: <%= dependency.license %><% }}) %>
-// `,
-//                     },
-//                     thirdParty: {
-//                         allow(dependency) {
-//                             let licenses = [
-//                                 'LGPL-2.1-or-later', 'MIT', 'BSD-3-Clause', 'Apache-2.0', 'BSD',
-//                                 '(MIT OR GPL-3.0-or-later)', '(MPL-2.0 OR Apache-2.0)', 'MIT OR SEE LICENSE IN FEEL-FREE.md'
-//                             ];
-//                             if (!licenses.includes(dependency.license)) {
-//                                 throw new Error(`Unknown license for ${dependency.name}: ${dependency.license}`);
-//                             }
-//                             return true;
-//                         },
-//                     },
-//                 }),
+            checkLicenses &&
+                license({
+                    banner: {
+                        commentStyle: 'ignored',
+                        content: `
+License: <%= pkg.license %>
+Dependencies:
+<% _.forEach(dependencies, function (dependency) { if (dependency.name) { %>
+<%= dependency.name %>: <%= dependency.license %><% }}) %>
+`,
+                    },
+                    thirdParty: {
+                        allow(dependency) {
+                            let licenses = [
+                                'LGPL-2.1-or-later', 'MIT', 'BSD-3-Clause', 'Apache-2.0', 'BSD',
+                                '(MIT OR GPL-3.0-or-later)', '(MPL-2.0 OR Apache-2.0)', 'MIT OR SEE LICENSE IN FEEL-FREE.md'
+                            ];
+                            if (!licenses.includes(dependency.license)) {
+                                throw new Error(`Unknown license for ${dependency.name}: ${dependency.license}`);
+                            }
+                            return true;
+                        },
+                    },
+                }),
             commonjs({
                 include: 'node_modules/**',
                 strictRequires: 'auto',
