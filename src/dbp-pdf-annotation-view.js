@@ -426,7 +426,7 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
                                         this.addAnnotation();
                                     }}"
                                     ?disabled="${!this.isSelected}">
-                                <dbp-icon name="checkmark-circle" aria-hidden="true"></dbp-icon></button>
+                                <dbp-icon name="plus" aria-hidden="true"></dbp-icon></button>
                             </button>
                         </div>
 
