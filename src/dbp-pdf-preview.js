@@ -509,13 +509,6 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                 justify-content: center;
             }
 
-            /* it's too risky to adapt the height */
-            /*
-            #pdf-meta button, #pdf-meta input {
-                max-height: 15px;
-            }
-            */
-
             #canvas-wrapper {
                 position: relative;
             }
@@ -536,22 +529,28 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                 justify-content: center;
                 align-items: center;
                 container-type: inline-size;
-                container-name: action-buttons;
+                container-name: action-container;
             }
 
-            .action-buttons-container {
+            .action-container {
                 display: flex;
-                gap: 10px;
+                gap: 1em;
                 flex-wrap: wrap;
                 justify-content: center;
             }
 
-            :host([don-t-show-buttons]) .action-buttons-container {
+            .button-container {
+                width: 100%;
+                display: flex;
+                gap: 1em;
+            }
+
+            :host([don-t-show-buttons]) .action-container {
                 display: none !important;
             }
 
-            .action-buttons-container .profile-type-select,
-            .action-buttons-container .positioning-type-select {
+            .action-container .profile-type-select,
+            .action-container .positioning-type-select {
                 padding-right: 2em;
                 padding-left: .75em;
                 background-size: 18px;
@@ -564,12 +563,12 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                 flex-direction: column;
             }
 
-            .action-buttons-container label {
-                flex-basis: 98%;
+            .action-container label {
+                flex-basis: 100%;
                 min-width: fit-content;
             }
 
-            .action-buttons-container .button {
+            .action-container .button {
                 flex-basis: calc(30% - 10px);
             }
 
@@ -577,17 +576,17 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                 display: flex;
                 justify-content: center;
                 flex-grow: 1;
-                flex-wrap: wrap;
+                flex-wrap: nowrap;
             }
 
-            @container action-buttons (max-width: 530px) {
-
-            }
-
-            @container action-buttons (max-width: 350px) {
-                .action-buttons-container {
+            @container action-container (max-width: 450px) {
+                .action-container {
                     flex-direction: column;
                     width: 100%;
+                }
+
+                .button-container {
+                    flex-direction: column;
                 }
 
                 .nav-buttons {
@@ -660,7 +659,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                 <div class="${classMap({hidden: !this.isPageLoaded})}">
                     <div id="pdf-meta">
                         <div class="buttons ${classMap({hidden: !this.isPageLoaded})}">
-                            <div class="action-buttons-container">
+                            <div class="action-container">
                                 <label for="positioning-type">Positioning type
                                     <select id="positioning-type"
                                         class="positioning-type-select"
@@ -678,39 +677,41 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                                         <option value="manual">Manual</option>
                                     </select>
                                 </label>
-                                <button
-                                    class="button ${classMap({
-                                        hidden: !this.isShowPlacement
-                                    })}"
-                                    id="rotate-signature-button"
-                                    title="${i18n.t('pdf-preview.rotate-signature')}"
-                                    @click="${() => {
-                                        this.rotateSignature();
-                                    }}"
-                                    ?disabled="${this.isPageRenderingInProgress}">
-                                    &#10227; ${i18n.t('pdf-preview.rotate')}
-                                </button>
-                                <button
-                                    class="button is-cancel ${classMap({
-                                        hidden: !this.isShowPlacement
-                                    })}"
-                                    id="cancel-signature-button"
-                                    @click="${() => {
-                                        this.sendCancelEvent();
-                                    }}"
-                                    title="${i18n.t('button-close-text')}"
-                                    aria-label="${i18n.t('button-close-text')}">Cancel
-                                </button>
-                                <button
-                                    class="button is-primary ${classMap({
-                                        hidden: !this.isShowPlacement
-                                    })}"
-                                    id="save-signature-button"
-                                    @click="${() => {
-                                        this.sendAcceptEvent();
-                                    }}">
-                                    ${i18n.t('pdf-preview.save')}
-                                </button>
+                                <div class="button-container">
+                                    <button
+                                        class="button ${classMap({
+                                            hidden: !this.isShowPlacement
+                                        })}"
+                                        id="rotate-signature-button"
+                                        title="${i18n.t('pdf-preview.rotate-signature')}"
+                                        @click="${() => {
+                                            this.rotateSignature();
+                                        }}"
+                                        ?disabled="${this.isPageRenderingInProgress}">
+                                        &#10227; ${i18n.t('pdf-preview.rotate')}
+                                    </button>
+                                    <button
+                                        class="button is-cancel ${classMap({
+                                            hidden: !this.isShowPlacement
+                                        })}"
+                                        id="cancel-signature-button"
+                                        @click="${() => {
+                                            this.sendCancelEvent();
+                                        }}"
+                                        title="${i18n.t('button-close-text')}"
+                                        aria-label="${i18n.t('button-close-text')}">Cancel
+                                    </button>
+                                    <button
+                                        class="button is-primary ${classMap({
+                                            hidden: !this.isShowPlacement
+                                        })}"
+                                        id="save-signature-button"
+                                        @click="${() => {
+                                            this.sendAcceptEvent();
+                                        }}">
+                                        ${i18n.t('pdf-preview.save')}
+                                    </button>
+                                </div>
                             </div>
                             <div class="nav-buttons">
                                 <button
