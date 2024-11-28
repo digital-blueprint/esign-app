@@ -535,7 +535,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
             .action-container {
                 display: flex;
                 gap: 1em;
-                flex-wrap: wrap;
+                flex-wrap: nowrap;
                 justify-content: center;
             }
 
@@ -563,13 +563,26 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                 flex-direction: column;
             }
 
+            .action-container {
+                width: 100%;
+            }
+
+            .positioning-type-select {
+                height: 35px;
+            }
+
             .action-container label {
                 flex-basis: 100%;
                 min-width: fit-content;
             }
 
             .action-container .button {
-                flex-basis: calc(30% - 10px);
+                flex-basis: 33%;
+                height: 30px;
+            }
+
+            .button-container {
+                align-items: end;
             }
 
             .nav-buttons {
@@ -579,7 +592,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                 flex-wrap: nowrap;
             }
 
-            @container action-container (max-width: 450px) {
+            @container action-container (max-width: 550px) {
                 .action-container {
                     flex-direction: column;
                     width: 100%;
@@ -587,6 +600,11 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
 
                 .button-container {
                     flex-direction: column;
+                    align-items: initial;
+                }
+
+                .action-container .button {
+                    flex-basis: 100%;
                 }
 
                 .nav-buttons {
@@ -612,7 +630,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
             }
 
             #pdf-meta {
-                padding: 0.54em;
+                padding: 0.54em 0;
                 border-bottom-width: 0;
                 border-top-width: 0;
             }
@@ -677,7 +695,9 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                                         <option value="manual">Manual</option>
                                     </select>
                                 </label>
-                                <div class="button-container">
+                                <div class="button-container ${classMap({
+                                        hidden: !this.isShowPlacement
+                                    })}">
                                     <button
                                         class="button ${classMap({
                                             hidden: !this.isShowPlacement
