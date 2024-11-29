@@ -683,8 +683,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                                         class="positioning-type-select"
                                         @change="${(event) => {
                                             if (event.target.value === 'auto') {
-                                                this.isShowPlacement = true;
-                                                // @TODO separate showButtons and showSignature
+                                                this.isShowPlacement = false;
                                                 this.signaturePlacementMode = 'auto';
                                             } else {
                                                 this.isShowPlacement = true;
@@ -695,25 +694,19 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                                         <option value="manual">Manual</option>
                                     </select>
                                 </label>
-                                <div class="button-container ${classMap({
-                                        hidden: !this.isShowPlacement
-                                    })}">
+                                <div class="button-container">
                                     <button
-                                        class="button ${classMap({
-                                            hidden: !this.isShowPlacement
-                                        })}"
+                                        class="button"
                                         id="rotate-signature-button"
                                         title="${i18n.t('pdf-preview.rotate-signature')}"
                                         @click="${() => {
                                             this.rotateSignature();
                                         }}"
-                                        ?disabled="${this.isPageRenderingInProgress}">
+                                        ?disabled="${this.isPageRenderingInProgress || !this.isShowPlacement}">
                                         &#10227; ${i18n.t('pdf-preview.rotate')}
                                     </button>
                                     <button
-                                        class="button is-cancel ${classMap({
-                                            hidden: !this.isShowPlacement
-                                        })}"
+                                        class="button is-cancel"
                                         id="cancel-signature-button"
                                         @click="${() => {
                                             this.sendCancelEvent();
@@ -722,9 +715,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                                         aria-label="${i18n.t('button-close-text')}">Cancel
                                     </button>
                                     <button
-                                        class="button is-primary ${classMap({
-                                            hidden: !this.isShowPlacement
-                                        })}"
+                                        class="button is-primary"
                                         id="save-signature-button"
                                         @click="${() => {
                                             this.sendAcceptEvent();
