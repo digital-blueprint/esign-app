@@ -3,16 +3,16 @@
     "module_src": "dbp-qualified-signature-pdf-upload.js",
     "routing_name": "qualified-pdf-upload",
     "name": {
-        "de": "Dokument persönlich signieren",
-        "en": "Personally sign document"
+        "de": "Dokumente persönlich signieren",
+        "en": "Personally sign documents"
     },
     "short_name": {
-        "de": "Dokument persönlich signieren",
-        "en": "Personally sign document"
+        "de": "Dokumente persönlich signieren",
+        "en": "Personally sign documents"
     },
     "description": {
-        "de": "Erlaubt das Hochladen von PDF-Dokumenten, um sie mit einer persönlichen elektronischen Signatur zu versehen",
-        "en": "Allows upload of PDF-documents to personally sign them"
+        "de": "Ermöglicht das Hochladen von PDF-Dokumenten, um sie mit einer persönlichen elektronischen Signatur zu versehen",
+        "en": "Enables you to upload PDF documents and to sign them personally"
     },
     "subscribe": "lang,entry-point-url,nextcloud-web-app-password-url,nextcloud-webdav-url,nextcloud-name,nextcloud-auth-info,nextcloud-file-url,file-handling-enabled-targets,auth,allow-annotating"
 }

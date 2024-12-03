@@ -76,7 +76,7 @@
         "upload-area-text": "Sie können in diesem Bereich PDF-Dokumente mit einer Maximalgröße von bis zu 32MB pro Dokument per Drag & Drop oder per Direktauswahl hochladen. Die PDF-Dokumente dürfen sich auch in ZIP-Dateien befinden.",
         "upload-button-label": "PDF-Dokumente auswählen",
         "upload-status-file-text": "({{fileSize}}) wird hochgeladen und verarbeitet...",
-        "upload-text": "Die Amtssignatur des \"Elektronische Signaturservice\" ist eine Applikation, mit der Sie PDF-Dateien mit einer elektronischen Amtssignatur versehen können."
+        "upload-text": "Hier können Sie PDF-Dateien mit einer elektronischen Amtssignatur versehen. Die elektronische Amtssignatur bestätigt das signierte Dokument als eine öffentliche Urkunde. Um den Signaturprozess zu starten, laden Sie bitte eine oder mehrere PDF-Dateien hoch."
     },
     "pdf-preview": {
         "save": "Speichern",
@@ -126,7 +126,7 @@
         "upload-area-text": "Sie können in diesem Bereich PDF-Dokumente mit einer Maximalgröße von bis zu 32MB pro Dokument per Drag & Drop oder per Direktauswahl hochladen. Die PDF-Dokumente dürfen sich auch in ZIP-Dateien befinden.",
         "upload-button-label": "PDF-Dokumente auswählen",
         "upload-status-file-text": "({{fileSize}}) wird hochgeladen und verarbeitet...",
-        "upload-text": "Das \"Elektronische Signaturservice\" ist eine Applikation, mit der Sie PDF-Dateien mit einer persönlichen, elektronischen (qualifizierten) Signatur versehen können. Eine qualifizierte Signatur ist Ihre persönliche Unterschrift im Internet und der eigenhändigen Unterschrift rechtlich gleichgestellt."
+        "upload-text": " Hier können Sie PDF-Dateien mit einer persönlichen elektronischen (qualifizierten) Signatur versehen. Eine qualifizierte persönliche Signatur ist Ihre persönliche Unterschrift, die Ihre Identität sowie die Integrität des Dokuments nachweist und der eigenhändigen Unterschrift rechtlich gleichgestellt ist. Um den Signaturprozess zu starten, laden Sie bitte eine oder mehrere PDF-Dateien hoch."
     },
     "signature-verification": {
         "clear-all": "Alle entfernen",
