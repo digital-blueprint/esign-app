@@ -39,7 +39,7 @@
     "download-file-completed": "File downloaded",
     "re-upload-all-button-title": "Queue all failed documents again",
     "remove-failed-file-button-title": "Remove failed document",
-
+    "download-file-button-title": "Download signed PDF",
     "official-pdf-upload": {
         "annotation": "Annotations",
         "annotation-no": "No",
@@ -51,9 +51,8 @@
         "select-all": "Select all",
         "deselect-all": "Deselect all",
         "confirm-page-leave": "Are you sure you want to leave this page? There are still signed documents ready to be downloaded.",
-        "download-file-button-title": "Save signed PDF",
-        "download-zip-button": "Save all",
-        "download-zip-button-tooltip": "Save all signed documents",
+        "download-zip-button": "Download all",
+        "download-zip-button-tooltip": "Download all signed documents",
         "error-files-label": "Failed documents",
         "file-picker-context": "Upload PDF-documents to sign (max. 32 MB per file)",
         "positioning": "Positioning",
