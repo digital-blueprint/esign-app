@@ -44,7 +44,7 @@
     "official-pdf-upload": {
         "annotation": "Anmerkungen",
         "annotation-no": "Nein",
-        "annotation-view-label": "Anmerkungen zu Dokument hinzufügen",
+        "annotation-view-label": "Anmerkungen zum Dokument hinzufügen",
         "annotation-yes": "Ja",
         "clear-all": "Alle entfernen",
         "expand-all": "Alles aufklappen",
@@ -92,7 +92,7 @@
     "qualified-pdf-upload": {
         "annotation": "Anmerkungen",
         "annotation-no": "Nein",
-        "annotation-view-label": "Anmerkungen zu Dokument hinzufügen",
+        "annotation-view-label": "Anmerkungen zum Dokument hinzufügen",
         "annotation-yes": "Ja",
         "clear-all": "Alle entfernen",
         "expand-all": "Alles aufklappen",
