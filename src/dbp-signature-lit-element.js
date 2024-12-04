@@ -1199,7 +1199,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                     title: 'download',
                     field: 'downloadButton',
                     sorter: false,
-                    width: 60,
+                    width: 140,
                     hozAlign: 'center',
                     headerHozAlign: 'center',
                     formatter: 'html',
