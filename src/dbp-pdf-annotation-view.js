@@ -193,12 +193,11 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
      */
     removeAnnotation(id) {
         if (this.annotationRows && this.annotationRows[id]) {
-            // delete this.annotationRows[id]; //length of array doesn't change
             this.annotationRows.splice(id, 1);
 
             if (this.annotationRows.length === 0) {
                 this.isTextHidden = false;
-                this.sendCancelEvent();
+                // this.sendCancelEvent();
             }
 
             // we just need this so the UI will update
