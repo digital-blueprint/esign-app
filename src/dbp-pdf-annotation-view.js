@@ -275,14 +275,10 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
                 border: var(--dbp-border);
             }
 
-            .form-description {
-                padding: 1em;
-                border: var(--dbp-border);
-            }
-
             .annotation-form {
                 display: grid;
                 row-gap: 1em;
+                cursor: default;
             }
 
             .action-buttons-wrapper {
