@@ -1094,6 +1094,12 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         };
 
         let tableFiles = [];
+        let noPlacementMissing = true;
+
+        // We remove the legend to make the language change work.
+        if (this._('.legend')) {
+            this._('.legend').remove();
+        }
 
         const ids = Object.keys(this.queuedFiles);
         if(this.tableQueuedFilesTable) {
@@ -1101,13 +1107,28 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                 const file = this.queuedFiles[id].file;
                 const isManual = this.queuedFilesPlacementModes[id] === 'manual';
                 const placementMissing = this.queuedFilesNeedsPlacement.get(id) && !isManual;
+                if (placementMissing) noPlacementMissing = false;
                 const warning = placementMissing
                     ? `<dbp-tooltip
                         text-content="${i18n.t('label-manual-positioning-missing')}"
                         icon-name="warning-high"
                         aria-label="${i18n.t('label-manual-positioning-missing')}"
-                        style="font-size:24px;color:red;margin-bottom:4px;margin-left:10px;"></dbp-tooltip>`
+                        style="font-size:24px;margin-bottom:4px;margin-left:10px;"></dbp-tooltip>`
                     : '';
+                // Show a legend if there are warnings
+                if (placementMissing && this._('.legend') === null) {
+                    const legend = document.createElement('div');
+                    legend.classList.add('legend');
+                    const legendIcon = document.createElement('dbp-icon');
+                    legendIcon.setAttribute('name', 'warning-high');
+                    legendIcon.setAttribute('aria-label', i18n.t('label-manual-positioning-missing'));
+                    legend.append(legendIcon);
+                    const legendDescription = document.createElement('span');
+                    legendDescription.classList.add('legend-description');
+                    legendDescription.textContent = i18n.t('label-manual-positioning-missing');
+                    legend.append(legendDescription);
+                    this._('.control.file-list').append(legend);
+                }
                 const actionButtons = this.getActionButtonsHtml(id);
                 let fileData = {
                     index: id,
@@ -1120,6 +1141,10 @@ export default class DBPSignatureLitElement extends BaseLitElement {
 
                 tableFiles.push(fileData);
             });
+
+            if (noPlacementMissing && this._('.legend')) {
+                this._('.legend').remove();
+            }
 
             queuedFilesOptions.data = tableFiles;
             this.queuedFilesOptions = queuedFilesOptions;

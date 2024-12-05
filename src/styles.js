@@ -176,8 +176,25 @@ export function getSignatureCss() {
         #table-signed-files,
         #table-failed-files {
             --dbp-tabulator-collapse-padding-left: 68px;
-            --dbp-tooltip-icon-color: red;
+            --dbp-tooltip-icon-color: var(--dbp-override-danger);
             --dbp-button-size: 50px;
+        }
+
+        .legend {
+            color: var(--dbp-override-danger);
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            gap: .75em;
+            padding: 1em;
+            border: var(--dbp-border);
+            border-color: var(--dbp-override-danger);
+        }
+
+        .legend dbp-icon {
+            font-size: 24px;
+            margin-top: -5px;
+            flex-shrink: 0;
         }
 
         #table-queued-files {

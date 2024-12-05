@@ -53,7 +53,7 @@
             margin: 0;
         }
 
-        #spinner{
+        #spinner {
             height: 100vh;
             width: 100vw;
             display: flex;
@@ -61,7 +61,7 @@
             align-items: center;
         }
 
-        .light-theme{
+        .light-theme {
             --dbp-override-background: white;
             --dbp-override-content: #222120;
 
@@ -86,7 +86,7 @@
             --dbp-override-border: 1px solid #222120;
         }
 
-        .dark-theme{
+        .dark-theme {
             --dbp-override-background: #222120;
             --dbp-override-content: white;
 
@@ -151,21 +151,18 @@
         </div>
         <div slot="logo">
             <style>
-
-            .logo-dark, .light-theme .logo-dark, .dark-theme .logo-light{
+            .logo-dark, .light-theme .logo-dark, .dark-theme .logo-light {
                 display: none;
             }
 
-            .logo-light, .light-theme .logo-light, .dark-theme .logo-dark{
+            .logo-light, .light-theme .logo-light, .dark-theme .logo-dark {
                 display: block;
             }
 
-            .wrapper{
+            .wrapper {
                 float: right;
                 padding: 0 50px 0 0;
             }
-
-
             </style>
             <div class="wrapper">
                 <img class="logo-light" style="height: 80px" src="<%= getPrivateUrl('dbp_logo_small_on_white.svg') %>" alt="Digital Blueprint - A University toolbox logo">
