@@ -742,6 +742,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
      * @param {object} tableEvent
      */
     handleTableSelection(tableEvent) {
+        const allSelectedRows = tableEvent.detail.allselected;
         const selectedRows = tableEvent.detail.selected;
         const deSelectedRows = tableEvent.detail.deselected;
 
@@ -770,6 +771,14 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                 const deselectedIndex = this.selectedFiles.findIndex(row => row.key === rowIndex);
                 this.selectedFiles.splice(deselectedIndex, 1);
             });
+        }
+
+        // If all rows are selected toggle select-all button to deselect-all
+        if (allSelectedRows.length === this.queuedFilesCount) {
+            this.queuedFilesTableAllSelected = true;
+        }
+        if (selectedRows.length === 0) {
+            this.queuedFilesTableAllSelected = false;
         }
     }
 
