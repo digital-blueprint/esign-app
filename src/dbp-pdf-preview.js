@@ -705,6 +705,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                                         ?disabled="${this.isPageRenderingInProgress || !this.isShowPlacement}">
                                         &#10227; ${i18n.t('pdf-preview.rotate')}
                                     </button>
+                                    <button
                                         class="button is-cancel"
                                         id="cancel-signature-button"
                                         @click="${() => {
