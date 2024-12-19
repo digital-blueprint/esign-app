@@ -140,8 +140,8 @@ export function getSignatureCss() {
         }
 
         .modal--pdf-preview {
-            --dbp-modal-max-width: 1280px;
-            --dbp-modal-min-width: min(75vw, 1280px);
+            --dbp-modal-max-width: 768px;
+            --dbp-modal-min-width: min(75vw, 768px);
         }
 
         .modal--annotation-view {
@@ -259,6 +259,13 @@ export function getSignatureCss() {
                 .failed-actions {
                     flex-basis: 100%;
                 }
+            }
+        }
+
+        @media only screen and (max-width: 900px) {
+            .modal--pdf-preview {
+                --dbp-modal-max-width: 85vw;
+                --dbp-modal-min-width: min(85vw, 768px);
             }
         }
 
