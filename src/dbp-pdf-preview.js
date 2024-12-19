@@ -678,7 +678,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                     <div id="pdf-meta">
                         <div class="buttons ${classMap({hidden: !this.isPageLoaded})}">
                             <div class="action-container">
-                                <label for="positioning-type">Positioning type
+                                <label for="positioning-type">${i18n.t('positioning-type-label')}
                                     <select id="positioning-type"
                                         class="positioning-type-select"
                                         @change="${(event) => {
@@ -705,14 +705,12 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                                         ?disabled="${this.isPageRenderingInProgress || !this.isShowPlacement}">
                                         &#10227; ${i18n.t('pdf-preview.rotate')}
                                     </button>
-                                    <button
                                         class="button is-cancel"
                                         id="cancel-signature-button"
                                         @click="${() => {
                                             this.sendCancelEvent();
                                         }}"
-                                        title="${i18n.t('button-close-text')}"
-                                        aria-label="${i18n.t('button-close-text')}">Cancel
+                                        title="${i18n.t('button-close-text')}">${i18n.t('button-cancel-text')}
                                     </button>
                                     <button
                                         class="button is-primary"

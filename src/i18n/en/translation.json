@@ -15,6 +15,8 @@
         "save-all-button-title": "Add to document"
     },
     "button-close-text": "Close",
+    "button-cancel-text": "Cancel",
+    "positioning-type-label": "Positioning type",
     "error-cancel-message": "The signature process was manually aborted.",
     "error-login-message": "You need to be logged in to use this function!",
     "error-manual-positioning-missing-title":"Signature error",
@@ -36,6 +38,7 @@
     "table-header-buttons": "Actions",
     "table-header-download": "Download",
     "table-header-file-downloaded": "Downloaded",
+    "table-header-error-message": "Error message",
     "download-file-completed": "File downloaded",
     "re-upload-all-button-title": "Queue all failed documents again",
     "remove-failed-file-button-title": "Remove failed document",

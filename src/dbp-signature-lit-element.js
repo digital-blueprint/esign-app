@@ -1278,6 +1278,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                 columns: {
                     'fileName': i18n.t('table-header-file-name', {lng: 'en'}),
                     'fileSize': i18n.t('table-header-file-size', {lng: 'en'}),
+                    'errorMessage': i18n.t('table-header-error-message', {lng: 'en'}),
                     'buttons': i18n.t('table-header-buttons', {lng: 'en'}),
                 },
             },
@@ -1285,6 +1286,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                 columns: {
                     'fileName': i18n.t('table-header-file-name', {lng: 'de'}),
                     'fileSize': i18n.t('table-header-file-size', {lng: 'de'}),
+                    'errorMessage': i18n.t('table-header-error-message', {lng: 'de'}),
                     'buttons': i18n.t('table-header-buttons', {lng: 'de'}),
                 },
             },
