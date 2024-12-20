@@ -124,7 +124,6 @@ function getOrigin(url) {
 const atrustHosts = [
     'https://www.handy-signatur.at', // old one
     'https://service.a-trust.at',
-    'https://www.a-trust.at', // sometimes used for error pages redirects
 ];
 
 config.CSP = `default-src 'self' 'unsafe-inline' \
