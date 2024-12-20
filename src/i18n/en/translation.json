@@ -95,7 +95,8 @@
         "page-count": "of {{totalPages}}",
         "previous-page": "Previous page",
         "rotate": "Rotate signature",
-        "rotate-signature": "Rotate signature clockwise"
+        "rotate-signature": "Rotate signature clockwise",
+        "signature-description": "The signature will be automatically positioned on the last page at the end of the document's content. In the case of limited space, a new page will be created specifically for the signature. To position the signature differently, please select manual signature positioning from the dropdown."
     },
     "qualified-pdf-upload": {
         "annotation": "Annotations",

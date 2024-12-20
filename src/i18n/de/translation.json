@@ -96,7 +96,8 @@
         "page-count": "von {{totalPages}}",
         "previous-page": "Vorherige Seite",
         "rotate": "Signatur rotieren",
-        "rotate-signature": "Signatur im Uhrzeigersinn rotieren"
+        "rotate-signature": "Signatur im Uhrzeigersinn rotieren",
+        "signature-description": "Die Signatur wird automatisch auf der letzten Seite am Ende des Dokumentinhalts positioniert. Falls der Platz beschränkt ist, wird eine neue Seite speziell für die Signatur erstellt. Um die Signatur anders zu positionieren, wählen Sie bitte die manuelle Positionierung der Signatur aus dem Dropdown."
     },
     "qualified-pdf-upload": {
         "annotation": "Anmerkungen",
