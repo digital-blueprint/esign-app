@@ -20,6 +20,7 @@ import {PdfAnnotationView} from './dbp-pdf-annotation-view';
 import {ExternalSignIFrame} from './ext-sign-iframe.js';
 import * as SignatureStyles from './styles';
 import {TabulatorTable} from '@dbp-toolkit/tabulator-table';
+import { send } from '@dbp-toolkit/common/notification';
 
 class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElement) {
     constructor() {
@@ -331,6 +332,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         .finally(() => {
             // Close the external auth modal
             that._('#external-auth').close();
+            this.sendReportNotification();
         });
     }
 
@@ -344,6 +346,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         this.endSigningProcessIfQueueEmpty();
         // Close the external auth modal
         this._('#external-auth').close();
+        this.sendReportNotification();
     }
 
     addToErrorFiles(file) {
@@ -367,6 +370,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
     onFileUploadFinished(data) {
         if (data.status !== 201) {
             this.addToErrorFiles(data);
+            this.sendReportNotification();
+            this._('#external-auth').close();
         } else if (data.json['@type'] === 'http://schema.org/EntryPoint') {
             // after the "real" upload we immediately start with the 2FA process
 
@@ -599,6 +604,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                         @click="${() => {
                                             this.signingProcessEnabled = true;
                                             this.signingProcessActive = true;
+                                            this.initialQueuedFilesCount = this.queuedFilesCount;
                                         }}"
                                         ?disabled="${this.queuedFilesCount === 0}"
                                         class="button is-primary">

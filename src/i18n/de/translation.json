@@ -44,6 +44,13 @@
     "remove-failed-file-button-title": "Fehlgeschlagenes Dokument entfernen",
     "annotations-count-text": "Dokument hat {{annotationCount}} Anmerkungen",
     "download-file-button-title": "Signiertes PDF Dokument herunterladen",
+    "report-message-title": "Bericht!",
+    "processed-document-report-message_one": "Verarbeitet {{count}} Dokument",
+    "signed-document-report-message_one": "{{count}} Dokument erfolgreich signiert.",
+    "failed-document-report-message_one": "Signierung für {{count}} Dokument fehlgeschlagen.",
+    "processed-document-report-message_other": "Verarbeitet {{count}} Dokumente",
+    "signed-document-report-message_other": "{{count}} Dokumente erfolgreich signiert.",
+    "failed-document-report-message_other": "Signierung für {{count}} Dokumenten fehlgeschlagen.",
     "official-pdf-upload": {
         "annotation": "Anmerkungen",
         "annotation-no": "Nein",

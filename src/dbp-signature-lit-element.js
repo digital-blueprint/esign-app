@@ -65,6 +65,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         this.errorFilesCount = 0;
         this.selectedFiles = [];
         this.selectedFilesProcessing = false;
+        this.initialQueuedFilesCount = 0;
     }
 
     static get properties() {
@@ -412,12 +413,12 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             },
             body: formData,
         })
-            .then((response) => {
+            .then(async (response) => {
                 /* Done. Inform the user */
                 console.log(`Status: ${response.status} for file ${file.name}`);
-                this.sendFinishedEvent(response, file);
+                await this.sendFinishedEvent(response, file);
             })
-            .catch((response) => {
+            .catch(async (response) => {
                 /* Error. Inform the user */
                 if (response.message) {
                     send({
@@ -428,7 +429,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                     });
                     console.log(`Error message: ${response.message}`);
                 }
-                this.sendFinishedEvent(response, file);
+                await this.sendFinishedEvent(response, file);
             });
 
         this.uploadInProgress = false;
@@ -1392,6 +1393,31 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             failedFilesOptions.data = tableFiles;
             this.failedFilesOptions = failedFilesOptions;
             this.tableFailedFilesTable.setData(tableFiles);
+        }
+    }
+
+    /**
+     * Display notification when all files are processed
+     */
+    sendReportNotification() {
+        const i18n = this._i18n;
+        if (this.queuedFilesCount === 0 || (this.selectedFilesProcessing && this.selectedFiles.length === 0)) {
+            if (this.signedFilesCount > 0) {
+                send({
+                    summary: i18n.t('report-message-title'),
+                    body: i18n.t('signed-document-report-message', {count: this.signedFilesCount}),
+                    type: 'success',
+                    timeout: 20,
+                });
+            }
+            if (this.errorFilesCount > 0 ) {
+                send({
+                    summary: i18n.t('report-message-title'),
+                    body: i18n.t('failed-document-report-message', {count: this.errorFilesCount}),
+                    type: 'danger',
+                    timeout: 20,
+                });
+            }
         }
     }
 }
