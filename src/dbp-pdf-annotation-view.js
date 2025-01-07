@@ -282,7 +282,7 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
 
             .action-buttons-wrapper {
                 display: flex;
-                gap: 1em;
+                gap: .5em;
             }
 
             .form-wrapper {
@@ -309,6 +309,7 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
                 justify-content: space-between;
                 flex-grow: 1;
                 flex-wrap: wrap;
+                gap: 1em;
             }
 
             .buttons {

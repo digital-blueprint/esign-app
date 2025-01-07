@@ -145,8 +145,8 @@ export function getSignatureCss() {
         }
 
         .modal--annotation-view {
-            --dbp-modal-max-width: 600px;
-            --dbp-modal-min-width: min(75vw, 600px);
+            --dbp-modal-max-width: 650px;
+            --dbp-modal-min-width: min(75vw, 650px);
         }
 
         .modal--external-auth {
