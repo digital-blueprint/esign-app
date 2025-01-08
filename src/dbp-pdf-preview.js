@@ -37,7 +37,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
         this.border_width = 2;
         this.allowSignatureRotation = false;
         this.signaturePlacementMode = 'auto';
-        this.showSignaturePlacementDescription = true;
+        this.showSignaturePlacementDescription = false;
 
         this._onWindowResize = this._onWindowResize.bind(this);
     }
@@ -67,6 +67,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
             signature_width: {type: Number, attribute: 'signature-width'},
             signature_height: {type: Number, attribute: 'signature-height'},
             allowSignatureRotation: {type: Boolean, attribute: 'allow-signature-rotation'},
+            showSignaturePlacementDescription: {type: Boolean}
         };
     }
 
@@ -487,7 +488,6 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
     setPositionTypeSelect(value) {
         const selectElement = /** @type {HTMLSelectElement} */ (this._('#positioning-type'));
         selectElement.value = value;
-        selectElement.dispatchEvent(new Event('change'));
     }
 
     static get styles() {

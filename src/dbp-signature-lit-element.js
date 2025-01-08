@@ -413,24 +413,24 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             },
             body: formData,
         })
-            .then(async (response) => {
-                /* Done. Inform the user */
-                console.log(`Status: ${response.status} for file ${file.name}`);
-                await this.sendFinishedEvent(response, file);
-            })
-            .catch(async (response) => {
-                /* Error. Inform the user */
-                if (response.message) {
-                    send({
-                        summary: 'Error!',
-                        body: response.message,
-                        type: 'danger',
-                        timeout: 15,
-                    });
-                    console.log(`Error message: ${response.message}`);
-                }
-                await this.sendFinishedEvent(response, file);
-            });
+        .then(response => {
+            /* Done. Inform the user */
+            console.log(`Status: ${response.status} for file ${file.name}`);
+            this.sendFinishedEvent(response, file);
+        })
+        .catch(response => {
+            /* Error. Inform the user */
+            if (response.message) {
+                send({
+                    summary: 'Error!',
+                    body: response.message,
+                    type: 'danger',
+                    timeout: 15,
+                });
+                console.log(`Error message: ${response.message}`);
+            }
+            this.sendFinishedEvent(response, file);
+        });
 
         this.uploadInProgress = false;
     }
@@ -800,7 +800,8 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         btnPreview.addEventListener("click", (event) => {
             event.stopPropagation();
             this._('#pdf-preview').open();
-            this._('#pdf-preview dbp-pdf-preview').setAttribute('don-t-show-buttons', true);
+            this._('#pdf-preview dbp-pdf-preview').showSignaturePlacementDescription = false;
+            this._('#pdf-preview dbp-pdf-preview').setAttribute('don-t-show-buttons', '');
             this.showPreview(id);
         });
         controlDiv.appendChild(btnPreview);
@@ -820,9 +821,11 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             this._('#pdf-preview').open();
             this._('#pdf-preview dbp-pdf-preview').removeAttribute('don-t-show-buttons');
             if (this.queuedFilesPlacementModes[id] === "manual") {
+                this._('#pdf-preview dbp-pdf-preview').showSignaturePlacementDescription = false;
                 this.queuePlacement(id, placement);
             } else {
                 // Hide signature when auto placement is active
+                this._('#pdf-preview dbp-pdf-preview').showSignaturePlacementDescription = true;
                 this.queuePlacement(id, placement, false);
             }
         });
