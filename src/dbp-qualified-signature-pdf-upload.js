@@ -20,7 +20,6 @@ import {PdfAnnotationView} from './dbp-pdf-annotation-view';
 import {ExternalSignIFrame} from './ext-sign-iframe.js';
 import * as SignatureStyles from './styles';
 import {TabulatorTable} from '@dbp-toolkit/tabulator-table';
-import { send } from '@dbp-toolkit/common/notification';
 
 class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElement) {
     constructor() {

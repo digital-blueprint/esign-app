@@ -19,7 +19,6 @@ import {Activity} from './activity.js';
 import {PdfAnnotationView} from './dbp-pdf-annotation-view';
 import * as SignatureStyles from './styles';
 import {TabulatorTable} from '@dbp-toolkit/tabulator-table';
-import { send } from '@dbp-toolkit/common/notification';
 
 class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElement) {
     constructor() {
