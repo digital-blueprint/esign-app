@@ -1,7 +1,7 @@
 import {LitElement, html, css} from 'lit';
 import {classMap} from 'lit/directives/class-map.js';
 import {MiniSpinner} from '@dbp-toolkit/common';
-import {ScopedElementsMixin} from '@dbp-toolkit/common';
+import {ScopedElementsMixin} from '@open-wc/scoped-elements';
 
 /**
  * Set the URL via setUrl(), reset via reset().
