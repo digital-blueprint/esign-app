@@ -164,7 +164,6 @@ export default (async () => {
             sourcemap: true,
         },
         treeshake: treeshake,
-        preserveEntrySignatures: false,
         // external: ['zlib', 'http', 'fs', 'https', 'url'],
         onwarn: function (warning, warn) {
             if (warning.code === 'EVAL' && (warning.id.includes('pdf.js') || warning.id.includes('pdfAnnotate.js'))) {
