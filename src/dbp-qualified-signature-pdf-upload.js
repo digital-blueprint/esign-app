@@ -180,6 +180,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         const entry = this.takeFileFromQueue(key);
         const file = entry.file;
         this.currentFile = file;
+        this.currentKey = key;
 
         // set placement mode and parameters to restore them when canceled
         this.currentFilePlacementMode = this.queuedFilesPlacementModes[key];

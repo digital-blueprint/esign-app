@@ -43,6 +43,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         this.currentFileName = '';
         this.currentFilePlacementMode = '';
         this.currentFileSignaturePlacement = {};
+        this.currentKey = '';
         this.queuedFilesAnnotations = [];
         this.queuedFilesAnnotationsCount = 0;
         this.uploadStatusFileName = '';
@@ -92,6 +93,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             queueBlockEnabled: {type: Boolean, attribute: false},
             currentFile: {type: Object, attribute: false},
             currentFileName: {type: String, attribute: false},
+            currentKey: {type: String, attribute: false},
             signaturePlacementInProgress: {type: Boolean, attribute: false},
             withSigBlock: {type: Boolean, attribute: false},
             isSignaturePlacement: {type: Boolean, attribute: false},
@@ -131,7 +133,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
      * @returns {Promise<string>} key of the re-queued item
      */
     async reQueueFile(file) {
-        const key = String(this._queueKey);
+        const key = this.currentKey;
         this.queuedFiles[key] = new SignatureEntry(key, file);
         this.updateQueuedFilesCount();
 
