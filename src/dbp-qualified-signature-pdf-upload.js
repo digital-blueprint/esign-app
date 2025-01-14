@@ -450,9 +450,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         `;
     }
 
-
-
-
     hasSignaturePermissions() {
         return this._hasSignaturePermissions('ROLE_SCOPE_QUALIFIED-SIGNATURE');
     }
@@ -468,11 +465,13 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         this.signingProcessActive = false;
 
         if (this.currentFile.file !== undefined) {
-            const key = await this.queueFile(this.currentFile.file);
+            // Re-queue file with the same key
+            const key = await this.reQueueFile(this.currentFile.file);
 
-            // set placement mode and parameters, so they are restore when canceled
+            // Set placement mode and parameters, so they are restore when canceled
             this.queuedFilesPlacementModes[key] = this.currentFilePlacementMode;
             this.queuedFilesSignaturePlacements[key] = this.currentFileSignaturePlacement;
+            this.setQueuedFilesTabulatorTable();
         }
     }
 

@@ -127,6 +127,18 @@ export default class DBPSignatureLitElement extends BaseLitElement {
     }
 
     /**
+     * @param file
+     * @returns {Promise<string>} key of the re-queued item
+     */
+    async reQueueFile(file) {
+        const key = String(this._queueKey);
+        this.queuedFiles[key] = new SignatureEntry(key, file);
+        this.updateQueuedFilesCount();
+
+        return key;
+    }
+
+    /**
      * Takes a file off of the queue
      *
      * @param key
