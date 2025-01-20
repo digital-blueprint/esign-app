@@ -1,7 +1,7 @@
 import {createInstance} from './i18n.js';
 import {humanFileSize} from '@dbp-toolkit/common/i18next.js';
 import {css, html} from 'lit';
-import {ScopedElementsMixin} from '@open-wc/scoped-elements';
+import {ScopedElementsMixin} from '@dbp-toolkit/common';
 import DBPSignatureLitElement from './dbp-signature-lit-element';
 import {PdfPreview} from './dbp-pdf-preview';
 import * as commonUtils from '@dbp-toolkit/common/utils';
