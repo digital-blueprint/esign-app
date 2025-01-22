@@ -1155,7 +1155,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                     fileName: `${file.name} ${warning}`,
                     fileSize: humanFileSize(file.size),
                     // profile: 'Personal',
-                    positioning: isManual ? 'manual' : 'auto',
+                    positioning: isManual ? i18n.t('positioning-manual') : i18n.t('positioning-automatic'),
                     buttons: actionButtons,
                 };
 

@@ -698,8 +698,8 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                                                 this.showSignaturePlacementDescription = false;
                                             }
                                         }}">
-                                        <option value="auto">Auto</option>
-                                        <option value="manual">Manual</option>
+                                        <option value="auto">${i18n.t('positioning-automatic')}</option>
+                                        <option value="manual">${i18n.t('positioning-manual')}</option>
                                     </select>
                                 </label>
                                 <div class="button-container">
