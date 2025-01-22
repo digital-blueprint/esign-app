@@ -1,7 +1,7 @@
 {
     "name": "@digital-blueprint/esign-app",
     "internalName": "dbp-signature",
-    "version": "2.4.0",
+    "version": "2.4.1",
     "type": "module",
     "main": "src/dbp-signature.js",
     "license": "LGPL-2.1-or-later",

@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.4.1
+
+* Fix disabling of the signature annotation feature not working anymore starting with 2.4.0 (enableAnnotations in the app.config)
+
 ## 2.4.0
 
 * Ported the signature queue and result lists to proper tables with selection controls
