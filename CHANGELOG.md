@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.4.0
+
+* Ported the signature queue and result lists to proper tables with selection controls
+
 ## 2.3.2
 
 * Update to pdf.js v4.4.168
