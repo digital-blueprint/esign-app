@@ -797,7 +797,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         }
     }
 
-    getActionButtonsHtml(id) {
+    getActionButtonsHtml(id, annotations=true) {
         const i18n = this._i18n;
         const ICON_SIZE = '24px';
 
@@ -907,8 +907,9 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             annotationWrapper.appendChild(annotationBadge);
         }
 
-        controlDiv.appendChild(annotationWrapper);
-
+        if (annotations) {
+            controlDiv.appendChild(annotationWrapper);
+        }
 
         // Delete button
         const btnDelete = document.createElement('dbp-icon-button');
@@ -1148,7 +1149,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                     legend.append(legendDescription);
                     this._('.control.file-list').append(legend);
                 }
-                const actionButtons = this.getActionButtonsHtml(id);
+                const actionButtons = this.getActionButtonsHtml(id, this.allowAnnotating);
                 let fileData = {
                     index: id,
                     fileName: `${file.name} ${warning}`,
