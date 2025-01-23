@@ -804,7 +804,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                         <dbp-modal id="annotation-view"
                             modal-id="annotation-view-modal"
                             class="modal--annotation-view ${classMap({
-                                hidden: !this.isAnnotationViewVisible || !this.allowAnnotating,
+                                hidden: !this.isAnnotationViewVisible,
                             })}"
                             title="${i18n.t('qualified-pdf-upload.annotation-view-label')}">
                             <div slot="header" class="header">

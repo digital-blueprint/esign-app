@@ -845,69 +845,68 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         });
         controlDiv.appendChild(btnEditSignature);
 
-        // Add annotation buttons
-        const annotationWrapper = document.createElement('span');
-        annotationWrapper.classList.add('annotation-wrapper');
-        const annotationWrapperStyles = {
-            'display': 'inline-grid',
-            'grid-template-columns': '27px 23px',
-            'grid-template-rows': '23px 27px',
-            'width': '50px',
-            'height': '50px',
-        };
-        Object.assign(annotationWrapper.style, annotationWrapperStyles);
-
-        const btnAnnotation = document.createElement('dbp-icon-button');
-        btnAnnotation.setAttribute('icon-name', 'bubble');
-        btnAnnotation.classList.add('annotation-button');
-        btnAnnotation.setAttribute('aria-label', i18n.t('annotation-button-title'));
-        btnAnnotation.setAttribute('title', i18n.t('annotation-button-title'));
-        btnAnnotation.style['font-size'] = ICON_SIZE;
-        const btnAnnotationStyles = {
-            'grid-column': '1 / 3',
-            'grid-row': '1 / 3',
-            'justify-self': 'center',
-            'align-self': 'center',
-        };
-        Object.assign(btnAnnotation.style, btnAnnotationStyles);
-        annotationWrapper.addEventListener("click", (event) => {
-            event.stopPropagation();
-            this._('#annotation-view').open();
-            this.showAnnotationView(id, 'text-selected');
-        });
-        annotationWrapper.appendChild(btnAnnotation);
-
-        const annotationCount = Array.isArray(this.queuedFilesAnnotations[id])
-            ? this.queuedFilesAnnotations[id].length
-            : 0;
-        if (annotationCount > 0) {
-            const annotationBadge = document.createElement('span');
-            annotationBadge.setAttribute('title', i18n.t('annotations-count-text', {annotationCount: annotationCount}));
-            annotationBadge.setAttribute('aria-label', i18n.t('annotations-count-text', {annotationCount: annotationCount}));
-            const annotationBadgeStyles = {
-                'grid-column': '2 / 3',
-                'grid-row': '1 / 2',
-                'justify-self': 'start',
-                'align-self': 'end',
-                'background': 'var(--dbp-primary)',
-                'color': 'var(--dbp-background)',
-                'border': '1px solid var(--dbp-background)',
-                'border-radius': '100%',
-                'display': 'block',
-                'width': '21px',
-                'height': '21px',
-                'text-align': 'center',
-                'line-height': '21px',
-                'font-size': '14px',
-                'font-weight': 'bold',
-                'z-index': '3',
-            };
-            Object.assign(annotationBadge.style, annotationBadgeStyles);
-            annotationBadge.textContent = String(annotationCount);
-            annotationWrapper.appendChild(annotationBadge);
-        }
-
         if (annotations) {
+            // Add annotation buttons
+            const annotationWrapper = document.createElement('span');
+            annotationWrapper.classList.add('annotation-wrapper');
+            const annotationWrapperStyles = {
+                'display': 'inline-grid',
+                'grid-template-columns': '27px 23px',
+                'grid-template-rows': '23px 27px',
+                'width': '50px',
+                'height': '50px',
+            };
+            Object.assign(annotationWrapper.style, annotationWrapperStyles);
+
+            const btnAnnotation = document.createElement('dbp-icon-button');
+            btnAnnotation.setAttribute('icon-name', 'bubble');
+            btnAnnotation.classList.add('annotation-button');
+            btnAnnotation.setAttribute('aria-label', i18n.t('annotation-button-title'));
+            btnAnnotation.setAttribute('title', i18n.t('annotation-button-title'));
+            btnAnnotation.style['font-size'] = ICON_SIZE;
+            const btnAnnotationStyles = {
+                'grid-column': '1 / 3',
+                'grid-row': '1 / 3',
+                'justify-self': 'center',
+                'align-self': 'center',
+            };
+            Object.assign(btnAnnotation.style, btnAnnotationStyles);
+            annotationWrapper.addEventListener("click", (event) => {
+                event.stopPropagation();
+                this._('#annotation-view').open();
+                this.showAnnotationView(id, 'text-selected');
+            });
+            annotationWrapper.appendChild(btnAnnotation);
+
+            const annotationCount = Array.isArray(this.queuedFilesAnnotations[id])
+                ? this.queuedFilesAnnotations[id].length
+                : 0;
+            if (annotationCount > 0) {
+                const annotationBadge = document.createElement('span');
+                annotationBadge.setAttribute('title', i18n.t('annotations-count-text', {annotationCount: annotationCount}));
+                annotationBadge.setAttribute('aria-label', i18n.t('annotations-count-text', {annotationCount: annotationCount}));
+                const annotationBadgeStyles = {
+                    'grid-column': '2 / 3',
+                    'grid-row': '1 / 2',
+                    'justify-self': 'start',
+                    'align-self': 'end',
+                    'background': 'var(--dbp-primary)',
+                    'color': 'var(--dbp-background)',
+                    'border': '1px solid var(--dbp-background)',
+                    'border-radius': '100%',
+                    'display': 'block',
+                    'width': '21px',
+                    'height': '21px',
+                    'text-align': 'center',
+                    'line-height': '21px',
+                    'font-size': '14px',
+                    'font-weight': 'bold',
+                    'z-index': '3',
+                };
+                Object.assign(annotationBadge.style, annotationBadgeStyles);
+                annotationBadge.textContent = String(annotationCount);
+                annotationWrapper.appendChild(annotationBadge);
+            };
             controlDiv.appendChild(annotationWrapper);
         }
 

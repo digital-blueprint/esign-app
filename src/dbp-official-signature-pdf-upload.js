@@ -659,7 +659,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                         <dbp-modal id="annotation-view"
                             modal-id="annotation-view-modal"
                             class="modal--annotation-view ${classMap({
-                                hidden: !this.isAnnotationViewVisible || !this.allowAnnotating,
+                                hidden: !this.isAnnotationViewVisible
                             })}"
                             title="${i18n.t('official-pdf-upload.annotation-view-label')}">
                             <div slot="header" class="header">
