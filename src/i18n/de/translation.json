@@ -52,8 +52,8 @@
     "signed-document-report-message_other": "{{count}} Dokumente erfolgreich signiert.",
     "failed-document-report-message_other": "Signierung für {{count}} Dokumenten fehlgeschlagen.",
     "positioning": "Positionierung",
-    "positioning-automatic": "Automatische",
-    "positioning-manual": "Manuelle",
+    "positioning-automatic": "Automatisch",
+    "positioning-manual": "Manuell",
     "official-pdf-upload": {
         "annotation": "Anmerkungen",
         "annotation-no": "Nein",
