@@ -20,6 +20,7 @@ import {PdfAnnotationView} from './dbp-pdf-annotation-view';
 import {ExternalSignIFrame} from './ext-sign-iframe.js';
 import * as SignatureStyles from './styles';
 import {TabulatorTable} from '@dbp-toolkit/tabulator-table';
+import SignaturePad from 'signature_pad';
 
 class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElement) {
     constructor() {
@@ -105,6 +106,9 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         this.tableQueuedFilesTable =  /** @type {TabulatorTable} */ (this._('#table-queued-files'));
         this.tableSignedFilesTable =  /** @type {TabulatorTable} */ (this._('#table-signed-files'));
         this.tableFailedFilesTable =  /** @type {TabulatorTable} */ (this._('#table-failed-files'));
+
+        let canvas = this._('#sig-canvas');
+        const signaturePad = new SignaturePad(canvas, {backgroundColor: "rgb(200, 255, 200)"});
     }
 
     async queueFile(file) {
@@ -864,6 +868,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                     </div>
                 </div>
             </div>
+            <canvas id="sig-canvas"></canvas>
             <div
                 class="notification is-warning ${classMap({
                     hidden: this.isLoggedIn() || this.isLoading(),

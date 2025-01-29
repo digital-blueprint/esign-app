@@ -65,6 +65,7 @@
         "jszip": "^3.5.0",
         "lit": "^3.0.0",
         "pdfjs-dist": "^4.3 <4.6",
+        "signature_pad": "^5.0.4",
         "universal-router": "^9.0.1"
     },
     "scripts": {
