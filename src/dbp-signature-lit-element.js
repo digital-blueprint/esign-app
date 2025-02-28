@@ -1213,6 +1213,43 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         }
     }
 
+    handlePositionButtonClickEvent(e, cell) {
+        console.log('handlePositionButtonClickEvent', e, cell);
+
+        e.stopPropagation();
+        e.preventDefault();
+        // Deselect row.
+        // Clicking on the row trigger row selection before cellClick is called
+        const row = cell.getRow();
+        row.deselect();
+
+        const rowIndex = row.getIndex();
+        let id = rowIndex;
+
+        const cellValue = cell.getValue();
+        let placement = 'auto';
+        // @TODO add data- attribute?
+        if (cellValue === 'Auto' || cellValue === 'Automatisch') {
+            placement = 'manual';
+        }
+
+        this._('#pdf-preview').open();
+        this._('#pdf-preview dbp-pdf-preview').removeAttribute('don-t-show-buttons');
+
+        // Set placement modes
+        this.queuedFilesSignaturePlacements[id] = {signaturePlacementMode: placement};
+        this.queuedFilesPlacementModes[id] = placement;
+
+        if (placement === 'manual') {
+            this._('#pdf-preview dbp-pdf-preview').showSignaturePlacementDescription = false;
+            this.queuePlacement(id, placement);
+        } else {
+            // Hide signature when auto placement is active
+            this._('#pdf-preview dbp-pdf-preview').showSignaturePlacementDescription = true;
+            this.queuePlacement(id, placement, false);
+        }
+    }
+
     /**
      * Create tabulator table for signed files
      */
