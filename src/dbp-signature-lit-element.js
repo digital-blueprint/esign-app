@@ -643,8 +643,9 @@ export default class DBPSignatureLitElement extends BaseLitElement {
      *
      * @param key
      * @param withSigBlock
+     * @param viewOnly
      */
-    async showPreview(key, withSigBlock = false) {
+    async showPreview(key, withSigBlock = false, viewOnly = false) {
         if (this.signingProcessEnabled) {
             return;
         }
@@ -655,10 +656,14 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         // start signature placement process
         this.signaturePlacementInProgress = true;
         this.withSigBlock = withSigBlock;
+        let placementData = this.queuedFilesSignaturePlacements[key];
+        if (viewOnly) {
+            placementData = {};
+        }
         await this._('dbp-pdf-preview').showPDF(
             entry.file,
             withSigBlock, //this.queuedFilesPlacementModes[key] === "manual",
-            this.queuedFilesSignaturePlacements[key]
+            placementData
         );
     }
 
@@ -814,36 +819,35 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         btnPreview.addEventListener("click", (event) => {
             event.stopPropagation();
             this._('#pdf-preview').open();
-            this._('#pdf-preview dbp-pdf-preview').showSignaturePlacementDescription = false;
             this._('#pdf-preview dbp-pdf-preview').setAttribute('don-t-show-buttons', '');
-            this.showPreview(id);
+            this.showPreview(id, false, true);
         });
         controlDiv.appendChild(btnPreview);
 
         // Edit signature button
-        const btnEditSignature = document.createElement('dbp-icon-button');
-        btnEditSignature.setAttribute('icon-name', 'pencil');
-        btnEditSignature.classList.add('edit-signature-button');
-        btnEditSignature.setAttribute('aria-label', i18n.t('edit-signature-button-title'));
-        btnEditSignature.setAttribute('title', i18n.t('edit-signature-button-title'));
-        btnEditSignature.style['font-size'] = ICON_SIZE;
-        btnEditSignature.setAttribute('data-placement', this.queuedFilesPlacementModes[id] || 'auto');
-        btnEditSignature.addEventListener("click", (event) => {
-            event.stopPropagation();
-            const editButton = /** @type {HTMLElement} */ (event.target);
-            const placement  = editButton.getAttribute('data-placement');
-            this._('#pdf-preview').open();
-            this._('#pdf-preview dbp-pdf-preview').removeAttribute('don-t-show-buttons');
-            if (this.queuedFilesPlacementModes[id] === "manual") {
-                this._('#pdf-preview dbp-pdf-preview').showSignaturePlacementDescription = false;
-                this.queuePlacement(id, placement);
-            } else {
-                // Hide signature when auto placement is active
-                this._('#pdf-preview dbp-pdf-preview').showSignaturePlacementDescription = true;
-                this.queuePlacement(id, placement, false);
-            }
-        });
-        controlDiv.appendChild(btnEditSignature);
+        // const btnEditSignature = document.createElement('dbp-icon-button');
+        // btnEditSignature.setAttribute('icon-name', 'pencil');
+        // btnEditSignature.classList.add('edit-signature-button');
+        // btnEditSignature.setAttribute('aria-label', i18n.t('edit-signature-button-title'));
+        // btnEditSignature.setAttribute('title', i18n.t('edit-signature-button-title'));
+        // btnEditSignature.style['font-size'] = ICON_SIZE;
+        // btnEditSignature.setAttribute('data-placement', this.queuedFilesPlacementModes[id] || 'auto');
+        // btnEditSignature.addEventListener("click", (event) => {
+        //     event.stopPropagation();
+        //     const editButton = /** @type {HTMLElement} */ (event.target);
+        //     const placement  = editButton.getAttribute('data-placement');
+        //     this._('#pdf-preview').open();
+        //     this._('#pdf-preview dbp-pdf-preview').removeAttribute('don-t-show-buttons');
+        //     if (this.queuedFilesPlacementModes[id] === "manual") {
+        //         this._('#pdf-preview dbp-pdf-preview').showSignaturePlacementDescription = false;
+        //         this.queuePlacement(id, placement);
+        //     } else {
+        //         // Hide signature when auto placement is active
+        //         this._('#pdf-preview dbp-pdf-preview').showSignaturePlacementDescription = true;
+        //         this.queuePlacement(id, placement, false);
+        //     }
+        // });
+        // controlDiv.appendChild(btnEditSignature);
 
         if (annotations) {
             // Add annotation buttons
@@ -855,6 +859,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                 'grid-template-rows': '23px 27px',
                 'width': '50px',
                 'height': '50px',
+                'position': 'relative',
             };
             Object.assign(annotationWrapper.style, annotationWrapperStyles);
 
@@ -881,6 +886,19 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             const annotationCount = Array.isArray(this.queuedFilesAnnotations[id])
                 ? this.queuedFilesAnnotations[id].length
                 : 0;
+            if (annotationCount === 0) {
+                const annotationPlusBadge = document.createElement('span');
+                const annotationPlusBadgeStyles = {
+                    'position': 'absolute',
+                    'font-size': '19px',
+                    'top': '22%',
+                    'left': '38%',
+                    'font-weight': 'bold',
+                };
+                Object.assign(annotationPlusBadge.style, annotationPlusBadgeStyles);
+                annotationPlusBadge.textContent = '+';
+                annotationWrapper.appendChild(annotationPlusBadge);
+            }
             if (annotationCount > 0) {
                 const annotationBadge = document.createElement('span');
                 annotationBadge.setAttribute('title', i18n.t('annotations-count-text', {annotationCount: annotationCount}));
@@ -906,7 +924,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                 Object.assign(annotationBadge.style, annotationBadgeStyles);
                 annotationBadge.textContent = String(annotationCount);
                 annotationWrapper.appendChild(annotationBadge);
-            };
+            }
             controlDiv.appendChild(annotationWrapper);
         }
 
@@ -1091,15 +1109,31 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                     minWidth: 120,
                     hozAlign: 'center',
                     headerHozAlign: 'center',
-                    formatter: 'html',
-                    responsive: 2
+                    formatter: function(cell, formatterParams) {
+                        const row = cell.getRow();
+                        const rowData = row.getData();
+                        // @TODO better solution needed
+                        if (rowData['fileName'].includes('bp-tooltip')) {
+                            return '<div class="set-position-button" style="background:var(--dbp-override-danger);color:var(--dbp-background);border:1px solid var(--dbp-override-danger);width:120px;padding:.4em 0;;text-align:center">' + cell.getValue() + '</div>';
+                        } else {
+                            return '<div class="set-position-button" style="border:1px solid var(--dbp-content);width:120px;padding:.4em 0;text-align:center">' + cell.getValue() + '</div>';
+                        }
+                    },
+                    cellClick: (e, cell) => {
+                        console.log('cellClick event', e);
+                        this.handlePositionButtonClickEvent(e, cell);
+                        const table = cell.getTable();
+                        const rows = table.getRows();
+                        this.reAddPositionButtonListenerQueuedFilesTabulatorTable(rows);
+                    },
+                    responsive: 2,
                 },
                 {
                     title: 'buttons',
                     field: 'buttons',
                     sorter: false,
                     headerSort: false,
-                    width: 200,
+                    width: 150,
                     hozAlign: 'right',
                     headerHozAlign: 'center',
                     formatter: 'html',

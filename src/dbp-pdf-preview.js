@@ -240,28 +240,33 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
         this.isPageLoaded = false; // prevent redisplay of previous pdf
         this.showErrorMessage = false;
 
-        if (placementData && placementData.signaturePlacementMode) {
-            this.setPositionTypeSelect(placementData.signaturePlacementMode);
+        // Just preview the pdf
+        if (Object.keys(placementData).length === 0) {
+            this.isShowPlacement = true;
+            this.signaturePlacementMode = 'manual';
+            this.showSignaturePlacementDescription = false;
         } else {
-            this.setPositionTypeSelect('auto');
-        }
+            if (placementData && placementData.signaturePlacementMode) {
+                this.setPositionTypeSelect(placementData.signaturePlacementMode);
+            }
 
-        // move signature if placementData was set
-        if (item !== undefined) {
-            if (placementData['scaleX'] !== undefined) {
-                item.set('scaleX', placementData['scaleX'] * this.canvasToPdfScale);
-            }
-            if (placementData['scaleY'] !== undefined) {
-                item.set('scaleY', placementData['scaleY'] * this.canvasToPdfScale);
-            }
-            if (placementData['left'] !== undefined) {
-                item.set('left', placementData['left'] * this.canvasToPdfScale);
-            }
-            if (placementData['top'] !== undefined) {
-                item.set('top', placementData['top'] * this.canvasToPdfScale);
-            }
-            if (placementData['angle'] !== undefined) {
-                item.set('angle', placementData['angle']);
+            // move signature if placementData was set
+            if (item !== undefined) {
+                if (placementData['scaleX'] !== undefined) {
+                    item.set('scaleX', placementData['scaleX'] * this.canvasToPdfScale);
+                }
+                if (placementData['scaleY'] !== undefined) {
+                    item.set('scaleY', placementData['scaleY'] * this.canvasToPdfScale);
+                }
+                if (placementData['left'] !== undefined) {
+                    item.set('left', placementData['left'] * this.canvasToPdfScale);
+                }
+                if (placementData['top'] !== undefined) {
+                    item.set('top', placementData['top'] * this.canvasToPdfScale);
+                }
+                if (placementData['angle'] !== undefined) {
+                    item.set('angle', placementData['angle']);
+                }
             }
         }
 
@@ -488,6 +493,16 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
     setPositionTypeSelect(value) {
         const selectElement = /** @type {HTMLSelectElement} */ (this._('#positioning-type'));
         selectElement.value = value;
+
+        if (value === 'auto') {
+            this.isShowPlacement = false;
+            this.signaturePlacementMode = 'auto';
+            this.showSignaturePlacementDescription = true;
+        } else if (value === 'manual') {
+            this.isShowPlacement = true;
+            this.signaturePlacementMode = 'manual';
+            this.showSignaturePlacementDescription = false;
+        }
     }
 
     static get styles() {
@@ -498,6 +513,10 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
 
             .hidden {
                 display: none !important;
+            }
+
+            #pdf-main-container {
+                padding: 1em 0;
             }
 
             #pdf-meta input[type=number] {
