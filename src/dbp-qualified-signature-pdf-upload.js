@@ -314,6 +314,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             that.signedFiles.push(document);
             // this triggers the correct update() execution
             that.signedFilesCount++;
+            that.signedFilesCountToReport++;
 
             this.sendSetPropertyEvent('analytics-event', {
                 category: 'QualifiedlySigning',
@@ -355,6 +356,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         this.errorFiles[Math.floor(Math.random() * 1000000)] = file;
         // this triggers the correct update() execution
         this.errorFilesCount++;
+        this.errorFilesCountToReport++;
 
         this.sendSetPropertyEvent('analytics-event', {
             category: 'QualifiedlySigning',

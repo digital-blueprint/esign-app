@@ -239,6 +239,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         this.errorFiles[Math.floor(Math.random() * 1000000)] = file;
         // this triggers the correct update() execution
         this.errorFilesCount++;
+        this.errorFilesCountToReport++;
 
         this.sendSetPropertyEvent('analytics-event', {
             category: 'officiallySigning',
@@ -258,6 +259,8 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             this.signedFiles.push(data.json);
             // this triggers the correct update() execution
             this.signedFilesCount++;
+            this.signedFilesCountToReport++;
+
             const entryPoint = data.json;
             this.currentFileName = entryPoint.name;
             this.endSigningProcessIfQueueEmpty();

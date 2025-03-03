@@ -62,8 +62,10 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         this.nextcloudDefaultDir = '';
         this.signedFiles = [];
         this.signedFilesCount = 0;
+        this.signedFilesCountToReport = 0;
         this.errorFiles = [];
         this.errorFilesCount = 0;
+        this.errorFilesCountToReport = 0;
         this.selectedFiles = [];
         this.selectedFilesProcessing = false;
         this.initialQueuedFilesCount = 0;
@@ -81,10 +83,12 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             nextcloudAuthInfo: {type: String, attribute: 'nextcloud-auth-info'},
             signedFiles: {type: Array, attribute: false},
             signedFilesCount: {type: Number, attribute: false},
+            signedFilesCountToReport: {type: Number, attribute: false},
             signedFilesToDownload: {type: Number, attribute: false},
             queuedFilesCount: {type: Number, attribute: false},
             errorFiles: {type: Array, attribute: false},
             errorFilesCount: {type: Number, attribute: false},
+            errorFilesCountToReport: {type: Number, attribute: false},
             uploadInProgress: {type: Boolean, attribute: false},
             uploadStatusFileName: {type: String, attribute: false},
             uploadStatusText: {type: String, attribute: false},
@@ -1491,24 +1495,24 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         const i18n = this._i18n;
         if (this.queuedFilesCount === 0 || (this.selectedFilesProcessing && this.selectedFiles.length === 0)) {
             this.selectedFilesProcessing = false;
-            if (this.signedFilesCount > 0) {
+            if (this.signedFilesCountToReport > 0) {
                 send({
                     summary: i18n.t('report-message-title'),
-                    body: i18n.t('signed-document-report-message', {count: this.signedFilesCount}),
+                    body: i18n.t('signed-document-report-message', {count: this.signedFilesCountToReport}),
                     type: 'success',
                     timeout: 20,
                 });
             }
-            if (this.errorFilesCount > 0 ) {
+            if (this.errorFilesCountToReport > 0 ) {
                 send({
                     summary: i18n.t('report-message-title'),
-                    body: i18n.t('failed-document-report-message', {count: this.errorFilesCount}),
+                    body: i18n.t('failed-document-report-message', {count: this.errorFilesCountToReport}),
                     type: 'danger',
                     timeout: 20,
                 });
             }
-            this.signedFilesCount = 0;
-            this.errorFilesCount = 0;
+            this.signedFilesCountToReport = 0;
+            this.errorFilesCountToReport = 0;
         }
     }
 }
