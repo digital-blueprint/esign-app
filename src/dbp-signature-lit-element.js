@@ -581,10 +581,18 @@ export default class DBPSignatureLitElement extends BaseLitElement {
      * @param event
      */
     hidePDF(event) {
-        // reset placement mode to "auto" if no placement was confirmed previously
-        if (this.queuedFilesSignaturePlacements[this.currentPreviewQueueKey] === undefined) {
-            this.queuedFilesPlacementModes[this.currentPreviewQueueKey] = 'auto';
+        if (this.queuedFilesSignaturePlacements[this.currentPreviewQueueKey] !== undefined) {
+            // If canceled when try to set to manual mode remove placement settings (auto is the default)
+            if (this.queuedFilesSignaturePlacements[this.currentPreviewQueueKey].signaturePlacementMode === 'manual') {
+                this.queuedFilesSignaturePlacements.splice(parseInt(this.currentPreviewQueueKey), 1);
+                this.queuedFilesPlacementModes.splice(parseInt(this.currentPreviewQueueKey), 1);
+            } else {
+                // If canceled when try to set automatic set back to manual
+                this.queuedFilesSignaturePlacements[this.currentPreviewQueueKey].signaturePlacementMode === 'manual';
+                this.queuedFilesPlacementModes[this.currentPreviewQueueKey] = 'manual';
+            }
         }
+
         this.signaturePlacementInProgress = false;
     }
 
@@ -742,7 +750,9 @@ export default class DBPSignatureLitElement extends BaseLitElement {
 
     handleModalClosed(event) {
         if (event.detail.id === 'pdf-preview-modal') {
-            this.hidePDF();
+            if (this.signaturePlacementInProgress) {
+                this.hidePDF();
+            }
         }
 
         if (event.detail.id === 'external-auth-modal') {
