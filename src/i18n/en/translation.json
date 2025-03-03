@@ -23,7 +23,7 @@
     "error-manual-positioning-missing": "Signatures in file {{file}} must be positioned manually.",
     "error-permission-message": "You need have permissions to use the official signature to use this function!",
     "error-rights-message": "Abort due to insufficient rights of your account.",
-    "label-manual-positioning-missing": "Existing signature present, please select its positioning manually.",
+    "label-manual-positioning-missing": "Existing signature available. Please select your positioning manually by clicking on the button marked in red.",
     "annotations-count-text": "Document has {{annotationCount}} annotations",
     "edit-signature-button-title": "Edit signature",
     "annotation-button-title": "Add annotation",

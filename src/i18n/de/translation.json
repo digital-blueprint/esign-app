@@ -23,8 +23,7 @@
     "error-manual-positioning-missing": "Ein oder mehrere Signaturen in der Warteschlange müssen manuell positioniert werden.",
     "error-permission-message": "Sie müssen das Recht auf Amtssignaturen besitzen um diese Funktion nutzen zu können!",
     "error-rights-message": "Abbruch auf Grund mangelnder Rechte Ihres Accounts.",
-    "label-manual-positioning-missing": "Bestehende Signatur vorhanden. Bitte wählen Sie Ihre Positionierung manuell.",
-
+    "label-manual-positioning-missing": "Bestehende Signatur vorhanden. Bitte wählen Sie Ihre Positionierung manuell, indem Sie auf die rot markierte Schaltfläche klicken.",
     "edit-signature-button-title": "Unterschrift bearbeiten",
     "annotation-button-title": "Annotation hinzufügen",
     "preview-file-button-title": "Vorschau Datei",
