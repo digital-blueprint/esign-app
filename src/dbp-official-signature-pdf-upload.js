@@ -197,7 +197,6 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         if (this.selectedFilesProcessing && this.selectedFiles.length === 0) {
             this.signingProcessEnabled = false;
             this.signingProcessActive = false;
-            this.selectedFilesProcessing = false;
             await this.stopSigningProcess();
         }
     }

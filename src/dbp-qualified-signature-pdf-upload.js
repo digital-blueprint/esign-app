@@ -211,7 +211,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         if (this.selectedFilesProcessing && this.selectedFiles.length === 0) {
             this.signingProcessEnabled = false;
             this.signingProcessActive = false;
-            this.selectedFilesProcessing = false;
             await this.stopSigningProcess();
         }
     }

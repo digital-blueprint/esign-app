@@ -1490,6 +1490,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
     sendReportNotification() {
         const i18n = this._i18n;
         if (this.queuedFilesCount === 0 || (this.selectedFilesProcessing && this.selectedFiles.length === 0)) {
+            this.selectedFilesProcessing = false;
             if (this.signedFilesCount > 0) {
                 send({
                     summary: i18n.t('report-message-title'),
@@ -1506,6 +1507,8 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                     timeout: 20,
                 });
             }
+            this.signedFilesCount = 0;
+            this.errorFilesCount = 0;
         }
     }
 }
