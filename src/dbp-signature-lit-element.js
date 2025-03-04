@@ -1121,6 +1121,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             responsiveLayout: 'collapse',
             responsiveLayoutCollapseStartOpen: false,
             index: 'index',
+            rowHeight: 50,
             columns: [
                 {
                     title: '#',
@@ -1352,6 +1353,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             responsiveLayout: 'collapse',
             responsiveLayoutCollapseStartOpen: false,
             index: 'index',
+            rowHeight: 50,
             columns: [
                 {
                     title: 'id',
@@ -1463,6 +1465,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             responsiveLayout: 'collapse',
             responsiveLayoutCollapseStartOpen: false,
             index: 'index',
+            rowHeight: 50,
             columns: [
                 {
                     title: 'id',
