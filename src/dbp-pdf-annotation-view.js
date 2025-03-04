@@ -76,7 +76,6 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
     }
 
     sendCancelEvent() {
-        console.log('cancel event called');
         const event = new CustomEvent('dbp-pdf-annotations-cancel', {
             detail: {},
             bubbles: true,

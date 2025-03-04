@@ -1190,7 +1190,6 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                         }
                     },
                     cellClick: (e, cell) => {
-                        console.log('cellClick event', e);
                         this.handlePositionButtonClickEvent(e, cell);
                     },
                     responsive: 2,
@@ -1286,8 +1285,6 @@ export default class DBPSignatureLitElement extends BaseLitElement {
     }
 
     handlePositionButtonClickEvent(e, cell) {
-        console.log('handlePositionButtonClickEvent', e, cell);
-
         e.stopPropagation();
         e.preventDefault();
         // Deselect row.
