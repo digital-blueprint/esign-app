@@ -725,6 +725,11 @@ export default class DBPSignatureLitElement extends BaseLitElement {
     tabulatorTableHandleCollapse(event) {
         if (event.detail.tableId === 'table-queued-files') {
             this.queuedFilesTableCollapsible = event.detail.isCollapsible;
+            // If the table is not collapsible display the 'Expand all' button
+            if (!this.queuedFilesTableCollapsible) {
+                this.queuedFilesTableExpanded = false;
+            }
+
             // Update table data when collapsing or expanding rows otherwise action buttons will not be shown
             this.setQueuedFilesTabulatorTable();
         }
