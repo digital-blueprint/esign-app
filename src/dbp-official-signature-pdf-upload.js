@@ -89,6 +89,9 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         window.removeEventListener('dbp-pdf-preview-cancel', this.handlePdfModalClosing);
         window.removeEventListener('dbp-pdf-annotations-cancel', this.handleAnnotationModalClosing);
         window.removeEventListener('dbp-pdf-annotations-save', this.handleAnnotationModalClosing);
+
+        this.stopPositionButtonObserver();
+
         super.disconnectedCallback();
     }
 

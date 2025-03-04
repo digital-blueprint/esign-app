@@ -69,6 +69,35 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         this.selectedFiles = [];
         this.selectedFilesProcessing = false;
         this.initialQueuedFilesCount = 0;
+        this.positionButtonObserverAdded = false;
+        this.positionButtonObserver = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'childList') {
+                    const collapsedSections = this.tableQueuedFilesTable.shadowRoot.querySelectorAll('.tabulator-responsive-collapse');
+                    // const collapsedSections = this.shadowRoot.querySelectorAll('.tabulator-responsive-collapse');
+                    collapsedSections.forEach((section) => {
+                        const positionButton = section.querySelector('.set-position-button');
+                        if (positionButton) {
+                            if (positionButton.classList.contains('event-listener-added')) {
+                                return;
+                            } else {
+                                positionButton.classList.add('event-listener-added');
+                                const rows = this.tableQueuedFilesTable.getRows();
+                                const rowId = positionButton.getAttribute('data-row-id');
+                                const row = rows[rowId - 1];
+                                if (row) {
+                                    const cell = row.getCell('positioning');
+                                    positionButton.addEventListener('click', (event) => {
+                                        this.handlePositionButtonClickEvent(event, cell);
+                                    });
+                                }
+
+                            }
+                        }
+                    });
+                }
+            });
+        });
     }
 
     static get properties() {
@@ -821,6 +850,26 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         }
     }
 
+    startPositionButtonObserver() {
+        if (this.positionButtonObserverAdded) {
+            return;
+        }
+        if (this.tableQueuedFilesTable) {
+            const table = this._('#table-queued-files');
+            if (table && table.shadowRoot) {
+                this.positionButtonObserver.observe(table.shadowRoot, {
+                    childList: true,
+                    subtree: true
+                });
+                this.positionButtonObserverAdded = true;
+            }
+        }
+    }
+
+    stopPositionButtonObserver() {
+        this.positionButtonObserver.disconnect();
+    }
+
     getActionButtonsHtml(id, annotations=true) {
         const i18n = this._i18n;
         const ICON_SIZE = '24px';
@@ -1130,12 +1179,13 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                     headerHozAlign: 'center',
                     formatter: function(cell, formatterParams) {
                         const row = cell.getRow();
+                        const id = row.getIndex();
                         const rowData = row.getData();
                         // @TODO better solution needed
                         if (rowData['fileName'].includes('bp-tooltip')) {
-                            return '<div class="set-position-button" style="background:var(--dbp-override-danger);color:var(--dbp-background);border:1px solid var(--dbp-override-danger);width:120px;padding:.4em 0;;text-align:center">' + cell.getValue() + '</div>';
+                            return `<div data-row-id=${id} class="set-position-button" style="background:var(--dbp-override-danger);color:var(--dbp-background);border:1px solid var(--dbp-override-danger);width:120px;padding:.4em 0;;text-align:center">${cell.getValue()}</div>`;
                         } else {
-                            return '<div class="set-position-button" style="border:1px solid var(--dbp-content);width:120px;padding:.4em 0;text-align:center">' + cell.getValue() + '</div>';
+                            return `<div data-row-id=${id} class="set-position-button" style="border:1px solid var(--dbp-content);width:120px;padding:.4em 0;text-align:center">${cell.getValue()}</div>`;
                         }
                     },
                     cellClick: (e, cell) => {
@@ -1229,6 +1279,11 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                 }
                 this.tableQueuedFilesTable.tabulatorTable.selectRow(selectedRows);
             }
+            const observerIsPresent = this.tableQueuedFilesTable.getAttribute('data-observer-added');
+            if (!observerIsPresent) {
+                this.tableQueuedFilesTable.setAttribute('data-observer-added', true);
+                this.startPositionButtonObserver();
+            }
         }
     }
 
@@ -1242,8 +1297,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         const row = cell.getRow();
         row.deselect();
 
-        const rowIndex = row.getIndex();
-        let id = rowIndex;
+        const id = row.getIndex();
 
         const cellValue = cell.getValue();
         let placement = 'auto';
