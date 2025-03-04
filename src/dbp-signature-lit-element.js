@@ -1192,9 +1192,6 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                     cellClick: (e, cell) => {
                         console.log('cellClick event', e);
                         this.handlePositionButtonClickEvent(e, cell);
-                        const table = cell.getTable();
-                        const rows = table.getRows();
-                        this.reAddPositionButtonListenerQueuedFilesTabulatorTable(rows);
                     },
                     responsive: 2,
                 },
