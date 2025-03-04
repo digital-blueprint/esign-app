@@ -57,7 +57,7 @@ export function getSignatureCss() {
         }
 
         .files-block.field:not(:last-child) {
-            margin-bottom: 40px;
+            margin-bottom: 80px;
         }
 
         .notification dbp-mini-spinner {
@@ -91,7 +91,7 @@ export function getSignatureCss() {
         }
 
         .empty-queue {
-            margin: 10px 0;
+            margin: -22px  0 0 0;
         }
 
         #grid-container {
