@@ -33,6 +33,14 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         this.nextcloudAuthInfo = '';
         this.activity = new Activity(metadata);
         this.fileHandlingEnabledTargets = 'local';
+
+        // Bind all event handlers
+        this._setQueuedFilesTabulatorTable = this.setQueuedFilesTabulatorTable.bind(this);
+        this._tabulatorTableHandleCollapse = this.tabulatorTableHandleCollapse.bind(this);
+        this._handleTableSelection = this.handleTableSelection.bind(this);
+        this._handleModalClosed = this.handleModalClosed.bind(this);
+        this._handlePdfModalClosing = this.handlePdfModalClosing.bind(this);
+        this._handleAnnotationModalClosing = this.handleAnnotationModalClosing.bind(this);
     }
 
     static get scopedElements() {
@@ -65,30 +73,31 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             this.handleQueuedFiles();
         }, 1000);
 
-        window.addEventListener('dbp-pdf-preview-accept', this.setQueuedFilesTabulatorTable.bind(this));
-        window.addEventListener('dbp-pdf-annotations-save', this.setQueuedFilesTabulatorTable.bind(this));
-        window.addEventListener('dbp-pdf-annotations-cancel', this.setQueuedFilesTabulatorTable.bind(this));
-        window.addEventListener('dbp-tabulator-table-collapsible-event', this.tabulatorTableHandleCollapse.bind(this));
-        window.addEventListener('dbp-tabulator-table-row-selection-changed-event', this.handleTableSelection.bind(this));
-        window.addEventListener('dbp-modal-closed', this.handleModalClosed.bind(this));
-        window.addEventListener('dbp-pdf-preview-accept', this.handlePdfModalClosing.bind(this));
-        window.addEventListener('dbp-pdf-preview-cancel', this.handlePdfModalClosing.bind(this));
-        window.addEventListener('dbp-pdf-annotations-cancel', this.handleAnnotationModalClosing.bind(this));
-        window.addEventListener('dbp-pdf-annotations-save', this.handleAnnotationModalClosing.bind(this));
+        // Add event listeners using bound methods
+        window.addEventListener('dbp-pdf-preview-accept', this._setQueuedFilesTabulatorTable);
+        window.addEventListener('dbp-pdf-annotations-save', this._setQueuedFilesTabulatorTable);
+        window.addEventListener('dbp-pdf-annotations-cancel', this._setQueuedFilesTabulatorTable);
+        window.addEventListener('dbp-tabulator-table-collapsible-event', this._tabulatorTableHandleCollapse);
+        window.addEventListener('dbp-tabulator-table-row-selection-changed-event', this._handleTableSelection);
+        window.addEventListener('dbp-modal-closed', this._handleModalClosed);
+        window.addEventListener('dbp-pdf-preview-accept', this._handlePdfModalClosing);
+        window.addEventListener('dbp-pdf-preview-cancel', this._handlePdfModalClosing);
+        window.addEventListener('dbp-pdf-annotations-cancel', this._handleAnnotationModalClosing);
+        window.addEventListener('dbp-pdf-annotations-save', this._handleAnnotationModalClosing);
     }
 
     disconnectedCallback() {
-        // remove event listeners
-        window.removeEventListener('dbp-pdf-preview-accept', this.setQueuedFilesTabulatorTable);
-        window.removeEventListener('dbp-pdf-annotations-save', this.setQueuedFilesTabulatorTable);
-        window.removeEventListener('dbp-pdf-annotations-cancel', this.setQueuedFilesTabulatorTable);
-        window.removeEventListener('dbp-tabulator-table-collapsible-event', this.tabulatorTableHandleCollapse);
-        window.removeEventListener('dbp-tabulator-table-row-selection-changed-event', this.handleTableSelection);
-        window.removeEventListener('dbp-modal-closed', this.handleModalClosed);
-        window.removeEventListener('dbp-pdf-preview-accept', this.handlePdfModalClosing);
-        window.removeEventListener('dbp-pdf-preview-cancel', this.handlePdfModalClosing);
-        window.removeEventListener('dbp-pdf-annotations-cancel', this.handleAnnotationModalClosing);
-        window.removeEventListener('dbp-pdf-annotations-save', this.handleAnnotationModalClosing);
+        // Remove event listeners using bound methods
+        window.removeEventListener('dbp-pdf-preview-accept', this._setQueuedFilesTabulatorTable);
+        window.removeEventListener('dbp-pdf-annotations-save', this._setQueuedFilesTabulatorTable);
+        window.removeEventListener('dbp-pdf-annotations-cancel', this._setQueuedFilesTabulatorTable);
+        window.removeEventListener('dbp-tabulator-table-collapsible-event', this._tabulatorTableHandleCollapse);
+        window.removeEventListener('dbp-tabulator-table-row-selection-changed-event', this._handleTableSelection);
+        window.removeEventListener('dbp-modal-closed', this._handleModalClosed);
+        window.removeEventListener('dbp-pdf-preview-accept', this._handlePdfModalClosing);
+        window.removeEventListener('dbp-pdf-preview-cancel', this._handlePdfModalClosing);
+        window.removeEventListener('dbp-pdf-annotations-cancel', this._handleAnnotationModalClosing);
+        window.removeEventListener('dbp-pdf-annotations-save', this._handleAnnotationModalClosing);
 
         this.stopPositionButtonObserver();
 
