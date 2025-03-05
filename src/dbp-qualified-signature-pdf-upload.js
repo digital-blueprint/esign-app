@@ -77,6 +77,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         window.addEventListener('dbp-pdf-annotations-cancel', this.setQueuedFilesTabulatorTable.bind(this));
         window.addEventListener('dbp-tabulator-table-collapsible-event', this.tabulatorTableHandleCollapse.bind(this));
         window.addEventListener('dbp-tabulator-table-row-selection-changed-event', this.handleTableSelection.bind(this));
+        window.addEventListener('dbp-tabulator-table-render-complete-event', this.tabulatorTableHandleRenderCompleted.bind(this));
         window.addEventListener('dbp-modal-closed', this.handleModalClosed.bind(this));
         window.addEventListener('dbp-pdf-preview-accept', this.handlePdfModalClosing.bind(this));
         window.addEventListener('dbp-pdf-preview-cancel', this.handlePdfModalClosing.bind(this));
@@ -91,6 +92,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         window.removeEventListener('dbp-pdf-annotations-save', this.setQueuedFilesTabulatorTable);
         window.removeEventListener('dbp-pdf-annotations-cancel', this.setQueuedFilesTabulatorTable);
         window.removeEventListener('dbp-tabulator-table-collapsible-event', this.tabulatorTableHandleCollapse);
+        window.removeEventListener('dbp-tabulator-table-render-complete-event', this.tabulatorTableHandleRenderCompleted);
         window.removeEventListener('dbp-tabulator-table-row-selection-changed-event', this.handleTableSelection);
         window.removeEventListener('dbp-modal-closed', this.handleModalClosed);
         window.removeEventListener('dbp-pdf-preview-accept', this.handlePdfModalClosing);

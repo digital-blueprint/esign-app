@@ -774,6 +774,28 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         }
     }
 
+    tabulatorTableHandleRenderCompleted(event) {
+        const tableId = event.detail.tableId;
+        const table = this._(`#${tableId}`);
+        const collapsableRows = table.shadowRoot.querySelectorAll('.tabulator-responsive-collapse');
+        const collapsableRowsCount = collapsableRows.length;
+        let expandedColumns = 0;
+        collapsableRows.forEach((row) => {
+            if (window.getComputedStyle(row).display === 'block') {
+                expandedColumns++;
+            }
+        });
+        if (event.detail.tableId === 'table-queued-files') {
+            expandedColumns == collapsableRowsCount ? this.queuedFilesTableExpanded = true : this.queuedFilesTableExpanded = false;
+        }
+        if (event.detail.tableId === 'table-signed-files') {
+            expandedColumns == collapsableRowsCount ? this.signedFilesTableExpanded = true : this.signedFilesTableExpanded = false;
+        }
+        if (event.detail.tableId === 'table-failed-files') {
+            expandedColumns == collapsableRowsCount ? this.failedFilesTableExpanded = true : this.failedFilesTableExpanded = false;
+        }
+    }
+
     handlePdfModalClosing() {
         this._('#pdf-preview').close();
     }
@@ -960,7 +982,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                     'position': 'absolute',
                     'font-size': '19px',
                     'top': '22%',
-                    'left': '38%',
+                    'left': '40%',
                     'font-weight': 'bold',
                 };
                 Object.assign(annotationPlusBadge.style, annotationPlusBadgeStyles);
@@ -1276,6 +1298,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                 }
                 this.tableQueuedFilesTable.tabulatorTable.selectRow(selectedRows);
             }
+
             const observerIsPresent = this.tableQueuedFilesTable.getAttribute('data-observer-added');
             if (!observerIsPresent) {
                 this.tableQueuedFilesTable.setAttribute('data-observer-added', true);
