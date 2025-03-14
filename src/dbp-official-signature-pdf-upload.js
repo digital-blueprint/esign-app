@@ -141,15 +141,15 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         // Validate that all PDFs with a signature have manual placement
         let errorInPositioning = false;
         for (const key of Object.keys(this.queuedFiles)) {
+            if (errorInPositioning === true) continue;
             const isManual = this.queuedFilesPlacementModes[key] === 'manual';
             if (this.queuedFilesNeedsPlacement.get(key) && !isManual && (this.selectedFiles.length === 0 || this.fileIsSelectedFile(key))) {
-                const file = this.queuedFiles[key].file;
-                const fileName = file.name;
                 // Some have a signature but are not "manual", stop everything
                 notify({
                     summary: i18n.t('error-manual-positioning-missing-title'),
-                    body: i18n.t('error-manual-positioning-missing', { file: fileName}),
+                    body: i18n.t('error-manual-positioning-missing'),
                     type: 'danger',
+                    timeout: 5
                 });
                 errorInPositioning = true;
             }
