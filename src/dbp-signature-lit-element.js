@@ -399,11 +399,44 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         return this.queuedFiles[key];
     }
 
-    clearQueuedFiles() {
-        this.queuedFilesAnnotations = [];
-        this.queuedFilesAnnotationsCount = 0;
-        this.queuedFiles = [];
+    /**
+     * Remove selected files from the file queue
+     * @param {Array} filesToRemove - array of index to remove
+     */
+    clearQueuedFiles(filesToRemove) {
+        if (!Array.isArray(filesToRemove) || filesToRemove.length < 1) return;
+
+        for (const fileKey of filesToRemove) {
+            // Remove annotation of selected rows form queuedFilesAnnotations
+            this.queuedFilesAnnotations.forEach((annotation, index) => {
+                if (index == fileKey) {
+                  delete this.queuedFilesAnnotations[index];
+                }
+            });
+
+            // Remove files of selected rows from queueFiles
+            this.queuedFiles.forEach((file, index) => {
+                if (index == fileKey) {
+                  delete this.queuedFiles[index];
+                }
+            });
+        }
+
+        this.selectedFiles = [];
+
+        this.queuedFilesAnnotationsCount = this.getRealLength(this.queuedFilesAnnotations);
         this.updateQueuedFilesCount();
+
+        this.tableQueuedFilesTable.tabulatorTable.redraw(true);
+    }
+
+    /**
+     * Get the real length of an array containing holes (sparse array)
+     * @param {Array} array
+     * @returns {number}
+     */
+    getRealLength(array) {
+        return Object.keys(array).filter(key => !isNaN(key)).length;
     }
 
     updateQueuedFilesCount() {
@@ -842,14 +875,22 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                 const rowIndex = String(selectedRow.getIndex());
                 const rowData = selectedRow.getData();
                 const fileNameCell = rowData.fileName;
+                const fileKey = rowData.index;
                 // Remove html tags from filename (the warning tooltip)
                 const fileName = fileNameCell.replace(/<[^>]*>/g, '').trim();
                 const existingIndex = this.selectedFiles.findIndex(row => row.key === rowIndex);
                 if (existingIndex === -1) {
-                    this.selectedFiles.push({
-                        key: rowIndex,
-                        filename: fileName
-                    });
+                    this.selectedFiles = [
+                        ...this.selectedFiles,
+                        {
+                            key: fileKey,
+                            filename: fileName
+                        }
+                    ];
+                    // this.selectedFiles.push({
+                    //     key: rowIndex,
+                    //     filename: fileName
+                    // });
                 }
             });
         }
@@ -859,7 +900,10 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             deSelectedRows.forEach(deSelectedRow => {
                 const rowIndex = String(deSelectedRow.getIndex());
                 const deselectedIndex = this.selectedFiles.findIndex(row => row.key === rowIndex);
-                this.selectedFiles.splice(deselectedIndex, 1);
+                this.selectedFiles = [
+                    ...this.selectedFiles.slice(0, deselectedIndex),
+                    ...this.selectedFiles.slice(deselectedIndex + 1)
+                  ];
             });
         }
 

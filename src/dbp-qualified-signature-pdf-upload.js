@@ -432,12 +432,27 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
     }
 
     clearQueuedFiles() {
-        this.queuedFilesSignaturePlacements = [];
-        this.queuedFilesPlacementModes = [];
-        this.queuedFilesNeedsPlacement.clear();
-        // Clear Tabulator Table rows
-        this.tableQueuedFilesTable.setData();
-        super.clearQueuedFiles();
+        // Delete selected files from the queues
+        if (this.selectedFiles.length) {
+            let filesToRemove = [];
+            for (const selectedFile of this.selectedFiles) {
+                this.queuedFilesSignaturePlacements.forEach((placement, index) => {
+                    if (index == selectedFile.key) {
+                      delete this.queuedFilesSignaturePlacements[index];
+                    }
+                });
+                this.queuedFilesPlacementModes.forEach((placementMode, index) => {
+                    if (index == selectedFile.key) {
+                      delete this.queuedFilesPlacementModes[index];
+                    }
+                });
+                this.queuedFilesNeedsPlacement.delete(selectedFile.key);
+
+                filesToRemove.push(selectedFile.key);
+            }
+
+            super.clearQueuedFiles(filesToRemove);
+        }
     }
 
     static get styles() {
@@ -609,7 +624,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                         id="clear-queue-button-queued-files"
                                         @click="${this.clearQueuedFiles}"
                                         ?disabled="${this.queuedFilesCount === 0 ||
-                                        this.signingProcessActive}"
+                                            this.signingProcessActive ||
+                                            this.selectedFiles.length < 1}"
                                         class="button">
                                         ${i18n.t('qualified-pdf-upload.clear-all')}
                                     </button>
