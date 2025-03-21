@@ -1,4 +1,5 @@
 import {createInstance} from './i18n.js';
+import {css, unsafeCSS, html, render} from 'lit';
 import * as utils from './utils';
 import * as commonUtils from '@dbp-toolkit/common/utils';
 import {BaseLitElement} from './base-element.js';
@@ -74,20 +75,19 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             mutations.forEach((mutation) => {
                 if (mutation.type === 'childList') {
                     const collapsedSections = this.tableQueuedFilesTable.shadowRoot.querySelectorAll('.tabulator-responsive-collapse');
-                    // const collapsedSections = this.shadowRoot.querySelectorAll('.tabulator-responsive-collapse');
                     collapsedSections.forEach((section) => {
-                        const positionButton = section.querySelector('.set-position-button');
-                        if (positionButton) {
-                            if (positionButton.classList.contains('event-listener-added')) {
+                        const positionToggler = section.querySelector('.toggle-item');
+                        if (positionToggler) {
+                            if (positionToggler.classList.contains('event-listener-added')) {
                                 return;
                             } else {
-                                positionButton.classList.add('event-listener-added');
+                                positionToggler.classList.add('event-listener-added');
                                 const rows = this.tableQueuedFilesTable.getRows();
-                                const rowId = positionButton.getAttribute('data-row-id');
+                                const rowId = positionToggler.getAttribute('data-row-id');
                                 const row = rows[rowId - 1];
                                 if (row) {
                                     const cell = row.getCell('positioning');
-                                    positionButton.addEventListener('click', (event) => {
+                                    positionToggler.addEventListener('click', (event) => {
                                         this.handlePositionButtonClickEvent(event, cell);
                                     });
                                 }
@@ -647,12 +647,14 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             // If canceled when try to set to manual mode remove placement settings (auto is the default)
             if (this.queuedFilesSignaturePlacements[this.currentPreviewQueueKey].signaturePlacementMode === 'manual') {
                 this.queuedFilesSignaturePlacements.splice(parseInt(this.currentPreviewQueueKey), 1);
-                this.queuedFilesPlacementModes.splice(parseInt(this.currentPreviewQueueKey), 1);
+                this.queuedFilesPlacementModes[this.currentPreviewQueueKey] = 'auto';
             } else {
                 // If canceled when try to set automatic set back to manual
                 this.queuedFilesSignaturePlacements[this.currentPreviewQueueKey].signaturePlacementMode === 'manual';
                 this.queuedFilesPlacementModes[this.currentPreviewQueueKey] = 'manual';
             }
+            // Re render text switch
+            this.setQueuedFilesTabulatorTable();
         }
 
         this.signaturePlacementInProgress = false;
@@ -887,10 +889,6 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                             filename: fileName
                         }
                     ];
-                    // this.selectedFiles.push({
-                    //     key: rowIndex,
-                    //     filename: fileName
-                    // });
                 }
             });
         }
@@ -957,31 +955,6 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             this.showPreview(id, false, true);
         });
         controlDiv.appendChild(btnPreview);
-
-        // Edit signature button
-        // const btnEditSignature = document.createElement('dbp-icon-button');
-        // btnEditSignature.setAttribute('icon-name', 'pencil');
-        // btnEditSignature.classList.add('edit-signature-button');
-        // btnEditSignature.setAttribute('aria-label', i18n.t('edit-signature-button-title'));
-        // btnEditSignature.setAttribute('title', i18n.t('edit-signature-button-title'));
-        // btnEditSignature.style['font-size'] = ICON_SIZE;
-        // btnEditSignature.setAttribute('data-placement', this.queuedFilesPlacementModes[id] || 'auto');
-        // btnEditSignature.addEventListener("click", (event) => {
-        //     event.stopPropagation();
-        //     const editButton = /** @type {HTMLElement} */ (event.target);
-        //     const placement  = editButton.getAttribute('data-placement');
-        //     this._('#pdf-preview').open();
-        //     this._('#pdf-preview dbp-pdf-preview').removeAttribute('don-t-show-buttons');
-        //     if (this.queuedFilesPlacementModes[id] === "manual") {
-        //         this._('#pdf-preview dbp-pdf-preview').showSignaturePlacementDescription = false;
-        //         this.queuePlacement(id, placement);
-        //     } else {
-        //         // Hide signature when auto placement is active
-        //         this._('#pdf-preview dbp-pdf-preview').showSignaturePlacementDescription = true;
-        //         this.queuePlacement(id, placement, false);
-        //     }
-        // });
-        // controlDiv.appendChild(btnEditSignature);
 
         if (annotations) {
             // Add annotation buttons
@@ -1088,6 +1061,158 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         return controlDiv;
     }
 
+    getPositioningSwitch(id, placement, needPositioning) {
+        const i18n = this._i18n;
+
+        const styles = css`
+
+            .toggle-wrapper {
+                --toggle-width: 80px;
+                --toggle-height: 36px;
+                --icon-height: 30px;
+                --transition-time: .3s;
+                --gap: 2px;
+                --checkmark-color: var(--dbp-muted);
+                --checkmark-color-need-positioning: var(--dbp-danger);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                overflow: hidden;
+                position: relative;
+            }
+
+            .toggle {
+                position: relative;
+                display: inline-block;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 0 8px;
+            }
+
+            .label-text {
+                line-height: var(--toggle-height);
+            }
+
+            /* the switch */
+            label.toggle-item {
+                width: var(--toggle-width);
+                background: #fcfcfc;
+                height: var(--toggle-height);
+                display: inline-block;
+                border-radius: var(--dbp-border-radius);
+                border: 1px solid var(--dbp-muted);
+                position: relative;
+                transition: all var(--transition-time) ease;
+                cursor: pointer;
+                margin: 0;
+            }
+
+            input {
+                height: 40px;
+                left: 0;
+                opacity: 0;
+                position: absolute;
+                top: 0;
+                width: 40px;
+                margin: 0;
+                padding: 0;
+            }
+
+            .toggle {
+
+                .input-checkbox:focus-visible + .toggle-item {
+                    box-shadow:0px 0px 3px 1px var(--dbp-primary) inset;
+                }
+
+                /* the button */
+                .check {
+                    border-radius: 10%;
+                    width: var(--icon-height);
+                    height: var(--icon-height);
+                    position: absolute;
+                    background: var(--checkmark-color);
+                    transition: .4s ease;
+                    top: var(--gap);
+                    left: var(--gap);
+
+                    /* X icon */
+                    &:before,
+                    &:after {
+                        height: 4px;
+                        border-radius: 10px;
+                        background: #fff;
+                        transition: .4s ease;
+                        content: '';
+                        position: absolute;
+                        left: 0;
+                        top: 0;
+                        opacity: 0;
+                    }
+                    &:before {
+                        width: 27px;
+                        transform-origin: center;
+                        transform: rotate(-45deg) translate(-8px, 11px);
+                    }
+                    &:after {
+                        width: 27px;
+                        transform-origin: center;
+                        transform: rotate(45deg) translate(11px, 8px);
+                    }
+                }
+            }
+
+            .need-positioning {
+
+                label.toggle-item {
+                    border-color: var(--checkmark-color-need-positioning);
+                }
+
+                .check {
+                    background: var(--checkmark-color-need-positioning);
+                }
+            }
+
+            /* animation */
+            .input-checkbox:checked + label {
+
+                .check {
+                    left: calc(100% - var(--icon-height) - var(--gap));
+                    background: var(--dbp-muted);
+
+                    /* Checkmark icon */
+                    &:before {
+                        opacity: 1;
+                        width: 20px;
+                        transform: rotate(-45deg) translate(-3px, 15px);
+                    }
+                    &:after {
+                        opacity: 1;
+                        width: 8px;
+                        transform: rotate(45deg) translate(15px, 7px);
+                    }
+                }
+            }
+
+        `;
+
+        const checkbox = html`
+            <style>${unsafeCSS(styles)}</style>
+            <span class="label-text">${i18n.t('toggle-switch-label-text-on')}</span>
+            <div class="toggle ${needPositioning ? 'need-positioning' : ''}" data-need-positioning="${needPositioning ? 'true' : 'false' }">
+                <input id="toggle-${id}" class="input-checkbox" type="checkbox" ?checked="${placement == 'manual'}"/>
+                <label class="toggle-item" for="toggle-${id}" data-row-id="${id}">
+                    <div class="check"></div>
+                </label>
+            </div>
+            <span class="label-text">${i18n.t('toggle-switch-label-text-off')}</span>
+        `;
+        const wrapper = document.createElement('div');
+        wrapper.classList.add('toggle-wrapper');
+        render(checkbox, wrapper);
+        return wrapper;
+    }
+
     getDownloadButtonHtml(id, file) {
         const i18n = this._i18n;
         const ICON_SIZE = '24px';
@@ -1187,7 +1312,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             responsiveLayout: 'collapse',
             responsiveLayoutCollapseStartOpen: false,
             index: 'index',
-            rowHeight: 50,
+            rowHeight: 54,
             columns: [
                 {
                     title: '#',
@@ -1225,7 +1350,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                     hozAlign: 'right',
                     headerHozAlign: 'right',
                     formatter: 'plaintext',
-                    responsive: 2
+                    responsive: 3
                 },
                 // {
                 //     title: 'profile',
@@ -1241,20 +1366,10 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                 {
                     title: 'positioning',
                     field: 'positioning',
-                    minWidth: 120,
+                    minWidth: 210,
                     hozAlign: 'center',
                     headerHozAlign: 'center',
-                    formatter: function(cell, formatterParams) {
-                        const row = cell.getRow();
-                        const id = row.getIndex();
-                        const rowData = row.getData();
-                        // @TODO better solution needed
-                        if (rowData['fileName'].includes('bp-tooltip')) {
-                            return `<div data-row-id=${id} class="set-position-button" style="background:var(--dbp-override-danger);color:var(--dbp-background);border:1px solid var(--dbp-override-danger);width:120px;padding:.4em 0;;text-align:center">${cell.getValue()}</div>`;
-                        } else {
-                            return `<div data-row-id=${id} class="set-position-button" style="border:1px solid var(--dbp-content);width:120px;padding:.4em 0;text-align:center">${cell.getValue()}</div>`;
-                        }
-                    },
+                    formatter: 'html',
                     cellClick: (e, cell) => {
                         this.handlePositionButtonClickEvent(e, cell);
                     },
@@ -1265,7 +1380,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                     field: 'buttons',
                     sorter: false,
                     headerSort: false,
-                    width: 150,
+                    width: 160,
                     hozAlign: 'right',
                     headerHozAlign: 'center',
                     formatter: 'html',
@@ -1315,12 +1430,15 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                     this._('.control.file-list').append(legend);
                 }
                 const actionButtons = this.getActionButtonsHtml(id, this.allowAnnotating);
+
+                const positioningSwitch = this.getPositioningSwitch(id, this.queuedFilesPlacementModes[id] || 'auto', placementMissing);
+
                 let fileData = {
                     index: id,
                     fileName: `${file.name} ${warning}`,
                     fileSize: humanFileSize(file.size),
                     // profile: 'Personal',
-                    positioning: isManual ? i18n.t('positioning-manual') : i18n.t('positioning-automatic'),
+                    positioning: positioningSwitch,
                     buttons: actionButtons,
                 };
 
@@ -1353,36 +1471,57 @@ export default class DBPSignatureLitElement extends BaseLitElement {
 
     handlePositionButtonClickEvent(e, cell) {
         e.stopPropagation();
-        e.preventDefault();
-        // Deselect row.
-        // Clicking on the row trigger row selection before cellClick is called
-        const row = cell.getRow();
-        row.deselect();
 
+        const row = cell.getRow();
         const id = row.getIndex();
 
-        const cellValue = cell.getValue();
-        let placement = 'auto';
-        // @TODO add data- attribute?
-        if (cellValue === 'Auto' || cellValue === 'Automatisch') {
-            placement = 'manual';
-        }
+        // Deselect row.
+        // Clicking on the row trigger row selection before cellClick is called
+        row.toggleSelect();
+        // row.deselect();
 
-        this._('#pdf-preview').open();
-        this._('#pdf-preview dbp-pdf-preview').removeAttribute('don-t-show-buttons');
+        const toggleTriggered = e.composedPath().find((element) => {
+            if (element.classList) {
+                return element.classList.contains('toggle-wrapper');
+            }
+        });
 
-        // Set placement modes
-        this.queuedFilesSignaturePlacements[id] = {signaturePlacementMode: placement};
-        this.queuedFilesPlacementModes[id] = placement;
+        // Prevent clickHandler running twice
+        if (!toggleTriggered) return;
+        if (toggleTriggered.getAttribute('data-click-triggered'))  return;
+        toggleTriggered.setAttribute('data-click-triggered', true);
 
-        if (placement === 'manual') {
-            this._('#pdf-preview dbp-pdf-preview').showSignaturePlacementDescription = false;
-            this.queuePlacement(id, placement);
-        } else {
-            // Hide signature when auto placement is active
-            this._('#pdf-preview dbp-pdf-preview').showSignaturePlacementDescription = true;
-            this.queuePlacement(id, placement, false);
-        }
+        console.log('toggleTriggered', toggleTriggered);
+
+        setTimeout(() => {
+
+            const cellValue = cell.getValue();
+            const checkboxIsChecked = cellValue.querySelector('.input-checkbox').checked;
+            console.log('checkboxState', checkboxIsChecked);
+
+            // }
+
+            const placement = checkboxIsChecked === true ? 'manual' : 'auto';
+
+            console.log('placement', placement);
+
+            this._('#pdf-preview').open();
+            this._('#pdf-preview dbp-pdf-preview').removeAttribute('don-t-show-buttons');
+
+            // // Set placement modes
+            this.queuedFilesSignaturePlacements[id] = {signaturePlacementMode: placement};
+            this.queuedFilesPlacementModes[id] = placement;
+
+            if (placement === 'manual') {
+                this._('#pdf-preview dbp-pdf-preview').showSignaturePlacementDescription = false;
+                this.queuePlacement(id, placement);
+            } else {
+                // Hide signature when auto placement is active
+                this._('#pdf-preview dbp-pdf-preview').showSignaturePlacementDescription = true;
+                this.queuePlacement(id, placement, false);
+            }
+            toggleTriggered.removeAttribute('data-click-triggered');
+        }, 400);
     }
 
     /**

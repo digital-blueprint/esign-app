@@ -660,10 +660,6 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                 border-top-width: 0;
             }
 
-            .button.is-cancel {
-                color: var(--dbp-danger);
-            }
-
             .error-message {
                 text-align: center;
                 border: 1px solid black;

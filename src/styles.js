@@ -197,10 +197,6 @@ export function getSignatureCss() {
             flex-shrink: 0;
         }
 
-        #table-queued-files {
-            --dbp-tabulator-cell-overflow: visible;
-        }
-
         @container tabulator-actions (max-width: 660px) {
             .table-actions,
             .sign-actions,

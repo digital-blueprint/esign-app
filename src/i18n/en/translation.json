@@ -35,7 +35,7 @@
     "table-header-file-name": "File name",
     "table-header-file-size": "File Size",
     "table-header-profile": "Profile",
-    "table-header-positioning": "Positioning",
+    "table-header-positioning": "Manual positioning",
     "table-header-buttons": "Actions",
     "table-header-download": "Download",
     "table-header-file-downloaded": "Downloaded",
@@ -54,6 +54,8 @@
     "positioning": "Positioning",
     "positioning-automatic": "Auto",
     "positioning-manual": "Manual",
+    "toggle-switch-label-text-on": "On",
+    "toggle-switch-label-text-off": "Off",
     "official-pdf-upload": {
         "annotation": "Annotations",
         "annotation-no": "No",
