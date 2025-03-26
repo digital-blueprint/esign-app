@@ -1,5 +1,5 @@
 import {createInstance} from './i18n.js';
-import {css, unsafeCSS, html, render} from 'lit';
+import {css, unsafeCSS} from 'lit';
 import * as utils from './utils';
 import * as commonUtils from '@dbp-toolkit/common/utils';
 import {BaseLitElement} from './base-element.js';
