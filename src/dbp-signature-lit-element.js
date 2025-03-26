@@ -75,6 +75,8 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             mutations.forEach((mutation) => {
                 if (mutation.type === 'childList') {
                     const collapsedSections = this.tableQueuedFilesTable.shadowRoot.querySelectorAll('.tabulator-responsive-collapse');
+                    // Add event listener to collapsed cells buttons.
+                    // cellClick() is not run on collapsed fields.
                     collapsedSections.forEach((section) => {
                         const positionToggler = section.querySelector('.toggle-item');
                         if (positionToggler) {
@@ -809,6 +811,10 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         }
     }
 
+    /**
+     *  Handle Expand/Collapse-all button state
+     * @param event - dbp-tabulator-table-render-complete-event
+     */
     tabulatorTableHandleRenderCompleted(event) {
         const tableId = event.detail.tableId;
         const table = this._(`#${tableId}`);
@@ -936,129 +942,33 @@ export default class DBPSignatureLitElement extends BaseLitElement {
 
     getActionButtonsHtml(id, annotations=true) {
         const i18n = this._i18n;
-        const ICON_SIZE = '24px';
-
-        let controlDiv = document.createElement('div');
-        controlDiv.classList.add('tabulator-icon-buttons');
-
-        // Show preview button
-        const btnPreview = document.createElement('dbp-icon-button');
-        btnPreview.setAttribute('icon-name', 'keyword-research');
-        btnPreview.classList.add('preview-button');
-        btnPreview.setAttribute('aria-label', i18n.t('preview-file-button-title'));
-        btnPreview.setAttribute('title', i18n.t('preview-file-button-title'));
-        btnPreview.style['font-size'] = ICON_SIZE;
-        btnPreview.addEventListener("click", (event) => {
-            event.stopPropagation();
-            this._('#pdf-preview').open();
-            this._('#pdf-preview dbp-pdf-preview').setAttribute('don-t-show-buttons', '');
-            this.showPreview(id, false, true);
-        });
-        controlDiv.appendChild(btnPreview);
-
-        if (annotations) {
-            // Add annotation buttons
-            const annotationWrapper = document.createElement('span');
-            annotationWrapper.classList.add('annotation-wrapper');
-            const annotationWrapperStyles = {
-                'display': 'inline-grid',
-                'grid-template-columns': '27px 23px',
-                'grid-template-rows': '23px 27px',
-                'width': '50px',
-                'height': '50px',
-                'position': 'relative',
-            };
-            Object.assign(annotationWrapper.style, annotationWrapperStyles);
-
-            const btnAnnotation = document.createElement('dbp-icon-button');
-            btnAnnotation.setAttribute('icon-name', 'bubble');
-            btnAnnotation.classList.add('annotation-button');
-            btnAnnotation.setAttribute('aria-label', i18n.t('annotation-button-title'));
-            btnAnnotation.setAttribute('title', i18n.t('annotation-button-title'));
-            btnAnnotation.style['font-size'] = ICON_SIZE;
-            const btnAnnotationStyles = {
-                'grid-column': '1 / 3',
-                'grid-row': '1 / 3',
-                'justify-self': 'center',
-                'align-self': 'center',
-            };
-            Object.assign(btnAnnotation.style, btnAnnotationStyles);
-            annotationWrapper.addEventListener("click", (event) => {
-                event.stopPropagation();
-                this._('#annotation-view').open();
-                this.showAnnotationView(id, 'text-selected');
-            });
-            annotationWrapper.appendChild(btnAnnotation);
-
-            const annotationCount = Array.isArray(this.queuedFilesAnnotations[id])
-                ? this.queuedFilesAnnotations[id].length
-                : 0;
-            if (annotationCount === 0) {
-                const annotationPlusBadge = document.createElement('span');
-                const annotationPlusBadgeStyles = {
-                    'position': 'absolute',
-                    'font-size': '19px',
-                    'top': '22%',
-                    'left': '40%',
-                    'font-weight': 'bold',
-                };
-                Object.assign(annotationPlusBadge.style, annotationPlusBadgeStyles);
-                annotationPlusBadge.textContent = '+';
-                annotationWrapper.appendChild(annotationPlusBadge);
-            }
-            if (annotationCount > 0) {
-                const annotationBadge = document.createElement('span');
-                annotationBadge.setAttribute('title', i18n.t('annotations-count-text', {annotationCount: annotationCount}));
-                annotationBadge.setAttribute('aria-label', i18n.t('annotations-count-text', {annotationCount: annotationCount}));
-                const annotationBadgeStyles = {
-                    'grid-column': '2 / 3',
-                    'grid-row': '1 / 2',
-                    'justify-self': 'start',
-                    'align-self': 'end',
-                    'background': 'var(--dbp-primary)',
-                    'color': 'var(--dbp-background)',
-                    'border': '1px solid var(--dbp-background)',
-                    'border-radius': '100%',
-                    'display': 'block',
-                    'width': '21px',
-                    'height': '21px',
-                    'text-align': 'center',
-                    'line-height': '21px',
-                    'font-size': '14px',
-                    'font-weight': 'bold',
-                    'z-index': '3',
-                };
-                Object.assign(annotationBadge.style, annotationBadgeStyles);
-                annotationBadge.textContent = String(annotationCount);
-                annotationWrapper.appendChild(annotationBadge);
-            }
-            controlDiv.appendChild(annotationWrapper);
-        }
-
-        // Delete button
-        const btnDelete = document.createElement('dbp-icon-button');
-        btnDelete.setAttribute('icon-name', 'trash');
-        btnDelete.classList.add('delete-button');
-        btnDelete.setAttribute('aria-label', i18n.t('remove-queued-file-button-title'));
-        btnDelete.setAttribute('title', i18n.t('remove-queued-file-button-title'));
-        btnDelete.style['font-size'] = ICON_SIZE;
         const fileName = this.queuedFiles[id].file.name;
-        if (fileName) {
-            btnDelete.setAttribute('data-filename', fileName);
-        }
-        btnDelete.addEventListener("click", (event) => {
-            event.stopPropagation();
-            const editButton = /** @type {HTMLElement} */ (event.target);
-            const fileName  = editButton.getAttribute('data-filename') || i18n.t('this-file');
-            const result = confirm(i18n.t('confirm-delete-file', { file: fileName}));
+        const annotationCount = Array.isArray(this.queuedFilesAnnotations[id])
+            ? this.queuedFilesAnnotations[id].length
+            : 0;
 
-            if (result) {
-                this.takeFileFromQueue(id);
-            }
-        });
-        controlDiv.appendChild(btnDelete);
-
-        return controlDiv;
+        const buttons = `
+            <div class="tabulator-icon-buttons" data-id=${id}>
+                <dbp-icon-button icon-name="keyword-research" class="preview-button" aria-label="${i18n.t('preview-file-button-title')}" title="${i18n.t('preview-file-button-title')}" style="font-size: 24px;"></dbp-icon-button>
+                ${annotations ?
+                    `<span class="annotation-wrapper" style="display: inline-grid; grid-template-columns: 27px 23px; grid-template-rows: 23px 27px; width: 50px; height: 50px; position: relative;">
+                        <dbp-icon-button icon-name="bubble" class="annotation-button"
+                            aria-label="${i18n.t('annotation-button-title')}" title="${i18n.t('annotation-button-title')}"
+                            style="font-size: 24px; grid-area: 1 / 1 / 3 / 3; place-self: center;"></dbp-icon-button>
+                        ${annotationCount < 1
+                            ? '<span style="position: absolute; font-size: 19px; top: 21%; left: 40%; font-weight: bold;">+</span>'
+                            : `<span title="${i18n.t('annotations-count-text', {annotationCount: annotationCount})}"
+                                style="grid-column: 2 / 3; grid-row: 1 / 2; justify-self: start; align-self: end; background: var(--dbp-primary); color: var(--dbp-background);
+                                border: 1px solid var(--dbp-background); border-radius: 100%; display: block; width: 21px; height: 21px; text-align: center; line-height: 21px;
+                                font-size: 14px; font-weight: bold; z-index: 3;">${annotationCount}</span>`
+                        }
+                    </span>`
+                    : ''
+                }
+                <dbp-icon-button icon-name="trash" class="delete-button" aria-label="${i18n.t('remove-queued-file-button-title')}" title="${i18n.t('remove-queued-file-button-title')}" style="font-size: 24px;" data-filename="${fileName}"></dbp-icon-button>
+            </div>
+        `;
+        return buttons;
     }
 
     getPositioningSwitch(id, placement, needPositioning) {
@@ -1196,21 +1106,20 @@ export default class DBPSignatureLitElement extends BaseLitElement {
 
         `;
 
-        const checkbox = html`
+        const checkbox = `
             <style>${unsafeCSS(styles)}</style>
-            <span class="label-text">${i18n.t('toggle-switch-label-text-on')}</span>
-            <div class="toggle ${needPositioning ? 'need-positioning' : ''}" data-need-positioning="${needPositioning ? 'true' : 'false' }">
-                <input id="toggle-${id}" class="input-checkbox" type="checkbox" ?checked="${placement == 'manual'}"/>
-                <label class="toggle-item" for="toggle-${id}" data-row-id="${id}">
-                    <div class="check"></div>
-                </label>
+            <div class="toggle-wrapper">
+                <span class="label-text">${i18n.t('toggle-switch-label-text-on')}</span>
+                <div class="toggle ${needPositioning ? 'need-positioning' : ''}" data-need-positioning="${needPositioning ? 'true' : 'false' }">
+                    <input id="toggle-${id}" class="input-checkbox" type="checkbox" ${placement == 'manual' ? 'checked="checked"' : ''}"/>
+                    <label class="toggle-item" for="toggle-${id}" data-row-id="${id}">
+                        <div class="check"></div>
+                    </label>
+                </div>
+                <span class="label-text">${i18n.t('toggle-switch-label-text-off')}</span>
             </div>
-            <span class="label-text">${i18n.t('toggle-switch-label-text-off')}</span>
         `;
-        const wrapper = document.createElement('div');
-        wrapper.classList.add('toggle-wrapper');
-        render(checkbox, wrapper);
-        return wrapper;
+        return checkbox;
     }
 
     getDownloadButtonHtml(id, file) {
@@ -1369,6 +1278,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                     minWidth: 210,
                     hozAlign: 'center',
                     headerHozAlign: 'center',
+                    headerSort:false,
                     formatter: 'html',
                     cellClick: (e, cell) => {
                         this.handlePositionButtonClickEvent(e, cell);
@@ -1383,7 +1293,57 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                     width: 160,
                     hozAlign: 'right',
                     headerHozAlign: 'center',
-                    formatter: 'html',
+                    formatter: (cell, formatterParams, onRendered) => {
+                        const buttonElements = cell.getValue();
+
+                        onRendered(() => {
+                            // Add EventListeners
+                            const cellElement = cell.getElement();
+                            const id = cell.getRow().getIndex();
+
+                            // Preview button eventListener
+                            const previewButton = cellElement.querySelector('.preview-button');
+                            if (previewButton) {
+                                previewButton.addEventListener("click", (event) => {
+                                    event.stopPropagation();
+                                    this._('#pdf-preview').open();
+                                    this._('#pdf-preview dbp-pdf-preview').setAttribute('don-t-show-buttons', '');
+                                    this.showPreview(id, false, true);
+                                });
+                            }
+
+                            // Annotation button eventListener
+                            const annotationWrapper = cellElement.querySelector('.annotation-wrapper');
+                            if (annotationWrapper) {
+                                annotationWrapper.addEventListener("click", (event) => {
+                                    console.log('ANNOTATION BUTTON CLICKED, ID=', id);
+                                    event.stopPropagation();
+                                    this._('#annotation-view').open();
+                                    this.showAnnotationView(id, 'text-selected');
+                                });
+                            }
+
+                            // Delete button eventListener
+                            const deleteButton = cellElement.querySelector('.delete-button');
+                            if (deleteButton) {
+                                deleteButton.addEventListener("click", (event) => {
+                                    console.log('DELETE BUTTON CLICKED');
+                                    event.stopPropagation();
+                                    const editButton = /** @type {HTMLElement} */ (event.target);
+                                    const fileName  = editButton.getAttribute('data-filename') || i18n.t('this-file');
+                                    const result = confirm(i18n.t('confirm-delete-file', { file: fileName}));
+
+                                    if (result) {
+                                        this.takeFileFromQueue(id);
+                                    }
+                                });
+                            }
+
+                            return cellElement;
+                        });
+
+                        return buttonElements;
+                    },
                     responsive: 1
                 },
             ],
@@ -1429,6 +1389,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                     legend.append(legendDescription);
                     this._('.control.file-list').append(legend);
                 }
+
                 const actionButtons = this.getActionButtonsHtml(id, this.allowAnnotating);
 
                 const positioningSwitch = this.getPositioningSwitch(id, this.queuedFilesPlacementModes[id] || 'auto', placementMissing);
@@ -1452,6 +1413,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             queuedFilesOptions.data = tableFiles;
             this.queuedFilesOptions = queuedFilesOptions;
             this.tableQueuedFilesTable.setData(tableFiles);
+
             // Set selected rows
             if (this.selectedFiles.length > 0) {
                 let selectedRows = [];
@@ -1470,6 +1432,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
     }
 
     handlePositionButtonClickEvent(e, cell) {
+
         e.stopPropagation();
 
         const row = cell.getRow();
@@ -1495,7 +1458,8 @@ export default class DBPSignatureLitElement extends BaseLitElement {
 
         setTimeout(() => {
 
-            const cellValue = cell.getValue();
+            // const cellValue = cell.getValue();
+            const cellValue = cell.getElement();
             const checkboxIsChecked = cellValue.querySelector('.input-checkbox').checked;
             console.log('checkboxState', checkboxIsChecked);
 
