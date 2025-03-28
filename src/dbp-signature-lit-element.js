@@ -1011,7 +1011,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                 height: var(--toggle-height);
                 display: inline-block;
                 border-radius: var(--dbp-border-radius);
-                border: 1px solid var(--dbp-muted);
+                border: 1px solid var(--dbp-content);
                 position: relative;
                 transition: all var(--transition-time) ease;
                 cursor: pointer;
