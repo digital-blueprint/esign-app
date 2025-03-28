@@ -1313,31 +1313,31 @@ export default class DBPSignatureLitElement extends BaseLitElement {
 
                             // Preview button eventListener
                             const previewButton = cellElement.querySelector('.preview-button');
-                            if (previewButton) {
+                            if (previewButton && !previewButton.hasAttribute('data-listener-added')) {
                                 previewButton.addEventListener("click", (event) => {
                                     event.stopPropagation();
                                     this._('#pdf-preview').open();
                                     this._('#pdf-preview dbp-pdf-preview').setAttribute('don-t-show-buttons', '');
                                     this.showPreview(id, false, true);
                                 });
+                                previewButton.setAttribute('data-listener-added', 'true');
                             }
 
                             // Annotation button eventListener
                             const annotationWrapper = cellElement.querySelector('.annotation-wrapper');
-                            if (annotationWrapper) {
+                            if (annotationWrapper && !annotationWrapper.hasAttribute('data-listener-added')) {
                                 annotationWrapper.addEventListener("click", (event) => {
-                                    console.log('ANNOTATION BUTTON CLICKED, ID=', id);
                                     event.stopPropagation();
                                     this._('#annotation-view').open();
                                     this.showAnnotationView(id, 'text-selected');
                                 });
+                                annotationWrapper.setAttribute('data-listener-added', 'true');
                             }
 
                             // Delete button eventListener
                             const deleteButton = cellElement.querySelector('.delete-button');
-                            if (deleteButton) {
+                            if (deleteButton && !deleteButton.hasAttribute('data-listener-added')) {
                                 deleteButton.addEventListener("click", (event) => {
-                                    console.log('DELETE BUTTON CLICKED');
                                     event.stopPropagation();
                                     const editButton = /** @type {HTMLElement} */ (event.target);
                                     const fileName  = editButton.getAttribute('data-filename') || i18n.t('this-file');
@@ -1347,6 +1347,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                                         this.takeFileFromQueue(id);
                                     }
                                 });
+                                deleteButton.setAttribute('data-listener-added', 'true');
                             }
 
                             return cellElement;
