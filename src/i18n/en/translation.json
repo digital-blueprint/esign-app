@@ -54,8 +54,8 @@
     "positioning": "Positioning",
     "positioning-automatic": "Auto",
     "positioning-manual": "Manual",
-    "toggle-switch-label-text-on": "On",
-    "toggle-switch-label-text-off": "Off",
+    "toggle-switch-label-text-on": "Manual positioning on",
+    "toggle-switch-label-text-off": "Manual positioning off",
     "official-pdf-upload": {
         "annotation": "Annotations",
         "annotation-no": "No",

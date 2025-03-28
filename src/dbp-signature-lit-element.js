@@ -1083,6 +1083,19 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                 }
             }
 
+            .hidden {
+                display: none;
+            }
+
+            .sr-only {
+                position: absolute !important;
+                clip: rect(1px, 1px, 1px, 1px);
+                overflow: hidden;
+                height: 1px;
+                width: 1px;
+                word-wrap: normal;
+            }
+
             /* animation */
             .input-checkbox:checked + label {
 
@@ -1109,14 +1122,15 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         const checkbox = `
             <style>${unsafeCSS(styles)}</style>
             <div class="toggle-wrapper">
-                <span class="label-text">${i18n.t('toggle-switch-label-text-on')}</span>
                 <div class="toggle ${needPositioning ? 'need-positioning' : ''}" data-need-positioning="${needPositioning ? 'true' : 'false' }">
-                    <input id="toggle-${id}" class="input-checkbox" type="checkbox" ${placement == 'manual' ? 'checked="checked"' : ''}"/>
+                    <input id="toggle-${id}" class="input-checkbox" type="checkbox" role="switch" ${placement == 'manual' ? 'checked="checked"' : ''}"/>
                     <label class="toggle-item" for="toggle-${id}" data-row-id="${id}">
+                        <span class="sr-only off ${placement == 'manual' ? 'hidden' : ''}">${i18n.t('toggle-switch-label-text-off')}</span>
+                        <span class="sr-only on ${placement == 'auto' ? 'hidden' : ''}">${i18n.t('toggle-switch-label-text-on')}</span>
                         <div class="check"></div>
                     </label>
                 </div>
-                <span class="label-text">${i18n.t('toggle-switch-label-text-off')}</span>
+
             </div>
         `;
         return checkbox;
@@ -1275,7 +1289,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                 {
                     title: 'positioning',
                     field: 'positioning',
-                    minWidth: 210,
+                    minWidth: 120,
                     hozAlign: 'center',
                     headerHozAlign: 'center',
                     headerSort:false,
@@ -1441,7 +1455,6 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         // Deselect row.
         // Clicking on the row trigger row selection before cellClick is called
         row.toggleSelect();
-        // row.deselect();
 
         const toggleTriggered = e.composedPath().find((element) => {
             if (element.classList) {
@@ -1454,35 +1467,39 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         if (toggleTriggered.getAttribute('data-click-triggered'))  return;
         toggleTriggered.setAttribute('data-click-triggered', true);
 
-        console.log('toggleTriggered', toggleTriggered);
-
         setTimeout(() => {
-
-            // const cellValue = cell.getValue();
             const cellValue = cell.getElement();
-            const checkboxIsChecked = cellValue.querySelector('.input-checkbox').checked;
-            console.log('checkboxState', checkboxIsChecked);
-
-            // }
-
+            const checkbox = cellValue.querySelector('.input-checkbox');
+            const checkboxId = checkbox.id;
+            const checkboxIsChecked = checkbox.checked;
             const placement = checkboxIsChecked === true ? 'manual' : 'auto';
 
-            console.log('placement', placement);
+            cellValue.querySelector(`label[for="${checkboxId}"] span.on`).classList.toggle('hidden');
+            cellValue.querySelector(`label[for="${checkboxId}"] span.off`).classList.toggle('hidden');
 
-            this._('#pdf-preview').open();
-            this._('#pdf-preview dbp-pdf-preview').removeAttribute('don-t-show-buttons');
-
-            // // Set placement modes
+            // Set placement modes
             this.queuedFilesSignaturePlacements[id] = {signaturePlacementMode: placement};
             this.queuedFilesPlacementModes[id] = placement;
 
             if (placement === 'manual') {
+                this._('#pdf-preview').open();
+                this._('#pdf-preview dbp-pdf-preview').removeAttribute('don-t-show-buttons');
                 this._('#pdf-preview dbp-pdf-preview').showSignaturePlacementDescription = false;
                 this.queuePlacement(id, placement);
             } else {
                 // Hide signature when auto placement is active
-                this._('#pdf-preview dbp-pdf-preview').showSignaturePlacementDescription = true;
+                // this._('#pdf-preview dbp-pdf-preview').showSignaturePlacementDescription = true;
                 this.queuePlacement(id, placement, false);
+                // Auto set signature placement without showing the preview
+                const data = {
+                    signaturePlacementMode: 'auto',
+                };
+                const event = new CustomEvent('dbp-pdf-preview-accept', {
+                    detail: data,
+                    bubbles: true,
+                    composed: true,
+                });
+                this.dispatchEvent(event);
             }
             toggleTriggered.removeAttribute('data-click-triggered');
         }, 400);
@@ -1543,7 +1560,6 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                     sorter: 'string',
                     minWidth: 200,
                     widthGrow: 3,
-                    // widthShrink: 1,
                     hozAlign: 'left',
                     formatter: 'html',
                     responsive: 0
