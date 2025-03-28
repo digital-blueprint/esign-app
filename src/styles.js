@@ -180,6 +180,10 @@ export function getSignatureCss() {
             --dbp-button-size: 50px;
         }
 
+        #table-queued-files {
+            --dbp-tabulator-cell-overflow: visible;
+        }
+
         .legend {
             color: var(--dbp-override-danger);
             display: flex;

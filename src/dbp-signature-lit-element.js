@@ -1383,6 +1383,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                     ? `<dbp-tooltip
                         text-content="${i18n.t('label-manual-positioning-missing')}"
                         icon-name="warning-high"
+                        role="tooltip"
                         aria-label="${i18n.t('label-manual-positioning-missing')}"
                         style="font-size:24px;margin-bottom:4px;margin-left:10px;"></dbp-tooltip>`
                     : '';
