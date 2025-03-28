@@ -195,7 +195,6 @@ export default class DBPSignatureLitElement extends BaseLitElement {
      */
     async showAnnotationView(key, name) {
         this.queuedFilesAnnotationModes[key] = name;
-        console.log(name);
 
         if (this.signingProcessEnabled) {
             return;
@@ -205,7 +204,6 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             const file = this.getQueuedFile(key);
             this.currentFile = file;
             this.currentPreviewQueueKey = key;
-            console.log(file);
 
             this.addAnnotationInProgress = true;
 
@@ -261,8 +259,6 @@ export default class DBPSignatureLitElement extends BaseLitElement {
      * Hides the PdfAnnotationView
      */
     hideAnnotationView() {
-        console.log('hide view - x click');
-
         if (
             this.queuedFilesAnnotationSaved[this.currentPreviewQueueKey] !== undefined &&
             this.queuedFilesAnnotationSaved[this.currentPreviewQueueKey]

@@ -292,7 +292,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             return;
         }
 
-        console.log('Got iframe message for sessionId ' + sessionId);
         const that = this;
 
         // get correct file name

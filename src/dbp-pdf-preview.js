@@ -221,7 +221,6 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
     async onPageNumberChanged(e) {
         let obj = e.target;
         const page_no = parseInt(obj.value);
-        console.log('page_no = ', page_no);
 
         if (page_no > 0 && page_no <= this.totalPages) {
             await this.showPage(page_no);
@@ -336,8 +335,6 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                 // as the canvas is of a fixed width we need to adjust the scale of the viewport where page is rendered
                 const oldScale = this.canvasToPdfScale;
                 this.canvasToPdfScale = this.canvas.width / originalViewport.width;
-
-                console.log('this.canvasToPdfScale: ' + this.canvasToPdfScale);
 
                 // get viewport to render the page at required scale
                 const viewport = page.getViewport({scale: this.canvasToPdfScale});
