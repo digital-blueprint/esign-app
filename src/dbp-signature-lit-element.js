@@ -974,15 +974,12 @@ export default class DBPSignatureLitElement extends BaseLitElement {
 
             .toggle-wrapper {
                 --toggle-width: 80px;
-                --toggle-height: 36px;
-                --icon-height: 30px;
+                --toggle-height: 34px;
+                --icon-height: 28px;
                 --transition-time: .3s;
                 --gap: 2px;
                 --checkmark-color: var(--dbp-muted);
                 --checkmark-color-need-positioning: var(--dbp-danger);
-                display: flex;
-                align-items: center;
-                justify-content: center;
                 overflow: hidden;
                 position: relative;
             }
@@ -990,9 +987,6 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             .toggle {
                 position: relative;
                 display: inline-block;
-                display: flex;
-                justify-content: center;
-                align-items: center;
                 padding: 0 8px;
             }
 
@@ -1040,6 +1034,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                     background: var(--checkmark-color);
                     transition: .4s ease;
                     top: var(--gap);
+                    bottom: var(--gap);
                     left: var(--gap);
 
                     /* X icon */
@@ -1393,7 +1388,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                     legend.classList.add('legend');
                     const legendIcon = document.createElement('dbp-icon');
                     legendIcon.setAttribute('name', 'warning-high');
-                    legendIcon.setAttribute('aria-label', i18n.t('label-manual-positioning-missing'));
+                    legendIcon.setAttribute('aria-hidden', 'true');
                     legend.append(legendIcon);
                     const legendDescription = document.createElement('span');
                     legendDescription.classList.add('legend-description');
