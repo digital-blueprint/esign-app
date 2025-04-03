@@ -952,11 +952,11 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                             aria-label="${i18n.t('annotation-button-title')}" title="${i18n.t('annotation-button-title')}"
                             style="font-size: 24px; grid-area: 1 / 1 / 3 / 3; place-self: center;"></dbp-icon-button>
                         ${annotationCount < 1
-                            ? '<span style="position: absolute; font-size: 19px; top: 21%; left: 40%; font-weight: bold;">+</span>'
+                            ? '<span style="position: absolute; font-size: 19px; top: 21%; left: 40%; font-weight: bold;pointer-events:none;">+</span>'
                             : `<span title="${i18n.t('annotations-count-text', {annotationCount: annotationCount})}"
                                 style="grid-column: 2 / 3; grid-row: 1 / 2; justify-self: start; align-self: end; background: var(--dbp-primary); color: var(--dbp-background);
                                 border: 1px solid var(--dbp-background); border-radius: 100%; display: block; width: 21px; height: 21px; text-align: center; line-height: 21px;
-                                font-size: 14px; font-weight: bold; z-index: 3;">${annotationCount}</span>`
+                                font-size: 14px; font-weight: bold; z-index: 3;pointer-events:none;">${annotationCount}</span>`
                         }
                     </span>`
                     : ''
@@ -975,13 +975,17 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             .toggle-wrapper {
                 --toggle-width: 80px;
                 --toggle-height: 34px;
+                --icon-width: 35px;
                 --icon-height: 28px;
                 --transition-time: .3s;
                 --gap: 2px;
                 --checkmark-color: var(--dbp-muted);
                 --checkmark-color-need-positioning: var(--dbp-danger);
+                --dbp-border-radius: 4px;
                 overflow: hidden;
                 position: relative;
+                display: flex;
+                align-items: center;
             }
 
             .toggle {
@@ -997,15 +1001,42 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             /* the switch */
             label.toggle-item {
                 width: var(--toggle-width);
-                background: #fcfcfc;
+                background: var(--dbp-muted);
+                color: var(--dbp-background);
                 height: var(--toggle-height);
-                display: inline-block;
+                display: block;
                 border-radius: var(--dbp-border-radius);
-                border: 1px solid var(--dbp-content);
+                border: 1px solid var(--dbp-muted);
                 position: relative;
                 transition: all var(--transition-time) ease;
                 cursor: pointer;
                 margin: 0;
+            }
+
+            label.toggle-item.on {
+                background-color: var(--dbp-info);
+                border: 1px solid var(--dbp-info);
+            }
+
+            .label-off,
+            .label-on {
+                font-weight: bold;
+                position: absolute;
+                transition: opacity .1s ease;
+                transition-delay: .3s;
+                opacity: 1;
+                height: var(--toggle-height);
+                line-height: var(--toggle-height);
+            }
+
+            .label-off {
+                /*left: calc(100% - var(--icon-size) - var(--gap));*/
+                right: 6px;
+            }
+
+            .label-on {
+                /*right: calc(100% - var(--icon-size) - var(--gap));*/
+                left: 6px;
             }
 
             input {
@@ -1020,46 +1051,22 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             }
 
             .toggle {
-
+                /* keyboard focus visibility */
                 .input-checkbox:focus-visible + .toggle-item {
-                    box-shadow:0px 0px 3px 1px var(--dbp-primary) inset;
+                    box-shadow:0px 0px 3px 1px var(--dbp-primary);
                 }
 
                 /* the button */
                 .check {
-                    border-radius: 10%;
-                    width: var(--icon-height);
+                    border-radius: var(--dbp-border-radius);
+                    width: var(--icon-width);
                     height: var(--icon-height);
                     position: absolute;
-                    background: var(--checkmark-color);
+                    background: var(--dbp-background);
                     transition: .4s ease;
                     top: var(--gap);
                     bottom: var(--gap);
                     left: var(--gap);
-
-                    /* X icon */
-                    &:before,
-                    &:after {
-                        height: 4px;
-                        border-radius: 10px;
-                        background: #fff;
-                        transition: .4s ease;
-                        content: '';
-                        position: absolute;
-                        left: 0;
-                        top: 0;
-                        opacity: 0;
-                    }
-                    &:before {
-                        width: 27px;
-                        transform-origin: center;
-                        transform: rotate(-45deg) translate(-8px, 11px);
-                    }
-                    &:after {
-                        width: 27px;
-                        transform-origin: center;
-                        transform: rotate(45deg) translate(11px, 8px);
-                    }
                 }
             }
 
@@ -1067,10 +1074,8 @@ export default class DBPSignatureLitElement extends BaseLitElement {
 
                 label.toggle-item {
                     border-color: var(--checkmark-color-need-positioning);
-                }
-
-                .check {
-                    background: var(--checkmark-color-need-positioning);
+                    background-color: var(--checkmark-color-need-positioning);
+                    color: var(--dbp-background);
                 }
             }
 
@@ -1091,23 +1096,9 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             .input-checkbox:checked + label {
 
                 .check {
-                    left: calc(100% - var(--icon-height) - var(--gap));
-                    background: var(--dbp-muted);
-
-                    /* Checkmark icon */
-                    &:before {
-                        opacity: 1;
-                        width: 20px;
-                        transform: rotate(-45deg) translate(-3px, 15px);
-                    }
-                    &:after {
-                        opacity: 1;
-                        width: 8px;
-                        transform: rotate(45deg) translate(15px, 7px);
-                    }
+                    left: calc(100% - var(--icon-width) - var(--gap));
                 }
             }
-
         `;
 
         const checkbox = `
@@ -1115,13 +1106,12 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             <div class="toggle-wrapper">
                 <div class="toggle ${needPositioning ? 'need-positioning' : ''}" data-need-positioning="${needPositioning ? 'true' : 'false' }">
                     <input id="toggle-${id}" class="input-checkbox" type="checkbox" role="switch" ${placement == 'manual' ? 'checked="checked"' : ''}"/>
-                    <label class="toggle-item" for="toggle-${id}" data-row-id="${id}">
-                        <span class="sr-only off ${placement == 'manual' ? 'hidden' : ''}">${i18n.t('toggle-switch-label-text-off')}</span>
-                        <span class="sr-only on ${placement == 'auto' ? 'hidden' : ''}">${i18n.t('toggle-switch-label-text-on')}</span>
+                    <label class="toggle-item ${placement == 'manual' ? 'on' : 'off'}" for="toggle-${id}" data-row-id="${id}">
+                        <span class="label-on" ${placement == 'manual' ? '' : 'aria-hidden="true"'}">${i18n.t('toggle-switch-label-text-on')}</span>
+                        <span class="label-off" ${placement == 'manual' ? 'aria-hidden="true"' : ''}">${i18n.t('toggle-switch-label-text-off')}</span>
                         <div class="check"></div>
                     </label>
                 </div>
-
             </div>
         `;
         return checkbox;
@@ -1141,6 +1131,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         btnDownload.setAttribute('aria-label', i18n.t('download-file-button-title'));
         btnDownload.setAttribute('title', i18n.t('download-file-button-title'));
         btnDownload.style['font-size'] = ICON_SIZE;
+        // const btnDownload = `<dbp-icon-button icon-name="download" class="download-button" aria-label="${i18n.t('download-file-button-title')}" title="${i18n.t('download-file-button-title')}" style="font-size: 24px;"></dbp-icon-button>`;
         btnDownload.addEventListener("click", async (event) => {
             event.stopPropagation();
             this.downloadFileClickHandler(file, 'file-download-' + id);
@@ -1250,7 +1241,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                     title: 'fileName',
                     field: 'fileName',
                     sorter: 'string',
-                    minWidth: 200,
+                    minWidth: 250,
                     widthGrow: 3,
                     hozAlign: 'left',
                     formatter: 'html',
@@ -1280,10 +1271,10 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                 {
                     title: 'positioning',
                     field: 'positioning',
-                    minWidth: 120,
+                    minWidth: 100,
                     hozAlign: 'center',
                     headerHozAlign: 'center',
-                    headerSort:false,
+                    headerSort: false,
                     formatter: 'html',
                     cellClick: (e, cell) => {
                         this.handlePositionButtonClickEvent(e, cell);
@@ -1467,8 +1458,8 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             const checkboxIsChecked = checkbox.checked;
             const placement = checkboxIsChecked === true ? 'manual' : 'auto';
 
-            cellValue.querySelector(`label[for="${checkboxId}"] span.on`).classList.toggle('hidden');
-            cellValue.querySelector(`label[for="${checkboxId}"] span.off`).classList.toggle('hidden');
+            cellValue.querySelector(`label[for="${checkboxId}"] span.label-on`).toggleAttribute('aria-hidden');
+            cellValue.querySelector(`label[for="${checkboxId}"] span.label-off`).toggleAttribute('aria-hidden');
 
             // Set placement modes
             this.queuedFilesSignaturePlacements[id] = {signaturePlacementMode: placement};
