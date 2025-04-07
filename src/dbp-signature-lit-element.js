@@ -727,8 +727,6 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         const entry = this.getQueuedFile(key);
         this.currentFile = entry.file;
         this.currentPreviewQueueKey = key;
-        // start signature placement process
-        this.signaturePlacementInProgress = true;
         this.withSigBlock = withSigBlock;
         let placementData = this.queuedFilesSignaturePlacements[key];
         if (viewOnly) {
