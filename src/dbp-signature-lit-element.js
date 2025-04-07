@@ -764,15 +764,6 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         this.errorFilesCount = 0;
     }
 
-    isUserInterfaceDisabled() {
-        return (
-            this.signaturePlacementInProgress ||
-            this.externalAuthInProgress ||
-            this.uploadInProgress ||
-            this.addAnnotationInProgress
-        );
-    }
-
     /**
      * Return true if the key of the file is in the selectedFiles
      * @param {string} key
