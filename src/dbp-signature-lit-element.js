@@ -8,7 +8,6 @@ import {getPDFSignatureCount} from './utils';
 import { send } from '@dbp-toolkit/common/notification';
 import { humanFileSize } from '@dbp-toolkit/common/i18next';
 
-
 export default class DBPSignatureLitElement extends BaseLitElement {
     constructor() {
         super();
@@ -1571,11 +1570,20 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         if(this.tableSignedFilesTable) {
             ids.forEach((id) => {
                 const file = this.signedFiles[id];
+
+                let downloadButton = this.tableSignedFilesTable.shadowRoot.createElement('dbp-esign-download-button');
+                downloadButton.setAttribute('subscribe', 'lang');
+                downloadButton.file = file;
+
+                let filenameLabel = this.tableSignedFilesTable.shadowRoot.createElement('dbp-esign-filename-label');
+                filenameLabel.setAttribute('subscribe', 'lang');
+                filenameLabel.file = file;
+
                 let fileData = {
                     index: id,
-                    fileName: `<span id="file-download-${id}">${file.name}</span>`,
+                    fileName: filenameLabel,
                     fileSize: humanFileSize(file.contentSize),
-                    downloadButton: this.getDownloadButtonHtml(id, file),
+                    downloadButton: downloadButton,
                 };
                 tableFiles.push(fileData);
             });
