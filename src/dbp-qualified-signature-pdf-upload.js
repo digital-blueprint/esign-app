@@ -19,7 +19,7 @@ import {Activity} from './activity.js';
 import {PdfAnnotationView} from './dbp-pdf-annotation-view';
 import {ExternalSignIFrame} from './ext-sign-iframe.js';
 import * as SignatureStyles from './styles';
-import {TabulatorTable} from '@dbp-toolkit/tabulator-table';
+import { CustomTabulatorTable } from './table-components.js';
 
 class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElement) {
     constructor() {
@@ -59,7 +59,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             'dbp-loading-button': LoadingButton,
             'dbp-pdf-annotation-view': PdfAnnotationView,
             'external-sign-iframe': ExternalSignIFrame,
-            'dbp-tabulator-table': TabulatorTable,
+            'dbp-tabulator-table': CustomTabulatorTable,
             'dbp-tooltip': TooltipElement,
             'dbp-modal': Modal,
         };
@@ -116,9 +116,9 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
 
     firstUpdated(changedProperties) {
         super.firstUpdated(changedProperties);
-        this.tableQueuedFilesTable =  /** @type {TabulatorTable} */ (this._('#table-queued-files'));
-        this.tableSignedFilesTable =  /** @type {TabulatorTable} */ (this._('#table-signed-files'));
-        this.tableFailedFilesTable =  /** @type {TabulatorTable} */ (this._('#table-failed-files'));
+        this.tableQueuedFilesTable =  /** @type {CustomTabulatorTable} */ (this._('#table-queued-files'));
+        this.tableSignedFilesTable =  /** @type {CustomTabulatorTable} */ (this._('#table-signed-files'));
+        this.tableFailedFilesTable =  /** @type {CustomTabulatorTable} */ (this._('#table-failed-files'));
     }
 
     async queueFile(file) {
@@ -719,19 +719,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                                 'qualified-pdf-upload.download-zip-button-tooltip'
                                             )}"
                                             class="zip-download-button"
-                                            @click="${() => {
-                                                this.zipDownloadClickHandler();
-                                                let id = 0;
-                                                for (const file of this.signedFiles) {
-                                                    this.tableSignedFilesTable.tabulatorTable.updateData([
-                                                        {
-                                                            index: id,
-                                                            fileName: `<span id="file-download-${id}">${file.name}</span>`
-                                                        }
-                                                    ]);
-                                                    id++;
-                                                }
-                                            }}"
+                                            @click="${this.zipDownloadClickHandler}"
                                             type="is-primary"></dbp-loading-button>
                                     </div>
                                 </div>

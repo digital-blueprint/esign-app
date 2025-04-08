@@ -18,7 +18,7 @@ import metadata from './dbp-official-signature-pdf-upload.metadata.json';
 import {Activity} from './activity.js';
 import {PdfAnnotationView} from './dbp-pdf-annotation-view';
 import * as SignatureStyles from './styles';
-import {TabulatorTable} from '@dbp-toolkit/tabulator-table';
+import { CustomTabulatorTable } from './table-components.js';
 
 class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElement) {
     constructor() {
@@ -54,7 +54,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             'dbp-icon-button': IconButton,
             'dbp-loading-button': LoadingButton,
             'dbp-pdf-annotation-view': PdfAnnotationView,
-            'dbp-tabulator-table': TabulatorTable,
+            'dbp-tabulator-table': CustomTabulatorTable,
             'dbp-tooltip': TooltipElement,
             'dbp-modal': Modal,
         };
@@ -106,9 +106,9 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
 
     firstUpdated(changedProperties) {
         super.firstUpdated(changedProperties);
-        this.tableQueuedFilesTable =  /** @type {TabulatorTable} */ (this._('#table-queued-files'));
-        this.tableSignedFilesTable =  /** @type {TabulatorTable} */ (this._('#table-signed-files'));
-        this.tableFailedFilesTable =  /** @type {TabulatorTable} */ (this._('#table-failed-files'));
+        this.tableQueuedFilesTable =  /** @type {CustomTabulatorTable} */ (this._('#table-queued-files'));
+        this.tableSignedFilesTable =  /** @type {CustomTabulatorTable} */ (this._('#table-signed-files'));
+        this.tableFailedFilesTable =  /** @type {CustomTabulatorTable} */ (this._('#table-failed-files'));
     }
 
     async queueFile(file) {

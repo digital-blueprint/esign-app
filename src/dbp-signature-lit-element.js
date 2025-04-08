@@ -8,7 +8,6 @@ import {getPDFSignatureCount} from './utils';
 import { send } from '@dbp-toolkit/common/notification';
 import { humanFileSize } from '@dbp-toolkit/common/i18next';
 
-
 export default class DBPSignatureLitElement extends BaseLitElement {
     constructor() {
         super();
@@ -577,14 +576,12 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         this._('#file-sink').files = [...files];
         this.signedFilesToDownload = files.length;
 
+        // Mark all files in the table as downloaded
+        for (let row of this.tableSignedFilesTable.getData()) {
+            row['fileName'].isDownloaded = true;
+        }
+
         this._('#zip-download-button').stop();
-        // mark downloaded files buttons
-        const spans = this.shadowRoot.querySelectorAll(
-            '.file-block > div.header > span.filename > span.bold-filename'
-        );
-        spans.forEach((span) => {
-            span.classList.remove('bold-filename');
-        });
     }
 
     /**
@@ -598,9 +595,8 @@ export default class DBPSignatureLitElement extends BaseLitElement {
      * Open Filesink for a single File
      *
      * @param file
-     * @param id of element to mark
      */
-    async downloadFileClickHandler(file, id) {
+    async downloadFileClickHandler(file) {
         let files = [];
         const arr = utils.convertDataURIToBinary(file.contentUrl);
         const binaryFile = new File([arr], file.name, {
@@ -609,13 +605,6 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         files.push(binaryFile);
         this.signedFilesToDownload = files.length;
         this._('#file-sink').files = [...files];
-        // mark downloaded files button
-        const span = this.shadowRoot.querySelector(
-            '#' + id + ' > div.header > span.filename > span.bold-filename'
-        );
-        if (span) {
-            span.classList.remove('bold-filename');
-        }
     }
 
     async _updateNeedsPlacementStatus(id) {
@@ -783,11 +772,6 @@ export default class DBPSignatureLitElement extends BaseLitElement {
 
             // Update table data when collapsing or expanding rows otherwise action buttons will not be shown
             this.setQueuedFilesTabulatorTable();
-        }
-        if (event.detail.tableId === 'table-signed-files') {
-            this.signedFilesTableCollapsible = event.detail.isCollapsible;
-            // Update table data when collapsing or expanding rows
-            this.setSignedFilesTabulatorTable();
         }
         if (event.detail.tableId === 'table-failed-files') {
             this.failedFilesTableCollapsible = event.detail.isCollapsible;
@@ -1104,39 +1088,6 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             </div>
         `;
         return checkbox;
-    }
-
-    getDownloadButtonHtml(id, file) {
-        const i18n = this._i18n;
-        const ICON_SIZE = '24px';
-
-        let controlDiv = document.createElement('div');
-        controlDiv.classList.add('tabulator-download-button');
-
-        // Download button
-        const btnDownload = document.createElement('dbp-icon-button');
-        btnDownload.setAttribute('icon-name', 'download');
-        btnDownload.classList.add('download-button');
-        btnDownload.setAttribute('aria-label', i18n.t('download-file-button-title'));
-        btnDownload.setAttribute('title', i18n.t('download-file-button-title'));
-        btnDownload.style['font-size'] = ICON_SIZE;
-        // const btnDownload = `<dbp-icon-button icon-name="download" class="download-button" aria-label="${i18n.t('download-file-button-title')}" title="${i18n.t('download-file-button-title')}" style="font-size: 24px;"></dbp-icon-button>`;
-        btnDownload.addEventListener("click", async (event) => {
-            event.stopPropagation();
-            this.downloadFileClickHandler(file, 'file-download-' + id);
-            this.tableSignedFilesTable.tabulatorTable.updateData([{
-                index: id,
-                fileName: `<span id="file-download-${id}">${file.name}</span>
-                    <dbp-icon name="download-complete"
-                        style="font-size: 24px;margin-bottom:8px;margin-left:24px;"
-                        title="${i18n.t('download-file-completed')}"
-                        aria-label="${i18n.t('download-file-completed')}">`
-                }]
-            );
-        });
-        controlDiv.appendChild(btnDownload);
-
-        return controlDiv;
     }
 
     getFailedButtonsHtml(id, data) {
@@ -1571,11 +1522,26 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         if(this.tableSignedFilesTable) {
             ids.forEach((id) => {
                 const file = this.signedFiles[id];
+
+                let filenameLabel = this.tableSignedFilesTable.createScopedElement('dbp-esign-filename-label');
+                filenameLabel.setAttribute('subscribe', 'lang');
+                filenameLabel.file = file;
+
+                let downloadButton = this.tableSignedFilesTable.createScopedElement('dbp-esign-download-button');
+                downloadButton.setAttribute('subscribe', 'lang');
+                downloadButton.file = file;
+
+                downloadButton.addEventListener("click", async (event) => {
+                    event.stopPropagation();
+                    await this.downloadFileClickHandler(file);
+                    filenameLabel.isDownloaded = true;
+                });
+
                 let fileData = {
                     index: id,
-                    fileName: `<span id="file-download-${id}">${file.name}</span>`,
+                    fileName: filenameLabel,
                     fileSize: humanFileSize(file.contentSize),
-                    downloadButton: this.getDownloadButtonHtml(id, file),
+                    downloadButton: downloadButton,
                 };
                 tableFiles.push(fileData);
             });
