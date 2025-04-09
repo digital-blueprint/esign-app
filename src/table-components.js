@@ -1,4 +1,4 @@
-import { LitElement, html, css } from 'lit';
+import { html, css } from 'lit';
 import { createInstance } from './i18n.js';
 import { ScopedElementsMixin, IconButton, Icon } from '@dbp-toolkit/common';
 import { TabulatorTable } from '@dbp-toolkit/tabulator-table';

@@ -595,7 +595,6 @@ export default class DBPSignatureLitElement extends BaseLitElement {
      * Open Filesink for a single File
      *
      * @param file
-     * @param id of element to mark
      */
     async downloadFileClickHandler(file) {
         let files = [];
