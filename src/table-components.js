@@ -81,7 +81,6 @@ export class DownloadButton extends ScopedElementsMixin(DBPLitElement) {
         super();
         this._i18n = createInstance();
         this.lang = this._i18n.language;
-        this.file = null;
     }
 
     static get properties() {
