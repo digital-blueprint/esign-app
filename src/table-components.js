@@ -1,6 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { createInstance } from './i18n.js';
-import { ScopedElementsMixin, IconButton } from '@dbp-toolkit/common';
+import { ScopedElementsMixin, IconButton, Icon } from '@dbp-toolkit/common';
 import { TabulatorTable } from '@dbp-toolkit/tabulator-table';
 import DBPLitElement from '@dbp-toolkit/common/dbp-lit-element';
 
@@ -20,6 +20,7 @@ export class FilenameLabel extends ScopedElementsMixin(DBPLitElement) {
         this._i18n = createInstance();
         this.lang = this._i18n.language;
         this.file = null;
+        this.isDownloaded = false;
     }
 
     static get properties() {
@@ -27,11 +28,13 @@ export class FilenameLabel extends ScopedElementsMixin(DBPLitElement) {
             ...super.properties,
             lang: { type: String },
             file: { type: Object, attribute: false },
+            isDownloaded: {type: Boolean, reflect: true},
         };
     }
 
     static get scopedElements() {
         return {
+            'dbp-icon': Icon,
         };
     }
 
@@ -47,9 +50,28 @@ export class FilenameLabel extends ScopedElementsMixin(DBPLitElement) {
         super.update(changedProperties);
     }
 
+    static get styles() {
+        return css`
+            :host {
+                display: flex;
+            }
+            dbp-icon {
+                font-size: 24px;
+                margin-left:20px;
+                top: -0.1em;
+            }
+        `;
+    }
+
     render() {
+        let i18n = this._i18n;
         return html`
-            ${this.file ? this.file.name : ``}
+            <span>${this.file ? this.file.name : ``}</span>
+            ${ this.isDownloaded ? html`
+                <dbp-icon
+                    name="download-complete"
+                    title="${i18n.t('download-file-completed')}"
+                    aria-label="${i18n.t('download-file-completed')}"></dbp-icon>` : ``}
     `;
     }
 }
@@ -87,10 +109,6 @@ export class DownloadButton extends ScopedElementsMixin(DBPLitElement) {
         super.update(changedProperties);
     }
 
-    _handleDownloadClick(event) {
-        console.log(this.file);
-    }
-
     render() {
         return html`
         <dbp-icon-button
@@ -98,7 +116,7 @@ export class DownloadButton extends ScopedElementsMixin(DBPLitElement) {
             class="download-button"
             aria-label="${this._i18n.t('download-file-button-title')}"
             title="${this._i18n.t('download-file-button-title')}"
-            @click="${this._handleDownloadClick}"></dbp-icon-button>
+            ></dbp-icon-button>
     `;
     }
 }

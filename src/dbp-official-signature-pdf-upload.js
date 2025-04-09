@@ -41,6 +41,8 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         this._handleModalClosed = this.handleModalClosed.bind(this);
         this._handlePdfModalClosing = this.handlePdfModalClosing.bind(this);
         this._handleAnnotationModalClosing = this.handleAnnotationModalClosing.bind(this);
+
+        this._resizeObserver = new ResizeObserver(this.handleResize.bind(this));
     }
 
     static get scopedElements() {
@@ -84,9 +86,14 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         window.addEventListener('dbp-pdf-preview-cancel', this._handlePdfModalClosing);
         window.addEventListener('dbp-pdf-annotations-cancel', this._handleAnnotationModalClosing);
         window.addEventListener('dbp-pdf-annotations-save', this._handleAnnotationModalClosing);
+
+        this._resizeObserver.observe(this);
     }
 
     disconnectedCallback() {
+        this._resizeObserver.unobserve(this);
+        this._resizeObserver.disconnect();
+
         // Remove event listeners using bound methods
         window.removeEventListener('dbp-pdf-preview-accept', this._setQueuedFilesTabulatorTable);
         window.removeEventListener('dbp-pdf-annotations-save', this._setQueuedFilesTabulatorTable);
@@ -102,6 +109,13 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         this.stopPositionButtonObserver();
 
         super.disconnectedCallback();
+    }
+
+    handleResize() {
+        // XXX: Work around tabulator table losing elements when uncollapsing
+        if (this.tableSignedFilesTable && this.tableSignedFilesTable.tabulatorTable) {
+            this.tableSignedFilesTable.tabulatorTable.redraw(true);
+        }
     }
 
     firstUpdated(changedProperties) {
@@ -343,6 +357,10 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             ${commonStyles.getButtonCSS()}
             ${commonStyles.getNotificationCSS()}
             ${SignatureStyles.getSignatureCss()}
+
+            :host {
+                display: block;
+            }
         `;
     }
 

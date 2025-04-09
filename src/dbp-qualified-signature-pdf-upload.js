@@ -19,7 +19,7 @@ import {Activity} from './activity.js';
 import {PdfAnnotationView} from './dbp-pdf-annotation-view';
 import {ExternalSignIFrame} from './ext-sign-iframe.js';
 import * as SignatureStyles from './styles';
-import {TabulatorTable} from '@dbp-toolkit/tabulator-table';
+import { CustomTabulatorTable } from './table-components.js';
 
 class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElement) {
     constructor() {
@@ -44,6 +44,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         this._handleModalClosed = this.handleModalClosed.bind(this);
         this._handlePdfModalClosing = this.handlePdfModalClosing.bind(this);
         this._handleAnnotationModalClosing = this.handleAnnotationModalClosing.bind(this);
+
+        this._resizeObserver = new ResizeObserver(this.handleResize.bind(this));
     }
 
     static get scopedElements() {
@@ -59,7 +61,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             'dbp-loading-button': LoadingButton,
             'dbp-pdf-annotation-view': PdfAnnotationView,
             'external-sign-iframe': ExternalSignIFrame,
-            'dbp-tabulator-table': TabulatorTable,
+            'dbp-tabulator-table': CustomTabulatorTable,
             'dbp-tooltip': TooltipElement,
             'dbp-modal': Modal,
         };
@@ -92,9 +94,14 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         window.addEventListener('dbp-pdf-preview-cancel', this._handlePdfModalClosing);
         window.addEventListener('dbp-pdf-annotations-cancel', this._handleAnnotationModalClosing);
         window.addEventListener('dbp-pdf-annotations-save', this._handleAnnotationModalClosing);
+
+        this._resizeObserver.observe(this);
     }
 
     disconnectedCallback() {
+        this._resizeObserver.unobserve(this);
+        this._resizeObserver.disconnect();
+
         // Remove event listeners using bound methods
         window.removeEventListener('beforeunload', this._onReceiveBeforeUnload);
         window.removeEventListener('dbp-pdf-preview-accept', this._setQueuedFilesTabulatorTable);
@@ -114,11 +121,18 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         super.disconnectedCallback();
     }
 
+    handleResize() {
+        // XXX: Work around tabulator table losing elements when uncollapsing
+        if (this.tableSignedFilesTable && this.tableSignedFilesTable.tabulatorTable) {
+            this.tableSignedFilesTable.tabulatorTable.redraw(true);
+        }
+    }
+
     firstUpdated(changedProperties) {
         super.firstUpdated(changedProperties);
-        this.tableQueuedFilesTable =  /** @type {TabulatorTable} */ (this._('#table-queued-files'));
-        this.tableSignedFilesTable =  /** @type {TabulatorTable} */ (this._('#table-signed-files'));
-        this.tableFailedFilesTable =  /** @type {TabulatorTable} */ (this._('#table-failed-files'));
+        this.tableQueuedFilesTable =  /** @type {CustomTabulatorTable} */ (this._('#table-queued-files'));
+        this.tableSignedFilesTable =  /** @type {CustomTabulatorTable} */ (this._('#table-signed-files'));
+        this.tableFailedFilesTable =  /** @type {CustomTabulatorTable} */ (this._('#table-failed-files'));
     }
 
     async queueFile(file) {
@@ -477,6 +491,10 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                 /* keeps the A-Trust webpage aligned left */
                 max-width: 575px;
             }
+
+            :host {
+                display: block;
+            }
         `;
     }
 
@@ -719,19 +737,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                                 'qualified-pdf-upload.download-zip-button-tooltip'
                                             )}"
                                             class="zip-download-button"
-                                            @click="${() => {
-                                                this.zipDownloadClickHandler();
-                                                let id = 0;
-                                                for (const file of this.signedFiles) {
-                                                    this.tableSignedFilesTable.tabulatorTable.updateData([
-                                                        {
-                                                            index: id,
-                                                            fileName: `<span id="file-download-${id}">${file.name}</span>`
-                                                        }
-                                                    ]);
-                                                    id++;
-                                                }
-                                            }}"
+                                            @click="${this.zipDownloadClickHandler}"
                                             type="is-primary"></dbp-loading-button>
                                     </div>
                                 </div>
