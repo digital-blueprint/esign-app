@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.5.0
+
+* Added toggle switch for automatic/manual signature positioning with screen reader support
+* Fixed manual positioning switch toggling incorrectly when closing preview
+* Delete button now removes only selected files instead of the entire queue
+* Improved collapsed rows handling and fixed positioning buttons inside them
+* Fixed error when canceling signature placement modal
+* Only one manual-positioning warning is now displayed at a time
+* Added more space between tables and set fixed row heights
+* Replaced edit button with dedicated positioning column button
+
 ## 2.4.1
 
 * Fix disabling of the signature annotation feature not working anymore starting with 2.4.0 (enableAnnotations in the app.config)
