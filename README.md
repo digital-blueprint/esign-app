@@ -75,12 +75,7 @@ npx @digital-blueprint/cli update-app signature
 
 ## Activities
 
-This app has the following activities:
-- `dbp-acquire-3g-ticket`
-- `dbp-show-active-tickets`
-- `dbp-show-reference-ticket`
-
-You can find the documentation of these activities in the [esign activities documentation](https://github.com/digital-blueprint/esign-app/-/tree/master/src).
+You can find the documentation of these activities in the [esign activities documentation](https://github.com/digital-blueprint/esign-app/tree/main/src).
 
 ## Adapt app
 
@@ -99,12 +94,6 @@ You can add multiple attributes to the `<dbp-signature>` tag.
 | `html-overrides` | String | [common](https://github.com/digital-blueprint/toolkit/tree/main/packages/common#overriding-slots-in-nested-web-components) |
 | `themes` | Array | [theme-switcher](https://github.com/digital-blueprint/toolkit/tree/main/packages/theme-switcher#themes-attribute) |
 | `darkModeThemeOverride` | String | [theme-switcher](https://github.com/digital-blueprint/toolkit/tree/main/packages/theme-switcher#themes-attribute) |
-| `gp-search-hash-string` | String | [greenlight activities](https://github.com/digital-blueprint/greenlight-app/tree/main/src) |
-| `gp-search-self-test-string-array` | String | [greenlight activities](https://github.com/digital-blueprint/greenlight-app/tree/main/src) |
-| `gp-self-test-valid` | Boolean | [greenlight activities](https://github.com/digital-blueprint/greenlight-app/tree/main/src) |
-| `ticket-types` | Object | [greenlight activities](https://github.com/digital-blueprint/greenlight-app/tree/main/src#shared-attributes) |
-| `show-preselected` | Boolean | [greenlight activities](https://github.com/digital-blueprint/greenlight-app/tree/main/src) |
-| `preselected-option` | String | [greenlight activities](https://github.com/digital-blueprint/greenlight-app/tree/main/src) |
 | `file-handling-enabled-targets` | String | [file-handling](https://github.com/digital-blueprint/toolkit/tree/main/packages/file-handling#attributes) |
 | `nextcloud-web-app-password-url` | String | [file-handling](https://github.com/digital-blueprint/toolkit/tree/main/packages/file-handling#attributes) |
 | `nextcloud-web-dav-url` | String | [file-handling](https://github.com/digital-blueprint/toolkit/tree/main/packages/file-handling#attributes) |
