@@ -773,6 +773,9 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             // Update table data when collapsing or expanding rows otherwise action buttons will not be shown
             this.setQueuedFilesTabulatorTable();
         }
+        if (event.detail.tableId === 'table-signed-files') {
+            this.signedFilesTableCollapsible = event.detail.isCollapsible;
+        }
         if (event.detail.tableId === 'table-failed-files') {
             this.failedFilesTableCollapsible = event.detail.isCollapsible;
             // Update table data when collapsing or expanding rows
