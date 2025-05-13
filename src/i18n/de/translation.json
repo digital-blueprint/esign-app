@@ -19,7 +19,7 @@
     "positioning-type-label": "Typ der Positionierung",
     "error-cancel-message": "Der Signaturprozess wurde manuell abgebrochen.",
     "error-login-message": "Bitte melden Sie sich an, um diese Funktion nutzen zu können.",
-    "error-login-link": "Zur Anmeldung",
+    "error-login-link": "Anmelden",
     "error-manual-positioning-missing-title":"Signature Fehler",
     "error-manual-positioning-missing": "Ein oder mehrere Signaturen in der Warteschlange müssen manuell positioniert werden.",
     "error-permission-message": "Sie müssen das Recht auf Amtssignaturen besitzen um diese Funktion nutzen zu können!",
