@@ -64,8 +64,7 @@
         "i18next": "^23.0.0 || ^24.0.0",
         "jszip": "^3.5.0",
         "lit": "^3.0.0",
-        "pdfjs-dist": "^4.3 <4.6",
-        "universal-router": "^9.0.1"
+        "pdfjs-dist": "^4.3 <4.6"
     },
     "scripts": {
         "format": "npm run format:eslint && npm run format:prettier",
