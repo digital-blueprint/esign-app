@@ -1,9 +1,8 @@
-import { html, css } from 'lit';
-import { createInstance } from './i18n.js';
-import { ScopedElementsMixin, IconButton, Icon } from '@dbp-toolkit/common';
-import { TabulatorTable } from '@dbp-toolkit/tabulator-table';
+import {html, css} from 'lit';
+import {createInstance} from './i18n.js';
+import {ScopedElementsMixin, IconButton, Icon} from '@dbp-toolkit/common';
+import {TabulatorTable} from '@dbp-toolkit/tabulator-table';
 import DBPLitElement from '@dbp-toolkit/common/dbp-lit-element';
-
 
 export class CustomTabulatorTable extends TabulatorTable {
     static get scopedElements() {
@@ -59,8 +58,8 @@ export class FilenameLabel extends ScopedElementsMixin(DBPLitElement) {
     static get properties() {
         return {
             ...super.properties,
-            lang: { type: String },
-            file: { type: Object, attribute: false },
+            lang: {type: String},
+            file: {type: Object, attribute: false},
             isDownloaded: {type: Boolean, reflect: true},
         };
     }
@@ -90,7 +89,7 @@ export class FilenameLabel extends ScopedElementsMixin(DBPLitElement) {
             }
             dbp-icon {
                 font-size: 24px;
-                margin-left:20px;
+                margin-left: 20px;
                 top: -0.1em;
             }
         `;
@@ -100,12 +99,15 @@ export class FilenameLabel extends ScopedElementsMixin(DBPLitElement) {
         let i18n = this._i18n;
         return html`
             <span>${this.file ? this.file.name : ``}</span>
-            ${ this.isDownloaded ? html`
-                <dbp-icon
-                    name="download-complete"
-                    title="${i18n.t('download-file-completed')}"
-                    aria-label="${i18n.t('download-file-completed')}"></dbp-icon>` : ``}
-    `;
+            ${this.isDownloaded
+                ? html`
+                      <dbp-icon
+                          name="download-complete"
+                          title="${i18n.t('download-file-completed')}"
+                          aria-label="${i18n.t('download-file-completed')}"></dbp-icon>
+                  `
+                : ``}
+        `;
     }
 }
 
@@ -119,7 +121,7 @@ export class DownloadButton extends ScopedElementsMixin(DBPLitElement) {
     static get properties() {
         return {
             ...super.properties,
-            lang: { type: String },
+            lang: {type: String},
         };
     }
 
@@ -143,12 +145,11 @@ export class DownloadButton extends ScopedElementsMixin(DBPLitElement) {
 
     render() {
         return html`
-        <dbp-icon-button
-            icon-name="download"
-            class="download-button"
-            aria-label="${this._i18n.t('download-file-button-title')}"
-            title="${this._i18n.t('download-file-button-title')}"
-            ></dbp-icon-button>
-    `;
+            <dbp-icon-button
+                icon-name="download"
+                class="download-button"
+                aria-label="${this._i18n.t('download-file-button-title')}"
+                title="${this._i18n.t('download-file-button-title')}"></dbp-icon-button>
+        `;
     }
 }

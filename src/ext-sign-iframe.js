@@ -55,7 +55,7 @@ export class ExternalSignIFrame extends ScopedElementsMixin(LitElement) {
                     detail: {
                         message: error,
                     },
-                })
+                }),
             );
         } else if (data.type === 'pdf-as-callback') {
             this.dispatchEvent(
@@ -63,7 +63,7 @@ export class ExternalSignIFrame extends ScopedElementsMixin(LitElement) {
                     detail: {
                         id: data.sessionId,
                     },
-                })
+                }),
             );
         }
     }

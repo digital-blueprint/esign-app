@@ -58,7 +58,7 @@ suite('pdf signature detection', () => {
         assert((await getPDFSignatureCount(getPDFFile(sig3))) === 1);
         assert((await getPDFSignatureCount(getPDFFile(sig1 + sig2))) === 2);
         assert(
-            (await getPDFSignatureCount(getPDFFile('foo' + sig1 + 'bar' + sig2 + 'quux'))) === 2
+            (await getPDFSignatureCount(getPDFFile('foo' + sig1 + 'bar' + sig2 + 'quux'))) === 2,
         );
         assert((await getPDFSignatureCount(getPDFFile('\nfoo' + sig1 + 'bar\n'))) === 1);
         assert((await getPDFSignatureCount(getPDFFile('\nfoo' + sig2 + 'bar\n'))) === 1);
@@ -79,7 +79,7 @@ suite('pdf signature detection', () => {
         assert.equal(await getPDFSignatureCount(await getRealPDFFile('qual-sig-simple.pdf')), 1);
         assert.equal(
             await getPDFSignatureCount(await getRealPDFFile('qual-sig-tugraz-multiple.pdf')),
-            2
+            2,
         );
     });
 });

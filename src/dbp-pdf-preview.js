@@ -67,7 +67,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
             signature_width: {type: Number, attribute: 'signature-width'},
             signature_height: {type: Number, attribute: 'signature-height'},
             allowSignatureRotation: {type: Boolean, attribute: 'allow-signature-rotation'},
-            showSignaturePlacementDescription: {type: Boolean}
+            showSignaturePlacementDescription: {type: Boolean},
         };
     }
 
@@ -91,14 +91,11 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
         // Re-dispatch the event over the shadowRoot.
         // Firefox block events in dialog opened with showModal().
         // Fabric add event listeners to the document, so we need to re-dispatch the event over the shadowRoot.
-        const clonedEvent = new event.constructor(
-            event.type,
-            {
-              bubbles: true,
-              composed: true,
-              cancelable: event.cancelable,
-            }
-        );
+        const clonedEvent = new event.constructor(event.type, {
+            bubbles: true,
+            composed: true,
+            cancelable: event.cancelable,
+        });
         this.shadowRoot.dispatchEvent(clonedEvent);
     }
 
@@ -116,7 +113,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
         const that = this;
         pdfjs.GlobalWorkerOptions.workerSrc = commonUtils.getAssetURL(
             pkgName,
-            'pdfjs/pdf.worker.mjs'
+            'pdfjs/pdf.worker.mjs',
         );
 
         window.addEventListener('resize', this._onWindowResize);
@@ -134,7 +131,6 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
             // Firefox block events in dialog opened with showModal().
             // Fabric add event listeners to the document, so we need to re-dispatch the event over the shadowRoot.
             this._('#pdf-main-container').addEventListener('mouseup', this._onMouseUp.bind(this));
-
 
             this.fabricCanvas = new fabric.Canvas(fabricCanvas, {
                 selection: false,
@@ -206,14 +202,14 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                 obj.canvas.height -
                     obj.getBoundingRect().height +
                     obj.top -
-                    obj.getBoundingRect().top
+                    obj.getBoundingRect().top,
             );
             obj.left = Math.min(
                 obj.left,
                 obj.canvas.width -
                     obj.getBoundingRect().width +
                     obj.left -
-                    obj.getBoundingRect().left
+                    obj.getBoundingRect().left,
             );
         }
     }
@@ -516,7 +512,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                 padding: 1em 0;
             }
 
-            #pdf-meta input[type=number] {
+            #pdf-meta input[type='number'] {
                 max-width: 50px;
             }
 
@@ -569,13 +565,13 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
             .action-container .profile-type-select,
             .action-container .positioning-type-select {
                 padding-right: 2em;
-                padding-left: .75em;
+                padding-left: 0.75em;
                 background-size: 18px;
                 background-position: calc(100% - 0.4rem) center;
             }
 
-            label[for="profile-type"],
-            label[for="positioning-type"] {
+            label[for='profile-type'],
+            label[for='positioning-type'] {
                 display: flex;
                 flex-direction: column;
             }
@@ -611,7 +607,7 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
 
             .signature-description {
                 padding: 1em 0;
-                margin-top: .5em;
+                margin-top: 0.5em;
             }
 
             @container action-container (max-width: 550px) {
@@ -696,8 +692,10 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                     <div id="pdf-meta">
                         <div class="buttons ${classMap({hidden: !this.isPageLoaded})}">
                             <div class="action-container">
-                                <label for="positioning-type">${i18n.t('positioning-type-label')}
-                                    <select id="positioning-type"
+                                <label for="positioning-type">
+                                    ${i18n.t('positioning-type-label')}
+                                    <select
+                                        id="positioning-type"
                                         class="positioning-type-select"
                                         @change="${(event) => {
                                             if (event.target.value === 'auto') {
@@ -710,8 +708,12 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                                                 this.showSignaturePlacementDescription = false;
                                             }
                                         }}">
-                                        <option value="auto">${i18n.t('positioning-automatic')}</option>
-                                        <option value="manual">${i18n.t('positioning-manual')}</option>
+                                        <option value="auto">
+                                            ${i18n.t('positioning-automatic')}
+                                        </option>
+                                        <option value="manual">
+                                            ${i18n.t('positioning-manual')}
+                                        </option>
                                     </select>
                                 </label>
                                 <div class="button-container">
@@ -722,7 +724,8 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                                         @click="${() => {
                                             this.rotateSignature();
                                         }}"
-                                        ?disabled="${this.isPageRenderingInProgress || !this.isShowPlacement}">
+                                        ?disabled="${this.isPageRenderingInProgress ||
+                                        !this.isShowPlacement}">
                                         &#10227; ${i18n.t('pdf-preview.rotate')}
                                     </button>
                                     <button
@@ -731,7 +734,8 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                                         @click="${() => {
                                             this.sendCancelEvent();
                                         }}"
-                                        title="${i18n.t('button-close-text')}">${i18n.t('button-cancel-text')}
+                                        title="${i18n.t('button-close-text')}">
+                                        ${i18n.t('button-cancel-text')}
                                     </button>
                                     <button
                                         class="button is-primary"
@@ -743,8 +747,16 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                                     </button>
                                 </div>
                             </div>
-                            <div class="signature-description ${classMap({hidden: !this.showSignaturePlacementDescription})}"><p>${i18n.t('pdf-preview.signature-description')}</p></div>
-                            <div class="nav-buttons ${classMap({hidden: this.showSignaturePlacementDescription})}">
+                            <div
+                                class="signature-description ${classMap({
+                                    hidden: !this.showSignaturePlacementDescription,
+                                })}">
+                                <p>${i18n.t('pdf-preview.signature-description')}</p>
+                            </div>
+                            <div
+                                class="nav-buttons ${classMap({
+                                    hidden: this.showSignaturePlacementDescription,
+                                })}">
                                 <button
                                     class="button is-icon"
                                     title="${i18n.t('pdf-preview.first-page')}"
@@ -754,7 +766,9 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                                     }}"
                                     ?disabled="${this.isPageRenderingInProgress ||
                                     this.currentPage === 1}">
-                                    <dbp-icon name="angle-double-left" aria-hidden="true"></dbp-icon>
+                                    <dbp-icon
+                                        name="angle-double-left"
+                                        aria-hidden="true"></dbp-icon>
                                 </button>
                                 <button
                                     class="button is-icon"
@@ -800,16 +814,24 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
                                     }}"
                                     ?disabled="${this.isPageRenderingInProgress ||
                                     this.currentPage === this.totalPages}">
-                                    <dbp-icon name="angle-double-right" aria-hidden="true"></dbp-icon>
+                                    <dbp-icon
+                                        name="angle-double-right"
+                                        aria-hidden="true"></dbp-icon>
                                 </button>
                             </div>
                         </div>
                     </div>
                     <div
                         id="canvas-wrapper"
-                        class="${classMap({hidden: this.isPageRenderingInProgress || this.showSignaturePlacementDescription})}">
+                        class="${classMap({
+                            hidden:
+                                this.isPageRenderingInProgress ||
+                                this.showSignaturePlacementDescription,
+                        })}">
                         <canvas id="pdf-canvas"></canvas>
-                        <canvas id="fabric-canvas" class="${classMap({hidden: !this.isShowPlacement})}"></canvas>
+                        <canvas
+                            id="fabric-canvas"
+                            class="${classMap({hidden: !this.isShowPlacement})}"></canvas>
                     </div>
                     <div class="${classMap({hidden: !this.isPageRenderingInProgress})}">
                         <dbp-mini-spinner id="page-loader"></dbp-mini-spinner>

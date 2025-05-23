@@ -5,8 +5,8 @@ import * as commonUtils from '@dbp-toolkit/common/utils';
 import {BaseLitElement} from './base-element.js';
 import {SignatureEntry} from './signature-entry.js';
 import {getPDFSignatureCount} from './utils';
-import { send } from '@dbp-toolkit/common/notification';
-import { humanFileSize } from '@dbp-toolkit/common/i18next';
+import {send} from '@dbp-toolkit/common/notification';
+import {humanFileSize} from '@dbp-toolkit/common/i18next';
 
 export default class DBPSignatureLitElement extends BaseLitElement {
     constructor() {
@@ -73,7 +73,10 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         this.positionButtonObserver = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
                 if (mutation.type === 'childList') {
-                    const collapsedSections = this.tableQueuedFilesTable.shadowRoot.querySelectorAll('.tabulator-responsive-collapse');
+                    const collapsedSections =
+                        this.tableQueuedFilesTable.shadowRoot.querySelectorAll(
+                            '.tabulator-responsive-collapse',
+                        );
                     // Add event listener to collapsed cells buttons.
                     // cellClick() is not run on collapsed fields.
                     collapsedSections.forEach((section) => {
@@ -92,7 +95,6 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                                         this.handlePositionButtonClickEvent(event, cell);
                                     });
                                 }
-
                             }
                         }
                     });
@@ -304,7 +306,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                 annotationType,
                 annotationTypeData.name.de,
                 annotationTypeData.name.en,
-                value
+                value,
             );
         });
 
@@ -407,14 +409,14 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             // Remove annotation of selected rows form queuedFilesAnnotations
             this.queuedFilesAnnotations.forEach((annotation, index) => {
                 if (index == fileKey) {
-                  delete this.queuedFilesAnnotations[index];
+                    delete this.queuedFilesAnnotations[index];
                 }
             });
 
             // Remove files of selected rows from queueFiles
             this.queuedFiles.forEach((file, index) => {
                 if (index == fileKey) {
-                  delete this.queuedFiles[index];
+                    delete this.queuedFiles[index];
                 }
             });
         }
@@ -433,7 +435,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
      * @returns {number}
      */
     getRealLength(array) {
-        return Object.keys(array).filter(key => !isNaN(key)).length;
+        return Object.keys(array).filter((key) => !isNaN(key)).length;
     }
 
     updateQueuedFilesCount() {
@@ -490,24 +492,24 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             },
             body: formData,
         })
-        .then(response => {
-            /* Done. Inform the user */
-            console.log(`Status: ${response.status} for file ${file.name}`);
-            this.sendFinishedEvent(response, file);
-        })
-        .catch(response => {
-            /* Error. Inform the user */
-            if (response.message) {
-                send({
-                    summary: 'Error!',
-                    body: response.message,
-                    type: 'danger',
-                    timeout: 15,
-                });
-                console.log(`Error message: ${response.message}`);
-            }
-            this.sendFinishedEvent(response, file);
-        });
+            .then((response) => {
+                /* Done. Inform the user */
+                console.log(`Status: ${response.status} for file ${file.name}`);
+                this.sendFinishedEvent(response, file);
+            })
+            .catch((response) => {
+                /* Error. Inform the user */
+                if (response.message) {
+                    send({
+                        summary: 'Error!',
+                        body: response.message,
+                        type: 'danger',
+                        timeout: 15,
+                    });
+                    console.log(`Error message: ${response.message}`);
+                }
+                this.sendFinishedEvent(response, file);
+            });
 
         this.uploadInProgress = false;
     }
@@ -524,7 +526,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         };
 
         if (response.status !== 201 && response.message) {
-            data.json = { 'hydra:description': response.message};
+            data.json = {'hydra:description': response.message};
         }
 
         try {
@@ -632,12 +634,19 @@ export default class DBPSignatureLitElement extends BaseLitElement {
     hidePDF(event) {
         if (this.queuedFilesSignaturePlacements[this.currentPreviewQueueKey] !== undefined) {
             // If canceled when try to set to manual mode remove placement settings (auto is the default)
-            if (this.queuedFilesSignaturePlacements[this.currentPreviewQueueKey].signaturePlacementMode === 'manual') {
-                this.queuedFilesSignaturePlacements.splice(parseInt(this.currentPreviewQueueKey), 1);
+            if (
+                this.queuedFilesSignaturePlacements[this.currentPreviewQueueKey]
+                    .signaturePlacementMode === 'manual'
+            ) {
+                this.queuedFilesSignaturePlacements.splice(
+                    parseInt(this.currentPreviewQueueKey),
+                    1,
+                );
                 this.queuedFilesPlacementModes[this.currentPreviewQueueKey] = 'auto';
             } else {
                 // If canceled when try to set automatic set back to manual
-                this.queuedFilesSignaturePlacements[this.currentPreviewQueueKey].signaturePlacementMode === 'manual';
+                this.queuedFilesSignaturePlacements[this.currentPreviewQueueKey]
+                    .signaturePlacementMode === 'manual';
                 this.queuedFilesPlacementModes[this.currentPreviewQueueKey] = 'manual';
             }
             // Re render text switch
@@ -724,7 +733,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         await this._('dbp-pdf-preview').showPDF(
             entry.file,
             withSigBlock, //this.queuedFilesPlacementModes[key] === "manual",
-            placementData
+            placementData,
         );
     }
 
@@ -758,7 +767,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
      * @param {string} key
      * @returns {boolean}
      */
-    fileIsSelectedFile(key){
+    fileIsSelectedFile(key) {
         return this.selectedFiles.some((file) => file.key === key);
     }
 
@@ -801,13 +810,19 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             }
         });
         if (event.detail.tableId === 'table-queued-files') {
-            expandedColumns == collapsableRowsCount ? this.queuedFilesTableExpanded = true : this.queuedFilesTableExpanded = false;
+            expandedColumns == collapsableRowsCount
+                ? (this.queuedFilesTableExpanded = true)
+                : (this.queuedFilesTableExpanded = false);
         }
         if (event.detail.tableId === 'table-signed-files') {
-            expandedColumns == collapsableRowsCount ? this.signedFilesTableExpanded = true : this.signedFilesTableExpanded = false;
+            expandedColumns == collapsableRowsCount
+                ? (this.signedFilesTableExpanded = true)
+                : (this.signedFilesTableExpanded = false);
         }
         if (event.detail.tableId === 'table-failed-files') {
-            expandedColumns == collapsableRowsCount ? this.failedFilesTableExpanded = true : this.failedFilesTableExpanded = false;
+            expandedColumns == collapsableRowsCount
+                ? (this.failedFilesTableExpanded = true)
+                : (this.failedFilesTableExpanded = false);
         }
     }
 
@@ -853,21 +868,21 @@ export default class DBPSignatureLitElement extends BaseLitElement {
 
         // Add selected files
         if (Array.isArray(selectedRows) && selectedRows.length > 0) {
-            selectedRows.forEach(selectedRow => {
+            selectedRows.forEach((selectedRow) => {
                 const rowIndex = String(selectedRow.getIndex());
                 const rowData = selectedRow.getData();
                 const fileNameCell = rowData.fileName;
                 const fileKey = rowData.index;
                 // Remove html tags from filename (the warning tooltip)
                 const fileName = fileNameCell.replace(/<[^>]*>/g, '').trim();
-                const existingIndex = this.selectedFiles.findIndex(row => row.key === rowIndex);
+                const existingIndex = this.selectedFiles.findIndex((row) => row.key === rowIndex);
                 if (existingIndex === -1) {
                     this.selectedFiles = [
                         ...this.selectedFiles,
                         {
                             key: fileKey,
-                            filename: fileName
-                        }
+                            filename: fileName,
+                        },
                     ];
                 }
             });
@@ -875,13 +890,13 @@ export default class DBPSignatureLitElement extends BaseLitElement {
 
         // Remove selected files
         if (Array.isArray(deSelectedRows) && deSelectedRows.length > 0) {
-            deSelectedRows.forEach(deSelectedRow => {
+            deSelectedRows.forEach((deSelectedRow) => {
                 const rowIndex = String(deSelectedRow.getIndex());
-                const deselectedIndex = this.selectedFiles.findIndex(row => row.key === rowIndex);
+                const deselectedIndex = this.selectedFiles.findIndex((row) => row.key === rowIndex);
                 this.selectedFiles = [
                     ...this.selectedFiles.slice(0, deselectedIndex),
-                    ...this.selectedFiles.slice(deselectedIndex + 1)
-                  ];
+                    ...this.selectedFiles.slice(deselectedIndex + 1),
+                ];
             });
         }
 
@@ -903,7 +918,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             if (table && table.shadowRoot) {
                 this.positionButtonObserver.observe(table.shadowRoot, {
                     childList: true,
-                    subtree: true
+                    subtree: true,
                 });
                 this.positionButtonObserverAdded = true;
             }
@@ -914,7 +929,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         this.positionButtonObserver.disconnect();
     }
 
-    getActionButtonsHtml(id, annotations=true) {
+    getActionButtonsHtml(id, annotations = true) {
         const i18n = this._i18n;
         const fileName = this.queuedFiles[id].file.name;
         const annotationCount = Array.isArray(this.queuedFilesAnnotations[id])
@@ -924,20 +939,22 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         const buttons = `
             <div class="tabulator-icon-buttons" data-id=${id}>
                 <dbp-icon-button icon-name="keyword-research" class="preview-button" aria-label="${i18n.t('preview-file-button-title')}" title="${i18n.t('preview-file-button-title')}" style="font-size: 24px;"></dbp-icon-button>
-                ${annotations ?
-                    `<span class="annotation-wrapper" style="display: inline-grid; grid-template-columns: 27px 23px; grid-template-rows: 23px 27px; width: 50px; height: 50px; position: relative;">
+                ${
+                    annotations
+                        ? `<span class="annotation-wrapper" style="display: inline-grid; grid-template-columns: 27px 23px; grid-template-rows: 23px 27px; width: 50px; height: 50px; position: relative;">
                         <dbp-icon-button icon-name="bubble" class="annotation-button"
                             aria-label="${i18n.t('annotation-button-title')}" title="${i18n.t('annotation-button-title')}"
                             style="font-size: 24px; grid-area: 1 / 1 / 3 / 3; place-self: center;"></dbp-icon-button>
-                        ${annotationCount < 1
-                            ? '<span style="position: absolute; font-size: 19px; top: 21%; left: 40%; font-weight: bold;pointer-events:none;">+</span>'
-                            : `<span title="${i18n.t('annotations-count-text', {annotationCount: annotationCount})}"
+                        ${
+                            annotationCount < 1
+                                ? '<span style="position: absolute; font-size: 19px; top: 21%; left: 40%; font-weight: bold;pointer-events:none;">+</span>'
+                                : `<span title="${i18n.t('annotations-count-text', {annotationCount: annotationCount})}"
                                 style="grid-column: 2 / 3; grid-row: 1 / 2; justify-self: start; align-self: end; background: var(--dbp-primary); color: var(--dbp-background);
                                 border: 1px solid var(--dbp-background); border-radius: 100%; display: block; width: 21px; height: 21px; text-align: center; line-height: 21px;
                                 font-size: 14px; font-weight: bold; z-index: 3;pointer-events:none;">${annotationCount}</span>`
                         }
                     </span>`
-                    : ''
+                        : ''
                 }
                 <dbp-icon-button icon-name="trash" class="delete-button" aria-label="${i18n.t('remove-queued-file-button-title')}" title="${i18n.t('remove-queued-file-button-title')}" style="font-size: 24px;" data-filename="${fileName}"></dbp-icon-button>
             </div>
@@ -949,13 +966,12 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         const i18n = this._i18n;
 
         const styles = css`
-
             .toggle-wrapper {
                 --toggle-width: 80px;
                 --toggle-height: 34px;
                 --icon-width: 35px;
                 --icon-height: 28px;
-                --transition-time: .3s;
+                --transition-time: 0.3s;
                 --gap: 2px;
                 --checkmark-color: var(--dbp-muted);
                 --checkmark-color-need-positioning: var(--dbp-danger);
@@ -1000,8 +1016,8 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             .label-on {
                 font-weight: bold;
                 position: absolute;
-                transition: opacity .1s ease;
-                transition-delay: .3s;
+                transition: opacity 0.1s ease;
+                transition-delay: 0.3s;
                 opacity: 1;
                 height: var(--toggle-height);
                 line-height: var(--toggle-height);
@@ -1031,7 +1047,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             .toggle {
                 /* keyboard focus visibility */
                 .input-checkbox:focus-visible + .toggle-item {
-                    box-shadow:0px 0px 3px 1px var(--dbp-primary);
+                    box-shadow: 0px 0px 3px 1px var(--dbp-primary);
                 }
 
                 /* the button */
@@ -1041,7 +1057,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                     height: var(--icon-height);
                     position: absolute;
                     background: var(--dbp-background);
-                    transition: .4s ease;
+                    transition: 0.4s ease;
                     top: var(--gap);
                     bottom: var(--gap);
                     left: var(--gap);
@@ -1049,7 +1065,6 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             }
 
             .need-positioning {
-
                 label.toggle-item {
                     border-color: var(--checkmark-color-need-positioning);
                     background-color: var(--checkmark-color-need-positioning);
@@ -1072,7 +1087,6 @@ export default class DBPSignatureLitElement extends BaseLitElement {
 
             /* animation */
             .input-checkbox:checked + label {
-
                 .check {
                     left: calc(100% - var(--icon-width) - var(--gap));
                 }
@@ -1082,7 +1096,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         const checkbox = `
             <style>${unsafeCSS(styles)}</style>
             <div class="toggle-wrapper">
-                <div class="toggle ${needPositioning ? 'need-positioning' : ''}" data-need-positioning="${needPositioning ? 'true' : 'false' }">
+                <div class="toggle ${needPositioning ? 'need-positioning' : ''}" data-need-positioning="${needPositioning ? 'true' : 'false'}">
                     <input id="toggle-${id}" class="input-checkbox" type="checkbox" role="switch" ${placement == 'manual' ? 'checked="checked"' : ''}"/>
                     <label class="toggle-item ${placement == 'manual' ? 'on' : 'off'}" for="toggle-${id}" data-row-id="${id}">
                         <span class="label-on" ${placement == 'manual' ? '' : 'aria-hidden="true"'}">${i18n.t('toggle-switch-label-text-on')}</span>
@@ -1109,7 +1123,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         btnReupload.setAttribute('aria-label', i18n.t('re-upload-file-button-title'));
         btnReupload.setAttribute('title', i18n.t('re-upload-file-button-title'));
         btnReupload.style['font-size'] = ICON_SIZE;
-        btnReupload.addEventListener("click", async (event) => {
+        btnReupload.addEventListener('click', async (event) => {
             event.stopPropagation();
             this.fileQueueingClickHandler(data.file, id);
         });
@@ -1121,7 +1135,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         btnDelete.classList.add('delete-button');
         btnDelete.setAttribute('aria-label', i18n.t('remove-failed-file-button-title'));
         btnDelete.setAttribute('title', i18n.t('remove-failed-file-button-title'));
-        btnDelete.addEventListener("click", async (event) => {
+        btnDelete.addEventListener('click', async (event) => {
             event.stopPropagation();
             this.takeFailedFileFromQueue(id);
         });
@@ -1136,21 +1150,21 @@ export default class DBPSignatureLitElement extends BaseLitElement {
      */
     setQueuedFilesTabulatorTable() {
         const i18n = this._i18n;
-        let langs  = {
-            'en': {
+        let langs = {
+            en: {
                 columns: {
-                    'fileName': i18n.t('table-header-file-name', {lng: 'en'}),
-                    'fileSize': i18n.t('table-header-file-size', {lng: 'en'}),
-                    'positioning': i18n.t('table-header-positioning', {lng: 'en'}),
-                    'buttons': i18n.t('table-header-buttons', {lng: 'en'}),
+                    fileName: i18n.t('table-header-file-name', {lng: 'en'}),
+                    fileSize: i18n.t('table-header-file-size', {lng: 'en'}),
+                    positioning: i18n.t('table-header-positioning', {lng: 'en'}),
+                    buttons: i18n.t('table-header-buttons', {lng: 'en'}),
                 },
             },
-            'de': {
+            de: {
                 columns: {
-                    'fileName': i18n.t('table-header-file-name', {lng: 'de'}),
-                    'fileSize': i18n.t('table-header-file-size', {lng: 'de'}),
-                    'positioning': i18n.t('table-header-positioning', {lng: 'de'}),
-                    'buttons': i18n.t('table-header-buttons', {lng: 'de'}),
+                    fileName: i18n.t('table-header-file-name', {lng: 'de'}),
+                    fileSize: i18n.t('table-header-file-size', {lng: 'de'}),
+                    positioning: i18n.t('table-header-positioning', {lng: 'de'}),
+                    buttons: i18n.t('table-header-buttons', {lng: 'de'}),
                 },
             },
         };
@@ -1170,7 +1184,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                     hozAlign: 'center',
                     headerHozAlign: 'center',
                     width: 40,
-                    visible: false
+                    visible: false,
                 },
                 {
                     title: '',
@@ -1179,8 +1193,8 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                     width: 65,
                     formatter: 'responsiveCollapse',
                     headerHozAlign: 'center',
-                    headerSort:false,
-                    responsive: 0
+                    headerSort: false,
+                    responsive: 0,
                 },
                 {
                     title: 'fileName',
@@ -1190,7 +1204,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                     widthGrow: 3,
                     hozAlign: 'left',
                     formatter: 'html',
-                    responsive: 0
+                    responsive: 0,
                 },
                 {
                     title: 'fileSize',
@@ -1200,7 +1214,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                     hozAlign: 'right',
                     headerHozAlign: 'right',
                     formatter: 'plaintext',
-                    responsive: 3
+                    responsive: 3,
                 },
                 // {
                 //     title: 'profile',
@@ -1244,20 +1258,30 @@ export default class DBPSignatureLitElement extends BaseLitElement {
 
                             // Preview button eventListener
                             const previewButton = cellElement.querySelector('.preview-button');
-                            if (previewButton && !previewButton.hasAttribute('data-listener-added')) {
-                                previewButton.addEventListener("click", (event) => {
+                            if (
+                                previewButton &&
+                                !previewButton.hasAttribute('data-listener-added')
+                            ) {
+                                previewButton.addEventListener('click', (event) => {
                                     event.stopPropagation();
                                     this._('#pdf-preview').open();
-                                    this._('#pdf-preview dbp-pdf-preview').setAttribute('don-t-show-buttons', '');
+                                    this._('#pdf-preview dbp-pdf-preview').setAttribute(
+                                        'don-t-show-buttons',
+                                        '',
+                                    );
                                     this.showPreview(id, false, true);
                                 });
                                 previewButton.setAttribute('data-listener-added', 'true');
                             }
 
                             // Annotation button eventListener
-                            const annotationWrapper = cellElement.querySelector('.annotation-wrapper');
-                            if (annotationWrapper && !annotationWrapper.hasAttribute('data-listener-added')) {
-                                annotationWrapper.addEventListener("click", (event) => {
+                            const annotationWrapper =
+                                cellElement.querySelector('.annotation-wrapper');
+                            if (
+                                annotationWrapper &&
+                                !annotationWrapper.hasAttribute('data-listener-added')
+                            ) {
+                                annotationWrapper.addEventListener('click', (event) => {
                                     event.stopPropagation();
                                     this._('#annotation-view').open();
                                     this.showAnnotationView(id, 'text-selected');
@@ -1268,11 +1292,15 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                             // Delete button eventListener
                             const deleteButton = cellElement.querySelector('.delete-button');
                             if (deleteButton && !deleteButton.hasAttribute('data-listener-added')) {
-                                deleteButton.addEventListener("click", (event) => {
+                                deleteButton.addEventListener('click', (event) => {
                                     event.stopPropagation();
                                     const editButton = /** @type {HTMLElement} */ (event.target);
-                                    const fileName  = editButton.getAttribute('data-filename') || i18n.t('this-file');
-                                    const result = confirm(i18n.t('confirm-delete-file', { file: fileName}));
+                                    const fileName =
+                                        editButton.getAttribute('data-filename') ||
+                                        i18n.t('this-file');
+                                    const result = confirm(
+                                        i18n.t('confirm-delete-file', {file: fileName}),
+                                    );
 
                                     if (result) {
                                         this.takeFileFromQueue(id);
@@ -1286,7 +1314,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
 
                         return buttonElements;
                     },
-                    responsive: 1
+                    responsive: 1,
                 },
             ],
             columnDefaults: {
@@ -1304,7 +1332,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         }
 
         const ids = Object.keys(this.queuedFiles);
-        if(this.tableQueuedFilesTable) {
+        if (this.tableQueuedFilesTable) {
             ids.forEach((id) => {
                 const file = this.queuedFiles[id].file;
                 const isManual = this.queuedFilesPlacementModes[id] === 'manual';
@@ -1335,7 +1363,11 @@ export default class DBPSignatureLitElement extends BaseLitElement {
 
                 const actionButtons = this.getActionButtonsHtml(id, this.allowAnnotating);
 
-                const positioningSwitch = this.getPositioningSwitch(id, this.queuedFilesPlacementModes[id] || 'auto', placementMissing);
+                const positioningSwitch = this.getPositioningSwitch(
+                    id,
+                    this.queuedFilesPlacementModes[id] || 'auto',
+                    placementMissing,
+                );
 
                 let fileData = {
                     index: id,
@@ -1366,7 +1398,8 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                 this.tableQueuedFilesTable.tabulatorTable.selectRow(selectedRows);
             }
 
-            const observerIsPresent = this.tableQueuedFilesTable.getAttribute('data-observer-added');
+            const observerIsPresent =
+                this.tableQueuedFilesTable.getAttribute('data-observer-added');
             if (!observerIsPresent) {
                 this.tableQueuedFilesTable.setAttribute('data-observer-added', true);
                 this.startPositionButtonObserver();
@@ -1375,7 +1408,6 @@ export default class DBPSignatureLitElement extends BaseLitElement {
     }
 
     handlePositionButtonClickEvent(e, cell) {
-
         e.stopPropagation();
 
         const row = cell.getRow();
@@ -1393,7 +1425,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
 
         // Prevent clickHandler running twice
         if (!toggleTriggered) return;
-        if (toggleTriggered.getAttribute('data-click-triggered'))  return;
+        if (toggleTriggered.getAttribute('data-click-triggered')) return;
         toggleTriggered.setAttribute('data-click-triggered', true);
 
         setTimeout(() => {
@@ -1403,8 +1435,12 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             const checkboxIsChecked = checkbox.checked;
             const placement = checkboxIsChecked === true ? 'manual' : 'auto';
 
-            cellValue.querySelector(`label[for="${checkboxId}"] span.label-on`).toggleAttribute('aria-hidden');
-            cellValue.querySelector(`label[for="${checkboxId}"] span.label-off`).toggleAttribute('aria-hidden');
+            cellValue
+                .querySelector(`label[for="${checkboxId}"] span.label-on`)
+                .toggleAttribute('aria-hidden');
+            cellValue
+                .querySelector(`label[for="${checkboxId}"] span.label-off`)
+                .toggleAttribute('aria-hidden');
 
             // Set placement modes
             this.queuedFilesSignaturePlacements[id] = {signaturePlacementMode: placement};
@@ -1439,19 +1475,19 @@ export default class DBPSignatureLitElement extends BaseLitElement {
      */
     setSignedFilesTabulatorTable() {
         const i18n = this._i18n;
-        let langs  = {
-            'en': {
+        let langs = {
+            en: {
                 columns: {
-                    'fileName': i18n.t('table-header-file-name', {lng: 'en'}),
-                    'fileSize': i18n.t('table-header-file-size', {lng: 'en'}),
-                    'downloadButton': i18n.t('table-header-download', {lng: 'en'}),
+                    fileName: i18n.t('table-header-file-name', {lng: 'en'}),
+                    fileSize: i18n.t('table-header-file-size', {lng: 'en'}),
+                    downloadButton: i18n.t('table-header-download', {lng: 'en'}),
                 },
             },
-            'de': {
+            de: {
                 columns: {
-                    'fileName': i18n.t('table-header-file-name', {lng: 'de'}),
-                    'fileSize': i18n.t('table-header-file-size', {lng: 'de'}),
-                    'downloadButton': i18n.t('table-header-download', {lng: 'de'}),
+                    fileName: i18n.t('table-header-file-name', {lng: 'de'}),
+                    fileSize: i18n.t('table-header-file-size', {lng: 'de'}),
+                    downloadButton: i18n.t('table-header-download', {lng: 'de'}),
                 },
             },
         };
@@ -1471,7 +1507,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                     hozAlign: 'center',
                     headerHozAlign: 'center',
                     width: 40,
-                    visible: false
+                    visible: false,
                 },
                 {
                     title: '',
@@ -1481,7 +1517,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                     formatter: 'responsiveCollapse',
                     headerHozAlign: 'center',
                     headerSort: false,
-                    responsive: 0
+                    responsive: 0,
                 },
                 {
                     title: 'fileName',
@@ -1491,7 +1527,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                     widthGrow: 3,
                     hozAlign: 'left',
                     formatter: 'html',
-                    responsive: 0
+                    responsive: 0,
                 },
                 {
                     title: 'fileSize',
@@ -1501,7 +1537,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                     hozAlign: 'right',
                     headerHozAlign: 'right',
                     formatter: 'plaintext',
-                    responsive: 2
+                    responsive: 2,
                 },
                 {
                     title: 'download',
@@ -1512,7 +1548,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                     hozAlign: 'center',
                     headerHozAlign: 'center',
                     formatter: 'html',
-                    responsive: 1
+                    responsive: 1,
                 },
             ],
             columnDefaults: {
@@ -1524,19 +1560,23 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         let tableFiles = [];
 
         const ids = Object.keys(this.signedFiles);
-        if(this.tableSignedFilesTable) {
+        if (this.tableSignedFilesTable) {
             ids.forEach((id) => {
                 const file = this.signedFiles[id];
 
-                let filenameLabel = this.tableSignedFilesTable.createScopedElement('dbp-esign-filename-label');
+                let filenameLabel = this.tableSignedFilesTable.createScopedElement(
+                    'dbp-esign-filename-label',
+                );
                 filenameLabel.setAttribute('subscribe', 'lang');
                 filenameLabel.file = file;
 
-                let downloadButton = this.tableSignedFilesTable.createScopedElement('dbp-esign-download-button');
+                let downloadButton = this.tableSignedFilesTable.createScopedElement(
+                    'dbp-esign-download-button',
+                );
                 downloadButton.setAttribute('subscribe', 'lang');
                 downloadButton.file = file;
 
-                downloadButton.addEventListener("click", async (event) => {
+                downloadButton.addEventListener('click', async (event) => {
                     event.stopPropagation();
                     await this.downloadFileClickHandler(file);
                     filenameLabel.isDownloaded = true;
@@ -1557,27 +1597,26 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         }
     }
 
-
     /**
      * Create tabulator table for failed files
      */
     setFailedFilesTabulatorTable() {
         const i18n = this._i18n;
-        let langs  = {
-            'en': {
+        let langs = {
+            en: {
                 columns: {
-                    'fileName': i18n.t('table-header-file-name', {lng: 'en'}),
-                    'fileSize': i18n.t('table-header-file-size', {lng: 'en'}),
-                    'errorMessage': i18n.t('table-header-error-message', {lng: 'en'}),
-                    'buttons': i18n.t('table-header-buttons', {lng: 'en'}),
+                    fileName: i18n.t('table-header-file-name', {lng: 'en'}),
+                    fileSize: i18n.t('table-header-file-size', {lng: 'en'}),
+                    errorMessage: i18n.t('table-header-error-message', {lng: 'en'}),
+                    buttons: i18n.t('table-header-buttons', {lng: 'en'}),
                 },
             },
-            'de': {
+            de: {
                 columns: {
-                    'fileName': i18n.t('table-header-file-name', {lng: 'de'}),
-                    'fileSize': i18n.t('table-header-file-size', {lng: 'de'}),
-                    'errorMessage': i18n.t('table-header-error-message', {lng: 'de'}),
-                    'buttons': i18n.t('table-header-buttons', {lng: 'de'}),
+                    fileName: i18n.t('table-header-file-name', {lng: 'de'}),
+                    fileSize: i18n.t('table-header-file-size', {lng: 'de'}),
+                    errorMessage: i18n.t('table-header-error-message', {lng: 'de'}),
+                    buttons: i18n.t('table-header-buttons', {lng: 'de'}),
                 },
             },
         };
@@ -1597,7 +1636,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                     hozAlign: 'center',
                     headerHozAlign: 'center',
                     width: 40,
-                    visible: false
+                    visible: false,
                 },
                 {
                     title: '',
@@ -1606,8 +1645,8 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                     width: 65,
                     formatter: 'responsiveCollapse',
                     headerHozAlign: 'center',
-                    headerSort:false,
-                    responsive: 0
+                    headerSort: false,
+                    responsive: 0,
                 },
                 {
                     title: 'fileName',
@@ -1617,7 +1656,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                     widthGrow: 3,
                     hozAlign: 'left',
                     formatter: 'html',
-                    responsive: 0
+                    responsive: 0,
                 },
                 {
                     title: 'fileSize',
@@ -1627,7 +1666,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                     hozAlign: 'right',
                     headerHozAlign: 'right',
                     formatter: 'plaintext',
-                    responsive: 2
+                    responsive: 2,
                 },
                 {
                     title: 'Error Message',
@@ -1638,7 +1677,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                     hozAlign: 'left',
                     headerHozAlign: 'left',
                     formatter: 'plaintext',
-                    responsive: 1
+                    responsive: 1,
                 },
                 {
                     title: 'buttons',
@@ -1649,7 +1688,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
                     hozAlign: 'center',
                     headerHozAlign: 'center',
                     formatter: 'html',
-                    responsive: 1
+                    responsive: 1,
                 },
             ],
             columnDefaults: {
@@ -1661,7 +1700,7 @@ export default class DBPSignatureLitElement extends BaseLitElement {
         let tableFiles = [];
 
         const ids = Object.keys(this.errorFiles);
-        if(this.tableFailedFilesTable) {
+        if (this.tableFailedFilesTable) {
             ids.forEach((id) => {
                 const data = this.errorFiles[id];
                 const errorMessage = data.json['hydra:description'];
@@ -1689,20 +1728,27 @@ export default class DBPSignatureLitElement extends BaseLitElement {
      */
     sendReportNotification() {
         const i18n = this._i18n;
-        if (this.queuedFilesCount === 0 || (this.selectedFilesProcessing && this.selectedFiles.length === 0)) {
+        if (
+            this.queuedFilesCount === 0 ||
+            (this.selectedFilesProcessing && this.selectedFiles.length === 0)
+        ) {
             this.selectedFilesProcessing = false;
             if (this.signedFilesCountToReport > 0) {
                 send({
                     summary: i18n.t('report-message-title'),
-                    body: i18n.t('signed-document-report-message', {count: this.signedFilesCountToReport}),
+                    body: i18n.t('signed-document-report-message', {
+                        count: this.signedFilesCountToReport,
+                    }),
                     type: 'success',
                     timeout: 20,
                 });
             }
-            if (this.errorFilesCountToReport > 0 ) {
+            if (this.errorFilesCountToReport > 0) {
                 send({
                     summary: i18n.t('report-message-title'),
-                    body: i18n.t('failed-document-report-message', {count: this.errorFilesCountToReport}),
+                    body: i18n.t('failed-document-report-message', {
+                        count: this.errorFilesCountToReport,
+                    }),
                     type: 'danger',
                     timeout: 20,
                 });

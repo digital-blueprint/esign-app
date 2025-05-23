@@ -3,12 +3,11 @@ import {css} from 'lit';
 export function getSignatureCss() {
     // language=css
     return css`
-
         .section-title {
             font-size: 1.4em;
             margin-bottom: 1em;
             border-left: 5px solid var(--dbp-primary);
-            padding-left: .5em;
+            padding-left: 0.5em;
         }
 
         #annotation-view button.is-cancel {
@@ -91,7 +90,7 @@ export function getSignatureCss() {
         }
 
         .empty-queue {
-            margin: -22px  0 0 0;
+            margin: -22px 0 0 0;
         }
 
         #grid-container {
@@ -154,7 +153,6 @@ export function getSignatureCss() {
             --dbp-modal-min-width: min(75vw, 600px);
         }
 
-
         .tabulator-actions {
             display: flex;
             gap: 1em;
@@ -189,7 +187,7 @@ export function getSignatureCss() {
             display: flex;
             justify-content: flex-start;
             align-items: center;
-            gap: .75em;
+            gap: 0.75em;
             padding: 1em;
             border: var(--dbp-border);
             border-color: var(--dbp-override-danger);
@@ -270,7 +268,6 @@ export function getSignatureCss() {
         }
 
         @media only screen and (orientation: portrait) and (max-width: 768px) {
-
             /* Don't use the whole screen for the upload progress */
             #upload-progress {
                 top: 10px;

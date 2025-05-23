@@ -215,7 +215,7 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
                 flex-flow: row wrap;
                 justify-content: space-between;
                 align-items: center;
-                container: annotation-from /inline-size;
+                container: annotation-from / inline-size;
             }
 
             .input-button-wrapper {
@@ -281,7 +281,7 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
 
             .action-buttons-wrapper {
                 display: flex;
-                gap: .5em;
+                gap: 0.5em;
             }
 
             .form-wrapper {
@@ -298,7 +298,7 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
                 padding-bottom: 1em;
             }
 
-           .pdf-meta option {
+            .pdf-meta option {
                 color: var(--dbp-content);
                 background-color: var(--dbp-background);
             }
@@ -427,8 +427,8 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
 
                         <div class="action-buttons-wrapper">
                                 <button class="button clear-all-button ${classMap({
-                                        hidden: !this.isTextHidden && this.annotationRows.length === 0,
-                                    })}"
+                                    hidden: !this.isTextHidden && this.annotationRows.length === 0,
+                                })}"
                                     title="${i18n.t('annotation-view.delete-all-button-title')}"
                                     @click="${() => {
                                         this.deleteAll();
@@ -450,8 +450,8 @@ export class PdfAnnotationView extends ScopedElementsMixin(DBPLitElement) {
                 <div class="form-wrapper">
                     <div class="annotation-form">
                         <div class="form-description ${classMap({
-                                hidden: this.isTextHidden || this.annotationRows.length > 0,
-                            })}">
+                            hidden: this.isTextHidden || this.annotationRows.length > 0,
+                        })}">
                             <p>${i18n.t('annotation-view.introduction')}</p>
                         </div>
                         <div class="form-fields">

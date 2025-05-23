@@ -6,7 +6,15 @@ import DBPSignatureLitElement from './dbp-signature-lit-element';
 import {PdfPreview} from './dbp-pdf-preview';
 import * as commonUtils from '@dbp-toolkit/common/utils';
 import * as utils from './utils';
-import {Button, Icon, IconButton, LoadingButton, MiniSpinner, combineURLs, Modal} from '@dbp-toolkit/common';
+import {
+    Button,
+    Icon,
+    IconButton,
+    LoadingButton,
+    MiniSpinner,
+    combineURLs,
+    Modal,
+} from '@dbp-toolkit/common';
 import * as commonStyles from '@dbp-toolkit/common/styles';
 import {TooltipElement} from '@dbp-toolkit/tooltip';
 import {classMap} from 'lit/directives/class-map.js';
@@ -18,7 +26,7 @@ import metadata from './dbp-official-signature-pdf-upload.metadata.json';
 import {Activity} from './activity.js';
 import {PdfAnnotationView} from './dbp-pdf-annotation-view';
 import * as SignatureStyles from './styles';
-import { CustomTabulatorTable } from './table-components.js';
+import {CustomTabulatorTable} from './table-components.js';
 
 class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElement) {
     constructor() {
@@ -77,8 +85,14 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         window.addEventListener('dbp-pdf-preview-accept', this._setQueuedFilesTabulatorTable);
         window.addEventListener('dbp-pdf-annotations-save', this._setQueuedFilesTabulatorTable);
         window.addEventListener('dbp-pdf-annotations-cancel', this._setQueuedFilesTabulatorTable);
-        window.addEventListener('dbp-tabulator-table-collapsible-event', this._tabulatorTableHandleCollapse);
-        window.addEventListener('dbp-tabulator-table-row-selection-changed-event', this._handleTableSelection);
+        window.addEventListener(
+            'dbp-tabulator-table-collapsible-event',
+            this._tabulatorTableHandleCollapse,
+        );
+        window.addEventListener(
+            'dbp-tabulator-table-row-selection-changed-event',
+            this._handleTableSelection,
+        );
         window.addEventListener('dbp-modal-closed', this._handleModalClosed);
         window.addEventListener('dbp-pdf-preview-accept', this._handlePdfModalClosing);
         window.addEventListener('dbp-pdf-preview-cancel', this._handlePdfModalClosing);
@@ -90,13 +104,25 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         // Remove event listeners using bound methods
         window.removeEventListener('dbp-pdf-preview-accept', this._setQueuedFilesTabulatorTable);
         window.removeEventListener('dbp-pdf-annotations-save', this._setQueuedFilesTabulatorTable);
-        window.removeEventListener('dbp-pdf-annotations-cancel', this._setQueuedFilesTabulatorTable);
-        window.removeEventListener('dbp-tabulator-table-collapsible-event', this._tabulatorTableHandleCollapse);
-        window.removeEventListener('dbp-tabulator-table-row-selection-changed-event', this._handleTableSelection);
+        window.removeEventListener(
+            'dbp-pdf-annotations-cancel',
+            this._setQueuedFilesTabulatorTable,
+        );
+        window.removeEventListener(
+            'dbp-tabulator-table-collapsible-event',
+            this._tabulatorTableHandleCollapse,
+        );
+        window.removeEventListener(
+            'dbp-tabulator-table-row-selection-changed-event',
+            this._handleTableSelection,
+        );
         window.removeEventListener('dbp-modal-closed', this._handleModalClosed);
         window.removeEventListener('dbp-pdf-preview-accept', this._handlePdfModalClosing);
         window.removeEventListener('dbp-pdf-preview-cancel', this._handlePdfModalClosing);
-        window.removeEventListener('dbp-pdf-annotations-cancel', this._handleAnnotationModalClosing);
+        window.removeEventListener(
+            'dbp-pdf-annotations-cancel',
+            this._handleAnnotationModalClosing,
+        );
         window.removeEventListener('dbp-pdf-annotations-save', this._handleAnnotationModalClosing);
 
         this.stopPositionButtonObserver();
@@ -106,9 +132,15 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
 
     firstUpdated(changedProperties) {
         super.firstUpdated(changedProperties);
-        this.tableQueuedFilesTable =  /** @type {CustomTabulatorTable} */ (this._('#table-queued-files'));
-        this.tableSignedFilesTable =  /** @type {CustomTabulatorTable} */ (this._('#table-signed-files'));
-        this.tableFailedFilesTable =  /** @type {CustomTabulatorTable} */ (this._('#table-failed-files'));
+        this.tableQueuedFilesTable = /** @type {CustomTabulatorTable} */ (
+            this._('#table-queued-files')
+        );
+        this.tableSignedFilesTable = /** @type {CustomTabulatorTable} */ (
+            this._('#table-signed-files')
+        );
+        this.tableFailedFilesTable = /** @type {CustomTabulatorTable} */ (
+            this._('#table-failed-files')
+        );
     }
 
     async queueFile(file) {
@@ -131,9 +163,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             return;
         }
 
-        if (!this.signingProcessEnabled ||
-            this.uploadInProgress ||
-            this.addAnnotationInProgress) {
+        if (!this.signingProcessEnabled || this.uploadInProgress || this.addAnnotationInProgress) {
             return;
         }
         this.signaturePlacementInProgress = false;
@@ -143,13 +173,17 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         for (const key of Object.keys(this.queuedFiles)) {
             if (errorInPositioning === true) continue;
             const isManual = this.queuedFilesPlacementModes[key] === 'manual';
-            if (this.queuedFilesNeedsPlacement.get(key) && !isManual && (this.selectedFiles.length === 0 || this.fileIsSelectedFile(key))) {
+            if (
+                this.queuedFilesNeedsPlacement.get(key) &&
+                !isManual &&
+                (this.selectedFiles.length === 0 || this.fileIsSelectedFile(key))
+            ) {
                 // Some have a signature but are not "manual", stop everything
                 notify({
                     summary: i18n.t('error-manual-positioning-missing-title'),
                     body: i18n.t('error-manual-positioning-missing'),
                     type: 'danger',
-                    timeout: 5
+                    timeout: 5,
                 });
                 errorInPositioning = true;
             }
@@ -165,11 +199,9 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         if (this.selectedFiles.length > 0) {
             // If we have selected files in the table use the selected file
             const selectedFile = this.selectedFiles.shift();
-            key = Object.keys(this.queuedFiles).find(
-                (index) => {
-                    return this.queuedFiles[index].file.name.trim() === selectedFile.filename.trim();
-                }
-            );
+            key = Object.keys(this.queuedFiles).find((index) => {
+                return this.queuedFiles[index].file.name.trim() === selectedFile.filename.trim();
+            });
             this.selectedFilesProcessing = true;
         } else {
             // Process all queued files
@@ -294,7 +326,10 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                     break;
                 case 'entryPointUrl':
                     if (this.entryPointUrl) {
-                        this.fileSourceUrl = combineURLs(this.entryPointUrl, '/esign/advancedly-signed-documents');
+                        this.fileSourceUrl = combineURLs(
+                            this.entryPointUrl,
+                            '/esign/advancedly-signed-documents',
+                        );
                     }
                     break;
                 case 'queuedFilesCount':
@@ -318,12 +353,12 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             for (const selectedFile of this.selectedFiles) {
                 this.queuedFilesSignaturePlacements.forEach((placement, index) => {
                     if (index == selectedFile.key) {
-                      delete this.queuedFilesSignaturePlacements[index];
+                        delete this.queuedFilesSignaturePlacements[index];
                     }
                 });
                 this.queuedFilesPlacementModes.forEach((placementMode, index) => {
                     if (index == selectedFile.key) {
-                      delete this.queuedFilesPlacementModes[index];
+                        delete this.queuedFilesPlacementModes[index];
                     }
                 });
                 this.queuedFilesNeedsPlacement.delete(selectedFile.key);
@@ -364,14 +399,14 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
     }
 
     _onLoginClicked(e) {
-        this.sendSetPropertyEvent('requested-login-status', "logged-in");
+        this.sendSetPropertyEvent('requested-login-status', 'logged-in');
         e.preventDefault();
     }
 
     render() {
         const placeholderUrl = commonUtils.getAssetURL(
             pkgName,
-            'official-signature-placeholder.png'
+            'official-signature-placeholder.png',
         );
         const i18n = this._i18n;
 
@@ -413,7 +448,8 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                             text="${i18n.t('official-pdf-upload.upload-area-text')}"
                             button-label="${i18n.t('official-pdf-upload.upload-button-label')}"
                             @dbp-file-source-file-selected="${this.onFileSelected}"
-                            @dbp-file-source-switched="${this.onFileSourceSwitch}"></dbp-file-source>
+                            @dbp-file-source-switched="${this
+                                .onFileSourceSwitch}"></dbp-file-source>
                     </div>
                 </div>
                 <div id="grid-container">
@@ -428,35 +464,42 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                             </h3>
                             <div class="control field tabulator-actions">
                                 <div class="table-actions">
-                                    <dbp-loading-button id="expand-all-btn-queued-files"
+                                    <dbp-loading-button
+                                        id="expand-all-btn-queued-files"
                                         class="${classMap({
-                                            hidden: this.queuedFilesTableExpanded
+                                            hidden: this.queuedFilesTableExpanded,
                                         })}"
-                                        ?disabled="${this.queuedFilesCount === 0 || this.queuedFilesTableCollapsible === false}"
+                                        ?disabled="${this.queuedFilesCount === 0 ||
+                                        this.queuedFilesTableCollapsible === false}"
                                         value="${i18n.t('qualified-pdf-upload.expand-all')}"
                                         @click="${() => {
                                             this.tableQueuedFilesTable.expandAll();
                                             this.queuedFilesTableExpanded = true;
                                         }}"
-                                        title="${i18n.t('qualified-pdf-upload.expand-all')}"
-                                        >${i18n.t('qualified-pdf-upload.expand-all')}</dbp-loading-button>
+                                        title="${i18n.t('qualified-pdf-upload.expand-all')}">
+                                        ${i18n.t('qualified-pdf-upload.expand-all')}
+                                    </dbp-loading-button>
 
-                                    <dbp-loading-button id="collapse-all-btn-queued-files"
+                                    <dbp-loading-button
+                                        id="collapse-all-btn-queued-files"
                                         class="${classMap({
-                                            hidden: !this.queuedFilesTableExpanded
+                                            hidden: !this.queuedFilesTableExpanded,
                                         })}"
-                                        ?disabled="${this.queuedFilesCount === 0 || this.queuedFilesTableCollapsible === false}"
+                                        ?disabled="${this.queuedFilesCount === 0 ||
+                                        this.queuedFilesTableCollapsible === false}"
                                         value="${i18n.t('qualified-pdf-upload.collapse-all')}"
                                         @click="${() => {
                                             this.tableQueuedFilesTable.collapseAll();
                                             this.queuedFilesTableExpanded = false;
                                         }}"
-                                        title="${i18n.t('qualified-pdf-upload.collapse-all')}"
-                                        >${i18n.t('qualified-pdf-upload.collapse-all')}</dbp-loading-button>
+                                        title="${i18n.t('qualified-pdf-upload.collapse-all')}">
+                                        ${i18n.t('qualified-pdf-upload.collapse-all')}
+                                    </dbp-loading-button>
 
-                                    <dbp-loading-button id="select-all-btn-queued-files"
+                                    <dbp-loading-button
+                                        id="select-all-btn-queued-files"
                                         class="${classMap({
-                                            hidden: this.queuedFilesTableAllSelected
+                                            hidden: this.queuedFilesTableAllSelected,
                                         })}"
                                         ?disabled="${this.queuedFilesCount === 0}"
                                         value="${i18n.t('qualified-pdf-upload.select-all')}"
@@ -464,12 +507,14 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                             this.queuedFilesTableAllSelected = true;
                                             this.tableQueuedFilesTable.selectAllRows();
                                         }}"
-                                        title="${i18n.t('qualified-pdf-upload.select-all')}"
-                                        >${i18n.t('qualified-pdf-upload.select-all')}</dbp-loading-button>
+                                        title="${i18n.t('qualified-pdf-upload.select-all')}">
+                                        ${i18n.t('qualified-pdf-upload.select-all')}
+                                    </dbp-loading-button>
 
-                                    <dbp-loading-button id="deselect-all-btn-queued-files"
+                                    <dbp-loading-button
+                                        id="deselect-all-btn-queued-files"
                                         class="${classMap({
-                                            hidden: !this.queuedFilesTableAllSelected
+                                            hidden: !this.queuedFilesTableAllSelected,
                                         })}"
                                         ?disabled="${this.queuedFilesCount === 0}"
                                         value="${i18n.t('qualified-pdf-upload.deselect-all')}"
@@ -477,8 +522,9 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                             this.queuedFilesTableAllSelected = false;
                                             this.tableQueuedFilesTable.deselectAllRows();
                                         }}"
-                                        title="${i18n.t('qualified-pdf-upload.deselect-all')}"
-                                        >${i18n.t('qualified-pdf-upload.deselect-all')}</dbp-loading-button>
+                                        title="${i18n.t('qualified-pdf-upload.deselect-all')}">
+                                        ${i18n.t('qualified-pdf-upload.deselect-all')}
+                                    </dbp-loading-button>
                                 </div>
                                 <div class="sign-actions">
                                     <!-- Buttons to start/stop signing process and clear queue -->
@@ -486,8 +532,8 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                         id="clear-queue-button-queued-files"
                                         @click="${this.clearQueuedFiles}"
                                         ?disabled="${this.queuedFilesCount === 0 ||
-                                            this.signingProcessActive ||
-                                            this.selectedFiles.length < 1}"
+                                        this.signingProcessActive ||
+                                        this.selectedFiles.length < 1}"
                                         class="button">
                                         ${i18n.t('official-pdf-upload.clear-all')}
                                     </button>
@@ -502,7 +548,9 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                         class="button is-primary ${classMap({
                                             hidden: this.signingProcessActive,
                                         })}">
-                                        ${i18n.t('official-pdf-upload.start-signing-process-button')}
+                                        ${i18n.t(
+                                            'official-pdf-upload.start-signing-process-button',
+                                        )}
                                     </button>
                                     <!-- -->
                                     <button
@@ -516,21 +564,19 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                 </div>
                             </div>
                             <!-- List of queued files -->
-                            <div
-                                class="control file-list">
+                            <div class="control file-list">
                                 <dbp-tabulator-table
                                     id="table-queued-files"
                                     identifier="table-queued-files"
                                     class="table-queued-files"
                                     lang="${this.lang}"
                                     select-rows-enabled
-                                    .options="${this.queuedFilesOptions}">
-                                </dbp-tabulator-table>
+                                    .options="${this.queuedFilesOptions}"></dbp-tabulator-table>
                             </div>
                             <!-- Text "queue empty" -->
                             <div
                                 class="empty-queue control ${classMap({
-                                    hidden: this.queuedFilesCount !== 0
+                                    hidden: this.queuedFilesCount !== 0,
                                 })}">
                                 ${i18n.t('official-pdf-upload.queued-files-empty1')}
                                 <br />
@@ -542,48 +588,60 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                             class="files-block signed-files field ${classMap({
                                 hidden: this.signedFilesCount === 0,
                             })}">
-                            <h3 class="section-title">${i18n.t('official-pdf-upload.signed-files-label')}</h3>
+                            <h3 class="section-title">
+                                ${i18n.t('official-pdf-upload.signed-files-label')}
+                            </h3>
                             <!-- Button to download all signed PDFs -->
                             <div class="field ${classMap({hidden: this.signedFilesCount === 0})}">
                                 <div class="control tabulator-actions">
                                     <div class="table-actions">
-                                        <dbp-loading-button id="expand-all-btn-signed-files"
+                                        <dbp-loading-button
+                                            id="expand-all-btn-signed-files"
                                             class="${classMap({
-                                                hidden: this.signedFilesTableExpanded
+                                                hidden: this.signedFilesTableExpanded,
                                             })}"
-                                            ?disabled="${this.signedFilesCount === 0 || this.signedFilesTableCollapsible === false}"
+                                            ?disabled="${this.signedFilesCount === 0 ||
+                                            this.signedFilesTableCollapsible === false}"
                                             value="${i18n.t('qualified-pdf-upload.expand-all')}"
                                             @click="${() => {
                                                 this.tableSignedFilesTable.expandAll();
                                                 this.signedFilesTableExpanded = true;
                                             }}"
-                                            title="${i18n.t('qualified-pdf-upload.expand-all')}"
-                                            >${i18n.t('qualified-pdf-upload.expand-all')}</dbp-loading-button>
+                                            title="${i18n.t('qualified-pdf-upload.expand-all')}">
+                                            ${i18n.t('qualified-pdf-upload.expand-all')}
+                                        </dbp-loading-button>
 
-                                        <dbp-loading-button id="collapse-all-btn-signed-files"
+                                        <dbp-loading-button
+                                            id="collapse-all-btn-signed-files"
                                             class="${classMap({
-                                                hidden: !this.signedFilesTableExpanded
+                                                hidden: !this.signedFilesTableExpanded,
                                             })}"
-                                            ?disabled="${this.signedFilesCount === 0 || this.signedFilesTableCollapsible === false}"
+                                            ?disabled="${this.signedFilesCount === 0 ||
+                                            this.signedFilesTableCollapsible === false}"
                                             value="${i18n.t('qualified-pdf-upload.collapse-all')}"
                                             @click="${() => {
                                                 this.tableSignedFilesTable.collapseAll();
                                                 this.signedFilesTableExpanded = false;
                                             }}"
-                                            title="${i18n.t('qualified-pdf-upload.collapse-all')}"
-                                            >${i18n.t('qualified-pdf-upload.collapse-all')}</dbp-loading-button>
+                                            title="${i18n.t('qualified-pdf-upload.collapse-all')}">
+                                            ${i18n.t('qualified-pdf-upload.collapse-all')}
+                                        </dbp-loading-button>
                                     </div>
                                     <div class="signed-actions">
-                                        <button id="clear-signed-files-btn"
+                                        <button
+                                            id="clear-signed-files-btn"
                                             class="clear-signed-files button"
-                                            @click="${this.clearSignedFiles}" class="button">
+                                            @click="${this.clearSignedFiles}"
+                                            class="button">
                                             ${i18n.t('official-pdf-upload.clear-all')}
                                         </button>
                                         <dbp-loading-button
                                             id="zip-download-button"
-                                            value="${i18n.t('official-pdf-upload.download-zip-button')}"
+                                            value="${i18n.t(
+                                                'official-pdf-upload.download-zip-button',
+                                            )}"
                                             title="${i18n.t(
-                                                'official-pdf-upload.download-zip-button-tooltip'
+                                                'official-pdf-upload.download-zip-button-tooltip',
                                             )}"
                                             class="zip-download-button"
                                             @click="${this.zipDownloadClickHandler}"
@@ -601,41 +659,50 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                         <!-- List of errored files -->
                         <div
                             class="files-block error-files field ${classMap({
-                                hidden: this.errorFilesCount === 0
+                                hidden: this.errorFilesCount === 0,
                             })}">
-                            <h3 class="section-title">${i18n.t('official-pdf-upload.error-files-label')}</h3>
+                            <h3 class="section-title">
+                                ${i18n.t('official-pdf-upload.error-files-label')}
+                            </h3>
                             <!-- Button to upload errored files again -->
                             <div class="field ${classMap({hidden: this.errorFilesCount === 0})}">
                                 <div class="control tabulator-actions">
                                     <div class="table-actions">
-                                        <dbp-loading-button id="expand-all-btn-failed-files"
+                                        <dbp-loading-button
+                                            id="expand-all-btn-failed-files"
                                             class="${classMap({
-                                                hidden: this.failedFilesTableExpanded
+                                                hidden: this.failedFilesTableExpanded,
                                             })}"
-                                            ?disabled="${this.errorFilesCount === 0 || this.failedFilesTableCollapsible === false}"
+                                            ?disabled="${this.errorFilesCount === 0 ||
+                                            this.failedFilesTableCollapsible === false}"
                                             value="${i18n.t('qualified-pdf-upload.expand-all')}"
                                             @click="${() => {
                                                 this.tableFailedFilesTable.expandAll();
                                                 this.failedFilesTableExpanded = true;
                                             }}"
-                                            title="${i18n.t('qualified-pdf-upload.expand-all')}"
-                                            >${i18n.t('qualified-pdf-upload.expand-all')}</dbp-loading-button>
+                                            title="${i18n.t('qualified-pdf-upload.expand-all')}">
+                                            ${i18n.t('qualified-pdf-upload.expand-all')}
+                                        </dbp-loading-button>
 
-                                        <dbp-loading-button id="collapse-all-btn-failed-files"
+                                        <dbp-loading-button
+                                            id="collapse-all-btn-failed-files"
                                             class="${classMap({
-                                                hidden: !this.failedFilesTableExpanded
+                                                hidden: !this.failedFilesTableExpanded,
                                             })}"
-                                            ?disabled="${this.errorFilesCount === 0 || this.failedFilesTableCollapsible === false}"
+                                            ?disabled="${this.errorFilesCount === 0 ||
+                                            this.failedFilesTableCollapsible === false}"
                                             value="${i18n.t('qualified-pdf-upload.collapse-all')}"
                                             @click="${() => {
                                                 this.tableFailedFilesTable.collapseAll();
                                                 this.failedFilesTableExpanded = false;
                                             }}"
-                                            title="${i18n.t('qualified-pdf-upload.collapse-all')}"
-                                            >${i18n.t('qualified-pdf-upload.collapse-all')}</dbp-loading-button>
+                                            title="${i18n.t('qualified-pdf-upload.collapse-all')}">
+                                            ${i18n.t('qualified-pdf-upload.collapse-all')}
+                                        </dbp-loading-button>
                                     </div>
                                     <div class="failed-actions">
-                                        <button id="clear-error-files-btn"
+                                        <button
+                                            id="clear-error-files-btn"
                                             @click="${this.clearErrorFiles}"
                                             class="clear-signed-files button">
                                             ${i18n.t('official-pdf-upload.clear-all')}
@@ -644,10 +711,10 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                             id="re-upload-all-button"
                                             ?disabled="${this.uploadInProgress}"
                                             value="${i18n.t(
-                                                'official-pdf-upload.re-upload-all-button'
+                                                'official-pdf-upload.re-upload-all-button',
                                             )}"
                                             title="${i18n.t(
-                                                'official-pdf-upload.re-upload-all-button-title'
+                                                'official-pdf-upload.re-upload-all-button-title',
                                             )}"
                                             class="is-right"
                                             @click="${this.reUploadAllClickHandler}"
@@ -665,7 +732,8 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                     </div>
                     <div class="modal-container">
                         <!-- PDF preview -->
-                        <dbp-modal id="pdf-preview"
+                        <dbp-modal
+                            id="pdf-preview"
                             modal-id="pdf-preview-modal"
                             class="modal--pdf-preview"
                             title="${this.withSigBlock
@@ -675,7 +743,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                 <div class="filename">
                                     <strong>${this.currentFile.name}</strong>
                                     (${humanFileSize(
-                                        this.currentFile !== undefined ? this.currentFile.size : 0
+                                        this.currentFile !== undefined ? this.currentFile.size : 0,
                                     )})
                                 </div>
                             </div>
@@ -691,20 +759,30 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                             </div>
                         </dbp-modal>
                         <!-- Annotation view -->
-                        <dbp-modal id="annotation-view"
+                        <dbp-modal
+                            id="annotation-view"
                             modal-id="annotation-view-modal"
                             class="modal--annotation-view ${classMap({
-                                hidden: !this.isAnnotationViewVisible
+                                hidden: !this.isAnnotationViewVisible,
                             })}"
                             title="${i18n.t('official-pdf-upload.annotation-view-label')}">
                             <div slot="header" class="header">
                                 <div class="modal-notification">
-                                    <dbp-notification id="dbp-modal-notification-annotation" inline lang="${this.lang}"></dbp-notification>
+                                    <dbp-notification
+                                        id="dbp-modal-notification-annotation"
+                                        inline
+                                        lang="${this.lang}"></dbp-notification>
                                 </div>
                                 <div class="filename">
-                                    <strong>${this.currentFile.file !== undefined ? this.currentFile.file.name : ''}</strong>
+                                    <strong>
+                                        ${this.currentFile.file !== undefined
+                                            ? this.currentFile.file.name
+                                            : ''}
+                                    </strong>
                                     (${humanFileSize(
-                                        this.currentFile.file !== undefined ? this.currentFile.file.size : 0
+                                        this.currentFile.file !== undefined
+                                            ? this.currentFile.file.size
+                                            : 0,
                                     )})
                                 </div>
                             </div>
@@ -712,8 +790,8 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                 <dbp-pdf-annotation-view
                                     lang="${this.lang}"
                                     @dbp-pdf-annotations-save="${this.processAnnotationEvent}"
-                                    @dbp-pdf-annotations-cancel="${this.processAnnotationCancelEvent}">
-                                </dbp-pdf-annotation-view>
+                                    @dbp-pdf-annotations-cancel="${this
+                                        .processAnnotationCancelEvent}"></dbp-pdf-annotation-view>
                             </div>
                         </dbp-modal>
                         <!-- File upload progress -->
@@ -733,7 +811,8 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                 class="notification is-warning ${classMap({
                     hidden: this.isLoggedIn() || this.isLoading(),
                 })}">
-                ${i18n.t('error-login-message')} <a href="#" @click="${this._onLoginClicked}">${i18n.t('error-login-link')}</a>
+                ${i18n.t('error-login-message')}
+                <a href="#" @click="${this._onLoginClicked}">${i18n.t('error-login-link')}</a>
             </div>
             <div
                 class="notification is-danger ${classMap({

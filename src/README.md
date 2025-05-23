@@ -1,4 +1,4 @@
-# Digital Signing  activities
+# Digital Signing activities
 
 Here you can find the individual activities of the `esign` app. If you want to use the whole app look at [esign](https://github.com/digital-blueprint/esign-app).
 
@@ -13,7 +13,7 @@ You can use every activity alone. Take a look at our examples [here](https://git
 These attributes are available for all activities listed here:
 
 - `lang` (optional, default: `de`): set to `de` or `en` for German or English
-  - example `lang="de"`
+    - example `lang="de"`
 
 ### dbp-qualified-signature-pdf-upload
 
@@ -47,7 +47,7 @@ Note that you will need a Keycloak server along with a client id for the domain 
   targets than local, comma seperated list
   actual supported: `local`, `clipboard`, `nextcloud`
     - example `file-handling-enabled-targets="local,nextcloud,clipboard"`
-    
+
 ### dbp-official-signature-pdf-upload
 
 You can use this activity to officially sign PDF documents like this:
@@ -68,7 +68,7 @@ Note that you will need a Keycloak server along with a client id for the domain 
   targets than local, comma seperated list
   actual supported: `local`, `clipboard`, `nextcloud`
     - example `file-handling-enabled-targets="local,nextcloud,clipboard"`
-    
+
 ### dbp-signature-verification
 
 This activity shows an information page where to verify signed documents, you can use it like this:
@@ -93,20 +93,20 @@ Example:
 
 ```html
 <dbp-signature-verification lang="de">
-  <template slot="additional-information">
-    <dbp-translated subscribe="lang">
-      <div slot="de">
-        <a target="_blank" href="#german-link">
-          Weitere Information zur Verifikation mit Adobe Reader
-        </a>
-      </div>
-      <div slot="en">
-        <a target="_blank" href="#english-link">
-          More information about verification with Adobe Reader
-        </a>
-      </div>
-    </dbp-translated>
-  </template>
+    <template slot="additional-information">
+        <dbp-translated subscribe="lang">
+            <div slot="de">
+                <a target="_blank" href="#german-link">
+                    Weitere Information zur Verifikation mit Adobe Reader
+                </a>
+            </div>
+            <div slot="en">
+                <a target="_blank" href="#english-link">
+                    More information about verification with Adobe Reader
+                </a>
+            </div>
+        </dbp-translated>
+    </template>
 </dbp-signature-verification>
 ```
 
@@ -125,7 +125,5 @@ you need to manually add these attributes so that the topic will work properly:
     requested-login-status
     analytics-event
     initial-file-handling-state
-    clipboard-files
->
-</dbp-signature>
+    clipboard-files></dbp-signature>
 ```

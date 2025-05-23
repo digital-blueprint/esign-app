@@ -83,25 +83,25 @@ You can find the documentation of these activities in the [esign activities docu
 
 You can add multiple attributes to the `<dbp-signature>` tag.
 
-| attribute name | value | Link to description |
-|----------------|-------| ------------|
-| `provider-root` | Boolean | [app-shell](https://github.com/digital-blueprint/toolkit/tree/main/packages/app-shell#attributes) |
-| `lang`         | String | [language-select](https://github.com/digital-blueprint/toolkit/tree/main/packages/language-select#attributes) |
-| `entry-point-url` | String | [app-shell](https://github.com/digital-blueprint/toolkit/tree/main/packages/app-shell#attributes) |
-| `keycloak-config` | Object | [app-shell](https://github.com/digital-blueprint/toolkit/tree/main/packages/app-shell#attributes) |
-| `base-path` | String | [app-shell](https://github.com/digital-blueprint/toolkit/tree/main/packages/app-shell#attributes) |
-| `src` | String | [app-shell](https://github.com/digital-blueprint/toolkit/tree/main/packages/app-shell#attributes) |
-| `html-overrides` | String | [common](https://github.com/digital-blueprint/toolkit/tree/main/packages/common#overriding-slots-in-nested-web-components) |
-| `themes` | Array | [theme-switcher](https://github.com/digital-blueprint/toolkit/tree/main/packages/theme-switcher#themes-attribute) |
-| `darkModeThemeOverride` | String | [theme-switcher](https://github.com/digital-blueprint/toolkit/tree/main/packages/theme-switcher#themes-attribute) |
-| `file-handling-enabled-targets` | String | [file-handling](https://github.com/digital-blueprint/toolkit/tree/main/packages/file-handling#attributes) |
-| `nextcloud-web-app-password-url` | String | [file-handling](https://github.com/digital-blueprint/toolkit/tree/main/packages/file-handling#attributes) |
-| `nextcloud-web-dav-url` | String | [file-handling](https://github.com/digital-blueprint/toolkit/tree/main/packages/file-handling#attributes) |
-| `nextcloud-file-url` | String | [file-handling](https://github.com/digital-blueprint/toolkit/tree/main/packages/file-handling#attributes) |
-| `nextcloud-auth-info` | String | [file-handling](https://github.com/digital-blueprint/toolkit/tree/main/packages/file-handling#attributes) |
-| `nextcloud-name` | String | [file-handling](https://github.com/digital-blueprint/toolkit/tree/main/packages/file-handling#attributes) |
-| `allow-annotating` | Boolean | [esign activities](https://github.com/digital-blueprint/esign-app/tree/main/src) |
-| `file-handling-enabled-targets` | String | [esign activities](https://github.com/digital-blueprint/esign-app/tree/main/src) |
+| attribute name                   | value   | Link to description                                                                                                        |
+| -------------------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `provider-root`                  | Boolean | [app-shell](https://github.com/digital-blueprint/toolkit/tree/main/packages/app-shell#attributes)                          |
+| `lang`                           | String  | [language-select](https://github.com/digital-blueprint/toolkit/tree/main/packages/language-select#attributes)              |
+| `entry-point-url`                | String  | [app-shell](https://github.com/digital-blueprint/toolkit/tree/main/packages/app-shell#attributes)                          |
+| `keycloak-config`                | Object  | [app-shell](https://github.com/digital-blueprint/toolkit/tree/main/packages/app-shell#attributes)                          |
+| `base-path`                      | String  | [app-shell](https://github.com/digital-blueprint/toolkit/tree/main/packages/app-shell#attributes)                          |
+| `src`                            | String  | [app-shell](https://github.com/digital-blueprint/toolkit/tree/main/packages/app-shell#attributes)                          |
+| `html-overrides`                 | String  | [common](https://github.com/digital-blueprint/toolkit/tree/main/packages/common#overriding-slots-in-nested-web-components) |
+| `themes`                         | Array   | [theme-switcher](https://github.com/digital-blueprint/toolkit/tree/main/packages/theme-switcher#themes-attribute)          |
+| `darkModeThemeOverride`          | String  | [theme-switcher](https://github.com/digital-blueprint/toolkit/tree/main/packages/theme-switcher#themes-attribute)          |
+| `file-handling-enabled-targets`  | String  | [file-handling](https://github.com/digital-blueprint/toolkit/tree/main/packages/file-handling#attributes)                  |
+| `nextcloud-web-app-password-url` | String  | [file-handling](https://github.com/digital-blueprint/toolkit/tree/main/packages/file-handling#attributes)                  |
+| `nextcloud-web-dav-url`          | String  | [file-handling](https://github.com/digital-blueprint/toolkit/tree/main/packages/file-handling#attributes)                  |
+| `nextcloud-file-url`             | String  | [file-handling](https://github.com/digital-blueprint/toolkit/tree/main/packages/file-handling#attributes)                  |
+| `nextcloud-auth-info`            | String  | [file-handling](https://github.com/digital-blueprint/toolkit/tree/main/packages/file-handling#attributes)                  |
+| `nextcloud-name`                 | String  | [file-handling](https://github.com/digital-blueprint/toolkit/tree/main/packages/file-handling#attributes)                  |
+| `allow-annotating`               | Boolean | [esign activities](https://github.com/digital-blueprint/esign-app/tree/main/src)                                           |
+| `file-handling-enabled-targets`  | String  | [esign activities](https://github.com/digital-blueprint/esign-app/tree/main/src)                                           |
 
 #### Mandatory attributes
 
@@ -110,13 +110,11 @@ you need to manually add these attributes so that the topic will work properly:
 
 ```html
 <dbp-signature
-        auth
-        requested-login-status
-        analytics-event
-        initial-file-handling-state
-        clipboard-files
->
-</dbp-signature>
+    auth
+    requested-login-status
+    analytics-event
+    initial-file-handling-state
+    clipboard-files></dbp-signature>
 ```
 
 ### Design
@@ -127,4 +125,3 @@ For frontend design customizations, such as logo, colors, font, favicon, and mor
 
 These are common slots for the app-shell. You can find the documentation of these slots in the [app-shell documentation](https://github.com/digital-blueprint/toolkit/tree/main/packages/app-shell).
 For the app specific slots take a look at the [esign activities documentation](https://github.com/digital-blueprint/esign-app/tree/main/src).
-

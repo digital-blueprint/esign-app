@@ -134,7 +134,7 @@ export const readArrayBufferFileContent = async (file) => {
 export const getPDFSignatureCount = async (file) => {
     const sigRegex = new RegExp(
         '(/Type\\s*/Sig|/Filter\\s*/Adobe.PPKLite)[\\s\\S]*?/SubFilter\\s*(/ETSI\\.CAdES\\.detached|/adbe\\.pkcs7\\.detached)',
-        'g'
+        'g',
     );
     const content = await readBinaryFileContent(file);
     let matches = 0;
@@ -190,7 +190,7 @@ export const addKeyValuePdfAnnotationsToAnnotationFactory = (
     annotationType,
     annotationTypeNameDE,
     annotationTypeNameEN,
-    value
+    value,
 ) => {
     annotationType = annotationType.trim();
     annotationTypeNameDE = annotationTypeNameDE.trim();
@@ -238,7 +238,7 @@ export const addPdfAnnotationToAnnotationFactory = (annotationFactory, author, c
             color: {r: 1, g: 1, b: 1}, // white to (maybe) hide it better
             opacity: 0.001, // we can't set to 0 because of "if (opacity) {"
             defaultAppearance: '/Invalid_font 0 Tf', // font size 0 to (maybe) hide it better
-        }
+        },
     );
     annotation.type = '/FreeText';
     annotationFactory.annotations.push(annotation);
