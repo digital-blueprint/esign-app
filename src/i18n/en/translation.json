@@ -99,7 +99,7 @@
         "upload-status-file-text": "({{fileSize}}) is currently uploading and being processed...",
         "upload-text": "You can use this application to add a qualified electronic signature to PDF documents. A qualified signature proves your identity and the integrity of the document and is legally equivalent to a handwritten signature. To start the signature process, please upload one or more PDF documents."
     },
-    "re-upload-file-button-title": "",
+    "re-upload-file-button-title": "Queue again",
     "remove-failed-file-button-title": "Remove failed document",
     "remove-queued-file-button-title": "Remove document from queue",
     "report-message-title": "Report!",

@@ -9,6 +9,8 @@ export class CustomTabulatorTable extends TabulatorTable {
         return {
             'dbp-esign-download-button': DownloadButton,
             'dbp-esign-filename-label': FilenameLabel,
+            'dbp-esign-reupload-button': ReUploadButton,
+            'dbp-esign-remove-failed-file-button': RemoveFailedFileButton,
         };
     }
 
@@ -110,6 +112,45 @@ export class DownloadButton extends LangMixin(ScopedElementsMixin(DBPLitElement)
                 class="download-button"
                 aria-label="${this._i18n.t('download-file-button-title')}"
                 title="${this._i18n.t('download-file-button-title')}"></dbp-icon-button>
+        `;
+    }
+}
+
+export class ReUploadButton extends LangMixin(ScopedElementsMixin(DBPLitElement), createInstance) {
+    static get scopedElements() {
+        return {
+            'dbp-icon-button': IconButton,
+        };
+    }
+
+    render() {
+        return html`
+            <dbp-icon-button
+                icon-name="reload"
+                class="re-upload-button"
+                aria-label="${this._i18n.t('re-upload-file-button-title')}"
+                title="${this._i18n.t('re-upload-file-button-title')}"></dbp-icon-button>
+        `;
+    }
+}
+
+export class RemoveFailedFileButton extends LangMixin(
+    ScopedElementsMixin(DBPLitElement),
+    createInstance,
+) {
+    static get scopedElements() {
+        return {
+            'dbp-icon-button': IconButton,
+        };
+    }
+
+    render() {
+        return html`
+            <dbp-icon-button
+                icon-name="trash"
+                class="delete-button"
+                aria-label="${this._i18n.t('remove-failed-file-button-title')}"
+                title="${this._i18n.t('remove-failed-file-button-title')}"></dbp-icon-button>
         `;
     }
 }

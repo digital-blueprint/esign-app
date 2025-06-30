@@ -99,7 +99,7 @@
         "upload-status-file-text": "({{fileSize}}) wird hochgeladen und verarbeitet...",
         "upload-text": " Hier können Sie PDF-Dateien mit einer persönlichen elektronischen (qualifizierten) Signatur versehen. Eine qualifizierte persönliche Signatur ist Ihre persönliche Unterschrift, die Ihre Identität sowie die Integrität des Dokuments nachweist und der eigenhändigen Unterschrift rechtlich gleichgestellt ist. Um den Signaturprozess zu starten, laden Sie bitte eine oder mehrere PDF-Dateien hoch."
     },
-    "re-upload-file-button-title": "",
+    "re-upload-file-button-title": "Erneut in die Warteschlange stellen",
     "remove-failed-file-button-title": "Fehlgeschlagenes Dokument entfernen",
     "remove-queued-file-button-title": "Dokument aus der Warteschlange entfernen",
     "report-message-title": "Bericht!",

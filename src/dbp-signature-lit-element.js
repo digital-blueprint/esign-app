@@ -1105,19 +1105,14 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
     }
 
     getFailedButtonsHtml(id, data) {
-        const i18n = this._i18n;
-        const ICON_SIZE = '24px';
-
         let controlDiv = document.createElement('div');
         controlDiv.classList.add('tabulator-failed-buttons');
 
         // Re upload button
-        const btnReupload = document.createElement('dbp-icon-button');
-        btnReupload.setAttribute('icon-name', 'reload');
-        btnReupload.classList.add('re-upload-button');
-        btnReupload.setAttribute('aria-label', i18n.t('re-upload-file-button-title'));
-        btnReupload.setAttribute('title', i18n.t('re-upload-file-button-title'));
-        btnReupload.style['font-size'] = ICON_SIZE;
+        const btnReupload = this.tableFailedFilesTable.createScopedElement(
+            'dbp-esign-reupload-button',
+        );
+        btnReupload.setAttribute('subscribe', 'lang');
         btnReupload.addEventListener('click', async (event) => {
             event.stopPropagation();
             this.fileQueueingClickHandler(data.file, id);
@@ -1125,11 +1120,10 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         controlDiv.appendChild(btnReupload);
 
         // Delete button
-        const btnDelete = document.createElement('dbp-icon-button');
-        btnDelete.setAttribute('icon-name', 'trash');
-        btnDelete.classList.add('delete-button');
-        btnDelete.setAttribute('aria-label', i18n.t('remove-failed-file-button-title'));
-        btnDelete.setAttribute('title', i18n.t('remove-failed-file-button-title'));
+        const btnDelete = this.tableFailedFilesTable.createScopedElement(
+            'dbp-esign-remove-failed-file-button',
+        );
+        btnDelete.setAttribute('subscribe', 'lang');
         btnDelete.addEventListener('click', async (event) => {
             event.stopPropagation();
             this.takeFailedFileFromQueue(id);
@@ -1702,9 +1696,16 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
                 if (data.file === undefined) {
                     return;
                 }
+
+                let filenameLabel = this.tableFailedFilesTable.createScopedElement(
+                    'dbp-esign-filename-label',
+                );
+                filenameLabel.setAttribute('subscribe', 'lang');
+                filenameLabel.file = data.file;
+
                 let fileData = {
                     index: id,
-                    fileName: `<span id="file-download-${id}" style="font-weight: bold;">${data.file.name}</span>`,
+                    fileName: filenameLabel,
                     fileSize: humanFileSize(data.file.size),
                     errorMessage: errorMessage,
                     buttons: this.getFailedButtonsHtml(id, data),
