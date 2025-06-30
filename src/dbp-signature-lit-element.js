@@ -925,37 +925,53 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         this.positionButtonObserver.disconnect();
     }
 
-    getActionButtonsHtml(id, annotations = true) {
+    getActionButtonsHtml(id, allowAnnotating = true) {
         const i18n = this._i18n;
         const fileName = this.queuedFiles[id].file.name;
-        const annotationCount = Array.isArray(this.queuedFilesAnnotations[id])
-            ? this.queuedFilesAnnotations[id].length
-            : 0;
+        const annotations = this.queuedFilesAnnotations[id] ?? [];
 
-        const buttons = `
-            <div class="tabulator-icon-buttons" data-id=${id}>
-                <dbp-icon-button icon-name="keyword-research" class="preview-button" aria-label="${i18n.t('preview-file-button-title')}" title="${i18n.t('preview-file-button-title')}" style="font-size: 24px;"></dbp-icon-button>
-                ${
-                    annotations
-                        ? `<span class="annotation-wrapper" style="display: inline-grid; grid-template-columns: 27px 23px; grid-template-rows: 23px 27px; width: 50px; height: 50px; position: relative;">
-                        <dbp-icon-button icon-name="bubble" class="annotation-button"
-                            aria-label="${i18n.t('annotation-button-title')}" title="${i18n.t('annotation-button-title')}"
-                            style="font-size: 24px; grid-area: 1 / 1 / 3 / 3; place-self: center;"></dbp-icon-button>
-                        ${
-                            annotationCount < 1
-                                ? '<span style="position: absolute; font-size: 19px; top: 21%; left: 40%; font-weight: bold;pointer-events:none;">+</span>'
-                                : `<span title="${i18n.t('annotations-count-text', {annotationCount: annotationCount})}"
-                                style="grid-column: 2 / 3; grid-row: 1 / 2; justify-self: start; align-self: end; background: var(--dbp-primary); color: var(--dbp-background);
-                                border: 1px solid var(--dbp-background); border-radius: 100%; display: block; width: 21px; height: 21px; text-align: center; line-height: 21px;
-                                font-size: 14px; font-weight: bold; z-index: 3;pointer-events:none;">${annotationCount}</span>`
-                        }
-                    </span>`
-                        : ''
-                }
-                <dbp-icon-button icon-name="trash" class="delete-button" aria-label="${i18n.t('remove-queued-file-button-title')}" title="${i18n.t('remove-queued-file-button-title')}" style="font-size: 24px;" data-filename="${fileName}"></dbp-icon-button>
-            </div>
-        `;
-        return buttons;
+        let previewButton = this.tableQueuedFilesTable.createScopedElement(
+            'dbp-esign-preview-button',
+        );
+        previewButton.setAttribute('subscribe', 'lang');
+        previewButton.addEventListener('click', (event) => {
+            event.stopPropagation();
+            this._('#pdf-preview').open();
+            this._('#pdf-preview dbp-pdf-preview').setAttribute('don-t-show-buttons', '');
+            this.showPreview(id, false, true);
+        });
+
+        let annotationsButton = this.tableQueuedFilesTable.createScopedElement(
+            'dbp-esign-annotations-button',
+        );
+        annotationsButton.setAttribute('subscribe', 'lang');
+        annotationsButton.annotations = annotations;
+        annotationsButton.addEventListener('click', (event) => {
+            event.stopPropagation();
+            this._('#annotation-view').open();
+            this.showAnnotationView(id, 'text-selected');
+        });
+
+        let deleteButton =
+            this.tableQueuedFilesTable.createScopedElement('dbp-esign-delete-button');
+        deleteButton.setAttribute('subscribe', 'lang');
+        deleteButton.addEventListener('click', (event) => {
+            event.stopPropagation();
+            const result = confirm(i18n.t('confirm-delete-file', {file: fileName}));
+            if (result) {
+                this.takeFileFromQueue(id);
+            }
+        });
+
+        let container = document.createElement('div');
+        container.style.display = 'flex';
+        container.appendChild(previewButton);
+        if (allowAnnotating) {
+            container.appendChild(annotationsButton);
+        }
+        container.appendChild(deleteButton);
+
+        return container;
     }
 
     getPositioningSwitch(id, placement, needPositioning) {
@@ -1238,72 +1254,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
                     width: 160,
                     hozAlign: 'right',
                     headerHozAlign: 'center',
-                    formatter: (cell, formatterParams, onRendered) => {
-                        const buttonElements = cell.getValue();
-
-                        onRendered(() => {
-                            // Add EventListeners
-                            const cellElement = cell.getElement();
-                            const id = cell.getRow().getIndex();
-
-                            // Preview button eventListener
-                            const previewButton = cellElement.querySelector('.preview-button');
-                            if (
-                                previewButton &&
-                                !previewButton.hasAttribute('data-listener-added')
-                            ) {
-                                previewButton.addEventListener('click', (event) => {
-                                    event.stopPropagation();
-                                    this._('#pdf-preview').open();
-                                    this._('#pdf-preview dbp-pdf-preview').setAttribute(
-                                        'don-t-show-buttons',
-                                        '',
-                                    );
-                                    this.showPreview(id, false, true);
-                                });
-                                previewButton.setAttribute('data-listener-added', 'true');
-                            }
-
-                            // Annotation button eventListener
-                            const annotationWrapper =
-                                cellElement.querySelector('.annotation-wrapper');
-                            if (
-                                annotationWrapper &&
-                                !annotationWrapper.hasAttribute('data-listener-added')
-                            ) {
-                                annotationWrapper.addEventListener('click', (event) => {
-                                    event.stopPropagation();
-                                    this._('#annotation-view').open();
-                                    this.showAnnotationView(id, 'text-selected');
-                                });
-                                annotationWrapper.setAttribute('data-listener-added', 'true');
-                            }
-
-                            // Delete button eventListener
-                            const deleteButton = cellElement.querySelector('.delete-button');
-                            if (deleteButton && !deleteButton.hasAttribute('data-listener-added')) {
-                                deleteButton.addEventListener('click', (event) => {
-                                    event.stopPropagation();
-                                    const editButton = /** @type {HTMLElement} */ (event.target);
-                                    const fileName =
-                                        editButton.getAttribute('data-filename') ||
-                                        i18n.t('this-file');
-                                    const result = confirm(
-                                        i18n.t('confirm-delete-file', {file: fileName}),
-                                    );
-
-                                    if (result) {
-                                        this.takeFileFromQueue(id);
-                                    }
-                                });
-                                deleteButton.setAttribute('data-listener-added', 'true');
-                            }
-
-                            return cellElement;
-                        });
-
-                        return buttonElements;
-                    },
+                    formatter: 'html',
                     responsive: 1,
                 },
             ],

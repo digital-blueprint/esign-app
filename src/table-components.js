@@ -12,6 +12,9 @@ export class CustomTabulatorTable extends TabulatorTable {
             'dbp-esign-filename-label': FilenameLabel,
             'dbp-esign-reupload-button': ReUploadButton,
             'dbp-esign-remove-failed-file-button': RemoveFailedFileButton,
+            'dbp-esign-preview-button': PreviewButton,
+            'dbp-esign-delete-button': DeleteButton,
+            'dbp-esign-annotations-button': AnnotationsButton,
         };
     }
 
@@ -169,6 +172,137 @@ export class RemoveFailedFileButton extends LangMixin(
                 class="delete-button"
                 aria-label="${this._i18n.t('remove-failed-file-button-title')}"
                 title="${this._i18n.t('remove-failed-file-button-title')}"></dbp-icon-button>
+        `;
+    }
+}
+
+export class PreviewButton extends LangMixin(ScopedElementsMixin(DBPLitElement), createInstance) {
+    static get scopedElements() {
+        return {
+            'dbp-icon-button': IconButton,
+        };
+    }
+
+    render() {
+        return html`
+            <dbp-icon-button
+                icon-name="keyword-research"
+                class="preview-button"
+                aria-label="${this._i18n.t('preview-file-button-title')}"
+                title="${this._i18n.t('preview-file-button-title')}"></dbp-icon-button>
+        `;
+    }
+}
+
+export class AnnotationsButton extends LangMixin(
+    ScopedElementsMixin(DBPLitElement),
+    createInstance,
+) {
+    static get scopedElements() {
+        return {
+            'dbp-icon-button': IconButton,
+        };
+    }
+
+    static get properties() {
+        return {
+            annotations: {type: Array},
+        };
+    }
+
+    static get styles() {
+        return css`
+            .annotation-wrapper {
+                display: inline-grid;
+                grid-template-columns: 27px 23px;
+                grid-template-rows: 23px 27px;
+                width: 50px;
+                height: 50px;
+                position: relative;
+            }
+
+            .annotation-button {
+                font-size: 24px;
+                grid-area: 1 / 1 / 3 / 3;
+                place-self: center;
+            }
+
+            .annotation-plus {
+                position: absolute;
+                font-size: 19px;
+                top: 21%;
+                left: 40%;
+                font-weight: bold;
+                pointer-events: none;
+            }
+
+            .annotation-count {
+                grid-column: 2 / 3;
+                grid-row: 1 / 2;
+                justify-self: start;
+                align-self: end;
+                background: var(--dbp-primary);
+                color: var(--dbp-background);
+                border: 1px solid var(--dbp-background);
+                border-radius: 100%;
+                display: block;
+                width: 21px;
+                height: 21px;
+                text-align: center;
+                line-height: 21px;
+                font-size: 14px;
+                font-weight: bold;
+                z-index: 3;
+                pointer-events: none;
+            }
+        `;
+    }
+
+    constructor() {
+        super();
+        this.annotations = [];
+    }
+
+    render() {
+        return html`
+            <span class="annotation-wrapper">
+                <dbp-icon-button
+                    icon-name="bubble"
+                    class="annotation-button"
+                    aria-label="${this._i18n.t('annotation-button-title')}"
+                    title="${this._i18n.t('annotation-button-title')}"></dbp-icon-button>
+                ${this.annotations.length < 1
+                    ? html`
+                          <span class="annotation-plus">+</span>
+                      `
+                    : html`
+                          <span
+                              class="annotation-count"
+                              title="${this._i18n.t('annotations-count-text', {
+                                  annotationCount: this.annotations.length,
+                              })}">
+                              ${this.annotations.length}
+                          </span>
+                      `}
+            </span>
+        `;
+    }
+}
+
+export class DeleteButton extends LangMixin(ScopedElementsMixin(DBPLitElement), createInstance) {
+    static get scopedElements() {
+        return {
+            'dbp-icon-button': IconButton,
+        };
+    }
+
+    render() {
+        return html`
+            <dbp-icon-button
+                icon-name="trash"
+                class="delete-button"
+                aria-label="${this._i18n.t('remove-queued-file-button-title')}"
+                title="${this._i18n.t('remove-queued-file-button-title')}"></dbp-icon-button>
         `;
     }
 }
