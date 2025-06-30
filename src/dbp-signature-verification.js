@@ -1,40 +1,15 @@
 import {createInstance} from './i18n.js';
 import {css, html} from 'lit';
-import {ScopedElementsMixin} from '@dbp-toolkit/common';
+import {LangMixin, ScopedElementsMixin} from '@dbp-toolkit/common';
 import DBPLitElement from '@dbp-toolkit/common/dbp-lit-element';
 import * as commonUtils from '@dbp-toolkit/common/utils';
 import * as commonStyles from '@dbp-toolkit/common/styles';
 import metadata from './dbp-signature-verification.metadata.json';
 import {Activity} from './activity.js';
 
-class SignatureVerification extends ScopedElementsMixin(DBPLitElement) {
-    constructor() {
-        super();
-        this._i18n = createInstance();
-        this.lang = this._i18n.language;
-    }
-
+class SignatureVerification extends LangMixin(ScopedElementsMixin(DBPLitElement), createInstance) {
     static get scopedElements() {
         return {};
-    }
-
-    static get properties() {
-        return {
-            ...super.properties,
-            lang: {type: String},
-        };
-    }
-
-    update(changedProperties) {
-        changedProperties.forEach((oldValue, propName) => {
-            switch (propName) {
-                case 'lang':
-                    this._i18n.changeLanguage(this.lang);
-                    break;
-            }
-        });
-
-        super.update(changedProperties);
     }
 
     static get styles() {

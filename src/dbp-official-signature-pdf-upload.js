@@ -1,4 +1,3 @@
-import {createInstance} from './i18n.js';
 import {humanFileSize} from '@dbp-toolkit/common/i18next.js';
 import {css, html} from 'lit';
 import {ScopedElementsMixin} from '@dbp-toolkit/common';
@@ -31,8 +30,6 @@ import {CustomTabulatorTable} from './table-components.js';
 class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElement) {
     constructor() {
         super();
-        this._i18n = createInstance();
-        this.lang = this._i18n.language;
         this.entryPointUrl = '';
         this.nextcloudWebAppPasswordURL = '';
         this.nextcloudWebDavURL = '';
@@ -318,10 +315,11 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
     }
 
     update(changedProperties) {
+        super.update(changedProperties);
+
         changedProperties.forEach((oldValue, propName) => {
             switch (propName) {
                 case 'lang':
-                    this._i18n.changeLanguage(this.lang);
                     this.setQueuedFilesTabulatorTable();
                     break;
                 case 'entryPointUrl':
@@ -343,7 +341,6 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                     break;
             }
         });
-        super.update(changedProperties);
     }
 
     clearQueuedFiles() {

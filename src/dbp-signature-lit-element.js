@@ -7,11 +7,11 @@ import {SignatureEntry} from './signature-entry.js';
 import {getPDFSignatureCount} from './utils';
 import {send} from '@dbp-toolkit/common/notification';
 import {humanFileSize} from '@dbp-toolkit/common/i18next';
+import {LangMixin} from '@dbp-toolkit/common';
 
-export default class DBPSignatureLitElement extends BaseLitElement {
+export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, createInstance) {
     constructor() {
         super();
-        this._i18n = createInstance();
         this.queuedFiles = [];
         this.queuedFilesCount = 0;
         this.uploadInProgress = false;
@@ -106,7 +106,6 @@ export default class DBPSignatureLitElement extends BaseLitElement {
     static get properties() {
         return {
             ...super.properties,
-            lang: {type: String},
             entryPointUrl: {type: String, attribute: 'entry-point-url'},
             nextcloudWebAppPasswordURL: {type: String, attribute: 'nextcloud-web-app-password-url'},
             nextcloudWebDavURL: {type: String, attribute: 'nextcloud-webdav-url'},
@@ -735,10 +734,6 @@ export default class DBPSignatureLitElement extends BaseLitElement {
             withSigBlock, //this.queuedFilesPlacementModes[key] === "manual",
             placementData,
         );
-    }
-
-    onLanguageChanged(e) {
-        this.lang = e.detail.lang;
     }
 
     /**

@@ -1,6 +1,6 @@
 import {html, css} from 'lit';
 import {createInstance} from './i18n.js';
-import {ScopedElementsMixin, IconButton, Icon} from '@dbp-toolkit/common';
+import {ScopedElementsMixin, IconButton, Icon, LangMixin} from '@dbp-toolkit/common';
 import {TabulatorTable} from '@dbp-toolkit/tabulator-table';
 import DBPLitElement from '@dbp-toolkit/common/dbp-lit-element';
 
@@ -46,11 +46,9 @@ export class CustomTabulatorTable extends TabulatorTable {
     }
 }
 
-export class FilenameLabel extends ScopedElementsMixin(DBPLitElement) {
+export class FilenameLabel extends LangMixin(ScopedElementsMixin(DBPLitElement), createInstance) {
     constructor() {
         super();
-        this._i18n = createInstance();
-        this.lang = this._i18n.language;
         this.file = null;
         this.isDownloaded = false;
     }
@@ -58,7 +56,6 @@ export class FilenameLabel extends ScopedElementsMixin(DBPLitElement) {
     static get properties() {
         return {
             ...super.properties,
-            lang: {type: String},
             file: {type: Object, attribute: false},
             isDownloaded: {type: Boolean, reflect: true},
         };
@@ -68,18 +65,6 @@ export class FilenameLabel extends ScopedElementsMixin(DBPLitElement) {
         return {
             'dbp-icon': Icon,
         };
-    }
-
-    update(changedProperties) {
-        changedProperties.forEach((oldValue, propName) => {
-            switch (propName) {
-                case 'lang':
-                    this._i18n.changeLanguage(this.lang);
-                    break;
-            }
-        });
-
-        super.update(changedProperties);
     }
 
     static get styles() {
@@ -111,36 +96,11 @@ export class FilenameLabel extends ScopedElementsMixin(DBPLitElement) {
     }
 }
 
-export class DownloadButton extends ScopedElementsMixin(DBPLitElement) {
-    constructor() {
-        super();
-        this._i18n = createInstance();
-        this.lang = this._i18n.language;
-    }
-
-    static get properties() {
-        return {
-            ...super.properties,
-            lang: {type: String},
-        };
-    }
-
+export class DownloadButton extends LangMixin(ScopedElementsMixin(DBPLitElement), createInstance) {
     static get scopedElements() {
         return {
             'dbp-icon-button': IconButton,
         };
-    }
-
-    update(changedProperties) {
-        changedProperties.forEach((oldValue, propName) => {
-            switch (propName) {
-                case 'lang':
-                    this._i18n.changeLanguage(this.lang);
-                    break;
-            }
-        });
-
-        super.update(changedProperties);
     }
 
     render() {

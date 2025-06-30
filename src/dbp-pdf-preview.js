@@ -2,7 +2,7 @@ import {createInstance} from './i18n.js';
 import {css, html} from 'lit';
 import {classMap} from 'lit/directives/class-map.js';
 import {live} from 'lit/directives/live.js';
-import {ScopedElementsMixin} from '@dbp-toolkit/common';
+import {LangMixin, ScopedElementsMixin} from '@dbp-toolkit/common';
 import DBPLitElement from '@dbp-toolkit/common/dbp-lit-element';
 import {MiniSpinner, Icon} from '@dbp-toolkit/common';
 import * as commonUtils from '@dbp-toolkit/common/utils';
@@ -14,11 +14,9 @@ import {send} from '@dbp-toolkit/common/notification';
 /**
  * PdfPreview web component
  */
-export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
+export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), createInstance) {
     constructor() {
         super();
-        this._i18n = createInstance();
-        this.lang = this._i18n.language;
         this.pdfDoc = null;
         this.currentPage = 0;
         this.totalPages = 0;
@@ -55,7 +53,6 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
     static get properties() {
         return {
             ...super.properties,
-            lang: {type: String},
             currentPage: {type: Number, attribute: false},
             totalPages: {type: Number, attribute: false},
             isShowPage: {type: Boolean, attribute: false},
@@ -69,18 +66,6 @@ export class PdfPreview extends ScopedElementsMixin(DBPLitElement) {
             allowSignatureRotation: {type: Boolean, attribute: 'allow-signature-rotation'},
             showSignaturePlacementDescription: {type: Boolean},
         };
-    }
-
-    update(changedProperties) {
-        changedProperties.forEach((oldValue, propName) => {
-            switch (propName) {
-                case 'lang':
-                    this._i18n.changeLanguage(this.lang);
-                    break;
-            }
-        });
-
-        super.update(changedProperties);
     }
 
     _onWindowResize() {
