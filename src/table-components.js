@@ -3,6 +3,7 @@ import {createInstance} from './i18n.js';
 import {ScopedElementsMixin, IconButton, Icon, LangMixin} from '@dbp-toolkit/common';
 import {TabulatorTable} from '@dbp-toolkit/tabulator-table';
 import DBPLitElement from '@dbp-toolkit/common/dbp-lit-element';
+import {TooltipElement} from '@dbp-toolkit/tooltip';
 
 export class CustomTabulatorTable extends TabulatorTable {
     static get scopedElements() {
@@ -53,6 +54,7 @@ export class FilenameLabel extends LangMixin(ScopedElementsMixin(DBPLitElement),
         super();
         this.file = null;
         this.isDownloaded = false;
+        this.isPlacementMissing = false;
     }
 
     static get properties() {
@@ -60,12 +62,14 @@ export class FilenameLabel extends LangMixin(ScopedElementsMixin(DBPLitElement),
             ...super.properties,
             file: {type: Object, attribute: false},
             isDownloaded: {type: Boolean, reflect: true},
+            isPlacementMissing: {type: Boolean, reflect: true},
         };
     }
 
     static get scopedElements() {
         return {
             'dbp-icon': Icon,
+            'dbp-tooltip': TooltipElement,
         };
     }
 
@@ -79,6 +83,11 @@ export class FilenameLabel extends LangMixin(ScopedElementsMixin(DBPLitElement),
                 margin-left: 20px;
                 top: -0.1em;
             }
+            dbp-tooltip {
+                font-size: 24px;
+                margin-bottom: 4px;
+                margin-left: 10px;
+            }
         `;
     }
 
@@ -86,6 +95,15 @@ export class FilenameLabel extends LangMixin(ScopedElementsMixin(DBPLitElement),
         let i18n = this._i18n;
         return html`
             <span>${this.file ? this.file.name : ``}</span>
+            ${this.isPlacementMissing
+                ? html`
+                      <dbp-tooltip
+                          text-content="${i18n.t('label-manual-positioning-missing')}"
+                          icon-name="warning-high"
+                          role="tooltip"
+                          aria-label="${i18n.t('label-manual-positioning-missing')}"></dbp-tooltip>
+                  `
+                : ''}
             ${this.isDownloaded
                 ? html`
                       <dbp-icon

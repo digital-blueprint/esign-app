@@ -868,8 +868,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
                 const rowData = selectedRow.getData();
                 const fileNameCell = rowData.fileName;
                 const fileKey = rowData.index;
-                // Remove html tags from filename (the warning tooltip)
-                const fileName = fileNameCell.replace(/<[^>]*>/g, '').trim();
+                const fileName = fileNameCell.file.name;
                 const existingIndex = this.selectedFiles.findIndex((row) => row.key === rowIndex);
                 if (existingIndex === -1) {
                     this.selectedFiles = [
@@ -1327,14 +1326,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
                 const isManual = this.queuedFilesPlacementModes[id] === 'manual';
                 const placementMissing = this.queuedFilesNeedsPlacement.get(id) && !isManual;
                 if (placementMissing) noPlacementMissing = false;
-                const warning = placementMissing
-                    ? `<dbp-tooltip
-                        text-content="${i18n.t('label-manual-positioning-missing')}"
-                        icon-name="warning-high"
-                        role="tooltip"
-                        aria-label="${i18n.t('label-manual-positioning-missing')}"
-                        style="font-size:24px;margin-bottom:4px;margin-left:10px;"></dbp-tooltip>`
-                    : '';
+
                 // Show a legend if there are warnings
                 if (placementMissing && this._('.legend') === null) {
                     const legend = document.createElement('div');
@@ -1358,9 +1350,16 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
                     placementMissing,
                 );
 
+                let filenameLabel = this.tableQueuedFilesTable.createScopedElement(
+                    'dbp-esign-filename-label',
+                );
+                filenameLabel.setAttribute('subscribe', 'lang');
+                filenameLabel.file = file;
+                filenameLabel.isPlacementMissing = placementMissing;
+
                 let fileData = {
                     index: id,
-                    fileName: `${file.name} ${warning}`,
+                    fileName: filenameLabel,
                     fileSize: humanFileSize(file.size),
                     // profile: 'Personal',
                     positioning: positioningSwitch,
