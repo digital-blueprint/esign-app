@@ -570,6 +570,18 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                     select-rows-enabled
                                     .options="${this.queuedFilesOptions}"></dbp-tabulator-table>
                             </div>
+                            ${this.anyPlacementMissing
+                                ? html`
+                                      <div class="legend">
+                                          <dbp-icon
+                                              name="warning-high"
+                                              aria-hidden="true"></dbp-icon>
+                                          <span class="legend-description">
+                                              ${i18n.t('label-manual-positioning-missing')}
+                                          </span>
+                                      </div>
+                                  `
+                                : ''}
                             <!-- Text "queue empty" -->
                             <div
                                 class="empty-queue control ${classMap({

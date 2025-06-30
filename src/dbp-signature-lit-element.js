@@ -70,6 +70,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         this.selectedFilesProcessing = false;
         this.initialQueuedFilesCount = 0;
         this.positionButtonObserverAdded = false;
+        this.anyPlacementMissing = false;
         this.positionButtonObserver = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
                 if (mutation.type === 'childList') {
@@ -148,6 +149,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
             failedFilesTableExpanded: {type: Boolean, attribute: false},
             failedFilesTableCollapsible: {type: Boolean, attribute: false},
             selectedFiles: {type: Array, attribute: false},
+            anyPlacementMissing: {type: Boolean, state: true},
         };
     }
 
@@ -1312,12 +1314,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         };
 
         let tableFiles = [];
-        let noPlacementMissing = true;
-
-        // We remove the legend to make the language change work.
-        if (this._('.legend')) {
-            this._('.legend').remove();
-        }
+        this.anyPlacementMissing = false;
 
         const ids = Object.keys(this.queuedFiles);
         if (this.tableQueuedFilesTable) {
@@ -1325,21 +1322,8 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
                 const file = this.queuedFiles[id].file;
                 const isManual = this.queuedFilesPlacementModes[id] === 'manual';
                 const placementMissing = this.queuedFilesNeedsPlacement.get(id) && !isManual;
-                if (placementMissing) noPlacementMissing = false;
-
-                // Show a legend if there are warnings
-                if (placementMissing && this._('.legend') === null) {
-                    const legend = document.createElement('div');
-                    legend.classList.add('legend');
-                    const legendIcon = document.createElement('dbp-icon');
-                    legendIcon.setAttribute('name', 'warning-high');
-                    legendIcon.setAttribute('aria-hidden', 'true');
-                    legend.append(legendIcon);
-                    const legendDescription = document.createElement('span');
-                    legendDescription.classList.add('legend-description');
-                    legendDescription.textContent = i18n.t('label-manual-positioning-missing');
-                    legend.append(legendDescription);
-                    this._('.control.file-list').append(legend);
+                if (placementMissing) {
+                    this.anyPlacementMissing = true;
                 }
 
                 const actionButtons = this.getActionButtonsHtml(id, this.allowAnnotating);
@@ -1368,10 +1352,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
 
                 tableFiles.push(fileData);
             });
-
-            if (noPlacementMissing && this._('.legend')) {
-                this._('.legend').remove();
-            }
 
             queuedFilesOptions.data = tableFiles;
             this.queuedFilesOptions = queuedFilesOptions;
