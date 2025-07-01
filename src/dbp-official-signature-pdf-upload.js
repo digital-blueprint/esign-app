@@ -59,7 +59,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             'dbp-icon-button': IconButton,
             'dbp-loading-button': LoadingButton,
             'dbp-pdf-annotation-view': PdfAnnotationView,
-            'dbp-tabulator-table': CustomTabulatorTable,
+            'dbp-esign-tabulator-table': CustomTabulatorTable,
             'dbp-tooltip': TooltipElement,
             'dbp-modal': Modal,
         };
@@ -560,12 +560,12 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                             </div>
                             <!-- List of queued files -->
                             <div class="control file-list">
-                                <dbp-tabulator-table
+                                <dbp-esign-tabulator-table
                                     id="table-queued-files"
                                     identifier="table-queued-files"
                                     class="table-queued-files"
                                     lang="${this.lang}"
-                                    select-rows-enabled></dbp-tabulator-table>
+                                    select-rows-enabled></dbp-esign-tabulator-table>
                             </div>
                             ${this.anyPlacementMissing
                                 ? html`
@@ -655,11 +655,11 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                     </div>
                                 </div>
                             </div>
-                            <dbp-tabulator-table
+                            <dbp-esign-tabulator-table
                                 id="table-signed-files"
                                 identifier="table-signed-files"
                                 class="table-signed-files"
-                                lang="${this.lang}"></dbp-tabulator-table>
+                                lang="${this.lang}"></dbp-esign-tabulator-table>
                         </div>
                         <!-- List of errored files -->
                         <div
@@ -727,11 +727,11 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                     </div>
                                 </div>
                             </div>
-                            <dbp-tabulator-table
+                            <dbp-esign-tabulator-table
                                 id="table-failed-files"
                                 identifier="table-failed-files"
                                 class="table-failed-files"
-                                lang="${this.lang}"></dbp-tabulator-table>
+                                lang="${this.lang}"></dbp-esign-tabulator-table>
                         </div>
                     </div>
                     <div class="modal-container">
