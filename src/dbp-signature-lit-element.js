@@ -28,9 +28,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         this.tableQueuedFilesTable = null;
         this.tableSignedFilesTable = null;
         this.tableFailedFilesTable = null;
-        this.queuedFilesOptions = {};
-        this.signedFilesOptions = {};
-        this.failedFilesOptions = {};
         this.queuedFilesTableExpanded = false;
         this.queuedFilesTableAllSelected = false;
         this.queuedFilesTableCollapsible = false;
@@ -1142,7 +1139,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
             });
 
             queuedFilesOptions.data = tableFiles;
-            this.queuedFilesOptions = queuedFilesOptions;
+            this.tableQueuedFilesTable.options = queuedFilesOptions;
             this.tableQueuedFilesTable.setData(tableFiles);
 
             // Set selected rows
@@ -1278,7 +1275,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
             });
 
             signedFilesOptions.data = tableFiles;
-            this.signedFilesOptions = signedFilesOptions;
+            this.tableSignedFilesTable.options = signedFilesOptions;
             this.tableSignedFilesTable.setData(tableFiles);
         }
     }
@@ -1411,7 +1408,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
             });
 
             failedFilesOptions.data = tableFiles;
-            this.failedFilesOptions = failedFilesOptions;
+            this.tableFailedFilesTable.options = failedFilesOptions;
             this.tableFailedFilesTable.setData(tableFiles);
         }
     }

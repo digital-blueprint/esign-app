@@ -704,8 +704,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                     identifier="table-queued-files"
                                     class="table-queued-files"
                                     lang="${this.lang}"
-                                    select-rows-enabled
-                                    .options="${this.queuedFilesOptions}"></dbp-tabulator-table>
+                                    select-rows-enabled></dbp-tabulator-table>
                             </div>
                             ${this.anyPlacementMissing
                                 ? html`
@@ -799,8 +798,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                 id="table-signed-files"
                                 identifier="table-signed-files"
                                 class="table-signed-files"
-                                lang="${this.lang}"
-                                .options="${this.signedFilesOptions}"></dbp-tabulator-table>
+                                lang="${this.lang}"></dbp-tabulator-table>
                         </div>
                         <!-- List of errored files -->
                         <div
@@ -872,8 +870,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                 id="table-failed-files"
                                 identifier="table-failed-files"
                                 class="table-failed-files"
-                                lang="${this.lang}"
-                                .options="${this.failedFilesOptions}"></dbp-tabulator-table>
+                                lang="${this.lang}"></dbp-tabulator-table>
                         </div>
                     </div>
                     <div class="modal-container">
