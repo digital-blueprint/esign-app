@@ -81,6 +81,7 @@ export class FilenameLabel extends LangMixin(ScopedElementsMixin(DBPLitElement),
         return css`
             :host {
                 display: flex;
+                align-items: center;
             }
             dbp-icon {
                 font-size: 24px;
