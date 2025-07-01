@@ -122,8 +122,6 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         );
         window.removeEventListener('dbp-pdf-annotations-save', this._handleAnnotationModalClosing);
 
-        this.stopPositionButtonObserver();
-
         super.disconnectedCallback();
     }
 

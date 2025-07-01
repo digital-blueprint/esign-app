@@ -15,6 +15,7 @@ export class CustomTabulatorTable extends TabulatorTable {
             'dbp-esign-preview-button': PreviewButton,
             'dbp-esign-delete-button': DeleteButton,
             'dbp-esign-annotations-button': AnnotationsButton,
+            'dbp-esign-positioning-switch': PositioningSwitch,
         };
     }
 
@@ -303,6 +304,192 @@ export class DeleteButton extends LangMixin(ScopedElementsMixin(DBPLitElement), 
                 class="delete-button"
                 aria-label="${this._i18n.t('remove-queued-file-button-title')}"
                 title="${this._i18n.t('remove-queued-file-button-title')}"></dbp-icon-button>
+        `;
+    }
+}
+
+export class PositioningSwitch extends LangMixin(
+    ScopedElementsMixin(DBPLitElement),
+    createInstance,
+) {
+    static get styles() {
+        return css`
+            .toggle-wrapper {
+                --toggle-width: 80px;
+                --toggle-height: 34px;
+                --icon-width: 35px;
+                --icon-height: 28px;
+                --transition-time: 0.3s;
+                --gap: 2px;
+                --checkmark-color: var(--dbp-muted);
+                --checkmark-color-need-positioning: var(--dbp-danger);
+                --dbp-border-radius: 4px;
+                overflow: hidden;
+                position: relative;
+                display: flex;
+                align-items: center;
+            }
+
+            .toggle {
+                position: relative;
+                display: inline-block;
+                padding: 0 8px;
+            }
+
+            .label-text {
+                line-height: var(--toggle-height);
+            }
+
+            /* the switch */
+            label.toggle-item {
+                width: var(--toggle-width);
+                background: var(--dbp-muted);
+                color: var(--dbp-background);
+                height: var(--toggle-height);
+                display: block;
+                border-radius: var(--dbp-border-radius);
+                border: 1px solid var(--dbp-muted);
+                position: relative;
+                transition: all var(--transition-time) ease;
+                cursor: pointer;
+                margin: 0;
+            }
+
+            label.toggle-item.on {
+                background-color: var(--dbp-info);
+                border: 1px solid var(--dbp-info);
+            }
+
+            .label-off,
+            .label-on {
+                font-weight: bold;
+                position: absolute;
+                transition: opacity 0.1s ease;
+                transition-delay: 0.3s;
+                opacity: 1;
+                height: var(--toggle-height);
+                line-height: var(--toggle-height);
+            }
+
+            .label-off {
+                /*left: calc(100% - var(--icon-size) - var(--gap));*/
+                right: 6px;
+            }
+
+            .label-on {
+                /*right: calc(100% - var(--icon-size) - var(--gap));*/
+                left: 6px;
+            }
+
+            input {
+                height: 40px;
+                left: 0;
+                opacity: 0;
+                position: absolute;
+                top: 0;
+                width: 40px;
+                margin: 0;
+                padding: 0;
+            }
+
+            .toggle {
+                /* keyboard focus visibility */
+                .input-checkbox:focus-visible + .toggle-item {
+                    box-shadow: 0px 0px 3px 1px var(--dbp-primary);
+                }
+
+                /* the button */
+                .check {
+                    border-radius: var(--dbp-border-radius);
+                    width: var(--icon-width);
+                    height: var(--icon-height);
+                    position: absolute;
+                    background: var(--dbp-background);
+                    transition: 0.4s ease;
+                    top: var(--gap);
+                    bottom: var(--gap);
+                    left: var(--gap);
+                }
+            }
+
+            .need-positioning {
+                label.toggle-item {
+                    border-color: var(--checkmark-color-need-positioning);
+                    background-color: var(--checkmark-color-need-positioning);
+                    color: var(--dbp-background);
+                }
+            }
+
+            .hidden {
+                display: none;
+            }
+
+            .sr-only {
+                position: absolute !important;
+                clip: rect(1px, 1px, 1px, 1px);
+                overflow: hidden;
+                height: 1px;
+                width: 1px;
+                word-wrap: normal;
+            }
+
+            /* animation */
+            .input-checkbox:checked + label {
+                .check {
+                    left: calc(100% - var(--icon-width) - var(--gap));
+                }
+            }
+        `;
+    }
+
+    constructor() {
+        super();
+        this.needPositioning = false;
+        this.checked = false;
+    }
+
+    static get properties() {
+        return {
+            needPositioning: {type: Boolean, attribute: 'need-positioning'},
+            checked: {type: Boolean, reflect: true},
+        };
+    }
+
+    _handleToggle(event) {
+        this.checked = event.target.checked;
+
+        this.dispatchEvent(
+            new CustomEvent('toggle-change', {
+                detail: {
+                    checked: this.checked,
+                },
+                bubbles: true,
+            }),
+        );
+    }
+
+    render() {
+        return html`
+            <div class="toggle-wrapper">
+                <div class="toggle ${this.needPositioning ? 'need-positioning' : ''}">
+                    <input
+                        id="toggle-input"
+                        class="input-checkbox"
+                        type="checkbox"
+                        role="switch"
+                        .checked="${this.checked}"
+                        @change="${this._handleToggle}" />
+                    <label class="toggle-item ${this.checked ? 'on' : 'off'}" for="toggle-input">
+                        <span class="label-on" ?aria-hidden="${!this.checked}">
+                            ${this._i18n.t('toggle-switch-label-text-on')}
+                        </span>
+                        <span class="label-off" ?aria-hidden="${this.checked}">
+                            ${this._i18n.t('toggle-switch-label-text-off')}
+                        </span>
+                        <div class="check"></div>
+                    </label>
+                </div>
+            </div>
         `;
     }
 }

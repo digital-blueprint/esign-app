@@ -1,5 +1,4 @@
 import {createInstance} from './i18n.js';
-import {css, unsafeCSS} from 'lit';
 import * as utils from './utils';
 import * as commonUtils from '@dbp-toolkit/common/utils';
 import {BaseLitElement} from './base-element.js';
@@ -69,39 +68,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         this.selectedFiles = [];
         this.selectedFilesProcessing = false;
         this.initialQueuedFilesCount = 0;
-        this.positionButtonObserverAdded = false;
         this.anyPlacementMissing = false;
-        this.positionButtonObserver = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                if (mutation.type === 'childList') {
-                    const collapsedSections =
-                        this.tableQueuedFilesTable.shadowRoot.querySelectorAll(
-                            '.tabulator-responsive-collapse',
-                        );
-                    // Add event listener to collapsed cells buttons.
-                    // cellClick() is not run on collapsed fields.
-                    collapsedSections.forEach((section) => {
-                        const positionToggler = section.querySelector('.toggle-item');
-                        if (positionToggler) {
-                            if (positionToggler.classList.contains('event-listener-added')) {
-                                return;
-                            } else {
-                                positionToggler.classList.add('event-listener-added');
-                                const rows = this.tableQueuedFilesTable.getRows();
-                                const rowId = positionToggler.getAttribute('data-row-id');
-                                const row = rows[rowId - 1];
-                                if (row) {
-                                    const cell = row.getCell('positioning');
-                                    positionToggler.addEventListener('click', (event) => {
-                                        this.handlePositionButtonClickEvent(event, cell);
-                                    });
-                                }
-                            }
-                        }
-                    });
-                }
-            });
-        });
     }
 
     static get properties() {
@@ -905,26 +872,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         }
     }
 
-    startPositionButtonObserver() {
-        if (this.positionButtonObserverAdded) {
-            return;
-        }
-        if (this.tableQueuedFilesTable) {
-            const table = this._('#table-queued-files');
-            if (table && table.shadowRoot) {
-                this.positionButtonObserver.observe(table.shadowRoot, {
-                    childList: true,
-                    subtree: true,
-                });
-                this.positionButtonObserverAdded = true;
-            }
-        }
-    }
-
-    stopPositionButtonObserver() {
-        this.positionButtonObserver.disconnect();
-    }
-
     getActionButtonsHtml(id, allowAnnotating = true) {
         const i18n = this._i18n;
         const fileName = this.queuedFiles[id].file.name;
@@ -975,150 +922,43 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
     }
 
     getPositioningSwitch(id, placement, needPositioning) {
-        const i18n = this._i18n;
+        let positioningSwitch = this.tableQueuedFilesTable.createScopedElement(
+            'dbp-esign-positioning-switch',
+        );
+        positioningSwitch.setAttribute('subscribe', 'lang');
+        positioningSwitch.checked = placement === 'manual';
+        positioningSwitch.needPositioning = needPositioning;
+        positioningSwitch.addEventListener('toggle-change', (event) => {
+            setTimeout(() => {
+                let placement = positioningSwitch.checked ? 'manual' : 'auto';
+                this.queuedFilesSignaturePlacements[id] = {signaturePlacementMode: placement};
+                this.queuedFilesPlacementModes[id] = placement;
 
-        const styles = css`
-            .toggle-wrapper {
-                --toggle-width: 80px;
-                --toggle-height: 34px;
-                --icon-width: 35px;
-                --icon-height: 28px;
-                --transition-time: 0.3s;
-                --gap: 2px;
-                --checkmark-color: var(--dbp-muted);
-                --checkmark-color-need-positioning: var(--dbp-danger);
-                --dbp-border-radius: 4px;
-                overflow: hidden;
-                position: relative;
-                display: flex;
-                align-items: center;
-            }
-
-            .toggle {
-                position: relative;
-                display: inline-block;
-                padding: 0 8px;
-            }
-
-            .label-text {
-                line-height: var(--toggle-height);
-            }
-
-            /* the switch */
-            label.toggle-item {
-                width: var(--toggle-width);
-                background: var(--dbp-muted);
-                color: var(--dbp-background);
-                height: var(--toggle-height);
-                display: block;
-                border-radius: var(--dbp-border-radius);
-                border: 1px solid var(--dbp-muted);
-                position: relative;
-                transition: all var(--transition-time) ease;
-                cursor: pointer;
-                margin: 0;
-            }
-
-            label.toggle-item.on {
-                background-color: var(--dbp-info);
-                border: 1px solid var(--dbp-info);
-            }
-
-            .label-off,
-            .label-on {
-                font-weight: bold;
-                position: absolute;
-                transition: opacity 0.1s ease;
-                transition-delay: 0.3s;
-                opacity: 1;
-                height: var(--toggle-height);
-                line-height: var(--toggle-height);
-            }
-
-            .label-off {
-                /*left: calc(100% - var(--icon-size) - var(--gap));*/
-                right: 6px;
-            }
-
-            .label-on {
-                /*right: calc(100% - var(--icon-size) - var(--gap));*/
-                left: 6px;
-            }
-
-            input {
-                height: 40px;
-                left: 0;
-                opacity: 0;
-                position: absolute;
-                top: 0;
-                width: 40px;
-                margin: 0;
-                padding: 0;
-            }
-
-            .toggle {
-                /* keyboard focus visibility */
-                .input-checkbox:focus-visible + .toggle-item {
-                    box-shadow: 0px 0px 3px 1px var(--dbp-primary);
+                if (placement === 'manual') {
+                    this._('#pdf-preview').open();
+                    this._('#pdf-preview dbp-pdf-preview').removeAttribute('don-t-show-buttons');
+                    this._('#pdf-preview dbp-pdf-preview').showSignaturePlacementDescription =
+                        false;
+                    this.queuePlacement(id, placement);
+                } else {
+                    // Hide signature when auto placement is active
+                    // this._('#pdf-preview dbp-pdf-preview').showSignaturePlacementDescription = true;
+                    this.queuePlacement(id, placement, false);
+                    // Auto set signature placement without showing the preview
+                    const data = {
+                        signaturePlacementMode: 'auto',
+                    };
+                    const event = new CustomEvent('dbp-pdf-preview-accept', {
+                        detail: data,
+                        bubbles: true,
+                        composed: true,
+                    });
+                    this.dispatchEvent(event);
                 }
+            }, 400);
+        });
 
-                /* the button */
-                .check {
-                    border-radius: var(--dbp-border-radius);
-                    width: var(--icon-width);
-                    height: var(--icon-height);
-                    position: absolute;
-                    background: var(--dbp-background);
-                    transition: 0.4s ease;
-                    top: var(--gap);
-                    bottom: var(--gap);
-                    left: var(--gap);
-                }
-            }
-
-            .need-positioning {
-                label.toggle-item {
-                    border-color: var(--checkmark-color-need-positioning);
-                    background-color: var(--checkmark-color-need-positioning);
-                    color: var(--dbp-background);
-                }
-            }
-
-            .hidden {
-                display: none;
-            }
-
-            .sr-only {
-                position: absolute !important;
-                clip: rect(1px, 1px, 1px, 1px);
-                overflow: hidden;
-                height: 1px;
-                width: 1px;
-                word-wrap: normal;
-            }
-
-            /* animation */
-            .input-checkbox:checked + label {
-                .check {
-                    left: calc(100% - var(--icon-width) - var(--gap));
-                }
-            }
-        `;
-
-        const checkbox = `
-            <style>${unsafeCSS(styles)}</style>
-            <div class="toggle-wrapper">
-                <div class="toggle ${needPositioning ? 'need-positioning' : ''}" data-need-positioning="${needPositioning ? 'true' : 'false'}">
-                    <input id="toggle-${id}" class="input-checkbox" type="checkbox" role="switch" ${placement == 'manual' ? 'checked="checked"' : ''}"/>
-                    <label class="toggle-item ${placement == 'manual' ? 'on' : 'off'}" for="toggle-${id}" data-row-id="${id}">
-                        <span class="label-on" ${placement == 'manual' ? '' : 'aria-hidden="true"'}">${i18n.t('toggle-switch-label-text-on')}</span>
-                        <span class="label-off" ${placement == 'manual' ? 'aria-hidden="true"' : ''}">${i18n.t('toggle-switch-label-text-off')}</span>
-                        <div class="check"></div>
-                    </label>
-                </div>
-            </div>
-        `;
-        return checkbox;
+        return positioningSwitch;
     }
 
     getFailedButtonsHtml(id, data) {
@@ -1241,9 +1081,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
                     headerHozAlign: 'center',
                     headerSort: false,
                     formatter: 'html',
-                    cellClick: (e, cell) => {
-                        this.handlePositionButtonClickEvent(e, cell);
-                    },
                     responsive: 2,
                 },
                 {
@@ -1316,77 +1153,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
                 }
                 this.tableQueuedFilesTable.tabulatorTable.selectRow(selectedRows);
             }
-
-            const observerIsPresent =
-                this.tableQueuedFilesTable.getAttribute('data-observer-added');
-            if (!observerIsPresent) {
-                this.tableQueuedFilesTable.setAttribute('data-observer-added', true);
-                this.startPositionButtonObserver();
-            }
         }
-    }
-
-    handlePositionButtonClickEvent(e, cell) {
-        e.stopPropagation();
-
-        const row = cell.getRow();
-        const id = row.getIndex();
-
-        // Deselect row.
-        // Clicking on the row trigger row selection before cellClick is called
-        row.toggleSelect();
-
-        const toggleTriggered = e.composedPath().find((element) => {
-            if (element.classList) {
-                return element.classList.contains('toggle-wrapper');
-            }
-        });
-
-        // Prevent clickHandler running twice
-        if (!toggleTriggered) return;
-        if (toggleTriggered.getAttribute('data-click-triggered')) return;
-        toggleTriggered.setAttribute('data-click-triggered', true);
-
-        setTimeout(() => {
-            const cellValue = cell.getElement();
-            const checkbox = cellValue.querySelector('.input-checkbox');
-            const checkboxId = checkbox.id;
-            const checkboxIsChecked = checkbox.checked;
-            const placement = checkboxIsChecked === true ? 'manual' : 'auto';
-
-            cellValue
-                .querySelector(`label[for="${checkboxId}"] span.label-on`)
-                .toggleAttribute('aria-hidden');
-            cellValue
-                .querySelector(`label[for="${checkboxId}"] span.label-off`)
-                .toggleAttribute('aria-hidden');
-
-            // Set placement modes
-            this.queuedFilesSignaturePlacements[id] = {signaturePlacementMode: placement};
-            this.queuedFilesPlacementModes[id] = placement;
-
-            if (placement === 'manual') {
-                this._('#pdf-preview').open();
-                this._('#pdf-preview dbp-pdf-preview').removeAttribute('don-t-show-buttons');
-                this._('#pdf-preview dbp-pdf-preview').showSignaturePlacementDescription = false;
-                this.queuePlacement(id, placement);
-            } else {
-                // Hide signature when auto placement is active
-                // this._('#pdf-preview dbp-pdf-preview').showSignaturePlacementDescription = true;
-                this.queuePlacement(id, placement, false);
-                // Auto set signature placement without showing the preview
-                const data = {
-                    signaturePlacementMode: 'auto',
-                };
-                const event = new CustomEvent('dbp-pdf-preview-accept', {
-                    detail: data,
-                    bubbles: true,
-                    composed: true,
-                });
-                this.dispatchEvent(event);
-            }
-            toggleTriggered.removeAttribute('data-click-triggered');
-        }, 400);
     }
 
     /**
