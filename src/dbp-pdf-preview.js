@@ -7,10 +7,26 @@ import DBPLitElement from '@dbp-toolkit/common/dbp-lit-element';
 import {MiniSpinner, Icon} from '@dbp-toolkit/common';
 import * as commonUtils from '@dbp-toolkit/common/utils';
 import * as commonStyles from '@dbp-toolkit/common/styles';
-import * as pdfjs from 'pdfjs-dist/legacy/build/pdf.mjs';
 import {name as pkgName} from './../package.json';
 import {readBinaryFileContent} from './utils.js';
 import {send} from '@dbp-toolkit/common/notification';
+
+let pdfjsPromise = null;
+
+async function getPdfJs() {
+    if (!pdfjsPromise) {
+        pdfjsPromise = (async () => {
+            const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
+            pdfjs.GlobalWorkerOptions.workerSrc = commonUtils.getAssetURL(
+                pkgName,
+                'pdfjs/pdf.worker.mjs',
+            );
+            return pdfjs;
+        })();
+    }
+    return pdfjsPromise;
+}
+
 /**
  * PdfPreview web component
  */
@@ -96,10 +112,6 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
     connectedCallback() {
         super.connectedCallback();
         const that = this;
-        pdfjs.GlobalWorkerOptions.workerSrc = commonUtils.getAssetURL(
-            pkgName,
-            'pdfjs/pdf.worker.mjs',
-        );
 
         window.addEventListener('resize', this._onWindowResize);
 
@@ -257,6 +269,7 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
 
         // get handle of pdf document
         try {
+            let pdfjs = await getPdfJs();
             this.pdfDoc = await pdfjs.getDocument({data: data, isEvalSupported: false}).promise;
         } catch (error) {
             console.error(error);
