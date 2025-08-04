@@ -475,7 +475,8 @@ Dependencies:
                                 bugfixes: true,
                                 modules: false,
                                 targets: {
-                                    esmodules: true,
+                                    esmodules: 'intersect',
+                                    browsers: 'defaults and not dead, last 5 years',
                                 },
                             },
                         ],
