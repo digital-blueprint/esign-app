@@ -477,7 +477,7 @@ Dependencies:
                                 loose: false,
                                 shippedProposals: true,
                                 bugfixes: true,
-                                modules: false
+                                modules: false,
                             },
                         ],
                     ],
