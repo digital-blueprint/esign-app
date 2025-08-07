@@ -393,32 +393,28 @@ export class PositioningSwitch extends LangMixin(
                 padding: 0;
             }
 
-            .toggle {
-                /* keyboard focus visibility */
-                .input-checkbox:focus-visible + .toggle-item {
-                    box-shadow: 0px 0px 3px 1px var(--dbp-primary);
-                }
-
-                /* the button */
-                .check {
-                    border-radius: var(--dbp-border-radius);
-                    width: var(--icon-width);
-                    height: var(--icon-height);
-                    position: absolute;
-                    background: var(--dbp-background);
-                    transition: 0.4s ease;
-                    top: var(--gap);
-                    bottom: var(--gap);
-                    left: var(--gap);
-                }
+            /* keyboard focus visibility */
+            .toggle .input-checkbox:focus-visible + .toggle-item {
+                box-shadow: 0px 0px 3px 1px var(--dbp-primary);
             }
 
-            .need-positioning {
-                label.toggle-item {
-                    border-color: var(--checkmark-color-need-positioning);
-                    background-color: var(--checkmark-color-need-positioning);
-                    color: var(--dbp-background);
-                }
+            /* the button */
+            .toggle .check {
+                border-radius: var(--dbp-border-radius);
+                width: var(--icon-width);
+                height: var(--icon-height);
+                position: absolute;
+                background: var(--dbp-background);
+                transition: 0.4s ease;
+                top: var(--gap);
+                bottom: var(--gap);
+                left: var(--gap);
+            }
+
+            .need-positioning label.toggle-item {
+                border-color: var(--checkmark-color-need-positioning);
+                background-color: var(--checkmark-color-need-positioning);
+                color: var(--dbp-background);
             }
 
             .hidden {
@@ -435,10 +431,8 @@ export class PositioningSwitch extends LangMixin(
             }
 
             /* animation */
-            .input-checkbox:checked + label {
-                .check {
-                    left: calc(100% - var(--icon-width) - var(--gap));
-                }
+            .input-checkbox:checked + label .check {
+                left: calc(100% - var(--icon-width) - var(--gap));
             }
         `;
     }

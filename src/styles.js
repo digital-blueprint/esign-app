@@ -237,26 +237,15 @@ export function getSignatureCss() {
                 flex-direction: column;
             }
 
-            .signed-files,
-            .error-files {
-                .tabulator-actions {
+            :is(.signed-files, .error-files) .tabulator-actions {
                     flex-direction: column;
                     flex-wrap: nowrap;
                 }
             }
 
-            .signed-files {
-                .table-actions,
-                .signed-actions {
-                    flex-basis: 100%;
-                }
-            }
-
-            .error-files {
-                .table-actions,
-                .failed-actions {
-                    flex-basis: 100%;
-                }
+            .signed-files :is(.table-actions, .signed-actions),
+            .error-files :is(.table-actions, .failed-actions) {
+                flex-basis: 100%;
             }
         }
 
