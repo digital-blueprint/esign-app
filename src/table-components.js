@@ -321,7 +321,7 @@ export class PositioningSwitch extends LangMixin(
                 --icon-width: 35px;
                 --icon-height: 28px;
                 --transition-time: 0.3s;
-                --gap: 2px;
+                --gap: 3px;
                 --checkmark-color: var(--dbp-muted);
                 --checkmark-color-need-positioning: var(--dbp-danger);
                 --dbp-border-radius: 4px;
@@ -406,6 +406,7 @@ export class PositioningSwitch extends LangMixin(
                 position: absolute;
                 background: var(--dbp-background);
                 transition: 0.4s ease;
+                /*top: calc(var(--gap) + 1px);*/
                 top: var(--gap);
                 bottom: var(--gap);
                 left: var(--gap);
@@ -432,6 +433,7 @@ export class PositioningSwitch extends LangMixin(
 
             /* animation */
             .input-checkbox:checked + label .check {
+                /*left: calc(100% - var(--icon-width) - var(--gap) - 1px);*/
                 left: calc(100% - var(--icon-width) - var(--gap));
             }
         `;
