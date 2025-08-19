@@ -324,11 +324,11 @@ Dependencies:
                         {src: 'assets/dbp-signature-maintenance.html', dest: 'dist'},
                         {
                             src: await getPackagePath('pdfjs-dist', 'legacy/build/pdf.worker.mjs'),
-                            dest: 'dist/' + (await getDistPath(pkg.name, 'pdfjs')),
+                            dest: 'dist/' + (await getDistPath('@dbp-toolkit/pdf-viewer', 'pdfjs')),
                         },
                         {
                             src: await getPackagePath('pdfjs-dist', 'cmaps/*'),
-                            dest: 'dist/' + (await getDistPath(pkg.name, 'pdfjs')),
+                            dest: 'dist/' + (await getDistPath('@dbp-toolkit/pdf-viewer', 'pdfjs')),
                         }, // do we want all map files?
                         {
                             src: await getPackagePath('@fontsource/nunito-sans', '*'),
@@ -409,11 +409,11 @@ Dependencies:
                         {src: customAssetsPath + 'dbp-signature-maintenance.html', dest: 'dist'},
                         {
                             src: await getPackagePath('pdfjs-dist', 'legacy/build/pdf.worker.mjs'),
-                            dest: 'dist/' + (await getDistPath(pkg.name, 'pdfjs')),
+                            dest: 'dist/' + (await getDistPath('@dbp-toolkit/pdf-viewer', 'pdfjs')),
                         },
                         {
                             src: await getPackagePath('pdfjs-dist', 'cmaps/*'),
-                            dest: 'dist/' + (await getDistPath(pkg.name, 'pdfjs')),
+                            dest: 'dist/' + (await getDistPath('@dbp-toolkit/pdf-viewer', 'pdfjs')),
                         }, // do we want all map files?
                         {
                             src: await getPackagePath('@tugraz/font-source-sans-pro', 'files/*'),
