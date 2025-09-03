@@ -9,6 +9,15 @@
         "type": "git",
         "url": "https://github.com/digital-blueprint/esign-app.git"
     },
+    "dbp": {
+        "assets": [
+            {
+                "srcPackage": "@digital-blueprint/esign-app",
+                "src": "assets/*-placeholder.png",
+                "dest": "."
+            }
+        ]
+    },
     "private": true,
     "workspaces": [
         "vendor/toolkit/packages/*"

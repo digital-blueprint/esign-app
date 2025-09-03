@@ -308,10 +308,6 @@ Dependencies:
             whitelabel &&
                 copy({
                     targets: [
-                        {
-                            src: 'assets/*-placeholder.png',
-                            dest: 'dist/' + (await getDistPath(pkg.name)),
-                        },
                         {src: 'assets/*.css', dest: 'dist/' + (await getDistPath(pkg.name))},
                         {src: 'src/*.metadata.json', dest: 'dist'},
                         {src: 'assets/*.svg', dest: 'dist/' + (await getDistPath(pkg.name))},
@@ -354,10 +350,6 @@ Dependencies:
             !whitelabel &&
                 copy({
                     targets: [
-                        {
-                            src: customAssetsPath + '*-placeholder.png',
-                            dest: 'dist/' + (await getDistPath(pkg.name)),
-                        },
                         {
                             src: customAssetsPath + '*.css',
                             dest: 'dist/' + (await getDistPath(pkg.name)),
