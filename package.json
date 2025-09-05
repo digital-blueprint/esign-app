@@ -64,6 +64,7 @@
         "@dbp-toolkit/notification": "^0.3.0",
         "@dbp-toolkit/pdf-viewer": "^0.1.6",
         "@dbp-toolkit/resource-select": "^0.1.0",
+        "@dbp-toolkit/tooltip": "^0.1.5",
         "@digital-blueprint/annotpdf": "^1.0.13-a",
         "@fontsource/nunito-sans": "^5.0.0",
         "@tugraz/font-source-sans-pro": "^0.2.4",

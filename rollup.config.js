@@ -17,6 +17,7 @@ import {
     generateTLSConfig,
     getDistPath,
     getCopyTargets,
+    getUrlOptions,
 } from '@dbp-toolkit/dev-utils';
 import replace from '@rollup/plugin-replace';
 import {createRequire} from 'module';
@@ -288,15 +289,7 @@ Dependencies:
                 strictRequires: 'auto',
             }),
             json(),
-            urlPlugin({
-                limit: 0,
-                include: [
-                    await getPackagePath('select2', '**/*.css'),
-                    await getPackagePath('tippy.js', '**/*.css'),
-                ],
-                emitFiles: true,
-                fileName: 'shared/[name].[hash][extname]',
-            }),
+            urlPlugin(await getUrlOptions(pkg.name, 'shared')),
             appEnv == 'test' &&
                 copy({
                     targets: [
