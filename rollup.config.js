@@ -306,7 +306,10 @@ Dependencies:
                         {src: 'src/*.metadata.json', dest: 'dist'},
                         {src: 'assets/*.svg', dest: 'dist/' + (await getDistPath(pkg.name))},
                         {src: 'assets/htaccess-shared', dest: 'dist/shared/', rename: '.htaccess'},
-                        {src: 'assets/images/*', dest: 'dist/images'},
+                        {
+                            src: 'assets/images/*',
+                            dest: 'dist/' + (await getDistPath(pkg.name, 'images')),
+                        },
                         {
                             src: 'assets/icon/*',
                             dest: 'dist/' + (await getDistPath(pkg.name, 'icon')),
@@ -358,7 +361,10 @@ Dependencies:
                             dest: 'dist/shared/',
                             rename: '.htaccess',
                         },
-                        {src: customAssetsPath + 'images/*', dest: 'dist/images'},
+                        {
+                            src: customAssetsPath + 'images/*',
+                            dest: 'dist/' + (await getDistPath(pkg.name, 'images')),
+                        },
                         {
                             src: customAssetsPath + 'icon/*',
                             dest: 'dist/' + (await getDistPath(pkg.name, 'icon')),
