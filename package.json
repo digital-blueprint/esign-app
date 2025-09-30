@@ -19,9 +19,6 @@
         ]
     },
     "private": false,
-    "publishConfig": {
-        "access": "public"
-    },
     "workspaces": [
         "vendor/toolkit/packages/*"
     ],
