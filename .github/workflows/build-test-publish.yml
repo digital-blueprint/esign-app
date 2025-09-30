@@ -71,7 +71,7 @@ jobs:
           npm install -g npm@latest
           npm ci
           npm run build
-          npm run publish
+          npm publish
 
       - name: Deploy and wait for completion
         if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/demo' || github.ref == 'refs/heads/production'
