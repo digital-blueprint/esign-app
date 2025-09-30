@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.5.1
+
+- Some minor translation fixes
+- Some minor styling fixes
+- Avoid eval errors with the default CSP
+- Lazy loading of pdf.js
+- Various dependency updates
+
 ## 2.5.0
 
 - Added toggle switch for automatic/manual signature positioning with screen reader support
