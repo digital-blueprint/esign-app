@@ -96,7 +96,6 @@
         "watch-bs": "rollup -c --watch --environment APP_ENV:bs",
         "test": "rollup -c --environment APP_ENV:test && karma start karma.conf.cjs --singleRun",
         "test-full": "rollup -c --environment FORCE_FULL,APP_ENV:test && karma start karma.conf.cjs --singleRun",
-        "tsc": "tsc -p jsconfig.json",
-        "publish": "can-npm-publish --verbose 2>&1 && npm publish 2>&1"
+        "tsc": "tsc -p jsconfig.json"
     }
 }

@@ -68,10 +68,12 @@ jobs:
       - name: Publish to NPM
         if: github.ref == 'refs/heads/main'
         run: |
-          npm install -g npm@latest
-          npm ci
-          npm run build
-          npm run publish
+          if npx --yes can-npm-publish --verbose; then
+            npm install -g npm@latest
+            npm ci
+            npm run build
+            npm publish
+          fi
 
       - name: Deploy and wait for completion
         if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/demo' || github.ref == 'refs/heads/production'
