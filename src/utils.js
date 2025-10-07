@@ -253,7 +253,7 @@ export const addPdfAnnotationToAnnotationFactory = (annotationFactory, author, c
  * @returns {object} describing the annotation type named key
  */
 export const getAnnotationTypes = (key = null) => {
-    // for i18next-parser
+    // for i18next-cli
     let i18n = createInstance();
     i18n.t('annotation-view.reference-number-placeholder');
     i18n.t('annotation-view.intended-use-placeholder');
