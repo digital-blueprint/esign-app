@@ -136,6 +136,8 @@ export function getSignatureCss() {
 
         .modal-container .filename {
             padding-bottom: 1em;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .modal--pdf-preview {

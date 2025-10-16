@@ -82,6 +82,11 @@ export class FilenameLabel extends LangMixin(ScopedElementsMixin(DBPLitElement),
             :host {
                 display: flex;
                 align-items: center;
+                max-width: 100%;
+            }
+            .filename {
+                overflow: hidden;
+                text-overflow: ellipsis;
             }
             dbp-icon {
                 font-size: 24px;
@@ -99,7 +104,7 @@ export class FilenameLabel extends LangMixin(ScopedElementsMixin(DBPLitElement),
     render() {
         let i18n = this._i18n;
         return html`
-            <span>${this.file ? this.file.name : ``}</span>
+            <div class="filename">${this.file ? this.file.name : ``}</div>
             ${this.isPlacementMissing
                 ? html`
                       <dbp-tooltip
