@@ -5,7 +5,7 @@ import {live} from 'lit/directives/live.js';
 import {LangMixin, ScopedElementsMixin} from '@dbp-toolkit/common';
 import DBPLitElement from '@dbp-toolkit/common/dbp-lit-element';
 import {MiniSpinner, Icon} from '@dbp-toolkit/common';
-import {importPdfJs} from '@dbp-toolkit/pdf-viewer';
+import {importPdfJs, getPdfJsDocument} from '@dbp-toolkit/pdf-viewer';
 import * as commonStyles from '@dbp-toolkit/common/styles';
 import {readBinaryFileContent} from './utils.js';
 import {send} from '@dbp-toolkit/common/notification';
@@ -253,7 +253,8 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
         // get handle of pdf document
         try {
             let pdfjs = await importPdfJs();
-            this.pdfDoc = await pdfjs.getDocument({data: data, isEvalSupported: false}).promise;
+            this.pdfDoc = await getPdfJsDocument(pdfjs, {data: data, isEvalSupported: false})
+                .promise;
         } catch (error) {
             console.error(error);
             this.showErrorMessage = true;
