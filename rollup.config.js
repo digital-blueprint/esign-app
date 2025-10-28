@@ -1,15 +1,10 @@
-import url from 'url';
+import url from 'node:url';
 import {globSync} from 'node:fs';
-import resolve from '@rollup/plugin-node-resolve';
-import commonjs from '@rollup/plugin-commonjs';
-import terser from '@rollup/plugin-terser';
-import json from '@rollup/plugin-json';
 import serve from 'rollup-plugin-serve';
 import license from 'rollup-plugin-license';
-import del from 'rollup-plugin-delete';
 import emitEJS from 'rollup-plugin-emit-ejs';
 import {getBabelOutputPlugin} from '@rollup/plugin-babel';
-import {replacePlugin as rolldownReplace} from 'rolldown/experimental';
+import {replacePlugin} from 'rolldown/experimental';
 import {
     getPackagePath,
     getBuildInfo,
@@ -17,8 +12,7 @@ import {
     getDistPath,
     assetPlugin,
 } from '@dbp-toolkit/dev-utils';
-import replace from '@rollup/plugin-replace';
-import {createRequire} from 'module';
+import {createRequire} from 'node:module';
 
 const require = createRequire(import.meta.url);
 const pkg = require('./package.json');
@@ -30,7 +24,6 @@ let useBabel = buildFull;
 let checkLicenses = buildFull;
 let treeshake = buildFull;
 let useHTTPS = true;
-let isRolldown = process.argv.some((arg) => arg.includes('rolldown'));
 let nodeEnv = buildFull ? 'production' : 'development';
 
 // if true, app assets and configs are whitelabel
@@ -175,7 +168,8 @@ export default (async () => {
             chunkFileNames: 'shared/[name].[hash].js',
             format: 'esm',
             sourcemap: true,
-            ...(isRolldown ? {minify: doMinify, cleanDir: true} : {}),
+            minify: doMinify,
+            cleanDir: true,
         },
         treeshake: treeshake,
         // external: ['zlib', 'http', 'fs', 'https', 'url'],
@@ -192,10 +186,6 @@ export default (async () => {
             '.css': 'js', // work around rolldown handling the CSS import before the URL plugin can
         },
         plugins: [
-            !isRolldown &&
-                del({
-                    targets: 'dist/*',
-                }),
             whitelabel &&
                 emitEJS({
                     src: 'assets',
@@ -262,11 +252,6 @@ export default (async () => {
                         appDomain: config.appDomain,
                     },
                 }),
-            !isRolldown &&
-                resolve({
-                    browser: true,
-                    preferBuiltins: true,
-                }),
             checkLicenses &&
                 license({
                     banner: {
@@ -300,12 +285,6 @@ Dependencies:
                         },
                     },
                 }),
-            !isRolldown &&
-                commonjs({
-                    include: 'node_modules/**',
-                    strictRequires: 'auto',
-                }),
-            !isRolldown && json(),
             whitelabel &&
                 (await assetPlugin(pkg.name, 'dist', {
                     copyTargets: [
@@ -408,19 +387,14 @@ Dependencies:
                         ...testCopyTargets,
                     ],
                 })),
-            isRolldown
-                ? rolldownReplace(
-                      {
-                          'process.env.NODE_ENV': JSON.stringify(nodeEnv),
-                      },
-                      {
-                          preventAssignment: true,
-                      },
-                  )
-                : replace({
-                      'process.env.NODE_ENV': JSON.stringify(nodeEnv),
-                      preventAssignment: true,
-                  }),
+            replacePlugin(
+                {
+                    'process.env.NODE_ENV': JSON.stringify(nodeEnv),
+                },
+                {
+                    preventAssignment: true,
+                },
+            ),
             useBabel &&
                 getBabelOutputPlugin({
                     compact: false,
@@ -440,7 +414,6 @@ Dependencies:
                         ],
                     ],
                 }),
-            doMinify && !isRolldown ? terser() : false,
             watch
                 ? serve({
                       contentBase: '.',
