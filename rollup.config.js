@@ -2,11 +2,9 @@ import url from 'url';
 import {globSync} from 'glob';
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
-import copy from 'rollup-plugin-copy';
 import terser from '@rollup/plugin-terser';
 import json from '@rollup/plugin-json';
 import serve from 'rollup-plugin-serve';
-import urlPlugin from '@rollup/plugin-url';
 import license from 'rollup-plugin-license';
 import del from 'rollup-plugin-delete';
 import emitEJS from 'rollup-plugin-emit-ejs';
@@ -16,8 +14,7 @@ import {
     getBuildInfo,
     generateTLSConfig,
     getDistPath,
-    getCopyTargets,
-    getUrlOptions,
+    assetPlugin,
 } from '@dbp-toolkit/dev-utils';
 import replace from '@rollup/plugin-replace';
 import {createRequire} from 'module';
@@ -139,6 +136,16 @@ ${getOrigin(config.nextcloudBaseURL)} ${getOrigin(config.nextcloudBaseURL)} \
 ${atrustHosts.map((h) => getOrigin(h)).join(' ')} \
 ${getOrigin(config.pdfAsQualifiedlySigningServer)}; \
 img-src * blob: data:; font-src 'self' data:`;
+
+let testCopyTargets =
+    appEnv == 'test'
+        ? [
+              {
+                  src: 'test/data/*',
+                  dest: 'dist/test',
+              },
+          ]
+        : [];
 
 export default (async () => {
     let privatePath = await getDistPath(pkg.name);
@@ -295,19 +302,9 @@ Dependencies:
                     strictRequires: 'auto',
                 }),
             !isRolldown && json(),
-            urlPlugin(await getUrlOptions(pkg.name, 'shared')),
-            appEnv == 'test' &&
-                copy({
-                    targets: [
-                        {
-                            src: 'test/data/*',
-                            dest: 'dist/test',
-                        },
-                    ],
-                }),
             whitelabel &&
-                copy({
-                    targets: [
+                (await assetPlugin(pkg.name, 'dist', {
+                    copyTargets: [
                         {src: 'assets/*.css', dest: 'dist/' + (await getDistPath(pkg.name))},
                         {src: 'src/*.metadata.json', dest: 'dist'},
                         {src: 'assets/*.svg', dest: 'dist/' + (await getDistPath(pkg.name))},
@@ -328,8 +325,9 @@ Dependencies:
                         {src: 'assets/silent-check-sso.html', dest: 'dist'},
                         {src: 'assets/dbp-signature-maintenance.html', dest: 'dist'},
                         {
-                            src: await getPackagePath('@fontsource/nunito-sans', '*'),
-                            dest: 'dist/' + (await getDistPath(pkg.name, 'fonts/nunito-sans')),
+                            src: await getPackagePath('@fontsource/nunito-sans', '.'),
+                            dest: 'dist/' + (await getDistPath(pkg.name, 'fonts')),
+                            rename: 'nunito-sans',
                         },
                         {
                             src: await getPackagePath('@dbp-toolkit/common', 'src/spinner.js'),
@@ -347,12 +345,12 @@ Dependencies:
                             ),
                             dest: 'dist/' + (await getDistPath(pkg.name)),
                         },
-                        ...(await getCopyTargets(pkg.name, 'dist')),
+                        ...testCopyTargets,
                     ],
-                }),
+                })),
             !whitelabel &&
-                copy({
-                    targets: [
+                (await assetPlugin(pkg.name, 'dist', {
+                    copyTargets: [
                         {
                             src: customAssetsPath + '*.css',
                             dest: 'dist/' + (await getDistPath(pkg.name)),
@@ -383,8 +381,9 @@ Dependencies:
                         {src: customAssetsPath + 'silent-check-sso.html', dest: 'dist'},
                         {src: customAssetsPath + 'dbp-signature-maintenance.html', dest: 'dist'},
                         {
-                            src: await getPackagePath('@tugraz/font-source-sans-pro', 'files/*'),
-                            dest: 'dist/' + (await getDistPath(pkg.name, 'fonts/source-sans-pro')),
+                            src: await getPackagePath('@tugraz/font-source-sans-pro', 'files'),
+                            dest: 'dist/' + (await getDistPath(pkg.name, 'fonts')),
+                            rename: 'source-sans-pro',
                         },
                         {
                             src: await getPackagePath('@tugraz/web-components', 'src/spinner.js'),
@@ -402,9 +401,9 @@ Dependencies:
                             ),
                             dest: 'dist/' + (await getDistPath(pkg.name)),
                         },
-                        ...(await getCopyTargets(pkg.name, 'dist')),
+                        ...testCopyTargets,
                     ],
-                }),
+                })),
             replace({
                 'process.env.NODE_ENV': JSON.stringify('production'),
                 preventAssignment: true,
