@@ -175,7 +175,7 @@ export default (async () => {
             chunkFileNames: 'shared/[name].[hash].js',
             format: 'esm',
             sourcemap: true,
-            ...(isRolldown ? {minify: doMinify} : {}),
+            ...(isRolldown ? {minify: doMinify, cleanDir: true} : {}),
         },
         treeshake: treeshake,
         // external: ['zlib', 'http', 'fs', 'https', 'url'],
@@ -192,9 +192,10 @@ export default (async () => {
             '.css': 'js', // work around rolldown handling the CSS import before the URL plugin can
         },
         plugins: [
-            del({
-                targets: 'dist/*',
-            }),
+            !isRolldown &&
+                del({
+                    targets: 'dist/*',
+                }),
             whitelabel &&
                 emitEJS({
                     src: 'assets',
