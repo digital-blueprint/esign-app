@@ -987,7 +987,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                     hidden:
                         this.hasSignaturePermissions() || !this.isLoggedIn() || this.isLoading(),
                 })}">
-                ${i18n.t('error-permission-message')}
+                ${i18n.t('error-permission-message-qualified')}
             </div>
             <div class="${classMap({hidden: !this.isLoading()})}">
                 <dbp-mini-spinner></dbp-mini-spinner>

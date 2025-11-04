@@ -823,7 +823,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                     hidden:
                         this.hasSignaturePermissions() || !this.isLoggedIn() || this.isLoading(),
                 })}">
-                ${i18n.t('error-permission-message')}
+                ${i18n.t('error-permission-message-official')}
             </div>
             <div class="${classMap({hidden: !this.isLoading()})}">
                 <dbp-mini-spinner></dbp-mini-spinner>
