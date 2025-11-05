@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.5.2
+
+- Fix various layout issues with PDFs wich overly long file names without spaces.
+- Various minor theme updates
+- Fix wrong error message in case qualified signature permissions are missing
+  for the user
+
 ## 2.5.1
 
 - Some minor translation fixes
