@@ -4,7 +4,7 @@ import serve from 'rollup-plugin-serve';
 import license from 'rollup-plugin-license';
 import emitEJS from 'rollup-plugin-emit-ejs';
 import {getBabelOutputPlugin} from '@rollup/plugin-babel';
-import {replacePlugin} from 'rolldown/experimental';
+import {replacePlugin} from 'rolldown/plugins';
 import {
     getPackagePath,
     getBuildInfo,
