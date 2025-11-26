@@ -248,8 +248,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         // We need to work with the AnnotationFactory because the pdf file is broken if
         // we add the multiple annotations to the file itself
         let pdfFactory = await utils.getAnnotationFactoryFromFile(file);
-        const activityNameDE = this.activity.getName('de');
-        const activityNameEN = this.activity.getName('en');
 
         await commonUtils.asyncObjectForEach(annotations, async (annotation) => {
             console.log('annotation', annotation);
@@ -265,8 +263,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
 
             pdfFactory = await utils.addKeyValuePdfAnnotationsToAnnotationFactory(
                 pdfFactory,
-                activityNameDE,
-                activityNameEN,
                 this.auth['user-full-name'],
                 annotationType,
                 annotationTypeData.name.de,

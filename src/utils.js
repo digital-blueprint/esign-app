@@ -184,8 +184,6 @@ export const getAnnotationFactoryFromFile = async (file) => {
  */
 export const addKeyValuePdfAnnotationsToAnnotationFactory = (
     annotationFactory,
-    activityNameDE,
-    activityNameEN,
     personName,
     annotationType,
     annotationTypeNameDE,
@@ -203,7 +201,8 @@ export const addKeyValuePdfAnnotationsToAnnotationFactory = (
     }
 
     // add human-readable annotation
-    let author = personName + ' via  "' + activityNameDE + ' / ' + activityNameEN + '"';
+    let hostname = window.location.hostname;
+    let author = personName + ' via  "' + hostname + '"';
     let content = annotationTypeNameDE + ': ' + value + '\n' + annotationTypeNameEN + ': ' + value;
     annotationFactory = addPdfAnnotationToAnnotationFactory(annotationFactory, author, content);
 
