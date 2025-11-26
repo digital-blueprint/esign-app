@@ -10,6 +10,10 @@ export function getSignatureCss() {
             padding-left: 0.5em;
         }
 
+        .description {
+            margin-top: 0;
+        }
+
         #annotation-view button.is-cancel {
             background: transparent;
             border: none;

@@ -4,8 +4,6 @@ import {LangMixin, ScopedElementsMixin} from '@dbp-toolkit/common';
 import DBPLitElement from '@dbp-toolkit/common/dbp-lit-element';
 import * as commonUtils from '@dbp-toolkit/common/utils';
 import * as commonStyles from '@dbp-toolkit/common/styles';
-import metadata from './dbp-signature-verification.metadata.json';
-import {Activity} from './activity.js';
 
 class SignatureVerification extends LangMixin(ScopedElementsMixin(DBPLitElement), createInstance) {
     static get scopedElements() {
@@ -37,16 +35,17 @@ class SignatureVerification extends LangMixin(ScopedElementsMixin(DBPLitElement)
                 /*line-height: 1.8;*/
                 margin-bottom: 1.2em;
             }
+
+            .description {
+                margin-top: 0;
+            }
         `;
     }
 
     render() {
         const i18n = this._i18n;
-        const activity = new Activity(metadata);
         return html`
-            <h2>${activity.getName(this.lang)}</h2>
-            <p class="subheadline">${activity.getDescription(this.lang)}</p>
-            <p>${i18n.t('signature-verification-extern.description-text')}</p>
+            <p class="description">${i18n.t('signature-verification-extern.description-text')}</p>
             <a
                 target="_blank"
                 rel="noopener"

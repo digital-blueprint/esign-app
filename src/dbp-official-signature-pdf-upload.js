@@ -21,8 +21,6 @@ import {FileSource} from '@dbp-toolkit/file-handling';
 import {FileSink} from '@dbp-toolkit/file-handling';
 import {name as pkgName} from './../package.json';
 import {send as notify} from '@dbp-toolkit/common/notification';
-import metadata from './dbp-official-signature-pdf-upload.metadata.json';
-import {Activity} from './activity.js';
 import {PdfAnnotationView} from './dbp-pdf-annotation-view';
 import * as SignatureStyles from './styles';
 import {CustomTabulatorTable} from './table-components.js';
@@ -36,7 +34,6 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         this.nextcloudName = '';
         this.nextcloudFileURL = '';
         this.nextcloudAuthInfo = '';
-        this.activity = new Activity(metadata);
         this.fileHandlingEnabledTargets = 'local';
 
         // Bind all event handlers
@@ -412,10 +409,8 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                         !this.isLoggedIn() || !this.hasSignaturePermissions() || this.isLoading(),
                 })}">
                 <div class="field">
-                    <h2>${this.activity.getName(this.lang)}</h2>
-                    <p class="subheadline">${this.activity.getDescription(this.lang)}</p>
                     <div class="control">
-                        <p>${i18n.t('official-pdf-upload.upload-text')}</p>
+                        <p class="description">${i18n.t('official-pdf-upload.upload-text')}</p>
                         <button
                             @click="${() => {
                                 this._('#file-source').setAttribute('dialog-open', '');
