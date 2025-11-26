@@ -159,8 +159,6 @@ export const getAnnotationFactoryFromFile = async (file) => {
  * Adds a key/value annotation to a AnnotationFactory and returns the AnnotationFactory
  *
  * @param annotationFactory
- * @param activityNameDE
- * @param activityNameEN
  * @param personName
  * @param annotationType
  * @param annotationTypeNameDE
