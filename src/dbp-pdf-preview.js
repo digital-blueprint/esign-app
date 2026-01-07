@@ -126,6 +126,8 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                 strokeWidth: that.border_width,
                 strokeUniform: true,
                 centeredRotation: true,
+                originX: 'left',
+                originY: 'top',
             });
 
             // disable controls, we currently don't want resizing and do rotation with a button
