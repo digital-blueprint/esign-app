@@ -156,8 +156,8 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
     }
 
     /**
-     * @param {*} key
-     * @param {*} name
+     * @param {string} key
+     * @param {string} name
      */
     async showAnnotationView(key, name) {
         this.queuedFilesAnnotationModes[key] = name;
@@ -190,8 +190,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
     }
 
     /**
-     *
-     * @param {*} event
+     * @param {CustomEvent} event
      */
     processAnnotationEvent(event) {
         let annotationDetails = event.detail;
@@ -208,7 +207,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
 
     /**
      *
-     * @param {*} event
+     * @param {CustomEvent} event
      */
     processAnnotationCancelEvent(event) {
         let key = this.currentPreviewQueueKey;

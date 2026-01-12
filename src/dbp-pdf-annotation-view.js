@@ -339,7 +339,7 @@ export class PdfAnnotationView extends LangMixin(
     /**
      * Returns the list of files of annotations of a queued file
      *
-     * @returns {*[]} Array of html templates
+     * @returns {Array} Array of html templates
      */
     getAnnotationsHtml() {
         const i18n = this._i18n;
