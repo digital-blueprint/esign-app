@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.6.0
+
+- New app shell/menu layout
+
 ## 2.5.2
 
 - Fix various layout issues with PDFs wich overly long file names without spaces.
