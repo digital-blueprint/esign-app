@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.6.1
+
+- App menu accessibility improvements
+
 ## 2.6.0
 
 - New app shell/menu layout
