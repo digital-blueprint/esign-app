@@ -9,10 +9,5 @@
         "enabled": true
     },
     "cloneSubmodules": true,
-    "packageRules": [
-        {
-            "matchPackageNames": ["pdfjs-dist"],
-            "allowedVersions": "<4.6"
-        }
-    ]
+    "packageRules": []
 }
