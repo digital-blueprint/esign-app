@@ -124,7 +124,7 @@ const atrustHosts = [
     'https://service.a-trust.at',
 ];
 
-config.CSP = `default-src 'self' 'unsafe-inline' \
+config.CSP = `default-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' \
 ${getOrigin(config.matomoUrl)} ${getOrigin(config.keyCloakBaseURL)} ${getOrigin(
     config.entryPointURL,
 )} \
