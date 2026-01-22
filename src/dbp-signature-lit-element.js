@@ -690,10 +690,12 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         if (viewOnly) {
             placementData = {};
         }
+        const annotations = this.queuedFilesAnnotations[key] || [];
         await this._('dbp-pdf-preview').showPDF(
             entry.file,
             withSigBlock, //this.queuedFilesPlacementModes[key] === "manual",
             placementData,
+            annotations,
         );
     }
 

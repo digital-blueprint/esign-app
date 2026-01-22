@@ -7,7 +7,7 @@ import DBPLitElement from '@dbp-toolkit/common/dbp-lit-element';
 import {MiniSpinner, Icon} from '@dbp-toolkit/common';
 import {importPdfJs, getPdfJsDocument} from '@dbp-toolkit/pdf-viewer';
 import * as commonStyles from '@dbp-toolkit/common/styles';
-import {readBinaryFileContent} from './utils.js';
+import {readBinaryFileContent, getAnnotationTypes} from './utils.js';
 import {send} from '@dbp-toolkit/common/notification';
 
 /**
@@ -35,6 +35,7 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
         this.allowSignatureRotation = false;
         this.signaturePlacementMode = 'auto';
         this.showSignaturePlacementDescription = false;
+        this.annotations = [];
 
         this._onWindowResize = this._onWindowResize.bind(this);
     }
@@ -64,6 +65,7 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
             signature_height: {type: Number, attribute: 'signature-height'},
             allowSignatureRotation: {type: Boolean, attribute: 'allow-signature-rotation'},
             showSignaturePlacementDescription: {type: Boolean},
+            annotations: {type: Array, attribute: false},
         };
     }
 
@@ -142,6 +144,7 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                 },
                 'object:modified': function (e) {
                     e.target.opacity = 1;
+                    that.updateAnnotationTexts();
                 },
             });
 
@@ -152,6 +155,7 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                 let obj = e.target;
                 obj.setCoords();
                 that.enforceCanvasBoundaries(obj);
+                that.updateAnnotationTexts();
             });
 
             // TODO: prevent scaling the signature in a way that it is crossing the canvas boundaries
@@ -211,11 +215,13 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
      * @param file
      * @param isShowPlacement
      * @param placementData
+     * @param annotations
      */
-    async showPDF(file, isShowPlacement = false, placementData = {}) {
+    async showPDF(file, isShowPlacement = false, placementData = {}, annotations = []) {
         let item = this.getSignatureRect();
         this.isPageLoaded = false; // prevent redisplay of previous pdf
         this.showErrorMessage = false;
+        this.annotations = annotations || [];
 
         // Just preview the pdf
         if (Object.keys(placementData).length === 0) {
@@ -282,6 +288,67 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
      */
     getSignatureRect() {
         return /** @type {import('fabric').FabricImage} */ (this.fabricCanvas.item(0));
+    }
+
+    /**
+     * Update or create annotation text objects below the signature seal
+     */
+    async updateAnnotationTexts() {
+        const fabric = await import('fabric');
+        const signature = this.getSignatureRect();
+
+        // Remove existing annotation text objects (items beyond index 0)
+        const objectsToRemove = [];
+        this.fabricCanvas.forEachObject((obj, index) => {
+            if (index > 0) {
+                objectsToRemove.push(obj);
+            }
+        });
+        objectsToRemove.forEach((obj) => this.fabricCanvas.remove(obj));
+
+        if (!this.annotations || this.annotations.length === 0) {
+            this.fabricCanvas.renderAll();
+            return;
+        }
+
+        // Get signature position and size (bounding rect gives the actual visual bounds)
+        const sigBoundingRect = signature.getBoundingRect();
+        const fontSize = 10;
+        const lineHeight = fontSize + 4;
+        const padding = 5;
+
+        // Start position: below the signature seal, left-aligned with the seal's left edge
+        let currentTop = sigBoundingRect.top + sigBoundingRect.height + padding;
+        const textLeft = sigBoundingRect.left;
+
+        for (const annotation of this.annotations) {
+            if (!annotation.value || annotation.value.trim() === '') {
+                continue;
+            }
+
+            const annotationTypeData = getAnnotationTypes(annotation.annotationType);
+            const label = annotationTypeData
+                ? annotationTypeData.name[this.lang] || annotationTypeData.name['en']
+                : '';
+            const text = `${label}: ${annotation.value}`;
+
+            const textObj = new fabric.Text(text, {
+                left: textLeft,
+                top: currentTop,
+                fontSize: fontSize,
+                fill: '#000000',
+                selectable: false,
+                evented: false,
+                fontFamily: 'Arial, sans-serif',
+                originX: 'left',
+                originY: 'top',
+            });
+
+            this.fabricCanvas.add(textObj);
+            currentTop += lineHeight;
+        }
+
+        this.fabricCanvas.renderAll();
     }
 
     /**
@@ -383,6 +450,8 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                 // render the page contents in the canvas
                 try {
                     await page.render(render_context).promise;
+                    // Update annotation texts after page render
+                    await that.updateAnnotationTexts();
                 } catch (error) {
                     console.error(error.message);
                     send({
