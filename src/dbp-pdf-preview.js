@@ -313,9 +313,11 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
 
         // Get signature position and size (bounding rect gives the actual visual bounds)
         const sigBoundingRect = signature.getBoundingRect();
-        const fontSize = 10;
-        const lineHeight = fontSize + 4;
-        const padding = 5;
+        const fontSize = 11;
+        const lineHeight = fontSize + 6;
+        const padding = 8;
+        const rowSpacing = 4;
+        const columnGap = 10;
 
         // Start position: below the signature seal, left-aligned with the seal's left edge
         let currentTop = sigBoundingRect.top + sigBoundingRect.height + padding;
@@ -327,12 +329,11 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
             }
 
             const annotationTypeData = getAnnotationTypes(annotation.annotationType);
-            const label = annotationTypeData
-                ? annotationTypeData.name[this.lang] || annotationTypeData.name['en']
-                : '';
-            const text = `${label}: ${annotation.value}`;
+            const labelDe = annotationTypeData ? annotationTypeData.name.de : '';
+            const labelEn = annotationTypeData ? annotationTypeData.name.en : '';
 
-            const textObj = new fabric.Text(text, {
+            // Create German label text (bold, first line on left)
+            const labelTextDe = new fabric.Text(`${labelDe} /`, {
                 left: textLeft,
                 top: currentTop,
                 fontSize: fontSize,
@@ -340,12 +341,50 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                 selectable: false,
                 evented: false,
                 fontFamily: 'Arial, sans-serif',
+                fontWeight: 'bold',
                 originX: 'left',
                 originY: 'top',
             });
 
-            this.fabricCanvas.add(textObj);
-            currentTop += lineHeight;
+            this.fabricCanvas.add(labelTextDe);
+
+            // Create English label text (bold, second line on left)
+            const labelTextEn = new fabric.Text(labelEn, {
+                left: textLeft,
+                top: currentTop + lineHeight,
+                fontSize: fontSize,
+                fill: '#000000',
+                selectable: false,
+                evented: false,
+                fontFamily: 'Arial, sans-serif',
+                fontWeight: 'bold',
+                originX: 'left',
+                originY: 'top',
+            });
+
+            this.fabricCanvas.add(labelTextEn);
+
+            // Calculate the width of the label column (use the wider of the two labels)
+            const labelWidthDe = labelTextDe.width;
+            const labelWidthEn = labelTextEn.width;
+            const labelColumnWidth = Math.max(labelWidthDe, labelWidthEn);
+
+            // Create value text (positioned on the right, vertically centered)
+            const valueText = new fabric.Text(annotation.value, {
+                left: textLeft + labelColumnWidth + columnGap,
+                top: currentTop + lineHeight / 2,
+                fontSize: fontSize,
+                fill: '#000000',
+                selectable: false,
+                evented: false,
+                fontFamily: 'Arial, sans-serif',
+                fontWeight: 'normal',
+                originX: 'left',
+                originY: 'top',
+            });
+
+            this.fabricCanvas.add(valueText);
+            currentTop += lineHeight * 2 + rowSpacing;
         }
 
         this.fabricCanvas.renderAll();
