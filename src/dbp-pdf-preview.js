@@ -315,13 +315,20 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
         const sigBoundingRect = signature.getBoundingRect();
         const fontSize = 11;
         const lineHeight = fontSize + 6;
-        const padding = 8;
+        const innerPadding = 8;
         const rowSpacing = 4;
         const columnGap = 10;
 
-        // Start position: below the signature seal, left-aligned with the seal's left edge
-        let currentTop = sigBoundingRect.top + sigBoundingRect.height + padding;
-        const textLeft = sigBoundingRect.left;
+        // Start position: directly below the signature seal, no margin
+        const annotationBoxTop = sigBoundingRect.top + sigBoundingRect.height;
+        const annotationBoxLeft = sigBoundingRect.left;
+        const annotationBoxWidth = sigBoundingRect.width; // Same width as signature seal
+        let currentTop = annotationBoxTop + innerPadding;
+        const textLeft = annotationBoxLeft + innerPadding;
+
+        // Collect all text objects first to calculate border dimensions
+        const textObjects = [];
+        let tempTop = currentTop;
 
         for (const annotation of this.annotations) {
             if (!annotation.value || annotation.value.trim() === '') {
@@ -335,7 +342,7 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
             // Create German label text (bold, first line on left)
             const labelTextDe = new fabric.Text(`${labelDe} /`, {
                 left: textLeft,
-                top: currentTop,
+                top: tempTop,
                 fontSize: fontSize,
                 fill: '#000000',
                 selectable: false,
@@ -345,13 +352,11 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                 originX: 'left',
                 originY: 'top',
             });
-
-            this.fabricCanvas.add(labelTextDe);
 
             // Create English label text (bold, second line on left)
             const labelTextEn = new fabric.Text(labelEn, {
                 left: textLeft,
-                top: currentTop + lineHeight,
+                top: tempTop + lineHeight,
                 fontSize: fontSize,
                 fill: '#000000',
                 selectable: false,
@@ -361,8 +366,6 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                 originX: 'left',
                 originY: 'top',
             });
-
-            this.fabricCanvas.add(labelTextEn);
 
             // Calculate the width of the label column (use the wider of the two labels)
             const labelWidthDe = labelTextDe.width;
@@ -372,7 +375,7 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
             // Create value text (positioned on the right, vertically centered)
             const valueText = new fabric.Text(annotation.value, {
                 left: textLeft + labelColumnWidth + columnGap,
-                top: currentTop + lineHeight / 2,
+                top: tempTop + lineHeight / 2,
                 fontSize: fontSize,
                 fill: '#000000',
                 selectable: false,
@@ -383,8 +386,35 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                 originY: 'top',
             });
 
+            textObjects.push({labelTextDe, labelTextEn, valueText});
+            tempTop += lineHeight * 2 + rowSpacing;
+        }
+
+        // Calculate border dimensions - use signature width
+        const borderHeight = tempTop - currentTop + innerPadding;
+
+        // Create border rectangle with same width as signature
+        const border = new fabric.Rect({
+            left: annotationBoxLeft,
+            top: annotationBoxTop,
+            width: annotationBoxWidth,
+            height: borderHeight,
+            fill: 'transparent',
+            stroke: '#000000',
+            strokeWidth: 1,
+            selectable: false,
+            evented: false,
+            originX: 'left',
+            originY: 'top',
+        });
+
+        this.fabricCanvas.add(border);
+
+        // Add all text objects to canvas
+        for (const {labelTextDe, labelTextEn, valueText} of textObjects) {
+            this.fabricCanvas.add(labelTextDe);
+            this.fabricCanvas.add(labelTextEn);
             this.fabricCanvas.add(valueText);
-            currentTop += lineHeight * 2 + rowSpacing;
         }
 
         this.fabricCanvas.renderAll();
