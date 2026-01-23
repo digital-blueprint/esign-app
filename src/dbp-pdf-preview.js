@@ -313,11 +313,11 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
 
         // Get signature position and size (bounding rect gives the actual visual bounds)
         const sigBoundingRect = signature.getBoundingRect();
-        const fontSize = 11;
-        const lineHeight = fontSize + 6;
-        const innerPadding = 8;
-        const rowSpacing = 4;
-        const columnGap = 10;
+        const fontSize = 9;
+        const lineHeight = fontSize + 3;
+        const innerPadding = 4;
+        const rowSpacing = 2;
+        const columnGap = 8;
 
         // Start position: directly below the signature seal, no margin
         const wholeBoxTop = sigBoundingRect.top + sigBoundingRect.height;
@@ -335,9 +335,9 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
         let currentTop = annotationBoxTop + innerPadding;
         const textLeft = annotationBoxLeft + innerPadding;
 
-        // Collect all text objects first to calculate border dimensions
-        const textObjects = [];
-        let tempTop = currentTop;
+        // First pass: create all label text objects and find maximum label width
+        const labelData = [];
+        let maxLabelWidth = 0;
 
         for (const annotation of this.annotations) {
             if (!annotation.value || annotation.value.trim() === '') {
@@ -347,6 +347,39 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
             const annotationTypeData = getAnnotationTypes(annotation.annotationType);
             const labelDe = annotationTypeData ? annotationTypeData.name.de : '';
             const labelEn = annotationTypeData ? annotationTypeData.name.en : '';
+
+            // Create temporary text objects to measure width
+            const labelTextDe = new fabric.Text(`${labelDe} /`, {
+                fontSize: fontSize,
+                fontFamily: 'Arial, sans-serif',
+                fontWeight: 'bold',
+            });
+
+            const labelTextEn = new fabric.Text(labelEn, {
+                fontSize: fontSize,
+                fontFamily: 'Arial, sans-serif',
+                fontWeight: 'bold',
+            });
+
+            const labelWidth = Math.max(labelTextDe.width, labelTextEn.width);
+            maxLabelWidth = Math.max(maxLabelWidth, labelWidth);
+
+            labelData.push({
+                annotation,
+                labelDe,
+                labelEn,
+            });
+        }
+
+        // Second pass: create all text objects with aligned values
+        const textObjects = [];
+        const borderLines = [];
+        let tempTop = currentTop;
+        const valueLeft = textLeft + maxLabelWidth + columnGap;
+        const rowHeight = lineHeight * 2 + rowSpacing;
+
+        for (let i = 0; i < labelData.length; i++) {
+            const {annotation, labelDe, labelEn} = labelData[i];
 
             // Create German label text (bold, first line on left)
             const labelTextDe = new fabric.Text(`${labelDe} /`, {
@@ -376,14 +409,9 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                 originY: 'top',
             });
 
-            // Calculate the width of the label column (use the wider of the two labels)
-            const labelWidthDe = labelTextDe.width;
-            const labelWidthEn = labelTextEn.width;
-            const labelColumnWidth = Math.max(labelWidthDe, labelWidthEn);
-
-            // Create value text (positioned on the right, vertically centered)
+            // Create value text (positioned at aligned column, vertically centered)
             const valueText = new fabric.Text(annotation.value, {
-                left: textLeft + labelColumnWidth + columnGap,
+                left: valueLeft,
                 top: tempTop + lineHeight / 2,
                 fontSize: fontSize,
                 fill: '#000000',
@@ -396,11 +424,43 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
             });
 
             textObjects.push({labelTextDe, labelTextEn, valueText});
-            tempTop += lineHeight * 2 + rowSpacing;
+
+            // Add horizontal border between rows (except after the last row)
+            if (i < labelData.length - 1) {
+                const horizontalLine = new fabric.Line(
+                    [
+                        annotationBoxLeft,
+                        tempTop + rowHeight - rowSpacing / 2,
+                        annotationBoxLeft + annotationBoxWidth,
+                        tempTop + rowHeight - rowSpacing / 2,
+                    ],
+                    {
+                        stroke: '#000000',
+                        strokeWidth: 1,
+                        selectable: false,
+                        evented: false,
+                    },
+                );
+                borderLines.push(horizontalLine);
+            }
+
+            tempTop += rowHeight;
         }
 
-        // Calculate border dimensions - use calculated heights
+        // Calculate border dimensions
         const borderHeight = tempTop - currentTop + innerPadding;
+
+        // Add vertical border between label and value columns
+        const verticalLineX = valueLeft - columnGap / 2;
+        const verticalLine = new fabric.Line(
+            [verticalLineX, wholeBoxTop, verticalLineX, wholeBoxTop + borderHeight],
+            {
+                stroke: '#000000',
+                strokeWidth: 1,
+                selectable: false,
+                evented: false,
+            },
+        );
 
         // Create left box rectangle (for logo/seal area)
         const leftBox = new fabric.Rect({
@@ -434,6 +494,14 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
 
         this.fabricCanvas.add(leftBox);
         this.fabricCanvas.add(rightBorder);
+
+        // Add vertical line between labels and values
+        this.fabricCanvas.add(verticalLine);
+
+        // Add horizontal lines between rows
+        for (const line of borderLines) {
+            this.fabricCanvas.add(line);
+        }
 
         // Add all text objects to canvas
         for (const {labelTextDe, labelTextEn, valueText} of textObjects) {
