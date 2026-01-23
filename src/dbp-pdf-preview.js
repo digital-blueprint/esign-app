@@ -320,9 +320,18 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
         const columnGap = 10;
 
         // Start position: directly below the signature seal, no margin
-        const annotationBoxTop = sigBoundingRect.top + sigBoundingRect.height;
-        const annotationBoxLeft = sigBoundingRect.left;
-        const annotationBoxWidth = sigBoundingRect.width; // Same width as signature seal
+        const wholeBoxTop = sigBoundingRect.top + sigBoundingRect.height;
+        const wholeBoxLeft = sigBoundingRect.left;
+        const wholeBoxWidth = sigBoundingRect.width; // Same width as signature seal
+
+        // Divide the width: left box (~18%) for logo/seal, right box (~82%) for annotations
+        const leftBoxWidth = wholeBoxWidth * 0.18;
+        const rightBoxWidth = wholeBoxWidth * 0.82;
+
+        const annotationBoxTop = wholeBoxTop;
+        const annotationBoxLeft = wholeBoxLeft + leftBoxWidth;
+        const annotationBoxWidth = rightBoxWidth;
+
         let currentTop = annotationBoxTop + innerPadding;
         const textLeft = annotationBoxLeft + innerPadding;
 
@@ -390,11 +399,26 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
             tempTop += lineHeight * 2 + rowSpacing;
         }
 
-        // Calculate border dimensions - use signature width
+        // Calculate border dimensions - use calculated heights
         const borderHeight = tempTop - currentTop + innerPadding;
 
-        // Create border rectangle with same width as signature
-        const border = new fabric.Rect({
+        // Create left box rectangle (for logo/seal area)
+        const leftBox = new fabric.Rect({
+            left: wholeBoxLeft,
+            top: wholeBoxTop,
+            width: leftBoxWidth,
+            height: borderHeight,
+            fill: 'transparent',
+            stroke: '#000000',
+            strokeWidth: 1,
+            selectable: false,
+            evented: false,
+            originX: 'left',
+            originY: 'top',
+        });
+
+        // Create right border rectangle for annotations
+        const rightBorder = new fabric.Rect({
             left: annotationBoxLeft,
             top: annotationBoxTop,
             width: annotationBoxWidth,
@@ -408,7 +432,8 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
             originY: 'top',
         });
 
-        this.fabricCanvas.add(border);
+        this.fabricCanvas.add(leftBox);
+        this.fabricCanvas.add(rightBorder);
 
         // Add all text objects to canvas
         for (const {labelTextDe, labelTextEn, valueText} of textObjects) {
