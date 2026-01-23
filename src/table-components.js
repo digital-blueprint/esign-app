@@ -15,6 +15,7 @@ export class CustomTabulatorTable extends TabulatorTable {
             'dbp-esign-preview-button': PreviewButton,
             'dbp-esign-delete-button': DeleteButton,
             'dbp-esign-annotations-button': AnnotationsButton,
+            'dbp-esign-edit-button': EditButton,
             'dbp-esign-positioning-switch': PositioningSwitch,
         };
     }
@@ -197,6 +198,93 @@ export class PreviewButton extends LangMixin(ScopedElementsMixin(DBPLitElement),
                 class="preview-button"
                 aria-label="${this._i18n.t('preview-file-button-title')}"
                 title="${this._i18n.t('preview-file-button-title')}"></dbp-icon-button>
+        `;
+    }
+}
+
+export class EditButton extends LangMixin(ScopedElementsMixin(DBPLitElement), createInstance) {
+    static get scopedElements() {
+        return {
+            'dbp-icon-button': IconButton,
+        };
+    }
+
+    static get properties() {
+        return {
+            annotations: {type: Array},
+            needPositioning: {type: Boolean},
+        };
+    }
+
+    static get styles() {
+        return css`
+            .edit-wrapper {
+                display: inline-grid;
+                grid-template-columns: 27px 23px;
+                grid-template-rows: 23px 27px;
+                width: 50px;
+                height: 50px;
+                position: relative;
+            }
+
+            .edit-button {
+                font-size: 24px;
+                grid-area: 1 / 1 / 3 / 3;
+                place-self: center;
+            }
+
+            .annotation-count {
+                grid-column: 2 / 3;
+                grid-row: 1 / 2;
+                justify-self: start;
+                align-self: end;
+                background: var(--dbp-primary);
+                color: var(--dbp-background);
+                border: 1px solid var(--dbp-background);
+                border-radius: 100%;
+                display: block;
+                width: 21px;
+                height: 21px;
+                text-align: center;
+                line-height: 21px;
+                font-size: 14px;
+                font-weight: bold;
+                z-index: 3;
+                pointer-events: none;
+            }
+
+            .needs-positioning .edit-button {
+                color: var(--dbp-danger);
+            }
+        `;
+    }
+
+    constructor() {
+        super();
+        this.annotations = [];
+        this.needPositioning = false;
+    }
+
+    render() {
+        return html`
+            <span class="edit-wrapper ${this.needPositioning ? 'needs-positioning' : ''}">
+                <dbp-icon-button
+                    icon-name="pencil"
+                    class="edit-button"
+                    aria-label="${this._i18n.t('edit-button-title')}"
+                    title="${this._i18n.t('edit-button-title')}"></dbp-icon-button>
+                ${this.annotations.length > 0
+                    ? html`
+                          <span
+                              class="annotation-count"
+                              title="${this._i18n.t('annotations-count-text', {
+                                  annotationCount: this.annotations.length,
+                              })}">
+                              ${this.annotations.length}
+                          </span>
+                      `
+                    : ''}
+            </span>
         `;
     }
 }

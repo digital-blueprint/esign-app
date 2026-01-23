@@ -9,6 +9,8 @@ import {importPdfJs, getPdfJsDocument} from '@dbp-toolkit/pdf-viewer';
 import * as commonStyles from '@dbp-toolkit/common/styles';
 import {readBinaryFileContent, getAnnotationTypes} from './utils.js';
 import {send} from '@dbp-toolkit/common/notification';
+import {PdfAnnotationView} from './dbp-pdf-annotation-view.js';
+import {ResourceSelect} from '@dbp-toolkit/resource-select';
 
 /**
  * PdfPreview web component
@@ -36,6 +38,7 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
         this.signaturePlacementMode = 'auto';
         this.showSignaturePlacementDescription = false;
         this.annotations = [];
+        this.showAnnotationEditor = false;
 
         this._onWindowResize = this._onWindowResize.bind(this);
     }
@@ -44,6 +47,8 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
         return {
             'dbp-mini-spinner': MiniSpinner,
             'dbp-icon': Icon,
+            'dbp-pdf-annotation-view': PdfAnnotationView,
+            'dbp-resource-select': ResourceSelect,
         };
     }
 
@@ -66,6 +71,7 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
             allowSignatureRotation: {type: Boolean, attribute: 'allow-signature-rotation'},
             showSignaturePlacementDescription: {type: Boolean},
             annotations: {type: Array, attribute: false},
+            showAnnotationEditor: {type: Boolean, attribute: false},
         };
     }
 
@@ -713,6 +719,60 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
         }
     }
 
+    openAnnotationEditor() {
+        this.showAnnotationEditor = true;
+        // Initialize annotation view with current annotations
+        this.updateComplete.then(() => {
+            const annotationView = this._('dbp-pdf-annotation-view');
+            if (annotationView) {
+                annotationView.setAnnotationRows(this.annotations);
+            }
+        });
+    }
+
+    closeAnnotationEditor() {
+        this.showAnnotationEditor = false;
+    }
+
+    async saveAnnotations() {
+        const annotationView = this._('dbp-pdf-annotation-view');
+        if (!annotationView) return;
+
+        // Validate annotations
+        if (!annotationView.validateValues(true)) {
+            annotationView.validateValues(); // Show error message
+            return;
+        }
+
+        // Update annotations from the view
+        this.annotations = [...annotationView.annotationRows];
+        this.showAnnotationEditor = false;
+
+        // Update annotation texts on the PDF
+        await this.updateAnnotationTexts();
+
+        // Dispatch annotation save event
+        const event = new CustomEvent('dbp-pdf-annotations-save', {
+            detail: {
+                annotationRows: this.annotations,
+            },
+            bubbles: true,
+            composed: true,
+        });
+        this.dispatchEvent(event);
+    }
+
+    cancelAnnotations() {
+        this.showAnnotationEditor = false;
+        // Restore original annotations
+        this.updateComplete.then(() => {
+            const annotationView = this._('dbp-pdf-annotation-view');
+            if (annotationView) {
+                annotationView.setAnnotationRows(this.annotations);
+            }
+        });
+    }
+
     static get styles() {
         // language=css
         return css`
@@ -885,6 +945,60 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                 display: block;
                 width: 17px;
             }
+
+            .annotation-section {
+                margin-top: 1em;
+                padding: 1em;
+                border: var(--dbp-border);
+                border-radius: 4px;
+                background-color: var(--dbp-background);
+            }
+
+            .annotation-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 1em;
+            }
+
+            .annotation-header h3 {
+                margin: 0;
+                font-size: 1.1em;
+            }
+
+            .annotation-actions {
+                display: flex;
+                gap: 0.5em;
+                margin-top: 1em;
+            }
+
+            .annotation-summary {
+                display: flex;
+                align-items: center;
+                gap: 0.5em;
+                cursor: pointer;
+                padding: 0.5em;
+                border: var(--dbp-border);
+                border-radius: 4px;
+                background-color: var(--dbp-background);
+            }
+
+            .annotation-summary:hover {
+                background-color: var(--dbp-hover-background-color, #f5f5f5);
+            }
+
+            .annotation-count-badge {
+                background: var(--dbp-primary);
+                color: var(--dbp-background);
+                border-radius: 100%;
+                width: 24px;
+                height: 24px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: bold;
+                font-size: 0.9em;
+            }
         `;
     }
 
@@ -962,6 +1076,73 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                                     </button>
                                 </div>
                             </div>
+                            ${!this.showSignaturePlacementDescription
+                                ? html`
+                                      <div class="annotation-section">
+                                          ${!this.showAnnotationEditor
+                                              ? html`
+                                                    <div
+                                                        class="annotation-summary"
+                                                        @click="${() =>
+                                                            this.openAnnotationEditor()}">
+                                                        <dbp-icon
+                                                            name="bubble"
+                                                            style="font-size: 1.2em;"></dbp-icon>
+                                                        <span>
+                                                            ${this.annotations.length > 0
+                                                                ? i18n.t('annotations-edit', {
+                                                                      count: this.annotations
+                                                                          .length,
+                                                                  })
+                                                                : i18n.t('annotations-add')}
+                                                        </span>
+                                                        ${this.annotations.length > 0
+                                                            ? html`
+                                                                  <span
+                                                                      class="annotation-count-badge">
+                                                                      ${this.annotations.length}
+                                                                  </span>
+                                                              `
+                                                            : ''}
+                                                        <dbp-icon
+                                                            name="chevron-down"
+                                                            style="margin-left: auto;"></dbp-icon>
+                                                    </div>
+                                                `
+                                              : html`
+                                                    <div class="annotation-header">
+                                                        <h3>
+                                                            <dbp-icon
+                                                                name="bubble"
+                                                                style="font-size: 1em; margin-right: 0.3em;"></dbp-icon>
+                                                            ${i18n.t('annotations-manage')}
+                                                        </h3>
+                                                        <dbp-icon
+                                                            name="chevron-up"
+                                                            style="cursor: pointer;"
+                                                            @click="${() =>
+                                                                this.closeAnnotationEditor()}"></dbp-icon>
+                                                    </div>
+                                                    <dbp-pdf-annotation-view
+                                                        subscribe="lang"></dbp-pdf-annotation-view>
+                                                    <div class="annotation-actions">
+                                                        <button
+                                                            class="button is-cancel"
+                                                            @click="${() =>
+                                                                this.cancelAnnotations()}">
+                                                            ${i18n.t('button-cancel-text')}
+                                                        </button>
+                                                        <button
+                                                            class="button is-primary"
+                                                            @click="${() =>
+                                                                this.saveAnnotations()}">
+                                                            ${i18n.t('annotations-save')}
+                                                        </button>
+                                                    </div>
+                                                `}
+                                      </div>
+                                  `
+                                : ''}
                             <div
                                 class="signature-description ${classMap({
                                     hidden: !this.showSignaturePlacementDescription,

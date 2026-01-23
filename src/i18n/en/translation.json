@@ -1,5 +1,9 @@
 {
     "annotation-button-title": "Add annotation",
+    "annotations-add": "Add annotations to document",
+    "annotations-edit": "Edit annotations ({{count}})",
+    "annotations-manage": "Manage Annotations",
+    "annotations-save": "Save annotations",
     "annotation-view": {
         "delete-all-button-text": "Clear all",
         "delete-all-button-title": "Clear all",
@@ -21,6 +25,7 @@
     "confirm-delete-file": "Are you sure you want to delete {{file}}?",
     "download-file-button-title": "Download signed PDF",
     "download-file-completed": "File downloaded",
+    "edit-button-title": "Edit signature placement and annotations",
     "error-cancel-message": "The signature process was manually aborted.",
     "error-login-link": "Log in",
     "error-login-message": "Please log in to use this functionality.",

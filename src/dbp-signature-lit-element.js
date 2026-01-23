@@ -203,6 +203,9 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
 
         this.queuedFilesAnnotationModes[this.currentPreviewQueueKey] = 'text-selected';
         this.queuedFilesAnnotationSaved[this.currentPreviewQueueKey] = true;
+
+        // Refresh the table to show updated annotation count
+        this.setQueuedFilesTabulatorTable();
     }
 
     /**
@@ -870,6 +873,28 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         const i18n = this._i18n;
         const fileName = this.queuedFiles[id].file.name;
         const annotations = this.queuedFilesAnnotations[id] ?? [];
+        const placementMode = this.queuedFilesPlacementModes[id] || 'auto';
+        const isManual = placementMode === 'manual';
+        const placementMissing = this.queuedFilesNeedsPlacement.get(id) && !isManual;
+
+        let editButton = this.tableQueuedFilesTable.createScopedElement('dbp-esign-edit-button');
+        editButton.setAttribute('subscribe', 'lang');
+        editButton.annotations = annotations;
+        editButton.needPositioning = placementMissing;
+        editButton.addEventListener('click', (event) => {
+            event.stopPropagation();
+
+            // Set placement mode if missing
+            if (placementMissing || isManual) {
+                this.queuedFilesPlacementModes[id] = 'manual';
+                this.queuedFilesSignaturePlacements[id] = {signaturePlacementMode: 'manual'};
+            }
+
+            this._('#pdf-preview').open();
+            this._('#pdf-preview dbp-pdf-preview').removeAttribute('don-t-show-buttons');
+            this._('#pdf-preview dbp-pdf-preview').showSignaturePlacementDescription = false;
+            this.queuePlacement(id, this.queuedFilesPlacementModes[id], true);
+        });
 
         let previewButton = this.tableQueuedFilesTable.createScopedElement(
             'dbp-esign-preview-button',
@@ -880,17 +905,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
             this._('#pdf-preview').open();
             this._('#pdf-preview dbp-pdf-preview').setAttribute('don-t-show-buttons', '');
             this.showPreview(id, false, true);
-        });
-
-        let annotationsButton = this.tableQueuedFilesTable.createScopedElement(
-            'dbp-esign-annotations-button',
-        );
-        annotationsButton.setAttribute('subscribe', 'lang');
-        annotationsButton.annotations = annotations;
-        annotationsButton.addEventListener('click', (event) => {
-            event.stopPropagation();
-            this._('#annotation-view').open();
-            this.showAnnotationView(id, 'text-selected');
         });
 
         let deleteButton =
@@ -906,10 +920,8 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
 
         let container = document.createElement('div');
         container.style.display = 'flex';
+        container.appendChild(editButton);
         container.appendChild(previewButton);
-        if (allowAnnotating) {
-            container.appendChild(annotationsButton);
-        }
         container.appendChild(deleteButton);
 
         return container;
@@ -995,7 +1007,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
                 columns: {
                     fileName: i18n.t('table-header-file-name', {lng: 'en'}),
                     fileSize: i18n.t('table-header-file-size', {lng: 'en'}),
-                    positioning: i18n.t('table-header-positioning', {lng: 'en'}),
                     buttons: i18n.t('table-header-buttons', {lng: 'en'}),
                 },
             },
@@ -1003,7 +1014,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
                 columns: {
                     fileName: i18n.t('table-header-file-name', {lng: 'de'}),
                     fileSize: i18n.t('table-header-file-size', {lng: 'de'}),
-                    positioning: i18n.t('table-header-positioning', {lng: 'de'}),
                     buttons: i18n.t('table-header-buttons', {lng: 'de'}),
                 },
             },
@@ -1056,27 +1066,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
                     formatter: 'plaintext',
                     responsive: 3,
                 },
-                // {
-                //     title: 'profile',
-                //     field: 'profile',
-                //     sorter: false,
-                //     width: 120,
-                //     hozAlign: 'center',
-                //     headerHozAlign: 'center',
-                //     formatter: 'html',
-                //     // visible: false
-                //     responsive: 2
-                // },
-                {
-                    title: 'positioning',
-                    field: 'positioning',
-                    minWidth: 100,
-                    hozAlign: 'center',
-                    headerHozAlign: 'center',
-                    headerSort: false,
-                    formatter: 'html',
-                    responsive: 2,
-                },
                 {
                     title: 'buttons',
                     field: 'buttons',
@@ -1110,12 +1099,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
 
                 const actionButtons = this.getActionButtonsHtml(id, this.allowAnnotating);
 
-                const positioningSwitch = this.getPositioningSwitch(
-                    id,
-                    this.queuedFilesPlacementModes[id] || 'auto',
-                    placementMissing,
-                );
-
                 let filenameLabel = this.tableQueuedFilesTable.createScopedElement(
                     'dbp-esign-filename-label',
                 );
@@ -1127,8 +1110,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
                     index: id,
                     fileName: filenameLabel,
                     fileSize: humanFileSize(file.size),
-                    // profile: 'Personal',
-                    positioning: positioningSwitch,
                     buttons: actionButtons,
                 };
 

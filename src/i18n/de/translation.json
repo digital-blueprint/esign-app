@@ -1,5 +1,9 @@
 {
     "annotation-button-title": "Annotation hinzufügen",
+    "annotations-add": "Anmerkungen zum Dokument hinzufügen",
+    "annotations-edit": "Anmerkungen bearbeiten ({{count}})",
+    "annotations-manage": "Anmerkungen verwalten",
+    "annotations-save": "Anmerkungen speichern",
     "annotation-view": {
         "delete-all-button-text": "Alle entfernen",
         "delete-all-button-title": "Alle entfernen",
@@ -21,6 +25,7 @@
     "confirm-delete-file": "Sind Sie sicher, dass Sie die {{file}} löschen möchten?",
     "download-file-button-title": "Signiertes PDF Dokument herunterladen",
     "download-file-completed": "Datei heruntergeladen",
+    "edit-button-title": "Signaturplatzierung und Anmerkungen bearbeiten",
     "error-cancel-message": "Der Signaturprozess wurde manuell abgebrochen.",
     "error-login-link": "Anmelden",
     "error-login-message": "Bitte melden Sie sich an, um diese Funktion nutzen zu können.",
