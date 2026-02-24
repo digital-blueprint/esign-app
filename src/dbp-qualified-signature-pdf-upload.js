@@ -317,15 +317,13 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         return errorParsed;
     }
 
-    _onIFrameDone(event) {
+    async _onIFrameDone(event) {
         const sessionId = event.detail.id;
 
         // check if sessionId is valid
         if (typeof sessionId !== 'string' || sessionId.length < 15) {
             return;
         }
-
-        const that = this;
 
         // get correct file name
         const fileName = this.currentFileName === '' ? 'mydoc.pdf' : this.currentFileName;
@@ -339,47 +337,46 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             '?fileName=' +
             encodeURIComponent(fileName);
 
-        fetch(apiUrl, {
-            headers: {
-                'Content-Type': 'application/ld+json',
-                Authorization: 'Bearer ' + that.auth.token,
-            },
-        })
-            .then((result) => {
-                // hide iframe
-                that.externalAuthInProgress = false;
-                this._('#iframe').reset();
-                this.endSigningProcessIfQueueEmpty();
-
-                if (!result.ok) throw result;
-
-                return result.json();
-            })
-            .then((document) => {
-                // this doesn't seem to trigger an update() execution
-                that.signedFiles.push(document);
-                // this triggers the correct update() execution
-                that.signedFilesCount++;
-                that.signedFilesCountToReport++;
-
-                this.sendSetPropertyEvent('analytics-event', {
-                    category: 'QualifiedlySigning',
-                    action: 'DocumentSigned',
-                    name: document.contentSize,
-                });
-            })
-            .catch((error) => {
-                let file = this.currentFile;
-                // let's override the json to inject an error message
-                file.json = {'hydra:description': 'Download failed!'};
-
-                this.addToErrorFiles(file);
-            })
-            .finally(() => {
-                // Close the external auth modal
-                that._('#external-auth').close();
-                this.sendReportNotification();
+        try {
+            const result = await fetch(apiUrl, {
+                headers: {
+                    'Content-Type': 'application/ld+json',
+                    Authorization: 'Bearer ' + this.auth.token,
+                },
             });
+
+            // hide iframe
+            this.externalAuthInProgress = false;
+            this._('#iframe').reset();
+            this.endSigningProcessIfQueueEmpty();
+
+            if (!result.ok) throw result;
+
+            const document = await result.json();
+
+            // this doesn't seem to trigger an update() execution
+            this.signedFiles.push(document);
+            // this triggers the correct update() execution
+            this.signedFilesCount++;
+            this.signedFilesCountToReport++;
+
+            this.sendSetPropertyEvent('analytics-event', {
+                category: 'QualifiedlySigning',
+                action: 'DocumentSigned',
+                name: document.contentSize,
+            });
+        } catch (error) {
+            console.error('Error while fetching signed document:', error);
+            let file = this.currentFile;
+            // let's override the json to inject an error message
+            file.json = {'hydra:description': 'Download failed!'};
+
+            this.addToErrorFiles(file);
+        } finally {
+            // Close the external auth modal
+            this._('#external-auth').close();
+            this.sendReportNotification();
+        }
     }
 
     _onIFrameError(event) {
