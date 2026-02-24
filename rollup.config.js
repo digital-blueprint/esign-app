@@ -172,10 +172,6 @@ export default (async () => {
             minify: doMinify,
             cleanDir: true,
         },
-        experimental: {
-            // https://github.com/rolldown/rolldown/issues/8361
-            chunkOptimization: false,
-        },
         treeshake: treeshake,
         // external: ['zlib', 'http', 'fs', 'https', 'url'],
         onwarn: function (warning, warn) {
