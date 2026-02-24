@@ -62,10 +62,10 @@ export const fabricjs2pdfasPosition = (data) => {
     }
 
     return {
-        y: Math.round(bottom),
-        x: Math.round(left),
+        y: bottom,
+        x: left,
         r: angle,
-        w: Math.round(data.width), // only width, no "height" allowed in PDF-AS
+        w: data.width, // only width, no "height" allowed in PDF-AS
         p: data.currentPage,
     };
 };
