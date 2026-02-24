@@ -65,7 +65,8 @@ export class ExternalSignIFrame extends ScopedElementsMixin(LitElement) {
             this.dispatchEvent(
                 new CustomEvent('signature-done', {
                     detail: {
-                        id: data.sessionId,
+                        // sessionId is deprecated since esign v0.5.0
+                        code: data.code ?? data.sessionId,
                     },
                 }),
             );

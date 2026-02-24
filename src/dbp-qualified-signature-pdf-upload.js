@@ -318,12 +318,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
     }
 
     async _onIFrameDone(event) {
-        const sessionId = event.detail.id;
-
-        // check if sessionId is valid
-        if (typeof sessionId !== 'string' || sessionId.length < 15) {
-            return;
-        }
+        const code = event.detail.code;
 
         // get correct file name
         const fileName = this.currentFileName === '' ? 'mydoc.pdf' : this.currentFileName;
@@ -333,7 +328,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         const apiUrl =
             apiUrlBase +
             '/' +
-            encodeURIComponent(sessionId) +
+            encodeURIComponent(code) +
             '?fileName=' +
             encodeURIComponent(fileName);
 
