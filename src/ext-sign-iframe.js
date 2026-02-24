@@ -14,6 +14,7 @@ export class ExternalSignIFrame extends ScopedElementsMixin(LitElement) {
     constructor() {
         super();
         this._loading = false;
+        this._done = true;
         this.locationCount = 0;
         this.loginPageLoaded = false;
         this._onReceiveIframeMessage = this._onReceiveIframeMessage.bind(this);
@@ -27,7 +28,8 @@ export class ExternalSignIFrame extends ScopedElementsMixin(LitElement) {
 
     static get properties() {
         return {
-            _loading: {type: Boolean, attribute: false},
+            _loading: {type: Boolean, state: true},
+            _done: {type: Boolean, state: true},
             locationCount: {type: Number, attribute: 'location-count', reflect: true},
             loginPageLoaded: {type: Boolean, attribute: 'login-page-loaded', reflect: true},
         };
@@ -46,6 +48,7 @@ export class ExternalSignIFrame extends ScopedElementsMixin(LitElement) {
     _onReceiveIframeMessage(event) {
         const data = event.data;
         if (data.type === 'pdf-as-error') {
+            this._done = true;
             let error = data.error;
             if (data.cause) {
                 error = `${error}: ${data.cause}`;
@@ -58,6 +61,7 @@ export class ExternalSignIFrame extends ScopedElementsMixin(LitElement) {
                 }),
             );
         } else if (data.type === 'pdf-as-callback') {
+            this._done = true;
             this.dispatchEvent(
                 new CustomEvent('signature-done', {
                     detail: {
@@ -71,6 +75,7 @@ export class ExternalSignIFrame extends ScopedElementsMixin(LitElement) {
     setUrl(url) {
         let iframe = /** @type {HTMLIFrameElement} */ (this.renderRoot.querySelector('#iframe'));
         this._loading = true;
+        this._done = false;
         iframe.src = url;
         this.locationCount = 0;
     }
@@ -114,7 +119,7 @@ export class ExternalSignIFrame extends ScopedElementsMixin(LitElement) {
     }
 
     render() {
-        let onDone = (event) => {
+        let onLoad = (event) => {
             this._loading = false;
             this.locationCount++;
         };
@@ -132,8 +137,8 @@ export class ExternalSignIFrame extends ScopedElementsMixin(LitElement) {
             <!-- "scrolling" is deprecated, but still seem to help -->
             <iframe
                 id="iframe"
-                class=${classMap({hidden: this._loading})}
-                @load="${onDone}"
+                class=${classMap({hidden: this._loading || this._done})}
+                @load="${onLoad}"
                 @error="${onError}"
                 scrolling="no"></iframe>
         `;
