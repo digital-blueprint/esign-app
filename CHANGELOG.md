@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.6.2
+
+- Show text annotations in the signature placement preview to help with.
+  positioning signatures in documents with many annotations.
+- Avoid iframe flashing content at the end of a qualified signature.
+- Some minor compatibility improvements for the next esign bundle version.
+
 ## 2.6.1
 
 - App menu accessibility improvements
