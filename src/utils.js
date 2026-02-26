@@ -282,3 +282,38 @@ export const getAnnotationTypeSelectOptionsHtml = (selectedKey, lang) => {
 
     return results;
 };
+
+/**
+ * @param {string} fileName
+ * @returns {string}
+ */
+export function generateSignedFileName(fileName) {
+    const parts = fileName.split('.');
+
+    let name, ext;
+
+    if (parts.length < 2) {
+        name = parts[0];
+        ext = '';
+    } else {
+        ext = parts.at(-1);
+        name = parts.at(-2);
+    }
+
+    const prevName = parts.length >= 2 ? parts.slice(0, -2) : [];
+
+    if (name.endsWith('-sig')) {
+        return fileName;
+    }
+
+    let prefix = '';
+    if (prevName.length > 0) {
+        prefix = prevName.join('.') + '.';
+    }
+
+    if (ext) {
+        ext = '.' + ext;
+    }
+
+    return prefix + name + '-sig' + ext;
+}

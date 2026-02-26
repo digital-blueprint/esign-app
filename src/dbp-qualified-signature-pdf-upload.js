@@ -325,12 +325,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
 
         let apiUrlBase = combineURLs(this.entryPointUrl, '/esign/qualifiedly-signed-documents');
 
-        const apiUrl =
-            apiUrlBase +
-            '/' +
-            encodeURIComponent(code) +
-            '?fileName=' +
-            encodeURIComponent(fileName);
+        const apiUrl = apiUrlBase + '/' + encodeURIComponent(code);
 
         try {
             const result = await fetch(apiUrl, {
@@ -348,6 +343,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             if (!result.ok) throw result;
 
             const document = await result.json();
+            document.name = utils.generateSignedFileName(fileName);
 
             // this doesn't seem to trigger an update() execution
             this.signedFiles.push(document);

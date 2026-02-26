@@ -2,7 +2,7 @@ import {assert} from 'chai';
 
 import '../src/dbp-official-signature-pdf-upload';
 import '../src/dbp-signature.js';
-import {getPDFSignatureCount} from '../src/utils.js';
+import {getPDFSignatureCount, generateSignedFileName} from '../src/utils.js';
 
 suite('dbp-official-signature-pdf-upload basics', () => {
     let node;
@@ -81,5 +81,14 @@ suite('pdf signature detection', () => {
             await getPDFSignatureCount(await getRealPDFFile('qual-sig-tugraz-multiple.pdf')),
             2,
         );
+    });
+
+    test('generateSignedFileName appends -sig before the extension', () => {
+        assert.equal(generateSignedFileName('foo.pdf'), 'foo-sig.pdf');
+        assert.equal(generateSignedFileName('.pdf'), '-sig.pdf');
+        assert.equal(generateSignedFileName('-sig.pdf'), '-sig.pdf');
+        assert.equal(generateSignedFileName(''), '-sig');
+        assert.equal(generateSignedFileName('foo.tar.gz'), 'foo.tar-sig.gz');
+        assert.equal(generateSignedFileName('foo.sig'), 'foo-sig.sig');
     });
 });

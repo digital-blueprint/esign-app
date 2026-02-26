@@ -292,6 +292,8 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         if (data.status !== 201) {
             this.addToErrorFiles(data);
         } else if (data.json['@type'] === 'http://schema.org/MediaObject') {
+            data.json.name = utils.generateSignedFileName(data.fileName);
+
             // this doesn't seem to trigger an update() execution
             this.signedFiles.push(data.json);
             // this triggers the correct update() execution
