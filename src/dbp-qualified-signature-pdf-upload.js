@@ -313,6 +313,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         // SecurityLayer Error: [6002] Abbruch auf Grund mangelnder Rechte zur Befehlsausführung.
         else if (error.includes('SecurityLayer Error: [6002]')) {
             errorParsed = i18n.t('error-rights-message');
+        } else if (error.includes('Unbekannter Fehler')) {
+            errorParsed = i18n.t('error-unknown-message');
         }
         return errorParsed;
     }
