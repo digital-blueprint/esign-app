@@ -25,6 +25,7 @@ export default [
             "semi": [2, "always"],
             "jsdoc/require-jsdoc": 0,
             "jsdoc/require-param-description": 0,
+            "jsdoc/require-property-description": 0,
             "jsdoc/require-returns": 0,
             "jsdoc/require-param-type": 0,
             "jsdoc/require-returns-description": 0,
