@@ -25,6 +25,7 @@ import {PdfAnnotationView} from './dbp-pdf-annotation-view';
 import {ExternalSignIFrame} from './ext-sign-iframe.js';
 import * as SignatureStyles from './styles';
 import {CustomTabulatorTable} from './table-components.js';
+import {EsignApi} from './api.js';
 
 class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElement) {
     constructor() {
@@ -47,6 +48,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         this._handleModalClosed = this.handleModalClosed.bind(this);
         this._handlePdfModalClosing = this.handlePdfModalClosing.bind(this);
         this._handleAnnotationModalClosing = this.handleAnnotationModalClosing.bind(this);
+
+        this._api = new EsignApi(this);
     }
 
     static get scopedElements() {
@@ -325,27 +328,14 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         // get correct file name
         const fileName = this.currentFileName === '' ? 'mydoc.pdf' : this.currentFileName;
 
-        let apiUrlBase = combineURLs(this.entryPointUrl, '/esign/qualifiedly-signed-documents');
-
-        const apiUrl = apiUrlBase + '/' + encodeURIComponent(code);
-
         try {
-            const result = await fetch(apiUrl, {
-                headers: {
-                    'Content-Type': 'application/ld+json',
-                    Authorization: 'Bearer ' + this.auth.token,
-                },
-            });
+            const document = await this._api.getQualifietlySignedDocument(code);
+            document.name = utils.generateSignedFileName(fileName);
 
             // hide iframe
             this.externalAuthInProgress = false;
             this._('#iframe').reset();
             this.endSigningProcessIfQueueEmpty();
-
-            if (!result.ok) throw result;
-
-            const document = await result.json();
-            document.name = utils.generateSignedFileName(fileName);
 
             // this doesn't seem to trigger an update() execution
             this.signedFiles.push(document);
