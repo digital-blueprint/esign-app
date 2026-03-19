@@ -280,7 +280,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
     onReceiveBeforeUnload(event) {
         const i18n = this._i18n;
         // we don't need to stop if there are no signed files
-        if (this.signedFiles.length === 0) {
+        if (this.signedFiles.size === 0) {
             return;
         }
 
@@ -332,26 +332,28 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
     async _onIFrameDone(event) {
         const code = event.detail.code;
 
-        // get correct file name
-        const fileName = this.activeSigningEntry.file.name || 'mydoc.pdf';
-
         try {
-            const document = await this._api.getQualifietlySignedDocument(code);
-            document.name = utils.generateSignedFileName(fileName);
+            const document = await this._api.getQualifiedlySignedDocument(code);
 
             // hide iframe
             this.externalAuthInProgress = false;
             this._('#iframe').reset();
             this.endSigningProcessIfQueueEmpty();
 
-            // this doesn't seem to trigger an update() execution
-            this.signedFiles = [...this.signedFiles, document];
+            let filename = utils.generateSignedFileName(this.activeSigningEntry.file.name);
+
+            const arr = utils.convertDataURIToBinary(document.contentUrl);
+            let signedFile = new File([arr], filename, {
+                type: utils.getDataURIContentType(document.contentUrl),
+            });
+
+            this.addSignedFile(this.activeSigningEntry.key, signedFile);
             this.signedFilesCountToReport++;
 
             this.sendSetPropertyEvent('analytics-event', {
                 category: 'QualifiedlySigning',
                 action: 'DocumentSigned',
-                name: document.contentSize,
+                name: signedFile.size,
             });
             this.activeSigningEntry = null;
             this.activeSigningUploadData = null;
@@ -709,13 +711,13 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                         <!-- List of signed PDFs -->
                         <div
                             class="files-block signed-files field ${classMap({
-                                hidden: this.signedFiles.length === 0,
+                                hidden: this.signedFiles.size === 0,
                             })}">
                             <h3 class="section-title ">
                                 ${i18n.t('qualified-pdf-upload.signed-files-label')}
                             </h3>
                             <!-- Button to download all signed PDFs -->
-                            <div class="field ${classMap({hidden: this.signedFiles.length === 0})}">
+                            <div class="field ${classMap({hidden: this.signedFiles.size === 0})}">
                                 <div class="control tabulator-actions">
                                     <div class="table-actions">
                                         <dbp-loading-button
@@ -723,7 +725,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                             class="${classMap({
                                                 hidden: this.signedFilesTableExpanded,
                                             })}"
-                                            ?disabled="${this.signedFiles.length === 0 ||
+                                            ?disabled="${this.signedFiles.size === 0 ||
                                             this.signedFilesTableCollapsible === false}"
                                             value="${i18n.t('qualified-pdf-upload.expand-all')}"
                                             @click="${() => {
@@ -739,7 +741,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                             class="${classMap({
                                                 hidden: !this.signedFilesTableExpanded,
                                             })}"
-                                            ?disabled="${this.signedFiles.length === 0 ||
+                                            ?disabled="${this.signedFiles.size === 0 ||
                                             this.signedFilesTableCollapsible === false}"
                                             value="${i18n.t('qualified-pdf-upload.collapse-all')}"
                                             @click="${() => {
