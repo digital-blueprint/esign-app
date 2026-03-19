@@ -25,6 +25,13 @@ export class SignatureEntry {
     }
 }
 
+export class SignedEntry {
+    constructor(key, signedFile) {
+        this.key = key;
+        this.file = signedFile;
+    }
+}
+
 export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, createInstance) {
     constructor() {
         super();
@@ -61,7 +68,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         this.fileSourceUrl = '';
         this.fileSource = '';
         this.nextcloudDefaultDir = '';
-        this.signedFiles = [];
+        this.signedFiles = new Map();
         this.signedFilesCountToReport = 0;
         this.errorFiles = [];
         this.errorFilesCount = 0;
@@ -80,7 +87,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
             nextcloudName: {type: String, attribute: 'nextcloud-name'},
             nextcloudFileURL: {type: String, attribute: 'nextcloud-file-url'},
             nextcloudAuthInfo: {type: String, attribute: 'nextcloud-auth-info'},
-            signedFiles: {type: Array, attribute: false},
+            signedFiles: {type: Object, attribute: false},
             signedFilesCountToReport: {type: Number, attribute: false},
             signedFilesToDownload: {type: Number, attribute: false},
             queuedFilesCount: {type: Number, attribute: false},
@@ -418,27 +425,20 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
     }
 
     /**
-     * Convert files to binary async
+     * @param {string} key
+     * @param {File} file
      */
-    async convertFiles() {
-        let files = [];
-
-        for (const file of this.signedFiles) {
-            const arr = utils.convertDataURIToBinary(file.contentUrl);
-            const binaryFile = new File([arr], file.name, {
-                type: utils.getDataURIContentType(file.contentUrl),
-            });
-            files.push(binaryFile);
-        }
-        return files;
+    addSignedFile(key, file) {
+        const signedFiles = new Map(this.signedFiles);
+        signedFiles.set(key, new SignedEntry(key, file));
+        this.signedFiles = signedFiles;
     }
 
     /**
      * Open Filesink for multiple files
      */
     async zipDownloadClickHandler() {
-        // add all signed pdf-files
-        const files = await this.convertFiles();
+        const files = Array.from(this.signedFiles.values(), (signedEntry) => signedEntry.file);
 
         this._('#file-sink').files = [...files];
         this.signedFilesToDownload = files.length;
@@ -464,12 +464,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
      * @param file
      */
     async downloadFileClickHandler(file) {
-        let files = [];
-        const arr = utils.convertDataURIToBinary(file.contentUrl);
-        const binaryFile = new File([arr], file.name, {
-            type: utils.getDataURIContentType(file.contentUrl),
-        });
-        files.push(binaryFile);
+        const files = [file];
         this.signedFilesToDownload = files.length;
         this._('#file-sink').files = [...files];
     }
@@ -619,7 +614,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
     }
 
     clearSignedFiles() {
-        this.signedFiles = [];
+        this.signedFiles = new Map();
     }
 
     clearErrorFiles() {
@@ -1138,10 +1133,9 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
 
         let tableFiles = [];
 
-        const ids = Object.keys(this.signedFiles);
         if (this.tableSignedFilesTable) {
-            ids.forEach((id) => {
-                const file = this.signedFiles[id];
+            this.signedFiles.forEach((signedEntry, id) => {
+                const file = signedEntry.file;
 
                 let filenameLabel = this.tableSignedFilesTable.createScopedElement(
                     'dbp-esign-filename-label',
@@ -1164,7 +1158,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
                 let fileData = {
                     index: id,
                     fileName: filenameLabel,
-                    fileSize: humanFileSize(file.contentSize),
+                    fileSize: humanFileSize(file.size),
                     downloadButton: downloadButton,
                 };
                 tableFiles.push(fileData);

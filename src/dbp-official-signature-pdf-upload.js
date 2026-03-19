@@ -250,7 +250,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
     onReceiveBeforeUnload(event) {
         const i18n = this._i18n;
         // we don't need to stop if there are no signed files
-        if (this.signedFiles.length === 0) {
+        if (this.signedFiles.size === 0) {
             return;
         }
 
@@ -297,17 +297,20 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             this.activeSigningEntry = null;
             this.addToErrorFiles(data);
         } else if (data.json['@type'] === 'http://schema.org/MediaObject') {
-            data.json.name = utils.generateSignedFileName(data.fileName);
+            let filename = utils.generateSignedFileName(this.activeSigningEntry.file.name);
+            const arr = utils.convertDataURIToBinary(data.json.contentUrl);
+            let signedFile = new File([arr], filename, {
+                type: utils.getDataURIContentType(data.json.contentUrl),
+            });
 
-            // this doesn't seem to trigger an update() execution
-            this.signedFiles = [...this.signedFiles, data.json];
+            this.addSignedFile(this.activeSigningEntry.key, signedFile);
             this.signedFilesCountToReport++;
 
             this.endSigningProcessIfQueueEmpty();
             this.sendSetPropertyEvent('analytics-event', {
                 category: 'OfficialSigning',
                 action: 'DocumentSigned',
-                name: data.json.contentSize,
+                name: signedFile.size,
             });
             this.activeSigningEntry = null;
         }
@@ -573,13 +576,13 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                         <!-- List of signed PDFs -->
                         <div
                             class="files-block signed-files field ${classMap({
-                                hidden: this.signedFiles.length === 0,
+                                hidden: this.signedFiles.size === 0,
                             })}">
                             <h3 class="section-title">
                                 ${i18n.t('official-pdf-upload.signed-files-label')}
                             </h3>
                             <!-- Button to download all signed PDFs -->
-                            <div class="field ${classMap({hidden: this.signedFiles.length === 0})}">
+                            <div class="field ${classMap({hidden: this.signedFiles.size === 0})}">
                                 <div class="control tabulator-actions">
                                     <div class="table-actions">
                                         <dbp-loading-button
@@ -587,7 +590,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                             class="${classMap({
                                                 hidden: this.signedFilesTableExpanded,
                                             })}"
-                                            ?disabled="${this.signedFiles.length === 0 ||
+                                            ?disabled="${this.signedFiles.size === 0 ||
                                             this.signedFilesTableCollapsible === false}"
                                             value="${i18n.t('qualified-pdf-upload.expand-all')}"
                                             @click="${() => {
@@ -603,7 +606,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                             class="${classMap({
                                                 hidden: !this.signedFilesTableExpanded,
                                             })}"
-                                            ?disabled="${this.signedFiles.length === 0 ||
+                                            ?disabled="${this.signedFiles.size === 0 ||
                                             this.signedFilesTableCollapsible === false}"
                                             value="${i18n.t('qualified-pdf-upload.collapse-all')}"
                                             @click="${() => {
