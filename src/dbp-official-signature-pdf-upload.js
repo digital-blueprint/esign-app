@@ -761,13 +761,13 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                 </div>
                                 <div class="filename">
                                     <strong>
-                                        ${this.currentFile.file !== undefined
-                                            ? this.currentFile.file.name
+                                        ${this.annotationEntry?.file !== undefined
+                                            ? this.annotationEntry.file.name
                                             : ''}
                                     </strong>
                                     (${humanFileSize(
-                                        this.currentFile.file !== undefined
-                                            ? this.currentFile.file.size
+                                        this.annotationEntry?.file !== undefined
+                                            ? this.annotationEntry.file.size
                                             : 0,
                                     )})
                                 </div>

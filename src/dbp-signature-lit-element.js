@@ -45,6 +45,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         this.failedFilesTableExpanded = false;
         this.failedFilesTableCollapsible = false;
         this.currentFile = {};
+        this.annotationEntry = null;
         this.activeSigningEntry = null;
         this.uploadStatusFileName = '';
         this.uploadStatusText = '';
@@ -92,6 +93,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
             signingProcessEnabled: {type: Boolean, attribute: false},
             signingProcessActive: {type: Boolean, attribute: false},
             currentFile: {type: Object, attribute: false},
+            annotationEntry: {type: Object, attribute: false},
             signaturePlacementInProgress: {type: Boolean, attribute: false},
             withSigBlock: {type: Boolean, attribute: false},
             isSignaturePlacement: {type: Boolean, attribute: false},
@@ -159,8 +161,11 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         }
 
         const entry = this.queuedFiles.get(key);
-        this.currentFile = entry;
-        this.currentPreviewQueueKey = key;
+        if (!entry) {
+            return;
+        }
+
+        this.annotationEntry = entry;
 
         this.addAnnotationInProgress = true;
 
@@ -175,16 +180,14 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
      * @param {CustomEvent} event
      */
     processAnnotationEvent(event) {
-        let annotationDetails = event.detail;
-        let key = this.currentPreviewQueueKey;
-        const entry = this.queuedFiles.get(key);
+        const annotationDetails = event.detail;
+        const entry = this.annotationEntry;
 
         if (entry) {
-            entry.annotations = annotationDetails.annotationRows;
+            entry.annotations = annotationDetails.annotationRows.map((row) => ({...row}));
         }
 
-        this.isAnnotationViewVisible = false;
-        this.addAnnotationInProgress = false;
+        this.hideAnnotationView();
     }
 
     /**
@@ -192,12 +195,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
      * @param {CustomEvent} event
      */
     processAnnotationCancelEvent(event) {
-        let key = this.currentPreviewQueueKey;
-        const entry = this.queuedFiles.get(key);
-
-        if (entry) {
-            entry.annotations = [];
-        }
+        this.hideAnnotationView();
     }
 
     /**
@@ -206,6 +204,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
     hideAnnotationView() {
         this.isAnnotationViewVisible = false;
         this.addAnnotationInProgress = false;
+        this.annotationEntry = null;
     }
 
     /**
@@ -708,13 +707,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
 
         if (event.detail.id === 'annotation-view-modal') {
             this.setQueuedFilesTabulatorTable();
-            const annotationModal = this._('#annotation-view');
-            const pdfAnnotationView = this._('dbp-pdf-annotation-view');
-            // Don't allow closing the modal if the annotation is not valid
-            if (!pdfAnnotationView.validateValues(true)) {
-                annotationModal.open();
-                pdfAnnotationView.validateValues();
-            }
+            this.hideAnnotationView();
         }
     }
 
