@@ -21,7 +21,6 @@ export class PdfAnnotationView extends LangMixin(
         this.isTextHidden = false;
         this.isSelected = false;
         this.annotationRows = [];
-        this.queuedFilesAnnotationsCount = 0;
         this.key = -1;
     }
 
@@ -43,7 +42,6 @@ export class PdfAnnotationView extends LangMixin(
             isTextHidden: {type: Boolean, attribute: false},
             isSelected: {type: Boolean, attribute: false},
             annotationRows: {type: Array, attribute: false},
-            queuedFilesAnnotationsCount: {type: Number, attribute: false},
         };
     }
 
@@ -145,15 +143,11 @@ export class PdfAnnotationView extends LangMixin(
     addAnnotation() {
         if (!this.annotationRows) {
             this.annotationRows = [];
-            this.queuedFilesAnnotationsCount = 0;
         }
 
         let e = /** @type {HTMLSelectElement} */ (this._('#additional-select'));
         let type = e?.options[e?.selectedIndex]?.value;
-        this.annotationRows.push({annotationType: type, value: ''});
-
-        // we just need this so the UI will update
-        this.queuedFilesAnnotationsCount++;
+        this.annotationRows = [...this.annotationRows, {annotationType: type, value: ''}];
 
         if (!this.isTextHidden) {
             this.isTextHidden = true;
@@ -180,15 +174,12 @@ export class PdfAnnotationView extends LangMixin(
      */
     removeAnnotation(id) {
         if (this.annotationRows && this.annotationRows[id]) {
-            this.annotationRows.splice(id, 1);
+            this.annotationRows = this.annotationRows.filter((_, index) => index !== id);
 
             if (this.annotationRows.length === 0) {
                 this.isTextHidden = false;
                 // this.sendCancelEvent();
             }
-
-            // we just need this so the UI will update
-            this.queuedFilesAnnotationsCount--;
         }
     }
 

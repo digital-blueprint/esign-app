@@ -8,11 +8,12 @@ import {humanFileSize} from '@dbp-toolkit/common/i18next';
 import {LangMixin} from '@dbp-toolkit/common';
 
 export class SignatureEntry {
-    constructor(key, file, placementMode = 'auto', needsPlacement = false) {
+    constructor(key, file, placementMode = 'auto', needsPlacement = false, annotations = []) {
         this.key = key;
         this.file = file;
         this.placementMode = placementMode;
         this.needsPlacement = needsPlacement;
+        this.annotations = annotations;
     }
 }
 
@@ -42,8 +43,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         this.currentFilePlacementMode = '';
         this.currentFileSignaturePlacement = {};
         this.currentKey = '';
-        this.queuedFilesAnnotations = [];
-        this.queuedFilesAnnotationsCount = 0;
         this.uploadStatusFileName = '';
         this.uploadStatusText = '';
         this.signingProcessActive = false;
@@ -98,8 +97,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
             isSignaturePlacement: {type: Boolean, attribute: false},
             allowAnnotating: {type: Boolean, attribute: 'allow-annotating'},
             isAnnotationViewVisible: {type: Boolean, attribute: false},
-            queuedFilesAnnotations: {type: Array, attribute: false},
-            queuedFilesAnnotationsCount: {type: Number, attribute: false},
             addAnnotationInProgress: {type: Boolean, attribute: false},
             fileHandlingEnabledTargets: {type: String, attribute: 'file-handling-enabled-targets'},
             queuedFilesTableExpanded: {type: Boolean, attribute: false},
@@ -162,15 +159,15 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
             return;
         }
 
-        const file = this.queuedFiles.get(key);
-        this.currentFile = file;
+        const entry = this.queuedFiles.get(key);
+        this.currentFile = entry;
         this.currentPreviewQueueKey = key;
 
         this.addAnnotationInProgress = true;
 
         const viewTag = 'dbp-pdf-annotation-view';
         this._(viewTag).setAttribute('key', key);
-        this._(viewTag).setAnnotationRows(this.queuedFilesAnnotations[key]);
+        this._(viewTag).setAnnotationRows(entry.annotations);
 
         this.isAnnotationViewVisible = true;
     }
@@ -181,8 +178,11 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
     processAnnotationEvent(event) {
         let annotationDetails = event.detail;
         let key = this.currentPreviewQueueKey;
+        const entry = this.queuedFiles.get(key);
 
-        this.queuedFilesAnnotations[key] = annotationDetails.annotationRows;
+        if (entry) {
+            entry.annotations = annotationDetails.annotationRows;
+        }
 
         this.isAnnotationViewVisible = false;
         this.addAnnotationInProgress = false;
@@ -194,8 +194,11 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
      */
     processAnnotationCancelEvent(event) {
         let key = this.currentPreviewQueueKey;
+        const entry = this.queuedFiles.get(key);
 
-        delete this.queuedFilesAnnotations[key];
+        if (entry) {
+            entry.annotations = [];
+        }
     }
 
     /**
@@ -251,10 +254,9 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
      * @param id
      */
     removeAnnotation(key, id) {
-        if (this.queuedFilesAnnotations[key] && this.queuedFilesAnnotations[key][id]) {
-            delete this.queuedFilesAnnotations[key][id];
-            // we just need this so the UI will update
-            this.queuedFilesAnnotationsCount--;
+        const entry = this.queuedFiles.get(key);
+        if (entry?.annotations && entry.annotations[id]) {
+            delete entry.annotations[id];
         }
     }
 
@@ -263,11 +265,9 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
      *
      * @param key
      */
-    takeAnnotationsFromQueue(key) {
-        const annotations = this.queuedFilesAnnotations[key];
-        delete this.queuedFilesAnnotations[key];
-
-        return annotations ?? [];
+    getAnnotations(key) {
+        const entry = this.queuedFiles.get(key);
+        return entry?.annotations ?? [];
     }
 
     /**
@@ -279,8 +279,9 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
      * @param value
      */
     updateAnnotation(key, id, annotationKey, value) {
-        if (this.queuedFilesAnnotations[key] && this.queuedFilesAnnotations[key][id]) {
-            this.queuedFilesAnnotations[key][id][annotationKey] = value;
+        const entry = this.queuedFiles.get(key);
+        if (entry?.annotations && entry.annotations[id]) {
+            entry.annotations[id][annotationKey] = value;
         }
     }
 
@@ -292,32 +293,15 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         if (!Array.isArray(filesToRemove) || filesToRemove.length < 1) return;
 
         for (const fileKey of filesToRemove) {
-            // Remove annotation of selected rows form queuedFilesAnnotations
-            this.queuedFilesAnnotations.forEach((annotation, index) => {
-                if (index == fileKey) {
-                    delete this.queuedFilesAnnotations[index];
-                }
-            });
-
             // Remove files of selected rows from queueFiles
             this.queuedFiles.delete(fileKey);
         }
 
         this.selectedFiles = [];
 
-        this.queuedFilesAnnotationsCount = this.getRealLength(this.queuedFilesAnnotations);
         this.updateQueuedFilesCount();
 
         this.tableQueuedFilesTable.tabulatorTable.redraw(true);
-    }
-
-    /**
-     * Get the real length of an array containing holes (sparse array)
-     * @param {Array} array
-     * @returns {number}
-     */
-    getRealLength(array) {
-        return Object.keys(array).filter((key) => !isNaN(key)).length;
     }
 
     updateQueuedFilesCount() {
@@ -630,7 +614,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         if (viewOnly) {
             placementData = {};
         }
-        const annotations = this.queuedFilesAnnotations[key] || [];
+        const annotations = entry.annotations || [];
         await this._('dbp-pdf-preview').showPDF(
             entry.file,
             withSigBlock,
@@ -807,8 +791,9 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
 
     getActionButtonsHtml(id, allowAnnotating = true) {
         const i18n = this._i18n;
-        const fileName = this.queuedFiles.get(id).file.name;
-        const annotations = this.queuedFilesAnnotations[id] ?? [];
+        const entry = this.queuedFiles.get(id);
+        const fileName = entry.file.name;
+        const annotations = entry.annotations ?? [];
 
         let previewButton = this.tableQueuedFilesTable.createScopedElement(
             'dbp-esign-preview-button',
