@@ -38,7 +38,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         this.nextcloudAuthInfo = '';
         this.fileHandlingEnabledTargets = 'local';
         this.externalAuthInProgress = false;
-        this.activeSigningUploadData = null;
 
         // Bind all event handlers
         this._onReceiveBeforeUnload = this.onReceiveBeforeUnload.bind(this);
@@ -76,7 +75,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         return {
             ...super.properties,
             externalAuthInProgress: {type: Boolean, attribute: false},
-            activeSigningUploadData: {type: Object, attribute: false},
         };
     }
 
@@ -241,7 +239,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         const entry = this.takeFileFromQueue(key);
         const file = entry.file;
         this.activeSigningEntry = entry;
-        this.activeSigningUploadData = null;
         this.uploadInProgress = true;
         let params = {};
 
@@ -356,20 +353,15 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                 name: signedFile.size,
             });
             this.activeSigningEntry = null;
-            this.activeSigningUploadData = null;
         } catch (error) {
             console.error('Error while fetching signed document:', error);
-            let file = this.activeSigningUploadData;
-            if (!file) {
+            if (!this.activeSigningEntry) {
                 this.activeSigningEntry = null;
                 return;
             }
-            // let's override the json to inject an error message
-            file.json = {'hydra:description': 'Download failed!'};
 
+            this.addToErrorFiles(this.activeSigningEntry, 'Download failed!');
             this.activeSigningEntry = null;
-            this.activeSigningUploadData = null;
-            this.addToErrorFiles(file);
         } finally {
             // Close the external auth modal
             this._('#external-auth').close();
@@ -379,14 +371,12 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
 
     _onIFrameError(event) {
         let error = event.detail.message;
-        let file = this.activeSigningUploadData;
-        if (!file) {
+        if (!this.activeSigningEntry) {
             return;
         }
-        file.json = {'hydra:description': this.parseError(error)};
+        const errorMessage = this.parseError(error);
+        this.addToErrorFiles(this.activeSigningEntry, errorMessage);
         this.activeSigningEntry = null;
-        this.activeSigningUploadData = null;
-        this.addToErrorFiles(file);
         this._('#iframe').reset();
         this.externalAuthInProgress = false;
         this.endSigningProcessIfQueueEmpty();
@@ -395,19 +385,20 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         this.sendReportNotification();
     }
 
-    addToErrorFiles(file) {
+    addToErrorFiles(sigEntry, errorMessage) {
         this.endSigningProcessIfQueueEmpty();
 
-        // this doesn't seem to trigger an update() execution
-        this.errorFiles[Math.floor(Math.random() * 1000000)] = file;
-        // this triggers the correct update() execution
-        this.errorFilesCount++;
+        const errorEntry = this.storeErrorFile(sigEntry, errorMessage);
+        if (!errorEntry) {
+            return;
+        }
+
         this.errorFilesCountToReport++;
 
         this.sendSetPropertyEvent('analytics-event', {
             category: 'QualifiedlySigning',
             action: 'SigningFailed',
-            name: file.json['hydra:description'],
+            name: errorMessage,
         });
     }
 
@@ -416,9 +407,9 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
      */
     onFileUploadFinished(data) {
         if (data.status !== 201) {
+            const errorMessage = data.json['hydra:description'];
+            this.addToErrorFiles(this.activeSigningEntry, errorMessage);
             this.activeSigningEntry = null;
-            this.activeSigningUploadData = null;
-            this.addToErrorFiles(data);
             this.sendReportNotification();
             this._('#external-auth').close();
         } else if (data.json['@type'] === 'http://schema.org/EntryPoint') {
@@ -428,9 +419,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             this.externalAuthInProgress = true;
 
             const entryPoint = data.json;
-
-            // we need the full file to upload it again in case the download of the signed file fails
-            this.activeSigningUploadData = data;
 
             // we want to load the redirect url in the iframe
             let iframe = this._('#iframe');
@@ -460,7 +448,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                 case 'signedFiles':
                     this.setSignedFilesTabulatorTable();
                     break;
-                case 'errorFilesCount':
+                case 'errorFiles':
                     this.setFailedFilesTabulatorTable();
                     break;
             }
@@ -522,8 +510,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             this.activeSigningEntry = null;
             this.setQueuedFilesTabulatorTable();
         }
-
-        this.activeSigningUploadData = null;
     }
 
     _onLoginClicked(e) {
@@ -783,13 +769,13 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                         <!-- List of errored files -->
                         <div
                             class="files-block error-files field ${classMap({
-                                hidden: this.errorFilesCount === 0,
+                                hidden: this.errorFiles.size === 0,
                             })}">
                             <h3 class="section-title">
                                 ${i18n.t('qualified-pdf-upload.error-files-label')}
                             </h3>
                             <!-- Button to upload errored files again -->
-                            <div class="field ${classMap({hidden: this.errorFilesCount === 0})}">
+                            <div class="field ${classMap({hidden: this.errorFiles.size === 0})}">
                                 <div class="control tabulator-actions">
                                     <div class="table-actions">
                                         <dbp-loading-button
@@ -797,7 +783,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                             class="${classMap({
                                                 hidden: this.failedFilesTableExpanded,
                                             })}"
-                                            ?disabled="${this.errorFilesCount === 0 ||
+                                            ?disabled="${this.errorFiles.size === 0 ||
                                             this.failedFilesTableCollapsible === false}"
                                             value="${i18n.t('qualified-pdf-upload.expand-all')}"
                                             @click="${() => {
@@ -813,7 +799,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                             class="${classMap({
                                                 hidden: !this.failedFilesTableExpanded,
                                             })}"
-                                            ?disabled="${this.errorFilesCount === 0 ||
+                                            ?disabled="${this.errorFiles.size === 0 ||
                                             this.failedFilesTableCollapsible === false}"
                                             value="${i18n.t('qualified-pdf-upload.collapse-all')}"
                                             @click="${() => {

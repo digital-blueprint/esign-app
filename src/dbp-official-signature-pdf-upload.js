@@ -274,18 +274,21 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
     }
 
     addToErrorFiles(file) {
+        const errorMessage = file.json['hydra:description'];
+
         this.endSigningProcessIfQueueEmpty();
 
-        // this doesn't seem to trigger an update() execution
-        this.errorFiles[Math.floor(Math.random() * 1000000)] = file;
-        // this triggers the correct update() execution
-        this.errorFilesCount++;
+        const errorEntry = this.storeErrorFile(this.activeSigningEntry, errorMessage);
+        if (!errorEntry) {
+            return;
+        }
+
         this.errorFilesCountToReport++;
 
         this.sendSetPropertyEvent('analytics-event', {
             category: 'officiallySigning',
             action: 'SigningFailed',
-            name: file.json['hydra:description'],
+            name: errorMessage,
         });
     }
 
@@ -294,8 +297,8 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
      */
     onFileUploadFinished(data) {
         if (data.status !== 201) {
-            this.activeSigningEntry = null;
             this.addToErrorFiles(data);
+            this.activeSigningEntry = null;
         } else if (data.json['@type'] === 'http://schema.org/MediaObject') {
             let filename = utils.generateSignedFileName(this.activeSigningEntry.file.name);
             const arr = utils.convertDataURIToBinary(data.json.contentUrl);
@@ -339,7 +342,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                 case 'signedFiles':
                     this.setSignedFilesTabulatorTable();
                     break;
-                case 'errorFilesCount':
+                case 'errorFiles':
                     this.setFailedFilesTabulatorTable();
                     break;
             }
@@ -648,13 +651,13 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                         <!-- List of errored files -->
                         <div
                             class="files-block error-files field ${classMap({
-                                hidden: this.errorFilesCount === 0,
+                                hidden: this.errorFiles.size === 0,
                             })}">
                             <h3 class="section-title">
                                 ${i18n.t('official-pdf-upload.error-files-label')}
                             </h3>
                             <!-- Button to upload errored files again -->
-                            <div class="field ${classMap({hidden: this.errorFilesCount === 0})}">
+                            <div class="field ${classMap({hidden: this.errorFiles.size === 0})}">
                                 <div class="control tabulator-actions">
                                     <div class="table-actions">
                                         <dbp-loading-button
@@ -662,7 +665,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                             class="${classMap({
                                                 hidden: this.failedFilesTableExpanded,
                                             })}"
-                                            ?disabled="${this.errorFilesCount === 0 ||
+                                            ?disabled="${this.errorFiles.size === 0 ||
                                             this.failedFilesTableCollapsible === false}"
                                             value="${i18n.t('qualified-pdf-upload.expand-all')}"
                                             @click="${() => {
@@ -678,7 +681,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                             class="${classMap({
                                                 hidden: !this.failedFilesTableExpanded,
                                             })}"
-                                            ?disabled="${this.errorFilesCount === 0 ||
+                                            ?disabled="${this.errorFiles.size === 0 ||
                                             this.failedFilesTableCollapsible === false}"
                                             value="${i18n.t('qualified-pdf-upload.collapse-all')}"
                                             @click="${() => {
