@@ -212,16 +212,13 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         const entry = this.takeFileFromQueue(key);
         const file = entry.file;
         this.currentFile = file;
-
-        // set placement mode and parameters to restore them when canceled
-        this.currentFilePlacementMode = entry.placementMode;
-        this.currentFileSignaturePlacement = this.queuedFilesSignaturePlacements[key];
+        this.currentQueueEntry = entry;
         this.uploadInProgress = true;
         let params = {};
 
         // prepare parameters to tell PDF-AS where and how the signature should be placed
         if (entry.placementMode === 'manual') {
-            const data = this.queuedFilesSignaturePlacements[key];
+            const data = entry.signaturePlacement;
             if (data !== undefined) {
                 params = utils.fabricjs2pdfasPosition(data);
             }
@@ -298,6 +295,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
      */
     onFileUploadFinished(data) {
         if (data.status !== 201) {
+            this.currentQueueEntry = null;
             this.addToErrorFiles(data);
         } else if (data.json['@type'] === 'http://schema.org/MediaObject') {
             data.json.name = utils.generateSignedFileName(data.fileName);
@@ -314,6 +312,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                 action: 'DocumentSigned',
                 name: data.json.contentSize,
             });
+            this.currentQueueEntry = null;
         }
         this.sendReportNotification();
     }
@@ -350,16 +349,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
     clearQueuedFiles() {
         // Delete selected files from the queues
         if (this.selectedFiles.length) {
-            let filesToRemove = [];
-            for (const selectedFile of this.selectedFiles) {
-                this.queuedFilesSignaturePlacements.forEach((placement, index) => {
-                    if (index == selectedFile.key) {
-                        delete this.queuedFilesSignaturePlacements[index];
-                    }
-                });
-
-                filesToRemove.push(selectedFile.key);
-            }
+            let filesToRemove = this.selectedFiles.map((selectedFile) => selectedFile.key);
 
             super.clearQueuedFiles(filesToRemove);
         }
@@ -384,12 +374,9 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         this.signingProcessEnabled = false;
         this.signingProcessActive = false;
 
-        if (this.currentFile.file !== undefined) {
-            const key = await this.queueFile(this.currentFile.file);
-
-            // set placement mode and parameters so they are restore when canceled
-            this.queuedFiles.get(key).placementMode = this.currentFilePlacementMode;
-            this.queuedFilesSignaturePlacements[key] = this.currentFileSignaturePlacement;
+        if (this.currentQueueEntry) {
+            await this.reQueueFile(this.currentQueueEntry);
+            this.currentQueueEntry = null;
         }
     }
 
