@@ -408,6 +408,21 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         return this.queuedFilesCount;
     }
 
+    getUserTextForAnnotations(annotations) {
+        let userText = [];
+        for (let annotation of annotations) {
+            const annotationTypeData = utils.getAnnotationTypes(annotation['annotationType']);
+
+            userText.push({
+                description: `${annotationTypeData.name.de || ''} / ${
+                    annotationTypeData.name.en || ''
+                }`,
+                value: annotation['value'],
+            });
+        }
+        return userText;
+    }
+
     /**
      * @param file
      * @param params
@@ -422,20 +437,11 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         // add annotations
         if (annotations.length > 0) {
             file = await this.addAnnotationsToFile(file, annotations);
-
             // Also send annotations to the server so they get included in the signature block
-            let userText = [];
-            for (let annotation of annotations) {
-                const annotationTypeData = utils.getAnnotationTypes(annotation['annotationType']);
-
-                userText.push({
-                    description: `${annotationTypeData.name.de || ''} / ${
-                        annotationTypeData.name.en || ''
-                    }`,
-                    value: annotation['value'],
-                });
-            }
-            formData.append('user_text', JSON.stringify(userText));
+            formData.append(
+                'user_text',
+                JSON.stringify(this.getUserTextForAnnotations(annotations)),
+            );
         }
 
         let url = new URL(this.fileSourceUrl);
