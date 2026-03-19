@@ -164,7 +164,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         let errorInPositioning = false;
         for (const key of this.queuedFiles.keys()) {
             if (errorInPositioning === true) continue;
-            const isManual = this.queuedFilesPlacementModes[key] === 'manual';
+            const isManual = this.queuedFiles.get(key).placementMode === 'manual';
             if (
                 this.queuedFilesNeedsPlacement.get(key) &&
                 !isManual &&
@@ -214,13 +214,13 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         this.currentFile = file;
 
         // set placement mode and parameters to restore them when canceled
-        this.currentFilePlacementMode = this.queuedFilesPlacementModes[key];
+        this.currentFilePlacementMode = entry.placementMode;
         this.currentFileSignaturePlacement = this.queuedFilesSignaturePlacements[key];
         this.uploadInProgress = true;
         let params = {};
 
         // prepare parameters to tell PDF-AS where and how the signature should be placed
-        if (this.queuedFilesPlacementModes[key] === 'manual') {
+        if (entry.placementMode === 'manual') {
             const data = this.queuedFilesSignaturePlacements[key];
             if (data !== undefined) {
                 params = utils.fabricjs2pdfasPosition(data);
@@ -358,11 +358,6 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                         delete this.queuedFilesSignaturePlacements[index];
                     }
                 });
-                this.queuedFilesPlacementModes.forEach((placementMode, index) => {
-                    if (index == selectedFile.key) {
-                        delete this.queuedFilesPlacementModes[index];
-                    }
-                });
                 this.queuedFilesNeedsPlacement.delete(selectedFile.key);
 
                 filesToRemove.push(selectedFile.key);
@@ -395,7 +390,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             const key = await this.queueFile(this.currentFile.file);
 
             // set placement mode and parameters so they are restore when canceled
-            this.queuedFilesPlacementModes[key] = this.currentFilePlacementMode;
+            this.queuedFiles.get(key).placementMode = this.currentFilePlacementMode;
             this.queuedFilesSignaturePlacements[key] = this.currentFileSignaturePlacement;
         }
     }
