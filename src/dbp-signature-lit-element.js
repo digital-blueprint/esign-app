@@ -445,31 +445,31 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         }
 
         // I got a 60s timeout in Google Chrome and found no way to increase that
-        await fetch(url, {
-            method: 'POST',
-            headers: {
-                Authorization: 'Bearer ' + this.auth.token,
-            },
-            body: formData,
-        })
-            .then((response) => {
-                /* Done. Inform the user */
-                console.log(`Status: ${response.status} for file ${file.name}`);
-                this.sendFinishedEvent(response, file);
-            })
-            .catch((response) => {
-                /* Error. Inform the user */
-                if (response.message) {
-                    send({
-                        summary: 'Error!',
-                        body: response.message,
-                        type: 'danger',
-                        timeout: 15,
-                    });
-                    console.log(`Error message: ${response.message}`);
-                }
-                this.sendFinishedEvent(response, file);
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + this.auth.token,
+                },
+                body: formData,
             });
+
+            /* Done. Inform the user */
+            console.log(`Status: ${response.status} for file ${file.name}`);
+            this.sendFinishedEvent(response, file);
+        } catch (error) {
+            /* Error. Inform the user */
+            if (error.message) {
+                send({
+                    summary: 'Error!',
+                    body: error.message,
+                    type: 'danger',
+                    timeout: 15,
+                });
+                console.log(`Error message: ${error.message}`);
+            }
+            this.sendFinishedEvent(error, file);
+        }
 
         this.uploadInProgress = false;
     }
