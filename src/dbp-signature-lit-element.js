@@ -16,7 +16,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         this.uploadInProgress = false;
         this._queueKey = 0;
 
-        this.queuedFilesAnnotationModes = [];
         this.signingProcessEnabled = false;
         this.queuedFilesAnnotationSaved = [];
         this.queuedFilesEnabledAnnotations = [];
@@ -98,7 +97,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
             queuedFilesAnnotations: {type: Array, attribute: false},
             queuedFilesAnnotationsCount: {type: Number, attribute: false},
             addAnnotationInProgress: {type: Boolean, attribute: false},
-            queuedFilesAnnotationModes: {type: Array, attribute: false},
             queuedFilesAnnotationSaved: {type: Array, attribute: false},
             fileHandlingEnabledTargets: {type: String, attribute: 'file-handling-enabled-targets'},
             queuedFilesTableExpanded: {type: Boolean, attribute: false},
@@ -156,8 +154,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
      * @param {string} name
      */
     async showAnnotationView(key, name) {
-        this.queuedFilesAnnotationModes[key] = name;
-
         if (this.signingProcessEnabled) {
             return;
         }
@@ -197,7 +193,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         this.isAnnotationViewVisible = false;
         this.addAnnotationInProgress = false;
 
-        this.queuedFilesAnnotationModes[this.currentPreviewQueueKey] = 'text-selected';
         this.queuedFilesAnnotationSaved[this.currentPreviewQueueKey] = true;
     }
 
@@ -212,7 +207,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         this.queuedFilesAnnotations[key] = undefined;
         this.disableAnnotationsForKey(key);
 
-        this.queuedFilesAnnotationModes[this.currentPreviewQueueKey] = 'no-text';
         this.queuedFilesAnnotationSaved[this.currentPreviewQueueKey] = false;
     }
 
@@ -220,14 +214,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
      * Hides the PdfAnnotationView
      */
     hideAnnotationView() {
-        if (
-            this.queuedFilesAnnotationSaved[this.currentPreviewQueueKey] !== undefined &&
-            this.queuedFilesAnnotationSaved[this.currentPreviewQueueKey]
-        ) {
-            this.queuedFilesAnnotationModes[this.currentPreviewQueueKey] = 'text-selected';
-        } else {
-            this.queuedFilesAnnotationModes[this.currentPreviewQueueKey] = 'no-text';
-        }
         this.isAnnotationViewVisible = false;
         this.addAnnotationInProgress = false;
     }
