@@ -162,7 +162,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
 
         // Validate that all PDFs with a signature have manual placement
         let errorInPositioning = false;
-        for (const key of Object.keys(this.queuedFiles)) {
+        for (const key of this.queuedFiles.keys()) {
             if (errorInPositioning === true) continue;
             const isManual = this.queuedFilesPlacementModes[key] === 'manual';
             if (
@@ -190,14 +190,23 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         let key = null;
         if (this.selectedFiles.length > 0) {
             // If we have selected files in the table use the selected file
-            const selectedFile = this.selectedFiles.shift();
-            key = Object.keys(this.queuedFiles).find((index) => {
-                return this.queuedFiles[index].file.name.trim() === selectedFile.filename.trim();
-            });
-            this.selectedFilesProcessing = true;
+            while (this.selectedFiles.length > 0 && key === null) {
+                const selectedFile = this.selectedFiles.shift();
+                if (selectedFile && this.queuedFiles.has(selectedFile.key)) {
+                    key = selectedFile.key;
+                }
+            }
+            this.selectedFilesProcessing = key !== null;
         } else {
             // Process all queued files
-            key = Object.keys(this.queuedFiles)[0];
+            key = this.queuedFiles.keys().next().value ?? null;
+        }
+
+        if (key === null) {
+            this.signingProcessEnabled = false;
+            this.signingProcessActive = false;
+            await this.stopSigningProcess();
+            return;
         }
 
         const entry = this.takeFileFromQueue(key);
