@@ -331,7 +331,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         const code = event.detail.code;
 
         // get correct file name
-        const fileName = this.currentFileName === '' ? 'mydoc.pdf' : this.currentFileName;
+        const fileName = this.activeSigningEntry.file.name || 'mydoc.pdf';
 
         try {
             const document = await this._api.getQualifietlySignedDocument(code);
@@ -412,7 +412,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             this.externalAuthInProgress = true;
 
             const entryPoint = data.json;
-            this.currentFileName = entryPoint.name;
 
             // we need the full file to upload it again in case the download of the signed file fails
             this.currentFile = data;
@@ -920,7 +919,11 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                             title="${i18n.t('qualified-pdf-upload.current-signing-process-label')}">
                             <div slot="header" class="header">
                                 <div class="filename">
-                                    <strong>${this.currentFileName}</strong>
+                                    <strong>
+                                        ${this.activeSigningEntry
+                                            ? this.activeSigningEntry.file.name
+                                            : ''}
+                                    </strong>
                                     (${humanFileSize(
                                         this.currentFile.file !== undefined
                                             ? this.currentFile.file.size
