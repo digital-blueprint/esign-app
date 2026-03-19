@@ -239,7 +239,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         const entry = this.takeFileFromQueue(key);
         const file = entry.file;
         this.currentFile = file;
-        this.currentQueueEntry = entry;
+        this.activeSigningEntry = entry;
         this.uploadInProgress = true;
         let params = {};
 
@@ -351,7 +351,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                 action: 'DocumentSigned',
                 name: document.contentSize,
             });
-            this.currentQueueEntry = null;
+            this.activeSigningEntry = null;
         } catch (error) {
             console.error('Error while fetching signed document:', error);
             let file = this.currentFile;
@@ -370,7 +370,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         let error = event.detail.message;
         let file = this.currentFile;
         file.json = {'hydra:description': this.parseError(error)};
-        this.currentQueueEntry = null;
+        this.activeSigningEntry = null;
         this.addToErrorFiles(file);
         this._('#iframe').reset();
         this.externalAuthInProgress = false;
@@ -401,7 +401,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
      */
     onFileUploadFinished(data) {
         if (data.status !== 201) {
-            this.currentQueueEntry = null;
+            this.activeSigningEntry = null;
             this.addToErrorFiles(data);
             this.sendReportNotification();
             this._('#external-auth').close();
@@ -501,10 +501,10 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         this.externalAuthInProgress = false;
         this.signingProcessActive = false;
 
-        if (this.currentQueueEntry) {
+        if (this.activeSigningEntry) {
             // Re-queue file with the same key
-            await this.reQueueFile(this.currentQueueEntry);
-            this.currentQueueEntry = null;
+            await this.reQueueFile(this.activeSigningEntry);
+            this.activeSigningEntry = null;
             this.setQueuedFilesTabulatorTable();
         }
     }

@@ -212,7 +212,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         const entry = this.takeFileFromQueue(key);
         const file = entry.file;
         this.currentFile = file;
-        this.currentQueueEntry = entry;
+        this.activeSigningEntry = entry;
         this.uploadInProgress = true;
         let params = {};
 
@@ -295,7 +295,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
      */
     onFileUploadFinished(data) {
         if (data.status !== 201) {
-            this.currentQueueEntry = null;
+            this.activeSigningEntry = null;
             this.addToErrorFiles(data);
         } else if (data.json['@type'] === 'http://schema.org/MediaObject') {
             data.json.name = utils.generateSignedFileName(data.fileName);
@@ -312,7 +312,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                 action: 'DocumentSigned',
                 name: data.json.contentSize,
             });
-            this.currentQueueEntry = null;
+            this.activeSigningEntry = null;
         }
         this.sendReportNotification();
     }
@@ -374,9 +374,9 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         this.signingProcessEnabled = false;
         this.signingProcessActive = false;
 
-        if (this.currentQueueEntry) {
-            await this.reQueueFile(this.currentQueueEntry);
-            this.currentQueueEntry = null;
+        if (this.activeSigningEntry) {
+            await this.reQueueFile(this.activeSigningEntry);
+            this.activeSigningEntry = null;
         }
     }
 
