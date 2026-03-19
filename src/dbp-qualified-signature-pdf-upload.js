@@ -262,9 +262,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             fileSize: humanFileSize(file.size, false),
         });
 
-        const annotationsEnabled = this.isAnnotationsEnabledForKey(key);
         const annotations = this.takeAnnotationsFromQueue(key);
-        await this.uploadFile(file, params, annotationsEnabled ? annotations : []);
+        await this.uploadFile(file, params, annotations);
         this.uploadInProgress = false;
         // Stop processing if no more selected file exists
         if (this.selectedFilesProcessing && this.selectedFiles.length === 0) {

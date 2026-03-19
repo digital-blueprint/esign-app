@@ -25,7 +25,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         this._queueKey = 0;
 
         this.signingProcessEnabled = false;
-        this.queuedFilesEnabledAnnotations = [];
         this.queuedFilesSignaturePlacements = [];
         this.externalAuthInProgress = false;
         this.tableQueuedFilesTable = null;
@@ -174,7 +173,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         this._(viewTag).setAnnotationRows(this.queuedFilesAnnotations[key]);
 
         this.isAnnotationViewVisible = true;
-        this.enableAnnotationsForKey(key);
     }
 
     /**
@@ -197,9 +195,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
     processAnnotationCancelEvent(event) {
         let key = this.currentPreviewQueueKey;
 
-        this.queuedFilesAnnotations[key] = [];
-        this.queuedFilesAnnotations[key] = undefined;
-        this.disableAnnotationsForKey(key);
+        delete this.queuedFilesAnnotations[key];
     }
 
     /**
@@ -270,48 +266,8 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
     takeAnnotationsFromQueue(key) {
         const annotations = this.queuedFilesAnnotations[key];
         delete this.queuedFilesAnnotations[key];
-        this.disableAnnotationsForKey(key);
 
-        return annotations;
-    }
-
-    /**
-     * Checks if annotations are enabled for an annotation key
-     *
-     * @param key
-     * @returns {boolean} true if annotations are enabled for annotation key
-     */
-    isAnnotationsEnabledForKey(key) {
-        return this.queuedFilesEnabledAnnotations.includes(key);
-    }
-
-    /**
-     * Enables annotations for an annotation key
-     *
-     * @param key
-     */
-    enableAnnotationsForKey(key) {
-        if (!this.isAnnotationsEnabledForKey(key)) {
-            this.queuedFilesEnabledAnnotations.push(key);
-        }
-    }
-
-    /**
-     * Disables annotations for an annotation key
-     *
-     * @param key
-     */
-    disableAnnotationsForKey(key) {
-        let i = 0;
-
-        // remove all occurrences of the value "key" in array this.queuedFilesEnabledAnnotations
-        while (i < this.queuedFilesEnabledAnnotations.length) {
-            if (this.queuedFilesEnabledAnnotations[i] === key) {
-                this.queuedFilesEnabledAnnotations.splice(i, 1);
-            } else {
-                ++i;
-            }
-        }
+        return annotations ?? [];
     }
 
     /**
