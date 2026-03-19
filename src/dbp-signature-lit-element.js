@@ -45,6 +45,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         this.failedFilesTableExpanded = false;
         this.failedFilesTableCollapsible = false;
         this.currentFile = {};
+        this.previewEntry = null;
         this.annotationEntry = null;
         this.activeSigningEntry = null;
         this.uploadStatusFileName = '';
@@ -93,6 +94,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
             signingProcessEnabled: {type: Boolean, attribute: false},
             signingProcessActive: {type: Boolean, attribute: false},
             currentFile: {type: Object, attribute: false},
+            previewEntry: {type: Object, attribute: false},
             annotationEntry: {type: Object, attribute: false},
             signaturePlacementInProgress: {type: Boolean, attribute: false},
             withSigBlock: {type: Boolean, attribute: false},
@@ -520,6 +522,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         }
 
         this.signaturePlacementInProgress = false;
+        this.previewEntry = null;
     }
 
     queuePlacementSwitch(key, name) {
@@ -596,7 +599,11 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         }
 
         const entry = this.queuedFiles.get(key);
-        this.currentFile = entry.file;
+        if (!entry) {
+            return;
+        }
+
+        this.previewEntry = entry;
         this.currentPreviewQueueKey = key;
         this.withSigBlock = withSigBlock;
         await this._('dbp-pdf-preview').showEntry(entry, withSigBlock, viewOnly);
@@ -687,6 +694,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
     }
 
     handlePdfModalClosing() {
+        this.previewEntry = null;
         this._('#pdf-preview').close();
     }
 
