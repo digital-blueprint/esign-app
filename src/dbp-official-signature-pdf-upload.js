@@ -137,7 +137,6 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
 
     async queueFile(file) {
         let id = await super.queueFile(file);
-        await this._updateNeedsPlacementStatus(id);
         this.setQueuedFilesTabulatorTable();
         this.requestUpdate();
         return id;
@@ -164,9 +163,10 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         let errorInPositioning = false;
         for (const key of this.queuedFiles.keys()) {
             if (errorInPositioning === true) continue;
-            const isManual = this.queuedFiles.get(key).placementMode === 'manual';
+            const entry = this.queuedFiles.get(key);
+            const isManual = entry.placementMode === 'manual';
             if (
-                this.queuedFilesNeedsPlacement.get(key) &&
+                entry.needsPlacement &&
                 !isManual &&
                 (this.selectedFiles.length === 0 || this.fileIsSelectedFile(key))
             ) {
@@ -358,7 +358,6 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                         delete this.queuedFilesSignaturePlacements[index];
                     }
                 });
-                this.queuedFilesNeedsPlacement.delete(selectedFile.key);
 
                 filesToRemove.push(selectedFile.key);
             }
