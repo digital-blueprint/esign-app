@@ -304,8 +304,6 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             this.signedFiles = [...this.signedFiles, data.json];
             this.signedFilesCountToReport++;
 
-            const entryPoint = data.json;
-            this.currentFileName = entryPoint.name;
             this.endSigningProcessIfQueueEmpty();
             this.sendSetPropertyEvent('analytics-event', {
                 category: 'OfficialSigning',

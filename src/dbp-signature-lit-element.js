@@ -46,7 +46,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         this.failedFilesTableCollapsible = false;
         this.currentFile = {};
         this.activeSigningEntry = null;
-        this.currentFileName = '';
         this.uploadStatusFileName = '';
         this.uploadStatusText = '';
         this.signingProcessActive = false;
@@ -93,7 +92,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
             signingProcessEnabled: {type: Boolean, attribute: false},
             signingProcessActive: {type: Boolean, attribute: false},
             currentFile: {type: Object, attribute: false},
-            currentFileName: {type: String, attribute: false},
             signaturePlacementInProgress: {type: Boolean, attribute: false},
             withSigBlock: {type: Boolean, attribute: false},
             isSignaturePlacement: {type: Boolean, attribute: false},
