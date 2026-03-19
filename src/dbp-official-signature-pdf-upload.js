@@ -148,7 +148,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
     async handleQueuedFiles() {
         const i18n = this._i18n;
         this.endSigningProcessIfQueueEmpty();
-        if (this.queuedFilesCount === 0) {
+        if (this.queuedFiles.size === 0) {
             // reset signingProcessEnabled button
             this.signingProcessEnabled = false;
             return;
@@ -336,7 +336,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                         );
                     }
                     break;
-                case 'queuedFilesCount':
+                case 'queuedFiles':
                     this.setQueuedFilesTabulatorTable();
                     break;
                 case 'signedFiles':
@@ -439,7 +439,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                     <div class="table-container">
                         <div
                             class="files-block queued-files field ${classMap({
-                                hidden: this.queuedFilesCount === 0,
+                                hidden: this.queuedFiles.size === 0,
                             })}">
                             <!-- Queued files headline and queueing spinner -->
                             <h3 class="section-title">
@@ -452,7 +452,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                         class="${classMap({
                                             hidden: this.queuedFilesTableExpanded,
                                         })}"
-                                        ?disabled="${this.queuedFilesCount === 0 ||
+                                        ?disabled="${this.queuedFiles.size === 0 ||
                                         this.queuedFilesTableCollapsible === false}"
                                         value="${i18n.t('qualified-pdf-upload.expand-all')}"
                                         @click="${() => {
@@ -468,7 +468,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                         class="${classMap({
                                             hidden: !this.queuedFilesTableExpanded,
                                         })}"
-                                        ?disabled="${this.queuedFilesCount === 0 ||
+                                        ?disabled="${this.queuedFiles.size === 0 ||
                                         this.queuedFilesTableCollapsible === false}"
                                         value="${i18n.t('qualified-pdf-upload.collapse-all')}"
                                         @click="${() => {
@@ -484,7 +484,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                         class="${classMap({
                                             hidden: this.queuedFilesTableAllSelected,
                                         })}"
-                                        ?disabled="${this.queuedFilesCount === 0}"
+                                        ?disabled="${this.queuedFiles.size === 0}"
                                         value="${i18n.t('qualified-pdf-upload.select-all')}"
                                         @click="${() => {
                                             this.queuedFilesTableAllSelected = true;
@@ -499,7 +499,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                         class="${classMap({
                                             hidden: !this.queuedFilesTableAllSelected,
                                         })}"
-                                        ?disabled="${this.queuedFilesCount === 0}"
+                                        ?disabled="${this.queuedFiles.size === 0}"
                                         value="${i18n.t('qualified-pdf-upload.deselect-all')}"
                                         @click="${() => {
                                             this.queuedFilesTableAllSelected = false;
@@ -514,7 +514,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                     <button
                                         id="clear-queue-button-queued-files"
                                         @click="${this.clearQueuedFiles}"
-                                        ?disabled="${this.queuedFilesCount === 0 ||
+                                        ?disabled="${this.queuedFiles.size === 0 ||
                                         this.signingProcessActive ||
                                         this.selectedFiles.length < 1}"
                                         class="button">
@@ -526,7 +526,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                             this.signingProcessEnabled = true;
                                             this.signingProcessActive = true;
                                         }}"
-                                        ?disabled="${this.queuedFilesCount === 0}"
+                                        ?disabled="${this.queuedFiles.size === 0}"
                                         class="button is-primary ${classMap({
                                             hidden: this.signingProcessActive,
                                         })}">
@@ -569,7 +569,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                             <!-- Text "queue empty" -->
                             <div
                                 class="empty-queue control ${classMap({
-                                    hidden: this.queuedFilesCount !== 0,
+                                    hidden: this.queuedFiles.size !== 0,
                                 })}">
                                 ${i18n.t('official-pdf-upload.queued-files-empty1')}
                                 <br />
