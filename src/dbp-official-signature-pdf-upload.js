@@ -535,7 +535,6 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                         @click="${() => {
                                             this.signingProcessEnabled = true;
                                             this.signingProcessActive = true;
-                                            this.initialQueuedFilesCount = this.queuedFilesCount;
                                         }}"
                                         ?disabled="${this.queuedFilesCount === 0}"
                                         class="button is-primary ${classMap({
