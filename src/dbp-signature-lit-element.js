@@ -11,7 +11,7 @@ import {LangMixin} from '@dbp-toolkit/common';
 export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, createInstance) {
     constructor() {
         super();
-        this.queuedFiles = [];
+        this.queuedFiles = new Map();
         this.queuedFilesCount = 0;
         this.uploadInProgress = false;
         this._queueKey = 0;
@@ -120,7 +120,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
     async queueFile(file) {
         this._queueKey++;
         const key = String(this._queueKey);
-        this.queuedFiles[key] = new SignatureEntry(key, file);
+        this.queuedFiles.set(key, new SignatureEntry(key, file));
         this.updateQueuedFilesCount();
         return key;
     }
@@ -131,7 +131,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
      */
     async reQueueFile(file) {
         const key = this.currentKey;
-        this.queuedFiles[key] = new SignatureEntry(key, file);
+        this.queuedFiles.set(key, new SignatureEntry(key, file));
         this.updateQueuedFilesCount();
 
         return key;
@@ -144,8 +144,8 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
      * @returns {SignatureEntry} entry
      */
     takeFileFromQueue(key) {
-        const entry = this.queuedFiles[key];
-        delete this.queuedFiles[key];
+        const entry = this.queuedFiles.get(key);
+        this.queuedFiles.delete(key);
         this.updateQueuedFilesCount();
 
         return entry;
@@ -163,7 +163,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         }
 
         if (name === 'text-selected') {
-            const file = this.getQueuedFile(key);
+            const file = this.queuedFiles.get(key);
             this.currentFile = file;
             this.currentPreviewQueueKey = key;
 
@@ -350,10 +350,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         }
     }
 
-    getQueuedFile(key) {
-        return this.queuedFiles[key];
-    }
-
     /**
      * Remove selected files from the file queue
      * @param {Array} filesToRemove - array of index to remove
@@ -370,11 +366,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
             });
 
             // Remove files of selected rows from queueFiles
-            this.queuedFiles.forEach((file, index) => {
-                if (index == fileKey) {
-                    delete this.queuedFiles[index];
-                }
-            });
+            this.queuedFiles.delete(fileKey);
         }
 
         this.selectedFiles = [];
@@ -395,7 +387,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
     }
 
     updateQueuedFilesCount() {
-        this.queuedFilesCount = Object.keys(this.queuedFiles).length;
+        this.queuedFilesCount = this.queuedFiles.size;
         return this.queuedFilesCount;
     }
 
@@ -567,7 +559,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
     }
 
     async _updateNeedsPlacementStatus(id) {
-        let entry = this.queuedFiles[id];
+        let entry = this.queuedFiles.get(id);
         let sigCount = await getPDFSignatureCount(entry.file);
         this.queuedFilesNeedsPlacement.delete(id);
         if (sigCount > 0) this.queuedFilesNeedsPlacement.set(id, true);
@@ -679,7 +671,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
             return;
         }
 
-        const entry = this.getQueuedFile(key);
+        const entry = this.queuedFiles.get(key);
         this.currentFile = entry.file;
         this.currentPreviewQueueKey = key;
         this.withSigBlock = withSigBlock;
@@ -864,7 +856,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
 
     getActionButtonsHtml(id, allowAnnotating = true) {
         const i18n = this._i18n;
-        const fileName = this.queuedFiles[id].file.name;
+        const fileName = this.queuedFiles.get(id).file.name;
         const annotations = this.queuedFilesAnnotations[id] ?? [];
 
         let previewButton = this.tableQueuedFilesTable.createScopedElement(
@@ -1094,10 +1086,10 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         let tableFiles = [];
         this.anyPlacementMissing = false;
 
-        const ids = Object.keys(this.queuedFiles);
+        const ids = [...this.queuedFiles.keys()];
         if (this.tableQueuedFilesTable) {
             ids.forEach((id) => {
-                const file = this.queuedFiles[id].file;
+                const file = this.queuedFiles.get(id).file;
                 const isManual = this.queuedFilesPlacementModes[id] === 'manual';
                 const placementMissing = this.queuedFilesNeedsPlacement.get(id) && !isManual;
                 if (placementMissing) {
