@@ -32,6 +32,14 @@ export class SignedEntry {
     }
 }
 
+export class ErrorEntry {
+    constructor(sigEntry, errorMessage) {
+        this.key = sigEntry.key;
+        this.sigEntry = sigEntry;
+        this.errorMessage = errorMessage;
+    }
+}
+
 export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, createInstance) {
     constructor() {
         super();
@@ -70,8 +78,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         this.nextcloudDefaultDir = '';
         this.signedFiles = new Map();
         this.signedFilesCountToReport = 0;
-        this.errorFiles = [];
-        this.errorFilesCount = 0;
+        this.errorFiles = new Map();
         this.errorFilesCountToReport = 0;
         this.selectedFiles = [];
         this.selectedFilesProcessing = false;
@@ -91,8 +98,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
             signedFilesCountToReport: {type: Number, attribute: false},
             signedFilesToDownload: {type: Number, attribute: false},
             queuedFilesCount: {type: Number, attribute: false},
-            errorFiles: {type: Array, attribute: false},
-            errorFilesCount: {type: Number, attribute: false},
+            errorFiles: {type: Object, attribute: false},
             errorFilesCountToReport: {type: Number, attribute: false},
             uploadInProgress: {type: Boolean, attribute: false},
             uploadStatusFileName: {type: String, attribute: false},
@@ -557,12 +563,11 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         const that = this;
 
         // we need to make a copy and reset the queue or else our queue will run crazy
-        const errorFilesCopy = {...this.errorFiles};
-        this.errorFiles = [];
-        this.errorFilesCount = 0;
+        const errorFilesCopy = new Map(this.errorFiles);
+        this.errorFiles = new Map();
 
-        commonUtils.asyncObjectForEach(errorFilesCopy, async (file, id) => {
-            await this.fileQueueingClickHandler(file.file, id);
+        errorFilesCopy.forEach(async (errorEntry) => {
+            await this.reQueueFile(errorEntry.sigEntry);
         });
 
         that._('#re-upload-all-button').stop();
@@ -571,12 +576,15 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
     /**
      * Queues a failed pdf-file again
      *
-     * @param file
-     * @param id
+     * @param {string} id
      */
-    async fileQueueingClickHandler(file, id) {
-        this.takeFailedFileFromQueue(id);
-        return this.queueFile(file);
+    async fileQueueingClickHandler(id) {
+        const errorEntry = this.takeFailedFileFromQueue(id);
+        if (!errorEntry) {
+            return null;
+        }
+
+        return this.reQueueFile(errorEntry.sigEntry);
     }
 
     /**
@@ -608,9 +616,16 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
      * @param key
      */
     takeFailedFileFromQueue(key) {
-        const file = this.errorFiles.splice(key, 1);
-        this.errorFilesCount = Object.keys(this.errorFiles).length;
-        return file;
+        const errorEntry = this.errorFiles.get(key);
+        if (!errorEntry) {
+            return null;
+        }
+
+        const errorFiles = new Map(this.errorFiles);
+        errorFiles.delete(key);
+        this.errorFiles = errorFiles;
+
+        return errorEntry;
     }
 
     clearSignedFiles() {
@@ -618,8 +633,21 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
     }
 
     clearErrorFiles() {
-        this.errorFiles = [];
-        this.errorFilesCount = 0;
+        this.errorFiles = new Map();
+    }
+
+    /**
+     * @param {SignatureEntry} sigEntry
+     * @param {string} errorMessage
+     * @returns {ErrorEntry}
+     */
+    storeErrorFile(sigEntry, errorMessage) {
+        const errorEntry = new ErrorEntry(sigEntry, errorMessage);
+        const errorFiles = new Map(this.errorFiles);
+        errorFiles.set(errorEntry.key, errorEntry);
+        this.errorFiles = errorFiles;
+
+        return errorEntry;
     }
 
     /**
@@ -848,7 +876,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         return positioningSwitch;
     }
 
-    getFailedButtonsHtml(id, data) {
+    getFailedButtonsHtml(id) {
         let controlDiv = document.createElement('div');
         controlDiv.classList.add('tabulator-failed-buttons');
 
@@ -859,7 +887,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         btnReupload.setAttribute('subscribe', 'lang');
         btnReupload.addEventListener('click', async (event) => {
             event.stopPropagation();
-            this.fileQueueingClickHandler(data.file, id);
+            this.fileQueueingClickHandler(id);
         });
         controlDiv.appendChild(btnReupload);
 
@@ -1272,27 +1300,22 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
 
         let tableFiles = [];
 
-        const ids = Object.keys(this.errorFiles);
         if (this.tableFailedFilesTable) {
-            ids.forEach((id) => {
-                const data = this.errorFiles[id];
-                const errorMessage = data.json['hydra:description'];
-                if (data.file === undefined) {
-                    return;
-                }
+            this.errorFiles.forEach((errorEntry, id) => {
+                const file = errorEntry.sigEntry.file;
 
                 let filenameLabel = this.tableFailedFilesTable.createScopedElement(
                     'dbp-esign-filename-label',
                 );
                 filenameLabel.setAttribute('subscribe', 'lang');
-                filenameLabel.file = data.file;
+                filenameLabel.file = file;
 
                 let fileData = {
                     index: id,
                     fileName: filenameLabel,
-                    fileSize: humanFileSize(data.file.size),
-                    errorMessage: errorMessage,
-                    buttons: this.getFailedButtonsHtml(id, data),
+                    fileSize: humanFileSize(file.size),
+                    errorMessage: errorEntry.errorMessage,
+                    buttons: this.getFailedButtonsHtml(id),
                 };
                 tableFiles.push(fileData);
             });
