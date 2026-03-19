@@ -57,7 +57,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         this.fileSource = '';
         this.nextcloudDefaultDir = '';
         this.signedFiles = [];
-        this.signedFilesCount = 0;
         this.signedFilesCountToReport = 0;
         this.errorFiles = [];
         this.errorFilesCount = 0;
@@ -78,7 +77,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
             nextcloudFileURL: {type: String, attribute: 'nextcloud-file-url'},
             nextcloudAuthInfo: {type: String, attribute: 'nextcloud-auth-info'},
             signedFiles: {type: Array, attribute: false},
-            signedFilesCount: {type: Number, attribute: false},
             signedFilesCountToReport: {type: Number, attribute: false},
             signedFilesToDownload: {type: Number, attribute: false},
             queuedFilesCount: {type: Number, attribute: false},
@@ -718,7 +716,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
 
     clearSignedFiles() {
         this.signedFiles = [];
-        this.signedFilesCount = 0;
     }
 
     clearErrorFiles() {
