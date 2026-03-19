@@ -45,7 +45,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         this.failedFilesTableExpanded = false;
         this.failedFilesTableCollapsible = false;
         this.currentFile = {};
-        this.currentQueueEntry = null;
+        this.activeSigningEntry = null;
         this.currentFileName = '';
         this.uploadStatusFileName = '';
         this.uploadStatusText = '';
