@@ -44,7 +44,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
     constructor() {
         super();
         this.queuedFiles = new Map();
-        this.queuedFilesCount = 0;
         this.uploadInProgress = false;
         this._queueKey = 0;
 
@@ -97,7 +96,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
             signedFiles: {type: Object, attribute: false},
             signedFilesCountToReport: {type: Number, attribute: false},
             signedFilesToDownload: {type: Number, attribute: false},
-            queuedFilesCount: {type: Number, attribute: false},
+            queuedFiles: {type: Object, attribute: false},
             errorFiles: {type: Object, attribute: false},
             errorFilesCountToReport: {type: Number, attribute: false},
             uploadInProgress: {type: Boolean, attribute: false},
@@ -133,8 +132,9 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
     async queueFile(file) {
         this._queueKey++;
         const key = String(this._queueKey);
-        this.queuedFiles.set(key, new SignatureEntry(key, file));
-        this.updateQueuedFilesCount();
+        const queuedFiles = new Map(this.queuedFiles);
+        queuedFiles.set(key, new SignatureEntry(key, file));
+        this.queuedFiles = queuedFiles;
         await this._updateNeedsPlacementStatus(key);
         return key;
     }
@@ -145,8 +145,9 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
      */
     async reQueueFile(entry) {
         const key = entry.key;
-        this.queuedFiles.set(key, entry);
-        this.updateQueuedFilesCount();
+        const queuedFiles = new Map(this.queuedFiles);
+        queuedFiles.set(key, entry);
+        this.queuedFiles = queuedFiles;
 
         return key;
     }
@@ -159,8 +160,10 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
      */
     takeFileFromQueue(key) {
         const entry = this.queuedFiles.get(key);
-        this.queuedFiles.delete(key);
-        this.updateQueuedFilesCount();
+
+        const queuedFiles = new Map(this.queuedFiles);
+        queuedFiles.delete(key);
+        this.queuedFiles = queuedFiles;
 
         return entry;
     }
@@ -303,21 +306,16 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
     clearQueuedFiles(filesToRemove) {
         if (!Array.isArray(filesToRemove) || filesToRemove.length < 1) return;
 
+        const queuedFiles = new Map(this.queuedFiles);
         for (const fileKey of filesToRemove) {
             // Remove files of selected rows from queueFiles
-            this.queuedFiles.delete(fileKey);
+            queuedFiles.delete(fileKey);
         }
+        this.queuedFiles = queuedFiles;
 
         this.selectedFiles = [];
 
-        this.updateQueuedFilesCount();
-
         this.tableQueuedFilesTable.tabulatorTable.redraw(true);
-    }
-
-    updateQueuedFilesCount() {
-        this.queuedFilesCount = this.queuedFiles.size;
-        return this.queuedFilesCount;
     }
 
     getUserTextForAnnotations(annotations) {
@@ -544,7 +542,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
     }
 
     endSigningProcessIfQueueEmpty() {
-        if (this.queuedFilesCount === 0 && this.signingProcessActive) {
+        if (this.queuedFiles.size === 0 && this.signingProcessActive) {
             this.signingProcessActive = false;
         }
     }
@@ -783,7 +781,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         }
 
         // If all rows are selected toggle select-all button to deselect-all
-        if (allSelectedRows.length === this.queuedFilesCount) {
+        if (allSelectedRows.length === this.queuedFiles.size) {
             this.queuedFilesTableAllSelected = true;
         }
         if (selectedRows.length === 0) {
@@ -1332,7 +1330,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
     sendReportNotification() {
         const i18n = this._i18n;
         if (
-            this.queuedFilesCount === 0 ||
+            this.queuedFiles.size === 0 ||
             (this.selectedFilesProcessing && this.selectedFiles.length === 0)
         ) {
             this.selectedFilesProcessing = false;
