@@ -38,6 +38,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         this.nextcloudAuthInfo = '';
         this.fileHandlingEnabledTargets = 'local';
         this.externalAuthInProgress = false;
+        this.activeSigningUploadData = null;
 
         // Bind all event handlers
         this._onReceiveBeforeUnload = this.onReceiveBeforeUnload.bind(this);
@@ -75,6 +76,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         return {
             ...super.properties,
             externalAuthInProgress: {type: Boolean, attribute: false},
+            activeSigningUploadData: {type: Object, attribute: false},
         };
     }
 
@@ -238,8 +240,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
 
         const entry = this.takeFileFromQueue(key);
         const file = entry.file;
-        this.currentFile = file;
         this.activeSigningEntry = entry;
+        this.activeSigningUploadData = null;
         this.uploadInProgress = true;
         let params = {};
 
@@ -352,12 +354,19 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                 name: document.contentSize,
             });
             this.activeSigningEntry = null;
+            this.activeSigningUploadData = null;
         } catch (error) {
             console.error('Error while fetching signed document:', error);
-            let file = this.currentFile;
+            let file = this.activeSigningUploadData;
+            if (!file) {
+                this.activeSigningEntry = null;
+                return;
+            }
             // let's override the json to inject an error message
             file.json = {'hydra:description': 'Download failed!'};
 
+            this.activeSigningEntry = null;
+            this.activeSigningUploadData = null;
             this.addToErrorFiles(file);
         } finally {
             // Close the external auth modal
@@ -368,9 +377,13 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
 
     _onIFrameError(event) {
         let error = event.detail.message;
-        let file = this.currentFile;
+        let file = this.activeSigningUploadData;
+        if (!file) {
+            return;
+        }
         file.json = {'hydra:description': this.parseError(error)};
         this.activeSigningEntry = null;
+        this.activeSigningUploadData = null;
         this.addToErrorFiles(file);
         this._('#iframe').reset();
         this.externalAuthInProgress = false;
@@ -402,6 +415,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
     onFileUploadFinished(data) {
         if (data.status !== 201) {
             this.activeSigningEntry = null;
+            this.activeSigningUploadData = null;
             this.addToErrorFiles(data);
             this.sendReportNotification();
             this._('#external-auth').close();
@@ -414,7 +428,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             const entryPoint = data.json;
 
             // we need the full file to upload it again in case the download of the signed file fails
-            this.currentFile = data;
+            this.activeSigningUploadData = data;
 
             // we want to load the redirect url in the iframe
             let iframe = this._('#iframe');
@@ -506,6 +520,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             this.activeSigningEntry = null;
             this.setQueuedFilesTabulatorTable();
         }
+
+        this.activeSigningUploadData = null;
     }
 
     _onLoginClicked(e) {
@@ -922,11 +938,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                             ? this.activeSigningEntry.file.name
                                             : ''}
                                     </strong>
-                                    (${humanFileSize(
-                                        this.currentFile.file !== undefined
-                                            ? this.currentFile.file.size
-                                            : 0,
-                                    )})
+                                    (${humanFileSize(this.activeSigningEntry?.file?.size ?? 0)})
                                 </div>
                             </div>
                             <div slot="content">

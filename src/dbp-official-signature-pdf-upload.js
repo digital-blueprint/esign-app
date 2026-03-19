@@ -211,7 +211,6 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
 
         const entry = this.takeFileFromQueue(key);
         const file = entry.file;
-        this.currentFile = file;
         this.activeSigningEntry = entry;
         this.uploadInProgress = true;
         let params = {};
