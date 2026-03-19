@@ -64,7 +64,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         this.errorFilesCountToReport = 0;
         this.selectedFiles = [];
         this.selectedFilesProcessing = false;
-        this.initialQueuedFilesCount = 0;
         this.anyPlacementMissing = false;
     }
 
