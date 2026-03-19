@@ -8,10 +8,11 @@ import {humanFileSize} from '@dbp-toolkit/common/i18next';
 import {LangMixin} from '@dbp-toolkit/common';
 
 export class SignatureEntry {
-    constructor(key, file, placementMode = 'auto') {
+    constructor(key, file, placementMode = 'auto', needsPlacement = false) {
         this.key = key;
         this.file = file;
         this.placementMode = placementMode;
+        this.needsPlacement = needsPlacement;
     }
 }
 
@@ -25,7 +26,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
 
         this.signingProcessEnabled = false;
         this.queuedFilesEnabledAnnotations = [];
-        this.queuedFilesNeedsPlacement = new Map();
         this.queuedFilesSignaturePlacements = [];
         this.externalAuthInProgress = false;
         this.tableQueuedFilesTable = null;
@@ -124,6 +124,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         const key = String(this._queueKey);
         this.queuedFiles.set(key, new SignatureEntry(key, file));
         this.updateQueuedFilesCount();
+        await this._updateNeedsPlacementStatus(key);
         return key;
     }
 
@@ -135,6 +136,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         const key = this.currentKey;
         this.queuedFiles.set(key, new SignatureEntry(key, file));
         this.updateQueuedFilesCount();
+        await this._updateNeedsPlacementStatus(key);
 
         return key;
     }
@@ -536,9 +538,12 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
 
     async _updateNeedsPlacementStatus(id) {
         let entry = this.queuedFiles.get(id);
+        if (!entry) {
+            return;
+        }
+
         let sigCount = await getPDFSignatureCount(entry.file);
-        this.queuedFilesNeedsPlacement.delete(id);
-        if (sigCount > 0) this.queuedFilesNeedsPlacement.set(id, true);
+        entry.needsPlacement = sigCount > 0;
     }
 
     storePDFData(event) {
@@ -1085,7 +1090,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
                 const entry = this.queuedFiles.get(id);
                 const file = entry.file;
                 const isManual = entry.placementMode === 'manual';
-                const placementMissing = this.queuedFilesNeedsPlacement.get(id) && !isManual;
+                const placementMissing = entry.needsPlacement && !isManual;
                 if (placementMissing) {
                     this.anyPlacementMissing = true;
                 }
