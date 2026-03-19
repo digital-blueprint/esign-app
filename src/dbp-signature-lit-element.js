@@ -23,7 +23,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         this._queueKey = 0;
 
         this.signingProcessEnabled = false;
-        this.queuedFilesAnnotationSaved = [];
         this.queuedFilesEnabledAnnotations = [];
         this.queuedFilesNeedsPlacement = new Map();
         this.queuedFilesSignaturePlacements = [];
@@ -103,7 +102,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
             queuedFilesAnnotations: {type: Array, attribute: false},
             queuedFilesAnnotationsCount: {type: Number, attribute: false},
             addAnnotationInProgress: {type: Boolean, attribute: false},
-            queuedFilesAnnotationSaved: {type: Array, attribute: false},
             fileHandlingEnabledTargets: {type: String, attribute: 'file-handling-enabled-targets'},
             queuedFilesTableExpanded: {type: Boolean, attribute: false},
             queuedFilesTableAllSelected: {type: Boolean, attribute: false},
@@ -179,7 +177,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
             this.enableAnnotationsForKey(key);
         } else {
             this.disableAnnotationsForKey(key);
-            this.queuedFilesAnnotationSaved[key] = false;
 
             if (this.currentPreviewQueueKey === key) {
                 this.isAnnotationViewVisible = false;
@@ -198,8 +195,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
 
         this.isAnnotationViewVisible = false;
         this.addAnnotationInProgress = false;
-
-        this.queuedFilesAnnotationSaved[this.currentPreviewQueueKey] = true;
     }
 
     /**
@@ -212,8 +207,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         this.queuedFilesAnnotations[key] = [];
         this.queuedFilesAnnotations[key] = undefined;
         this.disableAnnotationsForKey(key);
-
-        this.queuedFilesAnnotationSaved[this.currentPreviewQueueKey] = false;
     }
 
     /**
