@@ -37,6 +37,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         this.nextcloudFileURL = '';
         this.nextcloudAuthInfo = '';
         this.fileHandlingEnabledTargets = 'local';
+        this.externalAuthInProgress = false;
 
         // Bind all event handlers
         this._onReceiveBeforeUnload = this.onReceiveBeforeUnload.bind(this);

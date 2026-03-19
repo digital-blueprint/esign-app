@@ -34,7 +34,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         this._queueKey = 0;
 
         this.signingProcessEnabled = false;
-        this.externalAuthInProgress = false;
         this.tableQueuedFilesTable = null;
         this.tableSignedFilesTable = null;
         this.tableFailedFilesTable = null;
