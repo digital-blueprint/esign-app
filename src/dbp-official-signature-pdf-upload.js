@@ -246,7 +246,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
     onReceiveBeforeUnload(event) {
         const i18n = this._i18n;
         // we don't need to stop if there are no signed files
-        if (this.signedFilesCount === 0) {
+        if (this.signedFiles.length === 0) {
             return;
         }
 
@@ -295,9 +295,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             data.json.name = utils.generateSignedFileName(data.fileName);
 
             // this doesn't seem to trigger an update() execution
-            this.signedFiles.push(data.json);
-            // this triggers the correct update() execution
-            this.signedFilesCount++;
+            this.signedFiles = [...this.signedFiles, data.json];
             this.signedFilesCountToReport++;
 
             const entryPoint = data.json;
@@ -331,7 +329,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                 case 'queuedFilesCount':
                     this.setQueuedFilesTabulatorTable();
                     break;
-                case 'signedFilesCount':
+                case 'signedFiles':
                     this.setSignedFilesTabulatorTable();
                     break;
                 case 'errorFilesCount':
@@ -590,13 +588,13 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                         <!-- List of signed PDFs -->
                         <div
                             class="files-block signed-files field ${classMap({
-                                hidden: this.signedFilesCount === 0,
+                                hidden: this.signedFiles.length === 0,
                             })}">
                             <h3 class="section-title">
                                 ${i18n.t('official-pdf-upload.signed-files-label')}
                             </h3>
                             <!-- Button to download all signed PDFs -->
-                            <div class="field ${classMap({hidden: this.signedFilesCount === 0})}">
+                            <div class="field ${classMap({hidden: this.signedFiles.length === 0})}">
                                 <div class="control tabulator-actions">
                                     <div class="table-actions">
                                         <dbp-loading-button
@@ -604,7 +602,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                             class="${classMap({
                                                 hidden: this.signedFilesTableExpanded,
                                             })}"
-                                            ?disabled="${this.signedFilesCount === 0 ||
+                                            ?disabled="${this.signedFiles.length === 0 ||
                                             this.signedFilesTableCollapsible === false}"
                                             value="${i18n.t('qualified-pdf-upload.expand-all')}"
                                             @click="${() => {
@@ -620,7 +618,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                             class="${classMap({
                                                 hidden: !this.signedFilesTableExpanded,
                                             })}"
-                                            ?disabled="${this.signedFilesCount === 0 ||
+                                            ?disabled="${this.signedFiles.length === 0 ||
                                             this.signedFilesTableCollapsible === false}"
                                             value="${i18n.t('qualified-pdf-upload.collapse-all')}"
                                             @click="${() => {
