@@ -45,8 +45,12 @@ export class PdfAnnotationView extends LangMixin(
         };
     }
 
+    cloneAnnotationRows(rows = []) {
+        return rows.map((row) => ({...row}));
+    }
+
     setAnnotationRows(rows) {
-        this.annotationRows = rows ? rows : [];
+        this.annotationRows = rows ? this.cloneAnnotationRows(rows) : [];
         if (this.annotationRows.length === 0) {
             this.isTextHidden = false;
         }
@@ -58,7 +62,6 @@ export class PdfAnnotationView extends LangMixin(
     deleteAll() {
         this.annotationRows = [];
         this.isTextHidden = false;
-        this.sendCancelEvent();
     }
 
     sendCancelEvent() {
@@ -122,7 +125,7 @@ export class PdfAnnotationView extends LangMixin(
 
         const data = {
             key: this.key,
-            annotationRows: this.annotationRows,
+            annotationRows: this.cloneAnnotationRows(this.annotationRows),
         };
         const event = new CustomEvent('dbp-pdf-annotations-save', {
             detail: data,
@@ -174,7 +177,10 @@ export class PdfAnnotationView extends LangMixin(
      */
     removeAnnotation(id) {
         if (this.annotationRows && this.annotationRows[id]) {
-            this.annotationRows = this.annotationRows.filter((_, index) => index !== id);
+            const annotationIndex = Number(id);
+            this.annotationRows = this.annotationRows.filter(
+                (_, index) => index !== annotationIndex,
+            );
 
             if (this.annotationRows.length === 0) {
                 this.isTextHidden = false;
@@ -419,8 +425,7 @@ export class PdfAnnotationView extends LangMixin(
                                 title="${i18n.t('annotation-view.save-all-button-title')}"
                                 @click="${() => {
                                     this.saveAll();
-                                }}"
-                                ?disabled="${this.annotationRows.length === 0}">
+                                }}">
                                 ${i18n.t('annotation-view.save-all-button-text')}
                             </button>
                             </div>
