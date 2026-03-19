@@ -155,33 +155,24 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
 
     /**
      * @param {string} key
-     * @param {string} name
      */
-    async showAnnotationView(key, name) {
+    async showAnnotationView(key) {
         if (this.signingProcessEnabled) {
             return;
         }
 
-        if (name === 'text-selected') {
-            const file = this.queuedFiles.get(key);
-            this.currentFile = file;
-            this.currentPreviewQueueKey = key;
+        const file = this.queuedFiles.get(key);
+        this.currentFile = file;
+        this.currentPreviewQueueKey = key;
 
-            this.addAnnotationInProgress = true;
+        this.addAnnotationInProgress = true;
 
-            const viewTag = 'dbp-pdf-annotation-view';
-            this._(viewTag).setAttribute('key', key);
-            this._(viewTag).setAnnotationRows(this.queuedFilesAnnotations[key]);
+        const viewTag = 'dbp-pdf-annotation-view';
+        this._(viewTag).setAttribute('key', key);
+        this._(viewTag).setAnnotationRows(this.queuedFilesAnnotations[key]);
 
-            this.isAnnotationViewVisible = true;
-            this.enableAnnotationsForKey(key);
-        } else {
-            this.disableAnnotationsForKey(key);
-
-            if (this.currentPreviewQueueKey === key) {
-                this.isAnnotationViewVisible = false;
-            }
-        }
+        this.isAnnotationViewVisible = true;
+        this.enableAnnotationsForKey(key);
     }
 
     /**
@@ -863,7 +854,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         annotationsButton.addEventListener('click', (event) => {
             event.stopPropagation();
             this._('#annotation-view').open();
-            this.showAnnotationView(id, 'text-selected');
+            this.showAnnotationView(id);
         });
 
         let deleteButton =
