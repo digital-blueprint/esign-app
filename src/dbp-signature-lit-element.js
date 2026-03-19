@@ -2,11 +2,17 @@ import {createInstance} from './i18n.js';
 import * as utils from './utils';
 import * as commonUtils from '@dbp-toolkit/common/utils';
 import {BaseLitElement} from './base-element.js';
-import {SignatureEntry} from './signature-entry.js';
 import {getPDFSignatureCount} from './utils';
 import {send} from '@dbp-toolkit/common/notification';
 import {humanFileSize} from '@dbp-toolkit/common/i18next';
 import {LangMixin} from '@dbp-toolkit/common';
+
+export class SignatureEntry {
+    constructor(key, file) {
+        this.key = key;
+        this.file = file;
+    }
+}
 
 export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, createInstance) {
     constructor() {
