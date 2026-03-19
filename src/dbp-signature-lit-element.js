@@ -8,9 +8,10 @@ import {humanFileSize} from '@dbp-toolkit/common/i18next';
 import {LangMixin} from '@dbp-toolkit/common';
 
 export class SignatureEntry {
-    constructor(key, file) {
+    constructor(key, file, placementMode = 'auto') {
         this.key = key;
         this.file = file;
+        this.placementMode = placementMode;
     }
 }
 
@@ -26,7 +27,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         this.queuedFilesEnabledAnnotations = [];
         this.queuedFilesNeedsPlacement = new Map();
         this.queuedFilesSignaturePlacements = [];
-        this.queuedFilesPlacementModes = [];
         this.externalAuthInProgress = false;
         this.tableQueuedFilesTable = null;
         this.tableSignedFilesTable = null;
@@ -546,8 +546,11 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         let placementMode = placement.signaturePlacementMode;
 
         let key = this.currentPreviewQueueKey;
+        const entry = this.queuedFiles.get(key);
         this.queuedFilesSignaturePlacements[key] = placement;
-        this.queuedFilesPlacementModes[key] = placementMode;
+        if (entry) {
+            entry.placementMode = placementMode;
+        }
         this.signaturePlacementInProgress = false;
     }
 
@@ -557,6 +560,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
      * @param event
      */
     hidePDF(event) {
+        const entry = this.queuedFiles.get(this.currentPreviewQueueKey);
         if (this.queuedFilesSignaturePlacements[this.currentPreviewQueueKey] !== undefined) {
             // If canceled when try to set to manual mode remove placement settings (auto is the default)
             if (
@@ -567,12 +571,16 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
                     parseInt(this.currentPreviewQueueKey),
                     1,
                 );
-                this.queuedFilesPlacementModes[this.currentPreviewQueueKey] = 'auto';
+                if (entry) {
+                    entry.placementMode = 'auto';
+                }
             } else {
                 // If canceled when try to set automatic set back to manual
                 this.queuedFilesSignaturePlacements[this.currentPreviewQueueKey]
                     .signaturePlacementMode === 'manual';
-                this.queuedFilesPlacementModes[this.currentPreviewQueueKey] = 'manual';
+                if (entry) {
+                    entry.placementMode = 'manual';
+                }
             }
             // Re render text switch
             this.setQueuedFilesTabulatorTable();
@@ -582,13 +590,19 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
     }
 
     queuePlacementSwitch(key, name) {
-        this.queuedFilesPlacementModes[key] = name;
+        const entry = this.queuedFiles.get(key);
+        if (entry) {
+            entry.placementMode = name;
+        }
         this.showPreview(key, true);
         this.requestUpdate();
     }
 
     queuePlacement(key, name, showSignature = true) {
-        this.queuedFilesPlacementModes[key] = name;
+        const entry = this.queuedFiles.get(key);
+        if (entry) {
+            entry.placementMode = name;
+        }
         this.showPreview(key, showSignature);
         this.requestUpdate();
     }
@@ -658,7 +672,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         const annotations = this.queuedFilesAnnotations[key] || [];
         await this._('dbp-pdf-preview').showPDF(
             entry.file,
-            withSigBlock, //this.queuedFilesPlacementModes[key] === "manual",
+            withSigBlock,
             placementData,
             annotations,
         );
@@ -890,7 +904,10 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
             setTimeout(() => {
                 let placement = positioningSwitch.checked ? 'manual' : 'auto';
                 this.queuedFilesSignaturePlacements[id] = {signaturePlacementMode: placement};
-                this.queuedFilesPlacementModes[id] = placement;
+                const entry = this.queuedFiles.get(id);
+                if (entry) {
+                    entry.placementMode = placement;
+                }
 
                 if (placement === 'manual') {
                     this._('#pdf-preview').open();
@@ -1065,8 +1082,9 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         const ids = [...this.queuedFiles.keys()];
         if (this.tableQueuedFilesTable) {
             ids.forEach((id) => {
-                const file = this.queuedFiles.get(id).file;
-                const isManual = this.queuedFilesPlacementModes[id] === 'manual';
+                const entry = this.queuedFiles.get(id);
+                const file = entry.file;
+                const isManual = entry.placementMode === 'manual';
                 const placementMissing = this.queuedFilesNeedsPlacement.get(id) && !isManual;
                 if (placementMissing) {
                     this.anyPlacementMissing = true;
@@ -1076,7 +1094,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
 
                 const positioningSwitch = this.getPositioningSwitch(
                     id,
-                    this.queuedFilesPlacementModes[id] || 'auto',
+                    entry.placementMode,
                     placementMissing,
                 );
 
