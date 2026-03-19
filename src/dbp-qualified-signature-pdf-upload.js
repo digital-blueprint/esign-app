@@ -575,7 +575,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                     <div class="table-container">
                         <div
                             class="files-block queued-files field ${classMap({
-                                hidden: !this.queueBlockEnabled,
+                                hidden: this.queuedFilesCount === 0,
                             })}">
                             <!-- Queued files headline and queueing spinner -->
                             <h3 class="section-title">
