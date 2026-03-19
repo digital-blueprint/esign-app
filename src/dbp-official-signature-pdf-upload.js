@@ -727,10 +727,8 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                 : i18n.t('official-pdf-upload.preview-label')}">
                             <div slot="header" class="header">
                                 <div class="filename">
-                                    <strong>${this.currentFile.name}</strong>
-                                    (${humanFileSize(
-                                        this.currentFile !== undefined ? this.currentFile.size : 0,
-                                    )})
+                                    <strong>${this.previewEntry?.file?.name ?? ''}</strong>
+                                    (${humanFileSize(this.previewEntry?.file?.size ?? 0)})
                                 </div>
                             </div>
                             <div slot="content">
