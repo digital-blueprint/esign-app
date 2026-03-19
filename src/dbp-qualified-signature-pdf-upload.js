@@ -238,17 +238,13 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         const entry = this.takeFileFromQueue(key);
         const file = entry.file;
         this.currentFile = file;
-        this.currentKey = key;
-
-        // set placement mode and parameters to restore them when canceled
-        this.currentFilePlacementMode = entry.placementMode;
-        this.currentFileSignaturePlacement = this.queuedFilesSignaturePlacements[key];
+        this.currentQueueEntry = entry;
         this.uploadInProgress = true;
         let params = {};
 
         // prepare parameters to tell PDF-AS where and how the signature should be placed
         if (entry.placementMode === 'manual') {
-            const data = this.queuedFilesSignaturePlacements[key];
+            const data = entry.signaturePlacement;
             if (data !== undefined) {
                 params = utils.fabricjs2pdfasPosition(data);
             }
@@ -354,6 +350,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                 action: 'DocumentSigned',
                 name: document.contentSize,
             });
+            this.currentQueueEntry = null;
         } catch (error) {
             console.error('Error while fetching signed document:', error);
             let file = this.currentFile;
@@ -372,6 +369,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         let error = event.detail.message;
         let file = this.currentFile;
         file.json = {'hydra:description': this.parseError(error)};
+        this.currentQueueEntry = null;
         this.addToErrorFiles(file);
         this._('#iframe').reset();
         this.externalAuthInProgress = false;
@@ -402,6 +400,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
      */
     onFileUploadFinished(data) {
         if (data.status !== 201) {
+            this.currentQueueEntry = null;
             this.addToErrorFiles(data);
             this.sendReportNotification();
             this._('#external-auth').close();
@@ -455,16 +454,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
     clearQueuedFiles() {
         // Delete selected files from the queues
         if (this.selectedFiles.length) {
-            let filesToRemove = [];
-            for (const selectedFile of this.selectedFiles) {
-                this.queuedFilesSignaturePlacements.forEach((placement, index) => {
-                    if (index == selectedFile.key) {
-                        delete this.queuedFilesSignaturePlacements[index];
-                    }
-                });
-
-                filesToRemove.push(selectedFile.key);
-            }
+            let filesToRemove = this.selectedFiles.map((selectedFile) => selectedFile.key);
 
             super.clearQueuedFiles(filesToRemove);
         }
@@ -510,13 +500,10 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         this.externalAuthInProgress = false;
         this.signingProcessActive = false;
 
-        if (this.currentFile.file !== undefined) {
+        if (this.currentQueueEntry) {
             // Re-queue file with the same key
-            const key = await this.reQueueFile(this.currentFile.file);
-
-            // Set placement mode and parameters, so they are restore when canceled
-            this.queuedFiles.get(key).placementMode = this.currentFilePlacementMode;
-            this.queuedFilesSignaturePlacements[key] = this.currentFileSignaturePlacement;
+            await this.reQueueFile(this.currentQueueEntry);
+            this.currentQueueEntry = null;
             this.setQueuedFilesTabulatorTable();
         }
     }

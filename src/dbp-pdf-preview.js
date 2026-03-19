@@ -212,27 +212,39 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
     /**
      * Initialize and load the PDF
      *
-     * @param file
+     * @param entry
      * @param isShowPlacement
-     * @param placementData
-     * @param annotations
+     * @param viewOnly
      */
-    async showPDF(file, isShowPlacement = false, placementData = {}, annotations = []) {
+    async showEntry(entry, isShowPlacement = false, viewOnly = false) {
         let item = this.getSignatureRect();
         this.isPageLoaded = false; // prevent redisplay of previous pdf
         this.showErrorMessage = false;
-        this.annotations = annotations || [];
+        this.annotations = entry.annotations || [];
+        const placementMode = viewOnly ? 'manual' : entry.placementMode;
+        let placementData = {};
+
+        if (!viewOnly) {
+            if (placementMode === 'manual') {
+                if (entry.signaturePlacement !== undefined) {
+                    placementData = {
+                        signaturePlacementMode: 'manual',
+                        ...entry.signaturePlacement,
+                    };
+                }
+            } else {
+                placementData = {signaturePlacementMode: 'auto'};
+            }
+        }
+
+        this.setPositionTypeSelect(placementMode);
 
         // Just preview the pdf
         if (Object.keys(placementData).length === 0) {
-            this.isShowPlacement = true;
-            this.signaturePlacementMode = 'manual';
             this.showSignaturePlacementDescription = false;
-        } else {
-            if (placementData && placementData.signaturePlacementMode) {
-                this.setPositionTypeSelect(placementData.signaturePlacementMode);
-            }
+        }
 
+        if (Object.keys(placementData).length !== 0) {
             // move signature if placementData was set
             if (item !== undefined) {
                 if (placementData['scaleX'] !== undefined) {
@@ -253,10 +265,10 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
             }
         }
 
-        this.isShowPlacement = isShowPlacement;
+        this.isShowPlacement = viewOnly ? false : isShowPlacement;
         this.isShowPage = true;
 
-        const data = await readBinaryFileContent(file);
+        const data = await readBinaryFileContent(entry.file);
 
         // get handle of pdf document
         try {
