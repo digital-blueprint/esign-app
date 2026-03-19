@@ -14,7 +14,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         this.queuedFiles = [];
         this.queuedFilesCount = 0;
         this.uploadInProgress = false;
-        this.queueBlockEnabled = false;
         this._queueKey = 0;
 
         this.queuedFilesAnnotationModes = [];
@@ -88,7 +87,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
             uploadStatusText: {type: String, attribute: false},
             signingProcessEnabled: {type: Boolean, attribute: false},
             signingProcessActive: {type: Boolean, attribute: false},
-            queueBlockEnabled: {type: Boolean, attribute: false},
             currentFile: {type: Object, attribute: false},
             currentFileName: {type: String, attribute: false},
             currentKey: {type: String, attribute: false},
@@ -398,11 +396,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
 
     updateQueuedFilesCount() {
         this.queuedFilesCount = Object.keys(this.queuedFiles).length;
-
-        if (!this.queueBlockEnabled && this.queuedFilesCount > 0) {
-            this.queueBlockEnabled = true;
-        }
-
         return this.queuedFilesCount;
     }
 
