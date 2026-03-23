@@ -187,7 +187,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             return;
         }
 
-        let key = null;
+        let key;
         if (this.selectedFiles.length > 0) {
             // If we have selected files in the table use the selected file
             const selectedFile = this.selectedFiles.shift();
