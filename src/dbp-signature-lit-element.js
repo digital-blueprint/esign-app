@@ -341,7 +341,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
      */
     async uploadFile(file, params = {}, annotations = []) {
         this.uploadInProgress = true;
-        this.uploadStatusFileName = file.name;
         let formData = new FormData();
 
         // add annotations

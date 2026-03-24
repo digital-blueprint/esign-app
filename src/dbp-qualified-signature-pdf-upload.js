@@ -3,6 +3,7 @@ import {css, html} from 'lit';
 import {ScopedElementsMixin} from '@dbp-toolkit/common';
 import DBPSignatureLitElement from './dbp-signature-lit-element';
 import {PdfPreview} from './dbp-pdf-preview';
+import {sendNotification} from '@dbp-toolkit/common/notification';
 import * as commonUtils from '@dbp-toolkit/common/utils';
 import * as utils from './utils';
 import {
@@ -253,13 +254,14 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         params['invisible'] = 'false';
         params['profile'] = 'default';
 
+        this.uploadStatusFileName = file.name;
         this.uploadStatusText = i18n.t('qualified-pdf-upload.upload-status-file-text', {
             fileName: file.name,
             fileSize: humanFileSize(file.size, false),
         });
 
         const annotations = this.getAnnotations(key);
-        await this.uploadFile(file, params, annotations);
+        await this.signFile(file, params, annotations);
         this.uploadInProgress = false;
         // Stop processing if no more selected file exists
         if (this.selectedFilesProcessing && this.selectedFiles.length === 0) {
@@ -267,6 +269,47 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             this.signingProcessActive = false;
             await this.stopSigningProcess();
         }
+    }
+
+    /**
+     * @param file
+     * @param params
+     * @param annotations
+     * @returns {Promise<void>}
+     */
+    async signFile(file, params = {}, annotations = []) {
+        let userText = null;
+        // add annotations
+        if (annotations.length > 0) {
+            file = await this.addAnnotationsToFile(file, annotations);
+            // Also send annotations to the server so they get included in the signature block
+            userText = this.getUserTextForAnnotations(annotations);
+        }
+
+        let signingRequest;
+        try {
+            signingRequest = await this._api.createQualifiedSigningRequest(file, params, userText);
+        } catch (error) {
+            if (error.message) {
+                sendNotification({
+                    summary: 'Error!',
+                    body: error.message,
+                    type: 'danger',
+                    timeout: 15,
+                });
+                console.log(`Error message: ${error.message}`);
+            }
+
+            this.addToErrorFiles(this.activeSigningEntry, error.detail ?? error.message);
+            this.activeSigningEntry = null;
+            this.sendReportNotification();
+            this._('#external-auth').close();
+            return;
+        }
+
+        this.externalAuthInProgress = true;
+        let iframe = this._('#iframe');
+        iframe.setUrl(signingRequest.url);
     }
 
     /**
@@ -400,30 +443,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             action: 'SigningFailed',
             name: errorMessage,
         });
-    }
-
-    /**
-     * @param data
-     */
-    onFileUploadFinished(data) {
-        if (data.status !== 201) {
-            const errorMessage = data.json['hydra:description'];
-            this.addToErrorFiles(this.activeSigningEntry, errorMessage);
-            this.activeSigningEntry = null;
-            this.sendReportNotification();
-            this._('#external-auth').close();
-        } else if (data.json['@type'] === 'http://schema.org/EntryPoint') {
-            // after the "real" upload we immediately start with the 2FA process
-
-            // show the iframe and lock processing
-            this.externalAuthInProgress = true;
-
-            const entryPoint = data.json;
-
-            // we want to load the redirect url in the iframe
-            let iframe = this._('#iframe');
-            iframe.setUrl(entryPoint.url);
-        }
     }
 
     update(changedProperties) {

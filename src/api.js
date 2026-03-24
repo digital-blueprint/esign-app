@@ -1,6 +1,6 @@
 import {combineURLs} from '@dbp-toolkit/common';
 
-class ApiError extends Error {
+export class ApiError extends Error {
     /**
      * @param {number} status
      * @param {string} statusText
@@ -92,6 +92,7 @@ export class EsignApi {
             headers: {
                 'Content-Type': 'application/ld+json',
                 Authorization: 'Bearer ' + this._element.auth.token,
+                'Accept-Language': this._element.lang,
             },
         });
 
@@ -122,6 +123,7 @@ export class EsignApi {
             method: 'POST',
             headers: {
                 Authorization: 'Bearer ' + this._element.auth.token,
+                'Accept-Language': this._element.lang,
             },
             body: formData,
         });
@@ -153,6 +155,7 @@ export class EsignApi {
             method: 'POST',
             headers: {
                 Authorization: 'Bearer ' + this._element.auth.token,
+                'Accept-Language': this._element.lang,
             },
             body: formData,
         });

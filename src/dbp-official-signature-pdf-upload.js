@@ -226,6 +226,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         params['invisible'] = 'false';
         params['profile'] = 'official';
 
+        this.uploadStatusFileName = file.name;
         this.uploadStatusText = i18n.t('official-pdf-upload.upload-status-file-text', {
             fileName: file.name,
             fileSize: humanFileSize(file.size, false),
