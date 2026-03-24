@@ -36,6 +36,8 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
         this.signaturePlacementMode = 'auto';
         this.showSignaturePlacementDescription = false;
         this.annotations = [];
+        this.viewOnly = false;
+        this.viewOnlyPlacementPage = null;
 
         this._onWindowResize = this._onWindowResize.bind(this);
     }
@@ -66,6 +68,7 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
             allowSignatureRotation: {type: Boolean, attribute: 'allow-signature-rotation'},
             showSignaturePlacementDescription: {type: Boolean},
             annotations: {type: Array, attribute: false},
+            viewOnly: {type: Boolean, attribute: false},
         };
     }
 
@@ -221,8 +224,13 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
         this.isPageLoaded = false; // prevent redisplay of previous pdf
         this.showErrorMessage = false;
         this.annotations = entry.annotations || [];
-        const placementMode = viewOnly ? 'manual' : entry.placementMode;
+        this.viewOnly = viewOnly;
+        this.viewOnlyPlacementPage = null;
+        const placementMode = entry.placementMode;
         let placementData = {};
+
+        const hasManualPlacement =
+            placementMode === 'manual' && entry.signaturePlacement !== undefined;
 
         if (!viewOnly) {
             if (placementMode === 'manual') {
@@ -235,9 +243,32 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
             } else {
                 placementData = {signaturePlacementMode: 'auto'};
             }
+        } else if (hasManualPlacement) {
+            // In view-only mode with manual placement, load placement data to show the overlay
+            placementData = {
+                signaturePlacementMode: 'manual',
+                ...entry.signaturePlacement,
+            };
+            this.viewOnlyPlacementPage = entry.signaturePlacement.currentPage ?? null;
         }
 
         this.setPositionTypeSelect(placementMode);
+
+        // In view-only mode, set fabric canvas interactivity based on whether overlay is shown
+        if (this.fabricCanvas) {
+            const isInteractive = !viewOnly;
+            this.fabricCanvas.selection = isInteractive;
+            this.fabricCanvas.forEachObject((obj) => {
+                obj.selectable = isInteractive;
+                obj.evented = isInteractive;
+            });
+            // For the signature image (index 0), also lock movement in view-only
+            const sig = this.fabricCanvas.item(0);
+            if (sig) {
+                sig.lockMovementX = viewOnly;
+                sig.lockMovementY = viewOnly;
+            }
+        }
 
         // Just preview the pdf
         if (Object.keys(placementData).length === 0) {
@@ -265,7 +296,8 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
             }
         }
 
-        this.isShowPlacement = viewOnly ? false : isShowPlacement;
+        // Show the fabric overlay when: editing mode (isShowPlacement) OR view-only with manual placement
+        this.isShowPlacement = viewOnly ? hasManualPlacement : isShowPlacement;
         this.isShowPage = true;
 
         const data = await readBinaryFileContent(entry.file);
@@ -540,6 +572,11 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
         const that = this;
         this.isPageRenderingInProgress = true;
         this.currentPage = pageNumber;
+
+        // In view-only mode, only show the fabric overlay on the page the annotation was placed on
+        if (this.viewOnly && this.viewOnlyPlacementPage !== null) {
+            this.isShowPlacement = pageNumber === this.viewOnlyPlacementPage;
+        }
 
         try {
             // get handle of page
