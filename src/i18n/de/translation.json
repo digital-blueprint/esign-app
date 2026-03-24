@@ -98,7 +98,11 @@
         "start-signing-process-button": "Signatur starten",
         "upload-area-text": "Sie können in diesem Bereich PDF-Dokumente mit einer Maximalgröße von bis zu 32MB pro Dokument per Drag & Drop oder per Direktauswahl hochladen. Die PDF-Dokumente dürfen sich auch in ZIP-Dateien befinden.",
         "upload-button-label": "PDF-Dokumente auswählen",
-        "upload-status-file-text": "({{fileSize}}) wird hochgeladen und verarbeitet...",
+        "upload-status-file-name": "{{fileName}} ({{fileSize}})",
+        "upload-status-file-name-more_one": "{{firstFile}}, und {{count}} weitere Datei",
+        "upload-status-file-name-more_other": "{{firstFile}}, und {{count}} weitere Dateien",
+        "upload-status-file-text_one": "{{fileName}} ({{fileSize}}) wird hochgeladen und verarbeitet...",
+        "upload-status-file-text_other": "{{count}} Dateien werden hochgeladen und verarbeitet...",
         "upload-text": " Hier können Sie PDF-Dateien mit einer persönlichen elektronischen (qualifizierten) Signatur versehen. Eine qualifizierte persönliche Signatur ist Ihre persönliche Unterschrift, die Ihre Identität sowie die Integrität des Dokuments nachweist und der eigenhändigen Unterschrift rechtlich gleichgestellt ist. Um den Signaturprozess zu starten, laden Sie bitte eine oder mehrere PDF-Dateien hoch."
     },
     "re-upload-file-button-title": "Erneut in die Warteschlange stellen",

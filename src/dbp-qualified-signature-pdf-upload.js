@@ -1,7 +1,7 @@
 import {humanFileSize} from '@dbp-toolkit/common/i18next.js';
 import {css, html} from 'lit';
 import {ScopedElementsMixin} from '@dbp-toolkit/common';
-import DBPSignatureLitElement from './dbp-signature-lit-element';
+import DBPSignatureLitElement, {SignedEntry} from './dbp-signature-lit-element';
 import {PdfPreview} from './dbp-pdf-preview';
 import {sendNotification} from '@dbp-toolkit/common/notification';
 import * as commonUtils from '@dbp-toolkit/common/utils';
@@ -18,7 +18,7 @@ import {PdfAnnotationView} from './dbp-pdf-annotation-view';
 import {ExternalSignIFrame} from './ext-sign-iframe.js';
 import * as SignatureStyles from './styles';
 import {CustomTabulatorTable} from './table-components.js';
-import {EsignApi} from './api.js';
+import {EsignApi, EsignQualifiedBatchSigningRequestInput} from './api.js';
 
 class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElement) {
     constructor() {
@@ -31,6 +31,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         this.nextcloudAuthInfo = '';
         this.fileHandlingEnabledTargets = 'local';
         this.externalAuthInProgress = false;
+        this.activeSigningEntries = [];
+        this.uploadStatusHeader = '';
 
         // Bind all event handlers
         this._onReceiveBeforeUnload = this.onReceiveBeforeUnload.bind(this);
@@ -68,6 +70,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         return {
             ...super.properties,
             externalAuthInProgress: {type: Boolean, attribute: false},
+            uploadStatusHeader: {type: String, attribute: false},
         };
     }
 
@@ -151,7 +154,60 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
     }
 
     /**
-     * Starts or continues the signing process
+     * Returns a stable string key representing the user_text for an entry,
+     * used to determine chunk boundaries. Entries with no annotations return null.
+     *
+     * @param {import('./dbp-signature-lit-element.js').SignatureEntry} entry
+     * @returns {string|null}
+     */
+    _getEntryUserText(entry) {
+        const annotations = entry.annotations ?? [];
+        if (annotations.length === 0) return null;
+        return JSON.stringify(this.getUserTextForAnnotations(annotations));
+    }
+
+    /**
+     * Builds the spinner text shown while files are being prepared.
+     * Consistent with the official upload: "filename (size) is currently uploading..."
+     *
+     * @param {import('./dbp-signature-lit-element.js').SignatureEntry[]} entries
+     * @returns {string}
+     */
+    _buildUploadStatusText(entries) {
+        const i18n = this._i18n;
+        if (entries.length === 0) return '';
+        const first = entries[0];
+        return i18n.t('qualified-pdf-upload.upload-status-file-text', {
+            fileName: first.file.name,
+            fileSize: humanFileSize(first.file.size, false),
+            count: entries.length,
+        });
+    }
+
+    /**
+     * Builds the modal header summary: first filename + "and N more" for batches.
+     *
+     * @param {import('./dbp-signature-lit-element.js').SignatureEntry[]} entries
+     * @returns {string}
+     */
+    _buildUploadStatusHeader(entries) {
+        const i18n = this._i18n;
+        if (entries.length === 0) return '';
+        const first = entries[0];
+        const firstDesc = i18n.t('qualified-pdf-upload.upload-status-file-name', {
+            fileName: first.file.name,
+            fileSize: humanFileSize(first.file.size, false),
+        });
+        if (entries.length === 1) return firstDesc;
+        return i18n.t('qualified-pdf-upload.upload-status-file-name-more', {
+            firstFile: firstDesc,
+            count: entries.length - 1,
+        });
+    }
+
+    /**
+     * Starts the batch signing process for all queued (or selected) files,
+     * processing them in chunks where each chunk has ≤10 files with the same user_text.
      */
     async processSigningQueue() {
         const i18n = this._i18n;
@@ -167,107 +223,82 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         this.signingProcessActive = true;
         this.signaturePlacementInProgress = false;
 
-        // Validate that all PDFs with a signature have manual placement
-        let errorInPositioning = false;
-        for (const key of this.queuedFiles.keys()) {
-            if (errorInPositioning === true) continue;
+        // Build ordered candidate keys — selected subset or all queued
+        let candidateKeys = [];
+        if (this.selectedFiles.length > 0) {
+            for (const selectedFile of this.selectedFiles) {
+                if (this.queuedFiles.has(selectedFile.key)) {
+                    candidateKeys.push(selectedFile.key);
+                }
+            }
+            this.selectedFilesProcessing = candidateKeys.length > 0;
+        } else {
+            candidateKeys = [...this.queuedFiles.keys()];
+        }
+
+        if (candidateKeys.length === 0) {
+            this.signingProcessActive = false;
+            return;
+        }
+
+        // Validate placement before touching the queue
+        for (const key of candidateKeys) {
             const entry = this.queuedFiles.get(key);
-            const isManual = entry.placementMode === 'manual';
-            if (
-                entry.needsPlacement &&
-                !isManual &&
-                (this.selectedFiles.length === 0 || this.fileIsSelectedFile(key))
-            ) {
-                // Some have a signature but are not "manual", stop everything
+            if (entry.needsPlacement && entry.placementMode !== 'manual') {
                 notify({
                     summary: i18n.t('error-manual-positioning-missing-title'),
                     body: i18n.t('error-manual-positioning-missing'),
                     type: 'danger',
                     timeout: 5,
                 });
-                errorInPositioning = true;
+                this.signingProcessActive = false;
+                return;
             }
         }
-        if (errorInPositioning) {
-            this.signingProcessActive = false;
-            await this.stopSigningProcess();
-            return;
+
+        // Peek: determine the chunk — ≤10 files with the same user_text as the first
+        const firstUserText = this._getEntryUserText(this.queuedFiles.get(candidateKeys[0]));
+        const chunkKeys = [];
+        for (const key of candidateKeys) {
+            if (chunkKeys.length >= 10) break;
+            if (this._getEntryUserText(this.queuedFiles.get(key)) !== firstUserText) break;
+            chunkKeys.push(key);
         }
 
-        let key;
-        if (this.selectedFiles.length > 0) {
-            // If we have selected files in the table use the selected file
-            while (this.selectedFiles.length > 0 && key === null) {
-                const selectedFile = this.selectedFiles.shift();
-                if (selectedFile && this.queuedFiles.has(selectedFile.key)) {
-                    key = selectedFile.key;
-                }
+        // Take only the chunk entries off the queue
+        const entries = chunkKeys.map((key) => this.takeFileFromQueue(key));
+        this.activeSigningEntries = entries;
+        this.uploadInProgress = true;
+        this.uploadStatusText = this._buildUploadStatusText(entries);
+        this.uploadStatusHeader = this._buildUploadStatusHeader(entries);
+
+        // Build batch inputs (apply annotations sequentially)
+        const inputs = [];
+        for (const entry of entries) {
+            let file = entry.file;
+            let userText = null;
+            const annotations = entry.annotations ?? [];
+
+            if (annotations.length > 0) {
+                file = await this.addAnnotationsToFile(file, annotations);
+                userText = this.getUserTextForAnnotations(annotations);
             }
-            this.selectedFilesProcessing = key !== null;
-        } else {
-            // Process all queued files
-            key = this.queuedFiles.keys().next().value ?? null;
+
+            let params = {};
+            if (entry.placementMode === 'manual' && entry.signaturePlacement !== undefined) {
+                params = utils.fabricjs2pdfasPosition(entry.signaturePlacement);
+            }
+            params['profile'] = 'default';
+
+            inputs.push(new EsignQualifiedBatchSigningRequestInput(file, params, userText));
         }
 
-        if (key === null) {
-            this.signingProcessActive = false;
-            await this.stopSigningProcess();
-            return;
-        }
-
+        this.uploadInProgress = false;
         this._('#external-auth').open();
 
-        const entry = this.takeFileFromQueue(key);
-        const file = entry.file;
-        this.activeSigningEntry = entry;
-        this.uploadInProgress = true;
-        let params = {};
-
-        // prepare parameters to tell PDF-AS where and how the signature should be placed
-        if (entry.placementMode === 'manual') {
-            const data = entry.signaturePlacement;
-            if (data !== undefined) {
-                params = utils.fabricjs2pdfasPosition(data);
-            }
-        }
-
-        params['invisible'] = 'false';
-        params['profile'] = 'default';
-
-        this.uploadStatusFileName = file.name;
-        this.uploadStatusText = i18n.t('qualified-pdf-upload.upload-status-file-text', {
-            fileName: file.name,
-            fileSize: humanFileSize(file.size, false),
-        });
-
-        const annotations = this.getAnnotations(key);
-        await this.signFile(file, params, annotations);
-        this.uploadInProgress = false;
-        // Stop processing if no more selected file exists
-        if (this.selectedFilesProcessing && this.selectedFiles.length === 0) {
-            this.signingProcessActive = false;
-            await this.stopSigningProcess();
-        }
-    }
-
-    /**
-     * @param file
-     * @param params
-     * @param annotations
-     * @returns {Promise<void>}
-     */
-    async signFile(file, params = {}, annotations = []) {
-        let userText = null;
-        // add annotations
-        if (annotations.length > 0) {
-            file = await this.addAnnotationsToFile(file, annotations);
-            // Also send annotations to the server so they get included in the signature block
-            userText = this.getUserTextForAnnotations(annotations);
-        }
-
-        let signingRequest;
+        let batchRequest;
         try {
-            signingRequest = await this._api.createQualifiedSigningRequest(file, params, userText);
+            batchRequest = await this._api.createQualifiedBatchSigningRequest(inputs);
         } catch (error) {
             if (error.message) {
                 sendNotification({
@@ -276,19 +307,18 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                     type: 'danger',
                     timeout: 15,
                 });
-                console.log(`Error message: ${error.message}`);
             }
-
-            this.addToErrorFiles(this.activeSigningEntry, error.detail ?? error.message);
-            this.activeSigningEntry = null;
+            for (const entry of this.activeSigningEntries) {
+                this.addToErrorFiles(entry, error.detail ?? error.message);
+            }
+            this.activeSigningEntries = [];
             this.sendReportNotification();
             this._('#external-auth').close();
             return;
         }
 
         this.externalAuthInProgress = true;
-        let iframe = this._('#iframe');
-        iframe.setUrl(signingRequest.url);
+        this._('#iframe').setUrl(batchRequest.url);
     }
 
     /**
@@ -352,59 +382,68 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         const code = event.detail.code;
 
         try {
-            const document = await this._api.getQualifiedlySignedDocument(code);
+            const batchResult = await this._api.getQualifiedBatchSigningResult(code);
 
             // hide iframe
             this.externalAuthInProgress = false;
             this._('#iframe').reset();
 
-            let filename = utils.generateSignedFileName(this.activeSigningEntry.file.name);
+            const signedFiles = new Map(this.signedFiles);
+            for (let i = 0; i < this.activeSigningEntries.length; i++) {
+                const entry = this.activeSigningEntries[i];
+                const doc = batchResult.documents[i];
 
-            const arr = utils.convertDataURIToBinary(document.contentUrl);
-            let signedFile = new File([arr], filename, {
-                type: utils.getDataURIContentType(document.contentUrl),
-            });
+                const filename = utils.generateSignedFileName(entry.file.name);
+                const arr = utils.convertDataURIToBinary(doc.contentUrl);
+                const signedFile = new File([arr], filename, {
+                    type: utils.getDataURIContentType(doc.contentUrl),
+                });
 
-            this.addSignedFile(this.activeSigningEntry.key, signedFile);
-            this.signedFilesCountToReport++;
+                signedFiles.set(entry.key, new SignedEntry(entry.key, signedFile));
+                this.signedFilesCountToReport++;
 
-            this.sendSetPropertyEvent('analytics-event', {
-                category: 'QualifiedlySigning',
-                action: 'DocumentSigned',
-                name: signedFile.size,
-            });
-            this.activeSigningEntry = null;
-        } catch (error) {
-            console.error('Error while fetching signed document:', error);
-            if (!this.activeSigningEntry) {
-                this.activeSigningEntry = null;
-                return;
+                this.sendSetPropertyEvent('analytics-event', {
+                    category: 'QualifiedlySigning',
+                    action: 'DocumentSigned',
+                    name: signedFile.size,
+                });
             }
-
-            this.addToErrorFiles(this.activeSigningEntry, 'Download failed!');
-            this.activeSigningEntry = null;
+            this.signedFiles = signedFiles;
+        } catch (error) {
+            console.error('Error while fetching signed batch result:', error);
+            for (const entry of this.activeSigningEntries) {
+                this.addToErrorFiles(entry, 'Download failed!');
+            }
         } finally {
-            // Close the external auth modal
+            this.activeSigningEntries = [];
+            this.externalAuthInProgress = false;
             this._('#external-auth').close();
-            this.sendReportNotification();
-            this.processSigningQueue();
+
+            const hasMore = this.queuedFiles.size > 0 || this.selectedFiles.length > 0;
+            if (hasMore) {
+                this.processSigningQueue();
+            } else {
+                this.signingProcessActive = false;
+                this.sendReportNotification();
+            }
         }
     }
 
     _onIFrameError(event) {
         let error = event.detail.message;
-        if (!this.activeSigningEntry) {
+        if (this.activeSigningEntries.length === 0) {
             return;
         }
         const errorMessage = this.parseError(error);
-        this.addToErrorFiles(this.activeSigningEntry, errorMessage);
-        this.activeSigningEntry = null;
+        for (const entry of this.activeSigningEntries) {
+            this.addToErrorFiles(entry, errorMessage);
+        }
+        this.activeSigningEntries = [];
         this._('#iframe').reset();
         this.externalAuthInProgress = false;
-        // Close the external auth modal
+        this.signingProcessActive = false;
         this._('#external-auth').close();
         this.sendReportNotification();
-        this.processSigningQueue();
     }
 
     addToErrorFiles(sigEntry, errorMessage) {
@@ -491,10 +530,11 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         this.externalAuthInProgress = false;
         this.signingProcessActive = false;
 
-        if (this.activeSigningEntry) {
-            // Re-queue file with the same key
-            await this.reQueueFile(this.activeSigningEntry);
-            this.activeSigningEntry = null;
+        if (this.activeSigningEntries.length > 0) {
+            for (const entry of this.activeSigningEntries) {
+                await this.reQueueFile(entry);
+            }
+            this.activeSigningEntries = [];
             this.setQueuedFilesTabulatorTable();
         }
     }
@@ -894,7 +934,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                 hidden: !this.uploadInProgress,
                             })}">
                             <dbp-mini-spinner></dbp-mini-spinner>
-                            <strong>${this.uploadStatusFileName}</strong>
                             ${this.uploadStatusText}
                         </div>
                         <!-- External auth -->
@@ -906,14 +945,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                             })}"
                             title="${i18n.t('qualified-pdf-upload.current-signing-process-label')}">
                             <div slot="header" class="header">
-                                <div class="filename">
-                                    <strong>
-                                        ${this.activeSigningEntry
-                                            ? this.activeSigningEntry.file.name
-                                            : ''}
-                                    </strong>
-                                    (${humanFileSize(this.activeSigningEntry?.file?.size ?? 0)})
-                                </div>
+                                <div class="filename">${this.uploadStatusHeader}</div>
                             </div>
                             <div slot="content">
                                 <external-sign-iframe

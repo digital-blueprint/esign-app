@@ -28,6 +28,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         this.nextcloudFileURL = '';
         this.nextcloudAuthInfo = '';
         this.fileHandlingEnabledTargets = 'local';
+        this.activeSigningEntry = null;
 
         // Bind all event handlers
         this._setQueuedFilesTabulatorTable = this.setQueuedFilesTabulatorTable.bind(this);
@@ -206,7 +207,6 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                 }
             }
 
-            params['invisible'] = 'false';
             params['profile'] = 'official';
 
             this.uploadStatusFileName = file.name;
