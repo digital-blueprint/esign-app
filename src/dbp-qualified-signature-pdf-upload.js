@@ -151,18 +151,20 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
     }
 
     /**
-     * Processes queued files
+     * Starts or continues the signing process
      */
-    async handleQueuedFiles() {
+    async processSigningQueue() {
         const i18n = this._i18n;
         if (this.queuedFiles.size === 0) {
             this.signingProcessActive = false;
             return;
         }
 
-        if (!this.signingProcessActive || this.externalAuthInProgress) {
+        if (this.externalAuthInProgress) {
             return;
         }
+
+        this.signingProcessActive = true;
         this.signaturePlacementInProgress = false;
 
         // Validate that all PDFs with a signature have manual placement
@@ -385,7 +387,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             // Close the external auth modal
             this._('#external-auth').close();
             this.sendReportNotification();
-            this.handleQueuedFiles();
+            this.processSigningQueue();
         }
     }
 
@@ -402,7 +404,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         // Close the external auth modal
         this._('#external-auth').close();
         this.sendReportNotification();
-        this.handleQueuedFiles();
+        this.processSigningQueue();
     }
 
     addToErrorFiles(sigEntry, errorMessage) {
@@ -637,8 +639,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                     <button
                                         id="start-signing-button"
                                         @click="${() => {
-                                            this.signingProcessActive = true;
-                                            this.handleQueuedFiles();
+                                            this.processSigningQueue();
                                         }}"
                                         ?disabled="${this.queuedFiles.size === 0}"
                                         class="button is-primary">
