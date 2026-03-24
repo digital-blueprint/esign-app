@@ -65,11 +65,6 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
 
     connectedCallback() {
         super.connectedCallback();
-        // needs to be called in a function to get the variable scope of "this"
-        setInterval(() => {
-            this.handleQueuedFiles();
-        }, 1000);
-
         // Add event listeners using bound methods
         window.addEventListener('dbp-pdf-preview-accept', this._setQueuedFilesTabulatorTable);
         window.addEventListener('dbp-pdf-annotations-save', this._setQueuedFilesTabulatorTable);
@@ -149,7 +144,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             return;
         }
 
-        if (!this.signingProcessEnabled || this.uploadInProgress) {
+        if (!this.signingProcessEnabled) {
             return;
         }
         this.signaturePlacementInProgress = false;
@@ -182,60 +177,57 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             return;
         }
 
-        let key;
-        if (this.selectedFiles.length > 0) {
-            // If we have selected files in the table use the selected file
-            while (this.selectedFiles.length > 0 && key === null) {
-                const selectedFile = this.selectedFiles.shift();
-                if (selectedFile && this.queuedFiles.has(selectedFile.key)) {
-                    key = selectedFile.key;
+        while (this.signingProcessEnabled && this.queuedFiles.size > 0) {
+            let key;
+            if (this.selectedFiles.length > 0) {
+                // If we have selected files in the table use the selected file
+                while (this.selectedFiles.length > 0 && key === null) {
+                    const selectedFile = this.selectedFiles.shift();
+                    if (selectedFile && this.queuedFiles.has(selectedFile.key)) {
+                        key = selectedFile.key;
+                    }
+                }
+                this.selectedFilesProcessing = key !== null;
+            } else {
+                // Process all queued files
+                key = this.queuedFiles.keys().next().value ?? null;
+            }
+
+            if (key === null) {
+                break;
+            }
+
+            const entry = this.takeFileFromQueue(key);
+            const file = entry.file;
+            this.activeSigningEntry = entry;
+            this.uploadInProgress = true;
+            let params = {};
+
+            // prepare parameters to tell PDF-AS where and how the signature should be placed
+            if (entry.placementMode === 'manual') {
+                const data = entry.signaturePlacement;
+                if (data !== undefined) {
+                    params = utils.fabricjs2pdfasPosition(data);
                 }
             }
-            this.selectedFilesProcessing = key !== null;
-        } else {
-            // Process all queued files
-            key = this.queuedFiles.keys().next().value ?? null;
+
+            params['invisible'] = 'false';
+            params['profile'] = 'official';
+
+            this.uploadStatusFileName = file.name;
+            this.uploadStatusText = i18n.t('official-pdf-upload.upload-status-file-text', {
+                fileName: file.name,
+                fileSize: humanFileSize(file.size, false),
+            });
+
+            const annotations = this.getAnnotations(key);
+            await this.signFile(file, params, annotations);
+            this.uploadInProgress = false;
         }
 
-        if (key === null) {
-            this.signingProcessEnabled = false;
-            this.signingProcessActive = false;
-            await this.stopSigningProcess();
-            return;
-        }
-
-        const entry = this.takeFileFromQueue(key);
-        const file = entry.file;
-        this.activeSigningEntry = entry;
-        this.uploadInProgress = true;
-        let params = {};
-
-        // prepare parameters to tell PDF-AS where and how the signature should be placed
-        if (entry.placementMode === 'manual') {
-            const data = entry.signaturePlacement;
-            if (data !== undefined) {
-                params = utils.fabricjs2pdfasPosition(data);
-            }
-        }
-
-        params['invisible'] = 'false';
-        params['profile'] = 'official';
-
-        this.uploadStatusFileName = file.name;
-        this.uploadStatusText = i18n.t('official-pdf-upload.upload-status-file-text', {
-            fileName: file.name,
-            fileSize: humanFileSize(file.size, false),
-        });
-
-        const annotations = this.getAnnotations(key);
-        await this.signFile(file, params, annotations);
-        this.uploadInProgress = false;
-        // Stop processing if no more selected file exists
-        if (this.selectedFilesProcessing && this.selectedFiles.length === 0) {
-            this.signingProcessEnabled = false;
-            this.signingProcessActive = false;
-            await this.stopSigningProcess();
-        }
+        this.signingProcessEnabled = false;
+        this.signingProcessActive = false;
+        await this.stopSigningProcess();
     }
 
     /**
@@ -536,6 +528,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                         @click="${() => {
                                             this.signingProcessEnabled = true;
                                             this.signingProcessActive = true;
+                                            this.handleQueuedFiles();
                                         }}"
                                         ?disabled="${this.queuedFiles.size === 0}"
                                         class="button is-primary ${classMap({
@@ -712,7 +705,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                         </button>
                                         <dbp-loading-button
                                             id="re-upload-all-button"
-                                            ?disabled="${this.uploadInProgress}"
+                                            ?disabled="${this.signingProcessActive}"
                                             value="${i18n.t(
                                                 'official-pdf-upload.re-upload-all-button',
                                             )}"
