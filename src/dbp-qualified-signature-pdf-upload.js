@@ -155,14 +155,12 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
      */
     async handleQueuedFiles() {
         const i18n = this._i18n;
-        this.endSigningProcessIfQueueEmpty();
         if (this.queuedFiles.size === 0) {
-            // reset signingProcessEnabled button
-            this.signingProcessEnabled = false;
+            this.signingProcessActive = false;
             return;
         }
 
-        if (!this.signingProcessEnabled || this.externalAuthInProgress) {
+        if (!this.signingProcessActive || this.externalAuthInProgress) {
             return;
         }
         this.signaturePlacementInProgress = false;
@@ -189,7 +187,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             }
         }
         if (errorInPositioning) {
-            this.signingProcessEnabled = false;
             this.signingProcessActive = false;
             await this.stopSigningProcess();
             return;
@@ -211,7 +208,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         }
 
         if (key === null) {
-            this.signingProcessEnabled = false;
             this.signingProcessActive = false;
             await this.stopSigningProcess();
             return;
@@ -247,7 +243,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         this.uploadInProgress = false;
         // Stop processing if no more selected file exists
         if (this.selectedFilesProcessing && this.selectedFiles.length === 0) {
-            this.signingProcessEnabled = false;
             this.signingProcessActive = false;
             await this.stopSigningProcess();
         }
@@ -360,7 +355,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             // hide iframe
             this.externalAuthInProgress = false;
             this._('#iframe').reset();
-            this.endSigningProcessIfQueueEmpty();
 
             let filename = utils.generateSignedFileName(this.activeSigningEntry.file.name);
 
@@ -405,7 +399,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         this.activeSigningEntry = null;
         this._('#iframe').reset();
         this.externalAuthInProgress = false;
-        this.endSigningProcessIfQueueEmpty();
         // Close the external auth modal
         this._('#external-auth').close();
         this.sendReportNotification();
@@ -413,8 +406,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
     }
 
     addToErrorFiles(sigEntry, errorMessage) {
-        this.endSigningProcessIfQueueEmpty();
-
         const errorEntry = this.storeErrorFile(sigEntry, errorMessage);
         if (!errorEntry) {
             return;
@@ -495,7 +486,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         }
 
         this._('#iframe').reset();
-        this.signingProcessEnabled = false;
         this.externalAuthInProgress = false;
         this.signingProcessActive = false;
 
@@ -647,7 +637,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                     <button
                                         id="start-signing-button"
                                         @click="${() => {
-                                            this.signingProcessEnabled = true;
                                             this.signingProcessActive = true;
                                             this.handleQueuedFiles();
                                         }}"

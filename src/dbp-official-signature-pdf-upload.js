@@ -137,14 +137,12 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
      */
     async handleQueuedFiles() {
         const i18n = this._i18n;
-        this.endSigningProcessIfQueueEmpty();
         if (this.queuedFiles.size === 0) {
-            // reset signingProcessEnabled button
-            this.signingProcessEnabled = false;
+            this.signingProcessActive = false;
             return;
         }
 
-        if (!this.signingProcessEnabled) {
+        if (!this.signingProcessActive) {
             return;
         }
         this.signaturePlacementInProgress = false;
@@ -171,13 +169,12 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             }
         }
         if (errorInPositioning) {
-            this.signingProcessEnabled = false;
             this.signingProcessActive = false;
             await this.stopSigningProcess();
             return;
         }
 
-        while (this.signingProcessEnabled && this.queuedFiles.size > 0) {
+        while (this.signingProcessActive && this.queuedFiles.size > 0) {
             let key;
             if (this.selectedFiles.length > 0) {
                 // If we have selected files in the table use the selected file
@@ -225,7 +222,6 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             this.uploadInProgress = false;
         }
 
-        this.signingProcessEnabled = false;
         this.signingProcessActive = false;
         await this.stopSigningProcess();
     }
@@ -273,7 +269,6 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         this.addSignedFile(this.activeSigningEntry.key, signedFile);
         this.signedFilesCountToReport++;
 
-        this.endSigningProcessIfQueueEmpty();
         this.sendSetPropertyEvent('analytics-event', {
             category: 'OfficialSigning',
             action: 'DocumentSigned',
@@ -315,8 +310,6 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
     }
 
     addToErrorFiles(sigEntry, errorMessage) {
-        this.endSigningProcessIfQueueEmpty();
-
         const errorEntry = this.storeErrorFile(sigEntry, errorMessage);
         if (!errorEntry) {
             return;
@@ -377,7 +370,6 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
     }
 
     async stopSigningProcess() {
-        this.signingProcessEnabled = false;
         this.signingProcessActive = false;
 
         if (this.activeSigningEntry) {
@@ -526,7 +518,6 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                     <button
                                         id="start-signing-button"
                                         @click="${() => {
-                                            this.signingProcessEnabled = true;
                                             this.signingProcessActive = true;
                                             this.handleQueuedFiles();
                                         }}"

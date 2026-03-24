@@ -47,7 +47,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         this.uploadInProgress = false;
         this._queueKey = 0;
 
-        this.signingProcessEnabled = false;
         this.tableQueuedFilesTable = null;
         this.tableSignedFilesTable = null;
         this.tableFailedFilesTable = null;
@@ -100,7 +99,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
             uploadInProgress: {type: Boolean, attribute: false},
             uploadStatusFileName: {type: String, attribute: false},
             uploadStatusText: {type: String, attribute: false},
-            signingProcessEnabled: {type: Boolean, attribute: false},
             signingProcessActive: {type: Boolean, attribute: false},
             previewEntry: {type: Object, attribute: false},
             annotationEntry: {type: Object, attribute: false},
@@ -169,7 +167,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
      * @param {string} key
      */
     async showAnnotationView(key) {
-        if (this.signingProcessEnabled) {
+        if (this.signingProcessActive) {
             return;
         }
 
@@ -443,12 +441,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         this.requestUpdate();
     }
 
-    endSigningProcessIfQueueEmpty() {
-        if (this.queuedFiles.size === 0 && this.signingProcessActive) {
-            this.signingProcessActive = false;
-        }
-    }
-
     /**
      * @param ev
      */
@@ -495,7 +487,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
      * @param viewOnly
      */
     async showPreview(key, withSigBlock = false, viewOnly = false) {
-        if (this.signingProcessEnabled) {
+        if (this.signingProcessActive) {
             return;
         }
 
