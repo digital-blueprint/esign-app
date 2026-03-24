@@ -70,7 +70,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         this.currentPreviewQueueKey = '';
         this.allowAnnotating = false;
         this.isAnnotationViewVisible = false;
-        this.addAnnotationInProgress = false;
         // will be set in function update
         this.fileSource = '';
         this.nextcloudDefaultDir = '';
@@ -110,7 +109,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
             isSignaturePlacement: {type: Boolean, attribute: false},
             allowAnnotating: {type: Boolean, attribute: 'allow-annotating'},
             isAnnotationViewVisible: {type: Boolean, attribute: false},
-            addAnnotationInProgress: {type: Boolean, attribute: false},
             fileHandlingEnabledTargets: {type: String, attribute: 'file-handling-enabled-targets'},
             queuedFilesTableExpanded: {type: Boolean, attribute: false},
             queuedFilesTableAllSelected: {type: Boolean, attribute: false},
@@ -182,8 +180,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
 
         this.annotationEntry = entry;
 
-        this.addAnnotationInProgress = true;
-
         const viewTag = 'dbp-pdf-annotation-view';
         this._(viewTag).setAttribute('key', key);
         this._(viewTag).setAnnotationRows(entry.annotations);
@@ -218,7 +214,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
      */
     hideAnnotationView() {
         this.isAnnotationViewVisible = false;
-        this.addAnnotationInProgress = false;
         this.annotationEntry = null;
     }
 

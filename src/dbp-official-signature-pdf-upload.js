@@ -149,7 +149,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             return;
         }
 
-        if (!this.signingProcessEnabled || this.uploadInProgress || this.addAnnotationInProgress) {
+        if (!this.signingProcessEnabled || this.uploadInProgress) {
             return;
         }
         this.signaturePlacementInProgress = false;

@@ -73,11 +73,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
 
     connectedCallback() {
         super.connectedCallback();
-        // needs to be called in a function to get the variable scope of "this"
-        setInterval(() => {
-            this.handleQueuedFiles();
-        }, 1000);
-
         // Add event listeners using bound methods
         window.addEventListener('beforeunload', this._onReceiveBeforeUnload);
         window.addEventListener('dbp-pdf-preview-accept', this._setQueuedFilesTabulatorTable);
@@ -167,12 +162,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             return;
         }
 
-        if (
-            !this.signingProcessEnabled ||
-            this.externalAuthInProgress ||
-            this.uploadInProgress ||
-            this.addAnnotationInProgress
-        ) {
+        if (!this.signingProcessEnabled || this.externalAuthInProgress) {
             return;
         }
         this.signaturePlacementInProgress = false;
@@ -401,6 +391,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             // Close the external auth modal
             this._('#external-auth').close();
             this.sendReportNotification();
+            this.handleQueuedFiles();
         }
     }
 
@@ -418,6 +409,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         // Close the external auth modal
         this._('#external-auth').close();
         this.sendReportNotification();
+        this.handleQueuedFiles();
     }
 
     addToErrorFiles(sigEntry, errorMessage) {
@@ -657,6 +649,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                         @click="${() => {
                                             this.signingProcessEnabled = true;
                                             this.signingProcessActive = true;
+                                            this.handleQueuedFiles();
                                         }}"
                                         ?disabled="${this.queuedFiles.size === 0}"
                                         class="button is-primary">
@@ -822,7 +815,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                         </button>
                                         <dbp-loading-button
                                             id="re-upload-all-button"
-                                            ?disabled="${this.uploadInProgress}"
+                                            ?disabled="${this.signingProcessActive}"
                                             value="${i18n.t(
                                                 'qualified-pdf-upload.re-upload-all-button',
                                             )}"
