@@ -72,7 +72,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         this.isAnnotationViewVisible = false;
         this.addAnnotationInProgress = false;
         // will be set in function update
-        this.fileSourceUrl = '';
         this.fileSource = '';
         this.nextcloudDefaultDir = '';
         this.signedFiles = new Map();
@@ -333,90 +332,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         return userText;
     }
 
-    /**
-     * @param file
-     * @param params
-     * @param annotations
-     * @returns {Promise<void>}
-     */
-    async uploadFile(file, params = {}, annotations = []) {
-        this.uploadInProgress = true;
-        let formData = new FormData();
-
-        // add annotations
-        if (annotations.length > 0) {
-            file = await this.addAnnotationsToFile(file, annotations);
-            // Also send annotations to the server so they get included in the signature block
-            formData.append(
-                'user_text',
-                JSON.stringify(this.getUserTextForAnnotations(annotations)),
-            );
-        }
-
-        let url = new URL(this.fileSourceUrl);
-        formData.append('file', file);
-        for (let key in params) {
-            formData.append(key, params[key]);
-        }
-
-        // I got a 60s timeout in Google Chrome and found no way to increase that
-        try {
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    Authorization: 'Bearer ' + this.auth.token,
-                },
-                body: formData,
-            });
-
-            /* Done. Inform the user */
-            console.log(`Status: ${response.status} for file ${file.name}`);
-            this.sendFinishedEvent(response, file);
-        } catch (error) {
-            /* Error. Inform the user */
-            if (error.message) {
-                send({
-                    summary: 'Error!',
-                    body: error.message,
-                    type: 'danger',
-                    timeout: 15,
-                });
-                console.log(`Error message: ${error.message}`);
-            }
-            this.sendFinishedEvent(error, file);
-        }
-
-        this.uploadInProgress = false;
-    }
-
-    async sendFinishedEvent(response, file) {
-        if (response === undefined) {
-            return;
-        }
-
-        let data = {
-            fileName: file.name,
-            status: response.status,
-            json: {'hydra:description': ''},
-        };
-
-        if (response.status !== 201 && response.message) {
-            data.json = {'hydra:description': response.message};
-        }
-
-        try {
-            await response.json().then((json) => {
-                data.json = json;
-            });
-        } catch (e) {
-            console.error(e);
-        }
-
-        data.file = file;
-
-        this.onFileUploadFinished(data);
-    }
-
     onFileSourceSwitch(event) {
         if (event.detail.source) {
             this.fileSource = event.detail.source;
@@ -452,13 +367,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         }
 
         this._('#zip-download-button').stop();
-    }
-
-    /**
-     * @param data
-     */
-    onFileUploadFinished(data) {
-        console.log('Override me');
     }
 
     /**

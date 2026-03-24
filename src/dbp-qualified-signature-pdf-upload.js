@@ -6,15 +6,7 @@ import {PdfPreview} from './dbp-pdf-preview';
 import {sendNotification} from '@dbp-toolkit/common/notification';
 import * as commonUtils from '@dbp-toolkit/common/utils';
 import * as utils from './utils';
-import {
-    Button,
-    Icon,
-    IconButton,
-    LoadingButton,
-    MiniSpinner,
-    combineURLs,
-    Modal,
-} from '@dbp-toolkit/common';
+import {Button, Icon, IconButton, LoadingButton, MiniSpinner, Modal} from '@dbp-toolkit/common';
 import * as commonStyles from '@dbp-toolkit/common/styles';
 import {TooltipElement} from '@dbp-toolkit/tooltip';
 import {classMap} from 'lit/directives/class-map.js';
@@ -452,14 +444,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             switch (propName) {
                 case 'lang':
                     this.setQueuedFilesTabulatorTable();
-                    break;
-                case 'entryPointUrl':
-                    if (this.entryPointUrl) {
-                        this.fileSourceUrl = combineURLs(
-                            this.entryPointUrl,
-                            '/esign/qualified-signing-requests',
-                        );
-                    }
                     break;
                 case 'queuedFiles':
                     this.setQueuedFilesTabulatorTable();

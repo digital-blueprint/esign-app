@@ -5,25 +5,18 @@ import DBPSignatureLitElement from './dbp-signature-lit-element';
 import {PdfPreview} from './dbp-pdf-preview';
 import * as commonUtils from '@dbp-toolkit/common/utils';
 import * as utils from './utils';
-import {
-    Button,
-    Icon,
-    IconButton,
-    LoadingButton,
-    MiniSpinner,
-    combineURLs,
-    Modal,
-} from '@dbp-toolkit/common';
+import {Button, Icon, IconButton, LoadingButton, MiniSpinner, Modal} from '@dbp-toolkit/common';
 import * as commonStyles from '@dbp-toolkit/common/styles';
 import {TooltipElement} from '@dbp-toolkit/tooltip';
 import {classMap} from 'lit/directives/class-map.js';
 import {FileSource} from '@dbp-toolkit/file-handling';
 import {FileSink} from '@dbp-toolkit/file-handling';
 import {name as pkgName} from './../package.json';
-import {send as notify} from '@dbp-toolkit/common/notification';
+import {sendNotification} from '@dbp-toolkit/common/notification';
 import {PdfAnnotationView} from './dbp-pdf-annotation-view';
 import * as SignatureStyles from './styles';
 import {CustomTabulatorTable} from './table-components.js';
+import {EsignApi} from './api.js';
 
 class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElement) {
     constructor() {
@@ -43,6 +36,8 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         this._handleModalClosed = this.handleModalClosed.bind(this);
         this._handlePdfModalClosing = this.handlePdfModalClosing.bind(this);
         this._handleAnnotationModalClosing = this.handleAnnotationModalClosing.bind(this);
+
+        this._api = new EsignApi(this);
     }
 
     static get scopedElements() {
@@ -171,7 +166,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                 (this.selectedFiles.length === 0 || this.fileIsSelectedFile(key))
             ) {
                 // Some have a signature but are not "manual", stop everything
-                notify({
+                sendNotification({
                     summary: i18n.t('error-manual-positioning-missing-title'),
                     body: i18n.t('error-manual-positioning-missing'),
                     type: 'danger',
@@ -233,7 +228,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         });
 
         const annotations = this.getAnnotations(key);
-        await this.uploadFile(file, params, annotations);
+        await this.signFile(file, params, annotations);
         this.uploadInProgress = false;
         // Stop processing if no more selected file exists
         if (this.selectedFilesProcessing && this.selectedFiles.length === 0) {
@@ -241,6 +236,59 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             this.signingProcessActive = false;
             await this.stopSigningProcess();
         }
+    }
+
+    /**
+     * @param file
+     * @param params
+     * @param annotations
+     * @returns {Promise<void>}
+     */
+    async signFile(file, params = {}, annotations = []) {
+        let userText = null;
+        // add annotations
+        if (annotations.length > 0) {
+            file = await this.addAnnotationsToFile(file, annotations);
+            // Also send annotations to the server so they get included in the signature block
+            userText = this.getUserTextForAnnotations(annotations);
+        }
+
+        let signedDocument;
+        try {
+            signedDocument = await this._api.createAdvancedlySignedDocument(file, params, userText);
+        } catch (error) {
+            if (error.message) {
+                sendNotification({
+                    summary: 'Error!',
+                    body: error.message,
+                    type: 'danger',
+                    timeout: 15,
+                });
+                console.log(`Error message: ${error.message}`);
+            }
+
+            this.addToErrorFiles(this.activeSigningEntry, error.detail ?? error.message);
+            this.activeSigningEntry = null;
+            this.sendReportNotification();
+            return;
+        }
+
+        let filename = utils.generateSignedFileName(this.activeSigningEntry.file.name);
+        const arr = utils.convertDataURIToBinary(signedDocument.contentUrl);
+        let signedFile = new File([arr], filename, {
+            type: utils.getDataURIContentType(signedDocument.contentUrl),
+        });
+        this.addSignedFile(this.activeSigningEntry.key, signedFile);
+        this.signedFilesCountToReport++;
+
+        this.endSigningProcessIfQueueEmpty();
+        this.sendSetPropertyEvent('analytics-event', {
+            category: 'OfficialSigning',
+            action: 'DocumentSigned',
+            name: signedFile.size,
+        });
+        this.activeSigningEntry = null;
+        this.sendReportNotification();
     }
 
     /**
@@ -274,12 +322,10 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         event.returnValue = '';
     }
 
-    addToErrorFiles(file) {
-        const errorMessage = file.json['hydra:description'];
-
+    addToErrorFiles(sigEntry, errorMessage) {
         this.endSigningProcessIfQueueEmpty();
 
-        const errorEntry = this.storeErrorFile(this.activeSigningEntry, errorMessage);
+        const errorEntry = this.storeErrorFile(sigEntry, errorMessage);
         if (!errorEntry) {
             return;
         }
@@ -293,34 +339,6 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         });
     }
 
-    /**
-     * @param data
-     */
-    onFileUploadFinished(data) {
-        if (data.status !== 201) {
-            this.addToErrorFiles(data);
-            this.activeSigningEntry = null;
-        } else if (data.json['@type'] === 'http://schema.org/MediaObject') {
-            let filename = utils.generateSignedFileName(this.activeSigningEntry.file.name);
-            const arr = utils.convertDataURIToBinary(data.json.contentUrl);
-            let signedFile = new File([arr], filename, {
-                type: utils.getDataURIContentType(data.json.contentUrl),
-            });
-
-            this.addSignedFile(this.activeSigningEntry.key, signedFile);
-            this.signedFilesCountToReport++;
-
-            this.endSigningProcessIfQueueEmpty();
-            this.sendSetPropertyEvent('analytics-event', {
-                category: 'OfficialSigning',
-                action: 'DocumentSigned',
-                name: signedFile.size,
-            });
-            this.activeSigningEntry = null;
-        }
-        this.sendReportNotification();
-    }
-
     update(changedProperties) {
         super.update(changedProperties);
 
@@ -328,14 +346,6 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             switch (propName) {
                 case 'lang':
                     this.setQueuedFilesTabulatorTable();
-                    break;
-                case 'entryPointUrl':
-                    if (this.entryPointUrl) {
-                        this.fileSourceUrl = combineURLs(
-                            this.entryPointUrl,
-                            '/esign/advancedly-signed-documents',
-                        );
-                    }
                     break;
                 case 'queuedFiles':
                     this.setQueuedFilesTabulatorTable();
