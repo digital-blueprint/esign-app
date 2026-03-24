@@ -72,6 +72,40 @@ export class ApiError extends Error {
  * @property {boolean} [invisible]
  */
 
+/**
+ * @typedef {object} EsignQualifiedBatchSigningRequest
+ * @property {string} identifier
+ * @property {string} url
+ */
+
+/**
+ * @typedef {object} EsignQualifiedlyBatchSignedDocument
+ * @property {string} identifier
+ * @property {string} contentUrl
+ * @property {number} contentSize
+ */
+
+/**
+ * @typedef {object} EsignQualifiedBatchSigningResult
+ * @property {EsignQualifiedlyBatchSignedDocument[]} documents
+ */
+
+export class EsignQualifiedBatchSigningRequestInput {
+    /**
+     * @param {File} file
+     * @param {EsignSigningParameters} params
+     * @param {object|null} userText
+     */
+    constructor(file, params = {}, userText = null) {
+        /** @type {File} */
+        this.file = file;
+        /** @type {EsignSigningParameters} */
+        this.params = params;
+        /** @type {object|null} */
+        this.userText = userText;
+    }
+}
+
 export class EsignApi {
     constructor(element) {
         this._element = element;
@@ -126,6 +160,63 @@ export class EsignApi {
                 'Accept-Language': this._element.lang,
             },
             body: formData,
+        });
+
+        if (!result.ok) {
+            throw await ApiError.fromResponse(result);
+        }
+
+        return await result.json();
+    }
+
+    /**
+     * @param {EsignQualifiedBatchSigningRequestInput[]} files
+     * @returns {Promise<EsignQualifiedBatchSigningRequest>}
+     */
+    async createQualifiedBatchSigningRequest(files) {
+        let apiUrl = combineURLs(
+            this._element.entryPointUrl,
+            '/esign/qualified-batch-signing-requests',
+        );
+        let formData = new FormData();
+        for (let {file, params = {}, userText = null} of files) {
+            formData.append('files[]', file);
+            const request =
+                userText !== null ? {...params, user_text: JSON.stringify(userText)} : {...params};
+            formData.append('requests[]', JSON.stringify(request));
+        }
+        const result = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                Authorization: 'Bearer ' + this._element.auth.token,
+                'Accept-Language': this._element.lang,
+            },
+            body: formData,
+        });
+
+        if (!result.ok) {
+            throw await ApiError.fromResponse(result);
+        }
+
+        return await result.json();
+    }
+
+    /**
+     * @param {string} id
+     * @returns {Promise<EsignQualifiedBatchSigningResult>}
+     */
+    async getQualifiedBatchSigningResult(id) {
+        const apiUrl =
+            combineURLs(this._element.entryPointUrl, '/esign/qualified-batch-signing-results') +
+            '/' +
+            encodeURIComponent(id);
+
+        const result = await fetch(apiUrl, {
+            headers: {
+                'Content-Type': 'application/ld+json',
+                Authorization: 'Bearer ' + this._element.auth.token,
+                'Accept-Language': this._element.lang,
+            },
         });
 
         if (!result.ok) {
