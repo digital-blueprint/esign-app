@@ -32,7 +32,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         this.fileHandlingEnabledTargets = 'local';
         this.externalAuthInProgress = false;
         this.activeSigningEntries = [];
-        this.uploadStatusHeader = '';
 
         // Bind all event handlers
         this._onReceiveBeforeUnload = this.onReceiveBeforeUnload.bind(this);
@@ -70,7 +69,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         return {
             ...super.properties,
             externalAuthInProgress: {type: Boolean, attribute: false},
-            uploadStatusHeader: {type: String, attribute: false},
         };
     }
 
@@ -185,27 +183,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
     }
 
     /**
-     * Builds the modal header summary: first filename + "and N more" for batches.
-     *
-     * @param {import('./dbp-signature-lit-element.js').SignatureEntry[]} entries
-     * @returns {string}
-     */
-    _buildUploadStatusHeader(entries) {
-        const i18n = this._i18n;
-        if (entries.length === 0) return '';
-        const first = entries[0];
-        const firstDesc = i18n.t('qualified-pdf-upload.upload-status-file-name', {
-            fileName: first.file.name,
-            fileSize: humanFileSize(first.file.size, false),
-        });
-        if (entries.length === 1) return firstDesc;
-        return i18n.t('qualified-pdf-upload.upload-status-file-name-more', {
-            firstFile: firstDesc,
-            count: entries.length - 1,
-        });
-    }
-
-    /**
      * Starts the batch signing process for all queued (or selected) files,
      * processing them in chunks where each chunk has ≤10 files with the same user_text.
      */
@@ -270,7 +247,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         this.activeSigningEntries = entries;
         this.uploadInProgress = true;
         this.uploadStatusText = this._buildUploadStatusText(entries);
-        this.uploadStatusHeader = this._buildUploadStatusHeader(entries);
 
         // Build batch inputs (apply annotations sequentially)
         const inputs = [];
@@ -318,7 +294,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         }
 
         this.externalAuthInProgress = true;
-        this._('#iframe').setUrl(batchRequest.url);
+        this._('#iframe').setUrl(batchRequest.url, entries);
     }
 
     /**
@@ -944,9 +920,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                 hidden: !this.externalAuthInProgress,
                             })}"
                             title="${i18n.t('qualified-pdf-upload.current-signing-process-label')}">
-                            <div slot="header" class="header">
-                                <div class="filename">${this.uploadStatusHeader}</div>
-                            </div>
                             <div slot="content">
                                 <external-sign-iframe
                                     id="iframe"

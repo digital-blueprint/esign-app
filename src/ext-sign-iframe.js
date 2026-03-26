@@ -1,22 +1,25 @@
 import {LitElement, html, css} from 'lit';
+import {createInstance} from './i18n.js';
 import {classMap} from 'lit/directives/class-map.js';
-import {MiniSpinner} from '@dbp-toolkit/common';
+import {MiniSpinner, LangMixin} from '@dbp-toolkit/common';
 import {ScopedElementsMixin} from '@dbp-toolkit/common';
+import {humanFileSize} from '@dbp-toolkit/common/i18next.js';
+import {SignatureEntry} from './dbp-signature-lit-element.js';
 
 /**
  * Set the URL via setUrl(), reset via reset().
  *
  * Emits two custom events:
  *  signature-error with a "message"
- *  signature-done with an "id"
+ *  signature-done with an "code"
  */
-export class ExternalSignIFrame extends ScopedElementsMixin(LitElement) {
+export class ExternalSignIFrame extends LangMixin(ScopedElementsMixin(LitElement), createInstance) {
     constructor() {
         super();
-        this._loading = false;
         this._done = true;
-        this.locationCount = 0;
+        this._locationCount = 0;
         this._onReceiveIframeMessage = this._onReceiveIframeMessage.bind(this);
+        this._entries = [];
     }
 
     static get scopedElements() {
@@ -27,9 +30,8 @@ export class ExternalSignIFrame extends ScopedElementsMixin(LitElement) {
 
     static get properties() {
         return {
-            _loading: {type: Boolean, state: true},
             _done: {type: Boolean, state: true},
-            locationCount: {type: Number, attribute: 'location-count', reflect: true},
+            _locationCount: {type: Number, state: true},
         };
     }
 
@@ -44,9 +46,13 @@ export class ExternalSignIFrame extends ScopedElementsMixin(LitElement) {
     }
 
     _onReceiveIframeMessage(event) {
+        if (this._done) {
+            return;
+        }
         const data = event.data;
         if (data.type === 'pdf-as-error') {
             this._done = true;
+            this._entries = [];
             let error = data.error;
             if (data.cause) {
                 error = `${error}: ${data.cause}`;
@@ -60,6 +66,7 @@ export class ExternalSignIFrame extends ScopedElementsMixin(LitElement) {
             );
         } else if (data.type === 'pdf-as-callback') {
             this._done = true;
+            this._entries = [];
             this.dispatchEvent(
                 new CustomEvent('signature-done', {
                     detail: {
@@ -71,17 +78,21 @@ export class ExternalSignIFrame extends ScopedElementsMixin(LitElement) {
         }
     }
 
-    setUrl(url) {
+    /**
+     * @param {string} url
+     * @param {SignatureEntry[]} entries
+     */
+    setUrl(url, entries) {
         let iframe = /** @type {HTMLIFrameElement} */ (this.renderRoot.querySelector('#iframe'));
-        this._loading = true;
         this._done = false;
+        this._entries = entries;
+        this._locationCount = 0;
         iframe.src = url;
-        this.locationCount = 0;
     }
 
     reset() {
-        this.setUrl('about:blank');
-        this.locationCount = 0;
+        this.setUrl('about:blank', []);
+        this._done = true;
     }
 
     static get styles() {
@@ -102,29 +113,68 @@ export class ExternalSignIFrame extends ScopedElementsMixin(LitElement) {
             .hidden {
                 display: none;
             }
+
+            .title {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                margin-right: 0.5em;
+            }
         `;
     }
 
     render() {
         let onLoad = (event) => {
-            this._loading = false;
-            this.locationCount++;
+            this._locationCount++;
         };
 
         let onError = (event) => {
-            this._loading = false;
+            if (!this._done) {
+                this._done = true;
+                this._entries = [];
+                this.dispatchEvent(
+                    new CustomEvent('signature-error', {
+                        detail: {
+                            message: this._i18n.t('ext-sign.load-error'),
+                        },
+                    }),
+                );
+            }
         };
 
+        // before the first load, we can hide things
+        let loading = !this._done && this._locationCount < 1;
+        let active = !this._done && !loading;
+
+        // the third page is the signing one of the first document, then each
+        // load is the next document until we are done, or we get redirected to
+        // final result/error page
+        let currentEntry = this._entries[this._locationCount - 3];
+        const currentTitle = currentEntry
+            ? this._i18n.t('ext-sign.current-title', {
+                  fileName: currentEntry.file.name,
+                  fileSize: humanFileSize(currentEntry.file.size, false),
+              })
+            : undefined;
+
         return html`
-            ${this._loading
+            ${loading
                 ? html`
                       <dbp-mini-spinner></dbp-mini-spinner>
                   `
                 : html``}
+            <div class="title">
+                ${currentTitle && active
+                    ? html`
+                          <p>${currentTitle}</p>
+                      `
+                    : html`
+                          &nbsp;
+                      `}
+            </div>
             <!-- "scrolling" is deprecated, but still seem to help -->
             <iframe
                 id="iframe"
-                class=${classMap({hidden: this._loading || this._done})}
+                class=${classMap({hidden: !active})}
                 @load="${onLoad}"
                 @error="${onError}"
                 scrolling="no"></iframe>
