@@ -16,7 +16,6 @@ export class ExternalSignIFrame extends ScopedElementsMixin(LitElement) {
         this._loading = false;
         this._done = true;
         this.locationCount = 0;
-        this.loginPageLoaded = false;
         this._onReceiveIframeMessage = this._onReceiveIframeMessage.bind(this);
     }
 
@@ -31,7 +30,6 @@ export class ExternalSignIFrame extends ScopedElementsMixin(LitElement) {
             _loading: {type: Boolean, state: true},
             _done: {type: Boolean, state: true},
             locationCount: {type: Number, attribute: 'location-count', reflect: true},
-            loginPageLoaded: {type: Boolean, attribute: 'login-page-loaded', reflect: true},
         };
     }
 
@@ -105,18 +103,6 @@ export class ExternalSignIFrame extends ScopedElementsMixin(LitElement) {
                 display: none;
             }
         `;
-    }
-
-    update(changedProperties) {
-        changedProperties.forEach((oldValue, propName) => {
-            switch (propName) {
-                case 'locationCount':
-                    this.loginPageLoaded = this.locationCount > 1;
-                    break;
-            }
-        });
-
-        super.update(changedProperties);
     }
 
     render() {
