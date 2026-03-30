@@ -3,12 +3,12 @@
     "module_src": "dbp-official-signature-pdf-upload.js",
     "routing_name": "official-pdf-upload",
     "name": {
-        "de": "Dokumente amtssignieren",
-        "en": "Officially sign documents"
+        "de": "Als Mitarbeiter*in unterschreiben",
+        "en": "Sign as an employee"
     },
     "short_name": {
-        "de": "Dokumente amtssignieren",
-        "en": "Officially sign documents"
+        "de": "Als Mitarbeiter*in unterschreiben",
+        "en": "Sign as an employee"
     },
     "description": {
         "de": "Ermöglicht das Hochladen von PDF-Dokumenten, um sie mit einer Amtssignatur zu versehen",
