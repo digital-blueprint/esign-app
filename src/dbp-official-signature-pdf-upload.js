@@ -1,6 +1,6 @@
 import {humanFileSize} from '@dbp-toolkit/common/i18next.js';
 import {css, html} from 'lit';
-import {ScopedElementsMixin} from '@dbp-toolkit/common';
+import {DBPSelect, ScopedElementsMixin} from '@dbp-toolkit/common';
 import DBPSignatureLitElement from './dbp-signature-lit-element';
 import {PdfPreview} from './dbp-pdf-preview';
 import * as commonUtils from '@dbp-toolkit/common/utils';
@@ -55,6 +55,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             'dbp-esign-tabulator-table': CustomTabulatorTable,
             'dbp-tooltip': TooltipElement,
             'dbp-modal': Modal,
+            'dbp-select': DBPSelect,
         };
     }
 
@@ -66,6 +67,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
 
     connectedCallback() {
         super.connectedCallback();
+
         // Add event listeners using bound methods
         window.addEventListener('dbp-pdf-preview-accept', this._setQueuedFilesTabulatorTable);
         window.addEventListener('dbp-pdf-annotations-save', this._setQueuedFilesTabulatorTable);
@@ -115,6 +117,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
 
     firstUpdated(changedProperties) {
         super.firstUpdated(changedProperties);
+
         this.tableQueuedFilesTable = /** @type {CustomTabulatorTable} */ (
             this._('#table-queued-files')
         );
@@ -207,6 +210,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                 }
             }
 
+            // TODO add selected profile here
             params['profile'] = 'official';
 
             this.uploadStatusFileName = file.name;
@@ -381,12 +385,50 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         e.preventDefault();
     }
 
+    getProfileOptions() {
+        const i18n = this._i18n;
+        return [
+            {value: 'advanced', label: i18n.t('official-pdf-upload.profile-advanced')},
+            {
+                value: 'advanced-english',
+                label: i18n.t('official-pdf-upload.profile-advanced-english'),
+            },
+            {
+                value: 'advanced-invisible',
+                label: i18n.t('official-pdf-upload.profile-advanced-invisible'),
+            },
+            {
+                value: 'advanced-rector',
+                label: i18n.t('official-pdf-upload.profile-advanced-rector'),
+            },
+            {
+                value: 'advanced-official',
+                label: i18n.t('official-pdf-upload.profile-advanced-official'),
+            },
+            {
+                value: 'advanced-official-CO',
+                label: i18n.t('official-pdf-upload.profile-advanced-official-CO'),
+            },
+        ];
+    }
+
+    profileSelection(e) {
+        e.target.label = this.getProfileOptions().find(
+            (option) => option.value === e.target.value,
+        ).label;
+        this.selectedProfile = e.target.value;
+        this.requestUpdate();
+    }
+
     render() {
         const placeholderUrl = commonUtils.getAssetURL(
             pkgName,
             'official-signature-placeholder.png',
         );
+
         const i18n = this._i18n;
+
+        let profileOptions = this.getProfileOptions();
 
         return html`
             <div
@@ -397,11 +439,18 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                 <div class="field">
                     <div class="control">
                         <p class="description">${i18n.t('official-pdf-upload.upload-text')}</p>
+                        <dbp-select
+                            id="profile-select-dropdown"
+                            label="${i18n.t('official-pdf-upload.default-dropdown-text')}"
+                            .options=${profileOptions}
+                            @change="${this.profileSelection}"></dbp-select>
+                        <br />
+                        <br />
                         <button
                             @click="${() => {
                                 this._('#file-source').setAttribute('dialog-open', '');
                             }}"
-                            ?disabled="${this.signingProcessActive}"
+                            ?disabled="${this.signingProcessActive || this.selectedProfile === ''}"
                             class="button is-primary"
                             id="upload-pdf-button">
                             ${i18n.t('official-pdf-upload.upload-button-label')}

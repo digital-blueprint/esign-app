@@ -77,6 +77,16 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         this.selectedFiles = [];
         this.selectedFilesProcessing = false;
         this.anyPlacementMissing = false;
+        this.selectedProfile = '';
+
+        this.availableProfiles = {
+            advanced: {allowAnnotations: true, allowManualPositioning: true},
+            'advanced-english': {allowAnnotations: true, allowManualPositioning: true},
+            'advanced-invisible': {allowAnnotations: false, allowManualPositioning: false},
+            'advanced-rector': {allowAnnotations: true, allowManualPositioning: false},
+            'advanced-official': {allowAnnotations: false, allowManualPositioning: true},
+            'advanced-official-CO': {allowAnnotations: false, allowManualPositioning: false},
+        };
     }
 
     static get properties() {
@@ -115,6 +125,26 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
             selectedFiles: {type: Array, attribute: false},
             anyPlacementMissing: {type: Boolean, state: true},
         };
+    }
+
+    updated(changedProperties) {
+        super.updated(changedProperties);
+        if (this.selectedProfile !== '') {
+            this.allowAnnotating = this.getAllowAnnotations();
+            this.allowManualPositioning = this.getAllowManualPositioning();
+
+            if (this.tableQueuedFilesTable.tabulatorTable) {
+                this.setQueuedFilesTabulatorTable();
+            }
+        }
+    }
+
+    getAllowAnnotations() {
+        return this.availableProfiles[this.selectedProfile].allowAnnotations;
+    }
+
+    getAllowManualPositioning() {
+        return this.availableProfiles[this.selectedProfile].allowManualPositioning;
     }
 
     /**
@@ -805,7 +835,9 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
                 columns: {
                     fileName: i18n.t('table-header-file-name', {lng: 'en'}),
                     fileSize: i18n.t('table-header-file-size', {lng: 'en'}),
-                    positioning: i18n.t('table-header-positioning', {lng: 'en'}),
+                    ...(this.allowManualPositioning && {
+                        positioning: i18n.t('table-header-positioning', {lng: 'en'}),
+                    }),
                     buttons: i18n.t('table-header-buttons', {lng: 'en'}),
                 },
             },
@@ -813,7 +845,9 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
                 columns: {
                     fileName: i18n.t('table-header-file-name', {lng: 'de'}),
                     fileSize: i18n.t('table-header-file-size', {lng: 'de'}),
-                    positioning: i18n.t('table-header-positioning', {lng: 'de'}),
+                    ...(this.allowManualPositioning && {
+                        positioning: i18n.t('table-header-positioning', {lng: 'de'}),
+                    }),
                     buttons: i18n.t('table-header-buttons', {lng: 'de'}),
                 },
             },
@@ -877,16 +911,20 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
                 //     // visible: false
                 //     responsive: 2
                 // },
-                {
-                    title: 'positioning',
-                    field: 'positioning',
-                    minWidth: 100,
-                    hozAlign: 'center',
-                    headerHozAlign: 'center',
-                    headerSort: false,
-                    formatter: 'html',
-                    responsive: 2,
-                },
+                ...(this.allowManualPositioning
+                    ? [
+                          {
+                              title: 'positioning',
+                              field: 'positioning',
+                              minWidth: 100,
+                              hozAlign: 'center',
+                              headerHozAlign: 'center',
+                              headerSort: false,
+                              formatter: 'html',
+                              responsive: 2,
+                          },
+                      ]
+                    : []),
                 {
                     title: 'buttons',
                     field: 'buttons',
@@ -921,11 +959,14 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
 
                 const actionButtons = this.getActionButtonsHtml(id, this.allowAnnotating);
 
-                const positioningSwitch = this.getPositioningSwitch(
-                    id,
-                    entry.placementMode,
-                    placementMissing,
-                );
+                let positioningSwitch = undefined;
+                if (this.allowManualPositioning) {
+                    positioningSwitch = this.getPositioningSwitch(
+                        id,
+                        entry.placementMode,
+                        placementMissing,
+                    );
+                }
 
                 let filenameLabel = this.tableQueuedFilesTable.createScopedElement(
                     'dbp-esign-filename-label',
