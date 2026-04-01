@@ -124,19 +124,26 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
             failedFilesTableCollapsible: {type: Boolean, attribute: false},
             selectedFiles: {type: Array, attribute: false},
             anyPlacementMissing: {type: Boolean, state: true},
+            selectedProfile: {type: String, attribute: 'selected-profile'},
         };
     }
 
     updated(changedProperties) {
         super.updated(changedProperties);
-        if (this.selectedProfile !== '') {
-            this.allowAnnotating = this.getAllowAnnotations();
-            this.allowManualPositioning = this.getAllowManualPositioning();
+        changedProperties.forEach((oldValue, propName) => {
+            switch (propName) {
+                case 'selectedProfile':
+                    if (this.selectedProfile !== '') {
+                        this.allowAnnotating = this.getAllowAnnotations();
+                        this.allowManualPositioning = this.getAllowManualPositioning();
 
-            if (this.tableQueuedFilesTable.tabulatorTable) {
-                this.setQueuedFilesTabulatorTable();
+                        if (this.tableQueuedFilesTable.tabulatorTable) {
+                            this.setQueuedFilesTabulatorTable();
+                        }
+                    }
+                    break;
             }
-        }
+        });
     }
 
     getAllowAnnotations() {
