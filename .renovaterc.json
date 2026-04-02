@@ -9,6 +9,13 @@
     "lockFileMaintenance": {
         "enabled": true
     },
+    "internalChecksFilter": "strict",
+    "minimumReleaseAge": "5 days",
     "cloneSubmodules": true,
-    "packageRules": []
+    "packageRules": [
+        {
+            "matchUpdateTypes": ["lockFileMaintenance"],
+            "minimumReleaseAge": null
+        }
+    ]
 }
