@@ -387,29 +387,11 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
 
     getProfileOptions() {
         const i18n = this._i18n;
-        return [
-            {value: 'advanced', label: i18n.t('official-pdf-upload.profile-advanced')},
-            {
-                value: 'advanced-english',
-                label: i18n.t('official-pdf-upload.profile-advanced-english'),
-            },
-            {
-                value: 'advanced-invisible',
-                label: i18n.t('official-pdf-upload.profile-advanced-invisible'),
-            },
-            {
-                value: 'advanced-rector',
-                label: i18n.t('official-pdf-upload.profile-advanced-rector'),
-            },
-            {
-                value: 'advanced-official',
-                label: i18n.t('official-pdf-upload.profile-advanced-official'),
-            },
-            {
-                value: 'advanced-official-CO',
-                label: i18n.t('official-pdf-upload.profile-advanced-official-CO'),
-            },
-        ];
+        let profileOptions = [];
+        for (const key in this.availableProfiles) {
+            profileOptions.push({value: key, label: i18n.t('official-pdf-upload.profile-' + key)});
+        }
+        return profileOptions;
     }
 
     profileSelection(e) {
