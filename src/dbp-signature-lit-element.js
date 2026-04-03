@@ -79,14 +79,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         this.anyPlacementMissing = false;
         this.selectedProfile = '';
 
-        this.availableProfiles = {
-            advanced: {allowAnnotations: true, allowManualPositioning: true},
-            'advanced-english': {allowAnnotations: true, allowManualPositioning: true},
-            'advanced-invisible': {allowAnnotations: false, allowManualPositioning: false},
-            'advanced-rector': {allowAnnotations: true, allowManualPositioning: false},
-            'advanced-official': {allowAnnotations: false, allowManualPositioning: true},
-            'advanced-official-CO': {allowAnnotations: false, allowManualPositioning: false},
-        };
+        this.availableProfiles = {};
     }
 
     static get properties() {
@@ -128,6 +121,26 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         };
     }
 
+    fetchProfiles() {
+        fetch(this.entryPointUrl + '/esign/profiles?type=advanced', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${this.auth.token}`,
+            },
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                data['hydra:member'].forEach((entry) => {
+                    this.availableProfiles[entry.identifier] = {
+                        allowAnnotations: entry.allowAnnotations,
+                        allowManualPositioning: entry.allowManualPositioning,
+                    };
+                });
+                this.requestUpdate();
+            });
+    }
+
     updated(changedProperties) {
         super.updated(changedProperties);
         changedProperties.forEach((oldValue, propName) => {
@@ -141,6 +154,9 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
                             this.setQueuedFilesTabulatorTable();
                         }
                     }
+                    break;
+                case 'auth':
+                    this.fetchProfiles();
                     break;
             }
         });
