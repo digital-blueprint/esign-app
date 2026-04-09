@@ -9,5 +9,6 @@ t('official-pdf-upload.profile-advanced-invisible')
 t('official-pdf-upload.profile-advanced-official')
 t('official-pdf-upload.profile-advanced-official-CO')
 t('official-pdf-upload.profile-advanced-rector')
+t('official-pdf-upload.profile-official')
 
  */
