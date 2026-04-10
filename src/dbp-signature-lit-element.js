@@ -66,6 +66,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         this.withSigBlock = false;
         this.currentPreviewQueueKey = '';
         this.allowAnnotating = false;
+        this.allowManualPositioning = true;
         this.isAnnotationViewVisible = false;
         // will be set in function update
         this.fileSource = '';
