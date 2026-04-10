@@ -152,7 +152,9 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
                         this.allowManualPositioning = this.getAllowManualPositioning();
 
                         if (this.tableQueuedFilesTable.tabulatorTable) {
+                            this.tableQueuedFilesTable.tabulatorTable.destroy();
                             this.setQueuedFilesTabulatorTable();
+                            this.tableQueuedFilesTable.buildTable();
                         }
                     }
                     break;
