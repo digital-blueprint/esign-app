@@ -136,6 +136,8 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
                     this.availableProfiles[entry.identifier] = {
                         allowAnnotations: entry.allowAnnotations,
                         allowManualPositioning: entry.allowManualPositioning,
+                        displayNameEn: entry.displayNameEn,
+                        displayNameDe: entry.displayNameDe,
                     };
                 });
                 this.requestUpdate();

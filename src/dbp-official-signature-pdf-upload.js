@@ -386,10 +386,15 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
     }
 
     getProfileOptions() {
-        const i18n = this._i18n;
         let profileOptions = [];
         for (const key in this.availableProfiles) {
-            profileOptions.push({value: key, label: i18n.t('official-pdf-upload.profile-' + key)});
+            profileOptions.push({
+                value: key,
+                label:
+                    this.lang === 'en'
+                        ? this.availableProfiles[key].displayNameEn
+                        : this.availableProfiles[key].displayNameDe,
+            });
         }
         return profileOptions;
     }
