@@ -240,6 +240,7 @@ export const getAnnotationTypes = (key = null) => {
     let i18n = createInstance();
     i18n.t('annotation-view.reference-number-placeholder');
     i18n.t('annotation-view.intended-use-placeholder');
+    i18n.t('annotation-view.invoice-number-placeholder');
 
     const types = {
         bbe3a371: {
@@ -255,6 +256,13 @@ export const getAnnotationTypes = (key = null) => {
                 en: 'Intended use',
             },
             placeholderTextId: 'annotation-view.intended-use-placeholder',
+        },
+        '3c8da7b4': {
+            name: {
+                de: 'Innenauftragsnummer',
+                en: 'Invoice number',
+            },
+            placeholderTextId: 'annotation-view.invoice-number-placeholder',
         },
     };
 

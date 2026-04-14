@@ -10,6 +10,7 @@
         "introduction": "In diesem Bereich können Sie zusätzlichen Text definieren, der in der Signatur enthalten sein soll. Klicken Sie dafür auf \"Neues Feld einfügen\" und wählen Sie das gewünschte Feld aus. Klicken Sie dann auf das \"+\" um das Feld einzufügen und den gewünschten Text einzugeben.",
         "invalid-annotation-text-message": "Sie haben ein oder mehrere ungültige Zeichen eingegeben. Zulässige Sonderzeichen sind: \\/ !=+-_*&()",
         "invalid-annotation-text-title": "Ungültiger Eingabewert!",
+        "invoice-number-placeholder": "Fügen Sie hier die Innenauftragsnummer ein",
         "reference-number-placeholder": "Fügen Sie hier die Geschäftszahl ein (z.B. 247/1/2020-S)",
         "remove-field": "Feld löschen",
         "save-all-button-text": "Für Dokument übernehmen",

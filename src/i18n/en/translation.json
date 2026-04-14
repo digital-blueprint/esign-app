@@ -10,6 +10,7 @@
         "introduction": "In this area you can define additional text to be included in the signature. To do this, click on \"Insert new field\" and select the desired field. Then click on the \"+\" to insert the field and enter the desired text.",
         "invalid-annotation-text-message": "You have entered one or more invalid characters. Valid special characters are: \\/ !?=+-_*&()",
         "invalid-annotation-text-title": "Invalid Input Value!",
+        "invoice-number-placeholder": "Insert invoice number here",
         "reference-number-placeholder": "Insert reference number here (e.g. 247/1/2020-S)",
         "remove-field": "Delete field",
         "save-all-button-text": "Add to document",
