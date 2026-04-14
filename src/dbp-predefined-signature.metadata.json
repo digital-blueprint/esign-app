@@ -1,0 +1,18 @@
+{
+    "element": "dbp-predefined-signature",
+    "module_src": "dbp-predefined-signature.js",
+    "routing_name": "predefined-signature",
+    "name": {
+        "de": "Vordefinierter Signaturplan",
+        "en": "Predefined signature plan"
+    },
+    "short_name": {
+        "de": "Vordefinierter Signaturplan",
+        "en": "Predefined signature plan"
+    },
+    "description": {
+        "de": "Signiert Dokumente anhand eines vordefinierten Signaturplans, der über eine URL übergeben wird",
+        "en": "Signs documents based on a predefined signature plan passed via URL"
+    },
+    "subscribe": "lang,entry-point-url,auth"
+}

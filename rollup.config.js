@@ -154,6 +154,7 @@ export default (async () => {
                           'src/dbp-official-signature-pdf-upload.js',
                           'src/dbp-qualified-signature-pdf-upload.js',
                           'src/dbp-signature-verification.js',
+                          'src/dbp-predefined-signature.js',
                           await getPackagePath('@tugraz/web-components', 'src/logo.js'),
                       ]
                     : [
@@ -161,6 +162,7 @@ export default (async () => {
                           'src/dbp-official-signature-pdf-upload.js',
                           'src/dbp-qualified-signature-pdf-upload.js',
                           'src/dbp-signature-verification.js',
+                          'src/dbp-predefined-signature.js',
                       ]
                 : globSync('test/**/*.js'),
         output: {
