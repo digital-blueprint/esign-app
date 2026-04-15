@@ -210,7 +210,6 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                 }
             }
 
-            // TODO add selected profile here
             params['profile'] = this.selectedProfile;
 
             this.uploadStatusFileName = file.name;
