@@ -211,7 +211,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             }
 
             // TODO add selected profile here
-            params['profile'] = 'official';
+            params['profile'] = this.selectedProfile;
 
             this.uploadStatusFileName = file.name;
             this.uploadStatusText = i18n.t('official-pdf-upload.upload-status-file-text', {
