@@ -644,6 +644,17 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                         left: offsetLeft,
                         lockUniScaling: true, // lock aspect ratio when resizing
                     });
+
+                    // Re-apply view-only locks that were set before showPage was called
+                    if (this.viewOnly) {
+                        signature.set({
+                            selectable: false,
+                            evented: false,
+                            lockMovementX: true,
+                            lockMovementY: true,
+                        });
+                        this.fabricCanvas.selection = false;
+                    }
                 } else {
                     // adapt signature scale to new scale
                     const scaleAdapt = this.canvasToPdfScale / oldScale;

@@ -130,6 +130,7 @@ ${getOrigin(config.matomoUrl)} ${getOrigin(config.keyCloakBaseURL)} ${getOrigin(
 )} \
 ${getOrigin(config.nextcloudBaseURL)} ${getOrigin(config.nextcloudBaseURL)} \
 ${atrustHosts.map((h) => getOrigin(h)).join(' ')} \
+dbp-demo.tugraz.at; \
 ${getOrigin(config.pdfAsQualifiedlySigningServer)}; \
 img-src * blob: data:; font-src 'self' data:`;
 
