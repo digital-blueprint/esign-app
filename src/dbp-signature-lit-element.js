@@ -161,7 +161,9 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
                     }
                     break;
                 case 'auth':
-                    this.fetchProfiles();
+                    if (this.auth.token) {
+                        this.fetchProfiles();
+                    }
                     break;
             }
         });
