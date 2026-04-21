@@ -106,6 +106,9 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
 
         this.updateComplete.then(async () => {
             that.fabric = await import('fabric');
+            if (that.placeholder) {
+                await that.createFabric(that);
+            }
         });
     }
 
@@ -128,6 +131,11 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
         });
     }
 
+    isRemoteUrl(url) {
+        const link = new URL(url, window.location.href);
+        return link.origin !== window.location.origin;
+    }
+
     async createFabric(that) {
         that.canvas = that._('#pdf-canvas');
 
@@ -146,18 +154,22 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
             allowTouchScrolling: true,
         });
 
+        // TODO remove code for local placeholder as soon as we can fetch the qualified one as well
         // add signature image
-        console.log(this.placeholder);
-        const res = await fetch(this.placeholder, {
-            headers: {
-                Authorization: `Bearer ${this.auth.token}`,
-            },
-        });
-
-        const blob = await res.blob();
-        const url = URL.createObjectURL(blob);
-        let image = await that.fabric.FabricImage.fromURL(url);
-        URL.revokeObjectURL(url);
+        let image;
+        if (that.isRemoteUrl(that.placeholder)) {
+            const res = await fetch(this.placeholder, {
+                headers: {
+                    Authorization: `Bearer ${this.auth.token}`,
+                },
+            });
+            const blob = await res.blob();
+            const url = URL.createObjectURL(blob);
+            image = await that.fabric.FabricImage.fromURL(url);
+            URL.revokeObjectURL(url);
+        } else {
+            image = await that.fabric.FabricImage.fromURL(that.placeholder);
+        }
 
         // add a red border around the signature placeholder
         image.set({
