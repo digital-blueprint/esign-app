@@ -11,7 +11,6 @@ import {TooltipElement} from '@dbp-toolkit/tooltip';
 import {classMap} from 'lit/directives/class-map.js';
 import {FileSource} from '@dbp-toolkit/file-handling';
 import {FileSink} from '@dbp-toolkit/file-handling';
-import {name as pkgName} from './../package.json';
 import {sendNotification} from '@dbp-toolkit/common/notification';
 import {PdfAnnotationView} from './dbp-pdf-annotation-view';
 import * as SignatureStyles from './styles';
@@ -407,10 +406,11 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
     }
 
     render() {
-        const placeholderUrl = commonUtils.getAssetURL(
-            pkgName,
-            'official-signature-placeholder.png',
-        );
+        let previewUrl = '';
+
+        if (this.selectedProfile) {
+            previewUrl = this.entryPointUrl + '/esign/preview/' + this.selectedProfile;
+        }
 
         const i18n = this._i18n;
 
@@ -765,9 +765,10 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                             </div>
                             <div slot="content">
                                 <dbp-pdf-preview
+                                    subscribe="auth"
                                     lang="${this.lang}"
                                     allow-signature-rotation
-                                    signature-placeholder-image-src="${placeholderUrl}"
+                                    signature-placeholder-image-src=${previewUrl}
                                     signature-width="162"
                                     signature-height="28"
                                     @dbp-pdf-preview-accept="${this.storePDFData}"

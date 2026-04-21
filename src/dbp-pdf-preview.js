@@ -38,6 +38,7 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
         this.annotations = [];
         this.viewOnly = false;
         this.viewOnlyPlacementPage = null;
+        this.fabric = null;
 
         this._onWindowResize = this._onWindowResize.bind(this);
     }
@@ -104,74 +105,106 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
         window.addEventListener('resize', this._onWindowResize);
 
         this.updateComplete.then(async () => {
-            const fabric = await import('fabric');
-            that.canvas = that._('#pdf-canvas');
-
-            // add fabric.js canvas for signature positioning
-            // , {stateful : true}
-            // selection is turned off because it makes troubles on mobile devices
-            let fabricCanvas = /** @type {HTMLCanvasElement} */ (this._('#fabric-canvas'));
-
-            // Re-dispatch the event over the shadowRoot.
-            // Firefox block events in dialog opened with showModal().
-            // Fabric add event listeners to the document, so we need to re-dispatch the event over the shadowRoot.
-            this._('#pdf-main-container').addEventListener('mouseup', this._onMouseUp.bind(this));
-
-            this.fabricCanvas = new fabric.Canvas(fabricCanvas, {
-                selection: false,
-                allowTouchScrolling: true,
-            });
-
-            // add signature image
-            let image = await fabric.FabricImage.fromURL(this.placeholder);
-
-            // add a red border around the signature placeholder
-            image.set({
-                stroke: '#e4154b',
-                strokeWidth: that.border_width,
-                strokeUniform: true,
-                centeredRotation: true,
-                originX: 'left',
-                originY: 'top',
-            });
-
-            // disable controls, we currently don't want resizing and do rotation with a button
-            image.hasControls = false;
-
-            // we will resize the image when the initial pdf page is loaded
-            that.fabricCanvas.add(image);
-
-            this.fabricCanvas.on({
-                'object:moving': function (e) {
-                    e.target.opacity = 0.5;
-                },
-                'object:modified': function (e) {
-                    e.target.opacity = 1;
-                    that.updateAnnotationTexts();
-                },
-            });
-
-            // this.fabricCanvas.on("object:moved", function(opt){ console.log(opt); });
-
-            // disallow moving of signature outside of canvas boundaries
-            this.fabricCanvas.on('object:moving', function (e) {
-                let obj = e.target;
-                obj.setCoords();
-                that.enforceCanvasBoundaries(obj);
-                that.updateAnnotationTexts();
-            });
-
-            // TODO: prevent scaling the signature in a way that it is crossing the canvas boundaries
-            // it's very hard to calculate the way back from obj.scaleX and obj.translateX
-            // obj.getBoundingRect() will not be updated in the object:scaling event, it is only updated after the scaling is done
-            // this.fabricCanvas.observe('object:scaling', function (e) {
-            //     let obj = e.target;
-            //
-            //     console.log(obj);
-            //     console.log(obj.scaleX);
-            //     console.log(obj.translateX);
-            // });
+            that.fabric = await import('fabric');
         });
+    }
+
+    update(changedProperties) {
+        super.update(changedProperties);
+        const that = this;
+        changedProperties.forEach((oldValue, propName) => {
+            switch (propName) {
+                case 'placeholder':
+                    this.updateComplete.then(async () => {
+                        if (that.fabric && that.placeholder && that.auth) {
+                            if (that.fabricCanvas) {
+                                that.fabricCanvas.dispose();
+                            }
+                            await that.createFabric(that);
+                        }
+                    });
+                    break;
+            }
+        });
+    }
+
+    async createFabric(that) {
+        that.canvas = that._('#pdf-canvas');
+
+        // add fabric.js canvas for signature positioning
+        // , {stateful : true}
+        // selection is turned off because it makes troubles on mobile devices
+        let fabricCanvas = /** @type {HTMLCanvasElement} */ (this._('#fabric-canvas'));
+
+        // Re-dispatch the event over the shadowRoot.
+        // Firefox block events in dialog opened with showModal().
+        // Fabric add event listeners to the document, so we need to re-dispatch the event over the shadowRoot.
+        this._('#pdf-main-container').addEventListener('mouseup', this._onMouseUp.bind(this));
+
+        this.fabricCanvas = new that.fabric.Canvas(fabricCanvas, {
+            selection: false,
+            allowTouchScrolling: true,
+        });
+
+        // add signature image
+        console.log(this.placeholder);
+        const res = await fetch(this.placeholder, {
+            headers: {
+                Authorization: `Bearer ${this.auth.token}`,
+            },
+        });
+
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        let image = await that.fabric.FabricImage.fromURL(url);
+        URL.revokeObjectURL(url);
+
+        // add a red border around the signature placeholder
+        image.set({
+            stroke: '#e4154b',
+            strokeWidth: that.border_width,
+            strokeUniform: true,
+            centeredRotation: true,
+            originX: 'left',
+            originY: 'top',
+        });
+
+        // disable controls, we currently don't want resizing and do rotation with a button
+        image.hasControls = false;
+
+        // we will resize the image when the initial pdf page is loaded
+        that.fabricCanvas.add(image);
+
+        this.fabricCanvas.on({
+            'object:moving': function (e) {
+                e.target.opacity = 0.5;
+            },
+            'object:modified': function (e) {
+                e.target.opacity = 1;
+                that.updateAnnotationTexts();
+            },
+        });
+
+        // this.fabricCanvas.on("object:moved", function(opt){ console.log(opt); });
+
+        // disallow moving of signature outside of canvas boundaries
+        this.fabricCanvas.on('object:moving', function (e) {
+            let obj = e.target;
+            obj.setCoords();
+            that.enforceCanvasBoundaries(obj);
+            that.updateAnnotationTexts();
+        });
+
+        // TODO: prevent scaling the signature in a way that it is crossing the canvas boundaries
+        // it's very hard to calculate the way back from obj.scaleX and obj.translateX
+        // obj.getBoundingRect() will not be updated in the object:scaling event, it is only updated after the scaling is done
+        // this.fabricCanvas.observe('object:scaling', function (e) {
+        //     let obj = e.target;
+        //
+        //     console.log(obj);
+        //     console.log(obj.scaleX);
+        //     console.log(obj.translateX);
+        // });
     }
 
     enforceCanvasBoundaries(obj) {
