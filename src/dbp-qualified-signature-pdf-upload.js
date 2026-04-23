@@ -1,6 +1,6 @@
 import {humanFileSize} from '@dbp-toolkit/common/i18next.js';
 import {css, html} from 'lit';
-import {ScopedElementsMixin} from '@dbp-toolkit/common';
+import {DBPSelect, ScopedElementsMixin} from '@dbp-toolkit/common';
 import DBPSignatureLitElement, {SignedEntry} from './dbp-signature-lit-element';
 import {PdfPreview} from './dbp-pdf-preview';
 import {sendNotification} from '@dbp-toolkit/common/notification';
@@ -62,6 +62,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             'dbp-esign-tabulator-table': CustomTabulatorTable,
             'dbp-tooltip': TooltipElement,
             'dbp-modal': Modal,
+            'dbp-select': DBPSelect,
         };
     }
 
@@ -264,7 +265,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             if (entry.placementMode === 'manual' && entry.signaturePlacement !== undefined) {
                 params = utils.fabricjs2pdfasPosition(entry.signaturePlacement);
             }
-            params['profile'] = 'default';
+            params['profile'] = this.selectedProfile;
 
             inputs.push(new EsignQualifiedBatchSigningRequestInput(file, params, userText));
         }
@@ -454,6 +455,11 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                 case 'errorFiles':
                     this.setFailedFilesTabulatorTable();
                     break;
+                case 'auth':
+                    if (this.auth.token) {
+                        this.fetchProfiles('qualified');
+                    }
+                    break;
             }
         });
     }
@@ -527,6 +533,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         );
         const i18n = this._i18n;
 
+        let profileOptions = this.getProfileOptions();
+
         return html`
             <div
                 class="${classMap({
@@ -536,6 +544,13 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                 <div class="field">
                     <div class="control">
                         <p class="description">${i18n.t('qualified-pdf-upload.upload-text')}</p>
+                        <dbp-select
+                            id="profile-select-dropdown"
+                            label="${i18n.t('official-pdf-upload.default-dropdown-text')}"
+                            .options=${profileOptions}
+                            @change="${this.profileSelection}"></dbp-select>
+                        <br />
+                        <br />
                         <button
                             @click="${() => {
                                 this._('#file-source').setAttribute('dialog-open', '');

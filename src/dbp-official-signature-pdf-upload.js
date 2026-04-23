@@ -341,6 +341,11 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                 case 'errorFiles':
                     this.setFailedFilesTabulatorTable();
                     break;
+                case 'auth':
+                    if (this.auth.token) {
+                        this.fetchProfiles('advanced');
+                    }
+                    break;
             }
         });
     }
@@ -381,28 +386,6 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
     _onLoginClicked(e) {
         this.sendSetPropertyEvent('requested-login-status', 'logged-in');
         e.preventDefault();
-    }
-
-    getProfileOptions() {
-        let profileOptions = [];
-        for (const key in this.availableProfiles) {
-            profileOptions.push({
-                value: key,
-                label:
-                    this.lang === 'en'
-                        ? this.availableProfiles[key].displayNameEn
-                        : this.availableProfiles[key].displayNameDe,
-            });
-        }
-        return profileOptions;
-    }
-
-    profileSelection(e) {
-        e.target.label = this.getProfileOptions().find(
-            (option) => option.value === e.target.value,
-        ).label;
-        this.selectedProfile = e.target.value;
-        this.requestUpdate();
     }
 
     render() {

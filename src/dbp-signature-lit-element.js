@@ -122,8 +122,8 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         };
     }
 
-    fetchProfiles() {
-        fetch(this.entryPointUrl + '/esign/profiles?type=advanced', {
+    fetchProfiles(type) {
+        fetch(this.entryPointUrl + '/esign/profiles?type=' + type, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -144,6 +144,28 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
             });
     }
 
+    getProfileOptions() {
+        let profileOptions = [];
+        for (const key in this.availableProfiles) {
+            profileOptions.push({
+                value: key,
+                label:
+                    this.lang === 'en'
+                        ? this.availableProfiles[key].displayNameEn
+                        : this.availableProfiles[key].displayNameDe,
+            });
+        }
+        return profileOptions;
+    }
+
+    profileSelection(e) {
+        e.target.label = this.getProfileOptions().find(
+            (option) => option.value === e.target.value,
+        ).label;
+        this.selectedProfile = e.target.value;
+        this.requestUpdate();
+    }
+
     updated(changedProperties) {
         super.updated(changedProperties);
         changedProperties.forEach((oldValue, propName) => {
@@ -158,11 +180,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
                             this.setQueuedFilesTabulatorTable();
                             this.tableQueuedFilesTable.buildTable();
                         }
-                    }
-                    break;
-                case 'auth':
-                    if (this.auth.token) {
-                        this.fetchProfiles();
                     }
                     break;
             }

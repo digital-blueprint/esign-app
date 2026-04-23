@@ -3,12 +3,12 @@
     "module_src": "dbp-qualified-signature-pdf-upload.js",
     "routing_name": "qualified-pdf-upload",
     "name": {
-        "de": "Dokumente persönlich signieren",
-        "en": "Personally sign documents"
+        "de": "Als Privatperson unterzeichnen",
+        "en": "Sign as a private person"
     },
     "short_name": {
-        "de": "Dokumente persönlich signieren",
-        "en": "Personally sign documents"
+        "de": "Als Privatperson unterzeichnen",
+        "en": "Sign as a private person"
     },
     "description": {
         "de": "Ermöglicht das Hochladen von PDF-Dokumenten, um sie mit einer persönlichen elektronischen Signatur zu versehen",
