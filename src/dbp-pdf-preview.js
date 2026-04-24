@@ -121,7 +121,8 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                     this.updateComplete.then(async () => {
                         if (that.fabric && that.placeholder && that.auth) {
                             if (that.fabricCanvas) {
-                                that.fabricCanvas.dispose();
+                                that.isShowPlacement = true;
+                                await that.fabricCanvas.dispose();
                             }
                             await that.createFabric(that);
                         }
