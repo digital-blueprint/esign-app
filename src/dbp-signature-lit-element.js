@@ -144,15 +144,18 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
             });
     }
 
+    getProfileDisplayNameInLanguage(profile) {
+        return this.lang === 'en'
+            ? this.availableProfiles[profile].displayNameEn
+            : this.availableProfiles[profile].displayNameDe;
+    }
+
     getProfileOptions() {
         let profileOptions = [];
         for (const key in this.availableProfiles) {
             profileOptions.push({
                 value: key,
-                label:
-                    this.lang === 'en'
-                        ? this.availableProfiles[key].displayNameEn
-                        : this.availableProfiles[key].displayNameDe,
+                label: this.getProfileDisplayNameInLanguage(key),
             });
         }
         return profileOptions;

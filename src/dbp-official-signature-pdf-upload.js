@@ -410,7 +410,9 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                         <p class="description">${i18n.t('official-pdf-upload.upload-text')}</p>
                         <dbp-select
                             id="profile-select-dropdown"
-                            label="${i18n.t('official-pdf-upload.default-dropdown-text')}"
+                            label="${this.selectedProfile
+                                ? this.getProfileDisplayNameInLanguage(this.selectedProfile)
+                                : i18n.t('official-pdf-upload.default-dropdown-text')}"
                             .options=${profileOptions}
                             @change="${this.profileSelection}"></dbp-select>
                         <br />

@@ -439,7 +439,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
 
     update(changedProperties) {
         super.update(changedProperties);
-
         changedProperties.forEach((oldValue, propName) => {
             switch (propName) {
                 case 'lang':
@@ -547,7 +546,9 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                         <p class="description">${i18n.t('qualified-pdf-upload.upload-text')}</p>
                         <dbp-select
                             id="profile-select-dropdown"
-                            label="${i18n.t('official-pdf-upload.default-dropdown-text')}"
+                            label="${this.selectedProfile
+                                ? this.getProfileDisplayNameInLanguage(this.selectedProfile)
+                                : i18n.t('official-pdf-upload.default-dropdown-text')}"
                             .options=${profileOptions}
                             @change="${this.profileSelection}"></dbp-select>
                         <br />
