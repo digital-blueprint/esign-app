@@ -122,6 +122,24 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         };
     }
 
+    update(changedProperties) {
+        super.update(changedProperties);
+        changedProperties.forEach((oldValue, propName) => {
+            switch (propName) {
+                case 'selectedProfile':
+                    if (
+                        this.getInvisibilityOfSelectedProfile() ||
+                        !this.getAllowAnnotationsOfSelectedProfile()
+                    ) {
+                        this.queuedFiles.forEach((value) => {
+                            delete value.annotations;
+                        });
+                    }
+                    break;
+            }
+        });
+    }
+
     fetchProfiles(type) {
         fetch(this.entryPointUrl + '/esign/profiles?type=' + type, {
             method: 'GET',
@@ -139,6 +157,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
                         displayNameEn: entry.displayNameEn,
                         displayNameDe: entry.displayNameDe,
                         language: entry.language,
+                        invisible: entry.invisible,
                     };
                 });
                 this.requestUpdate();
@@ -172,6 +191,18 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
 
     getLanguageOfSelectedProfile() {
         return this.selectedProfile ? this.availableProfiles[this.selectedProfile].language : '';
+    }
+
+    getInvisibilityOfSelectedProfile() {
+        return this.selectedProfile
+            ? this.availableProfiles[this.selectedProfile].invisible
+            : false;
+    }
+
+    getAllowAnnotationsOfSelectedProfile() {
+        return this.selectedProfile
+            ? this.availableProfiles[this.selectedProfile].allowAnnotations
+            : false;
     }
 
     updated(changedProperties) {
@@ -830,7 +861,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
                     }
                 }
 
-                if (placement === 'manual') {
+                if (placement === 'manual' && !this.getInvisibilityOfSelectedProfile()) {
                     this._('#pdf-preview').open();
                     this._('#pdf-preview dbp-pdf-preview').removeAttribute('don-t-show-buttons');
                     this._('#pdf-preview dbp-pdf-preview').showSignaturePlacementDescription =

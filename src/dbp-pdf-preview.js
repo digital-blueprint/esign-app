@@ -40,6 +40,7 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
         this.viewOnlyPlacementPage = null;
         this.fabric = null;
         this.profileLanguage = '';
+        this.signatureInvisible = false;
 
         this._onWindowResize = this._onWindowResize.bind(this);
     }
@@ -72,6 +73,7 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
             annotations: {type: Array, attribute: false},
             viewOnly: {type: Boolean, attribute: false},
             profileLanguage: {type: String, attribute: 'profile-lang'},
+            signatureInvisible: {type: Boolean, attribute: 'signature-invisible', reflect: true},
         };
     }
 
@@ -125,6 +127,9 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                             if (that.fabricCanvas) {
                                 that.isShowPlacement = true;
                                 await that.fabricCanvas.dispose();
+
+                                // reset annotations
+                                that.annotations = [];
                             }
                             await that.createFabric(that);
                         }
@@ -157,69 +162,71 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
             allowTouchScrolling: true,
         });
 
-        // TODO remove code for local placeholder as soon as we can fetch the qualified one as well
-        // add signature image
-        let image;
-        if (that.isRemoteUrl(that.placeholder)) {
-            const res = await fetch(this.placeholder, {
-                headers: {
-                    Authorization: `Bearer ${this.auth.token}`,
+        if (!this.signatureInvisible) {
+            // TODO remove code for local placeholder as soon as we can fetch the qualified one as well
+            // add signature image
+            let image;
+            if (that.isRemoteUrl(that.placeholder)) {
+                const res = await fetch(this.placeholder, {
+                    headers: {
+                        Authorization: `Bearer ${this.auth.token}`,
+                    },
+                });
+                const blob = await res.blob();
+                const url = URL.createObjectURL(blob);
+                image = await that.fabric.FabricImage.fromURL(url);
+                URL.revokeObjectURL(url);
+            } else {
+                image = await that.fabric.FabricImage.fromURL(that.placeholder);
+            }
+
+            // add a red border around the signature placeholder
+            image.set({
+                stroke: '#e4154b',
+                strokeWidth: that.border_width,
+                strokeUniform: true,
+                centeredRotation: true,
+                originX: 'left',
+                originY: 'top',
+            });
+
+            // disable controls, we currently don't want resizing and do rotation with a button
+            image.hasControls = false;
+
+            // we will resize the image when the initial pdf page is loaded
+            that.fabricCanvas.add(image);
+
+            this.fabricCanvas.on({
+                'object:moving': function (e) {
+                    e.target.opacity = 0.5;
+                },
+                'object:modified': function (e) {
+                    e.target.opacity = 1;
+                    that.updateAnnotationTexts();
                 },
             });
-            const blob = await res.blob();
-            const url = URL.createObjectURL(blob);
-            image = await that.fabric.FabricImage.fromURL(url);
-            URL.revokeObjectURL(url);
-        } else {
-            image = await that.fabric.FabricImage.fromURL(that.placeholder);
-        }
 
-        // add a red border around the signature placeholder
-        image.set({
-            stroke: '#e4154b',
-            strokeWidth: that.border_width,
-            strokeUniform: true,
-            centeredRotation: true,
-            originX: 'left',
-            originY: 'top',
-        });
+            // this.fabricCanvas.on("object:moved", function(opt){ console.log(opt); });
 
-        // disable controls, we currently don't want resizing and do rotation with a button
-        image.hasControls = false;
-
-        // we will resize the image when the initial pdf page is loaded
-        that.fabricCanvas.add(image);
-
-        this.fabricCanvas.on({
-            'object:moving': function (e) {
-                e.target.opacity = 0.5;
-            },
-            'object:modified': function (e) {
-                e.target.opacity = 1;
+            // disallow moving of signature outside of canvas boundaries
+            this.fabricCanvas.on('object:moving', function (e) {
+                let obj = e.target;
+                obj.setCoords();
+                that.enforceCanvasBoundaries(obj);
                 that.updateAnnotationTexts();
-            },
-        });
+            });
 
-        // this.fabricCanvas.on("object:moved", function(opt){ console.log(opt); });
-
-        // disallow moving of signature outside of canvas boundaries
-        this.fabricCanvas.on('object:moving', function (e) {
-            let obj = e.target;
-            obj.setCoords();
-            that.enforceCanvasBoundaries(obj);
-            that.updateAnnotationTexts();
-        });
-
-        // TODO: prevent scaling the signature in a way that it is crossing the canvas boundaries
-        // it's very hard to calculate the way back from obj.scaleX and obj.translateX
-        // obj.getBoundingRect() will not be updated in the object:scaling event, it is only updated after the scaling is done
-        // this.fabricCanvas.observe('object:scaling', function (e) {
-        //     let obj = e.target;
-        //
-        //     console.log(obj);
-        //     console.log(obj.scaleX);
-        //     console.log(obj.translateX);
-        // });
+            // TODO: prevent scaling the signature in a way that it is crossing the canvas boundaries
+            // it's very hard to calculate the way back from obj.scaleX and obj.translateX
+            // obj.getBoundingRect() will not be updated in the object:scaling event, it is only updated after the scaling is done
+            // this.fabricCanvas.observe('object:scaling', function (e) {
+            //     let obj = e.target;
+            //
+            //     console.log(obj);
+            //     console.log(obj.scaleX);
+            //     console.log(obj.translateX);
+            // });
+        }
     }
 
     enforceCanvasBoundaries(obj) {
@@ -319,11 +326,11 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
         }
 
         // Just preview the pdf
-        if (Object.keys(placementData).length === 0) {
+        if (Object.keys(placementData).length === 0 || !this.signatureInvisible) {
             this.showSignaturePlacementDescription = false;
         }
 
-        if (Object.keys(placementData).length !== 0) {
+        if (Object.keys(placementData).length !== 0 && !this.signatureInvisible) {
             // move signature if placementData was set
             if (item !== undefined) {
                 if (placementData['scaleX'] !== undefined) {
@@ -639,7 +646,7 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                 let signature = this.getSignatureRect();
 
                 // set the initial position of the signature
-                if (initSignature) {
+                if (initSignature && !this.signatureInvisible) {
                     const sigSizeMM = {width: this.signature_width, height: this.signature_height};
                     const sigPosMM = {top: 5, left: 5};
 
@@ -680,7 +687,7 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                         });
                         this.fabricCanvas.selection = false;
                     }
-                } else {
+                } else if (!this.signatureInvisible) {
                     // adapt signature scale to new scale
                     const scaleAdapt = this.canvasToPdfScale / oldScale;
 

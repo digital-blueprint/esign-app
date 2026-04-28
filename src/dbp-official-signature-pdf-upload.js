@@ -756,6 +756,8 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                     signature-placeholder-image-src=${previewUrl}
                                     signature-width="162"
                                     signature-height="28"
+                                    profile-lang="${this.getLanguageOfSelectedProfile()}"
+                                    ?signature-invisible="${this.getInvisibilityOfSelectedProfile()}"
                                     @dbp-pdf-preview-accept="${this.storePDFData}"
                                     @dbp-pdf-preview-cancel="${this.hidePDF}"></dbp-pdf-preview>
                             </div>

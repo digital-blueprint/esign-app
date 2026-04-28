@@ -882,6 +882,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                     signature-width="80"
                                     signature-height="29"
                                     profile-lang="${this.getLanguageOfSelectedProfile()}"
+                                    ?signature-invisible="${this.getInvisibilityOfSelectedProfile()}"
                                     @dbp-pdf-preview-accept="${this.storePDFData}"
                                     @dbp-pdf-preview-cancel="${this.hidePDF}"></dbp-pdf-preview>
                             </div>
