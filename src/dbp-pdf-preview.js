@@ -39,6 +39,7 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
         this.viewOnly = false;
         this.viewOnlyPlacementPage = null;
         this.fabric = null;
+        this.profileLanguage = '';
 
         this._onWindowResize = this._onWindowResize.bind(this);
     }
@@ -70,6 +71,7 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
             showSignaturePlacementDescription: {type: Boolean},
             annotations: {type: Array, attribute: false},
             viewOnly: {type: Boolean, attribute: false},
+            profileLanguage: {type: String, attribute: 'profile-lang'},
         };
     }
 
@@ -435,29 +437,21 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
             }
 
             const annotationTypeData = getAnnotationTypes(annotation.annotationType);
-            const labelDe = annotationTypeData ? annotationTypeData.name.de : '';
-            const labelEn = annotationTypeData ? annotationTypeData.name.en : '';
+            const label = annotationTypeData ? annotationTypeData.name[this.profileLanguage] : '';
 
             // Create temporary text objects to measure width
-            const labelTextDe = new fabric.Text(`${labelDe} /`, {
+            const labelText = new fabric.Text(`${label}`, {
                 fontSize: fontSize,
                 fontFamily: 'Arial, sans-serif',
                 fontWeight: 'bold',
             });
 
-            const labelTextEn = new fabric.Text(labelEn, {
-                fontSize: fontSize,
-                fontFamily: 'Arial, sans-serif',
-                fontWeight: 'bold',
-            });
-
-            const labelWidth = Math.max(labelTextDe.width, labelTextEn.width);
+            const labelWidth = labelText.width;
             maxLabelWidth = Math.max(maxLabelWidth, labelWidth);
 
             labelData.push({
                 annotation,
-                labelDe,
-                labelEn,
+                label,
             });
         }
 
@@ -469,26 +463,12 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
         const rowHeight = lineHeight * 2 + rowSpacing;
 
         for (let i = 0; i < labelData.length; i++) {
-            const {annotation, labelDe, labelEn} = labelData[i];
+            const {annotation, label} = labelData[i];
 
             // Create German label text (bold, first line on left)
-            const labelTextDe = new fabric.Text(`${labelDe} /`, {
+            const labelText = new fabric.Text(`${label}`, {
                 left: textLeft,
                 top: tempTop,
-                fontSize: fontSize,
-                fill: '#000000',
-                selectable: false,
-                evented: false,
-                fontFamily: 'Arial, sans-serif',
-                fontWeight: 'bold',
-                originX: 'left',
-                originY: 'top',
-            });
-
-            // Create English label text (bold, second line on left)
-            const labelTextEn = new fabric.Text(labelEn, {
-                left: textLeft,
-                top: tempTop + lineHeight,
                 fontSize: fontSize,
                 fill: '#000000',
                 selectable: false,
@@ -513,7 +493,7 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                 originY: 'top',
             });
 
-            textObjects.push({labelTextDe, labelTextEn, valueText});
+            textObjects.push({labelText, valueText});
 
             // Add horizontal border between rows (except after the last row)
             if (i < labelData.length - 1) {
@@ -594,9 +574,8 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
         }
 
         // Add all text objects to canvas
-        for (const {labelTextDe, labelTextEn, valueText} of textObjects) {
-            this.fabricCanvas.add(labelTextDe);
-            this.fabricCanvas.add(labelTextEn);
+        for (const {labelText, valueText} of textObjects) {
+            this.fabricCanvas.add(labelText);
             this.fabricCanvas.add(valueText);
         }
 

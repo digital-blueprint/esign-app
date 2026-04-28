@@ -138,6 +138,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
                         allowManualPositioning: entry.allowManualPositioning,
                         displayNameEn: entry.displayNameEn,
                         displayNameDe: entry.displayNameDe,
+                        language: entry.language,
                     };
                 });
                 this.requestUpdate();
@@ -167,6 +168,10 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         ).label;
         this.selectedProfile = e.target.value;
         this.requestUpdate();
+    }
+
+    getLanguageOfSelectedProfile() {
+        return this.selectedProfile ? this.availableProfiles[this.selectedProfile].language : '';
     }
 
     updated(changedProperties) {
@@ -320,8 +325,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
                 pdfFactory,
                 this.auth['user-full-name'],
                 annotationType,
-                annotationTypeData.name.de,
-                annotationTypeData.name.en,
+                annotationTypeData.name[this.getLanguageOfSelectedProfile()],
                 value,
             );
         });
@@ -393,9 +397,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
             const annotationTypeData = utils.getAnnotationTypes(annotation['annotationType']);
 
             userText.push({
-                description: `${annotationTypeData.name.de || ''} / ${
-                    annotationTypeData.name.en || ''
-                }`,
+                description: `${annotationTypeData.name[this.getLanguageOfSelectedProfile()] || ''}`,
                 value: annotation['value'],
             });
         }

@@ -161,8 +161,7 @@ export const getAnnotationFactoryFromFile = async (file) => {
  * @param annotationFactory
  * @param personName
  * @param annotationType
- * @param annotationTypeNameDE
- * @param annotationTypeNameEN
+ * @param annotationTypeName
  * @param value
  * @returns {AnnotationFactory} prepared to annotate
  */
@@ -170,13 +169,11 @@ export const addKeyValuePdfAnnotationsToAnnotationFactory = (
     annotationFactory,
     personName,
     annotationType,
-    annotationTypeNameDE,
-    annotationTypeNameEN,
+    annotationTypeName,
     value,
 ) => {
     annotationType = annotationType.trim();
-    annotationTypeNameDE = annotationTypeNameDE.trim();
-    annotationTypeNameEN = annotationTypeNameEN.trim();
+    annotationTypeName = annotationTypeName.trim();
     value = value.trim();
 
     // don't annotate if key or value are empty
@@ -187,7 +184,7 @@ export const addKeyValuePdfAnnotationsToAnnotationFactory = (
     // add human-readable annotation
     let hostname = window.location.hostname;
     let author = personName + ' via  "' + hostname + '"';
-    let content = annotationTypeNameDE + ': ' + value + '\n' + annotationTypeNameEN + ': ' + value;
+    let content = annotationTypeName + ': ' + value;
     annotationFactory = addPdfAnnotationToAnnotationFactory(annotationFactory, author, content);
 
     // add machine-readable annotation
