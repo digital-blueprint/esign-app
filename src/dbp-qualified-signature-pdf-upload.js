@@ -550,6 +550,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                 ? this.getProfileDisplayNameInLanguage(this.selectedProfile)
                                 : i18n.t('official-pdf-upload.default-dropdown-text')}"
                             .options=${profileOptions}
+                            align="left"
                             @change="${this.profileSelection}"></dbp-select>
                         <br />
                         <br />
