@@ -196,7 +196,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             }
 
             const entry = this.takeFileFromQueue(key);
-            const file = entry.file;
+            let file = entry.file;
             this.activeSigningEntry = entry;
             this.uploadInProgress = true;
             let params = {};
@@ -210,14 +210,15 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             }
 
             params['profile'] = this.selectedProfile;
-
             this.uploadStatusFileName = file.name;
             this.uploadStatusText = i18n.t('official-pdf-upload.upload-status-file-text', {
                 fileName: file.name,
                 fileSize: humanFileSize(file.size, false),
             });
-
-            const annotations = this.getAnnotations(key);
+            if (entry.annotations && entry.annotations.length > 0) {
+                file = await this.addAnnotationsToFile(file, entry.annotations);
+            }
+            const annotations = entry.annotations;
             await this.signFile(file, params, annotations);
             this.uploadInProgress = false;
         }
