@@ -27,6 +27,7 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
         this.canvas = null;
         this.fabricCanvas = null;
         this.canvasToPdfScale = 1.0;
+        this.previewScale = 0.5;
         this.currentPageOriginalHeight = 0;
         this.placeholder = '';
         this.border_width = 2;
@@ -65,6 +66,7 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
             isShowPlacement: {type: Boolean, attribute: false},
             placeholder: {type: String, attribute: 'signature-placeholder-image-src'},
             allowSignatureRotation: {type: Boolean, attribute: 'allow-signature-rotation'},
+            previewScale: {type: Number, attribute: 'preview-scale'},
             showSignaturePlacementDescription: {type: Boolean},
             annotations: {type: Array, attribute: false},
             viewOnly: {type: Boolean, attribute: false},
@@ -650,7 +652,7 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                     const pointsPerMM = inchPerMM * DPI;
 
                     const sigSize = signature.getOriginalSize();
-                    const sigWidth = this.canvas.width * 0.8;
+                    const sigWidth = this.canvas.width * this.previewScale;
                     const scale = sigWidth / sigSize.width;
 
                     const offsetTop = sigPosMM.top * pointsPerMM;
