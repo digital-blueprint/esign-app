@@ -29,8 +29,6 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
         this.canvasToPdfScale = 1.0;
         this.currentPageOriginalHeight = 0;
         this.placeholder = '';
-        this.signature_width = 42;
-        this.signature_height = 42;
         this.border_width = 2;
         this.allowSignatureRotation = false;
         this.signaturePlacementMode = 'auto';
@@ -66,8 +64,6 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
             showErrorMessage: {type: Boolean, attribute: false},
             isShowPlacement: {type: Boolean, attribute: false},
             placeholder: {type: String, attribute: 'signature-placeholder-image-src'},
-            signature_width: {type: Number, attribute: 'signature-width'},
-            signature_height: {type: Number, attribute: 'signature-height'},
             allowSignatureRotation: {type: Boolean, attribute: 'allow-signature-rotation'},
             showSignaturePlacementDescription: {type: Boolean},
             annotations: {type: Array, attribute: false},
@@ -647,30 +643,22 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
 
                 // set the initial position of the signature
                 if (initSignature && !this.signatureInvisible) {
-                    const sigSizeMM = {width: this.signature_width, height: this.signature_height};
                     const sigPosMM = {top: 5, left: 5};
 
                     const inchPerMM = 0.03937007874;
                     const DPI = 72;
                     const pointsPerMM = inchPerMM * DPI;
-                    const documentSizeMM = {
-                        width: originalViewport.width / pointsPerMM,
-                        height: originalViewport.height / pointsPerMM,
-                    };
 
                     const sigSize = signature.getOriginalSize();
-                    const scaleX =
-                        (this.canvas.width / sigSize.width) *
-                        (sigSizeMM.width / documentSizeMM.width);
-                    const scaleY =
-                        (this.canvas.height / sigSize.height) *
-                        (sigSizeMM.height / documentSizeMM.height);
+                    const sigWidth = this.canvas.width * 0.8;
+                    const scale = sigWidth / sigSize.width;
+
                     const offsetTop = sigPosMM.top * pointsPerMM;
                     const offsetLeft = sigPosMM.left * pointsPerMM;
 
                     signature.set({
-                        scaleX: scaleX,
-                        scaleY: scaleY,
+                        scaleX: scale,
+                        scaleY: scale,
                         angle: 0,
                         top: offsetTop,
                         left: offsetLeft,

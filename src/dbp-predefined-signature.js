@@ -421,8 +421,6 @@ class PredefinedSignature extends ScopedElementsMixin(LangMixin(BaseLitElement, 
                     <dbp-pdf-preview
                         lang="${this.lang}"
                         signature-placeholder-image-src="${placeholderUrl}"
-                        signature-width="162"
-                        signature-height="28"
                         don-t-show-buttons></dbp-pdf-preview>
                 `;
             }
