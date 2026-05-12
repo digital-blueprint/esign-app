@@ -116,7 +116,7 @@
         "entryPointURL": "https://api-test.tugraz.at",
         "keyCloakBaseURL": "https://auth-test.tugraz.at/auth",
         "keyCloakRealm": "tugraz",
-        "keyCloakClientId": "esig_tugraz_at",
+        "keyCloakClientId": "esign-test_tugraz_at",
         "matomoUrl": "https://analytics.tugraz.at/",
         "matomoSiteId": 131,
         "nextcloudBaseURL": "https://cloud.tugraz.at",
