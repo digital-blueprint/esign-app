@@ -424,6 +424,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                             ?disabled="${this.signingProcessActive || this.selectedProfile === ''}"
                             class="button is-primary"
                             id="upload-pdf-button">
+                            <dbp-icon name="select-all" aria-hidden="true"></dbp-icon>
                             ${i18n.t('official-pdf-upload.upload-button-label')}
                         </button>
                         <dbp-file-source
@@ -473,6 +474,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                             this.queuedFilesTableExpanded = true;
                                         }}"
                                         title="${i18n.t('qualified-pdf-upload.expand-all')}">
+                                        <dbp-icon name="chevron-down" aria-hidden="true"></dbp-icon>
                                         ${i18n.t('qualified-pdf-upload.expand-all')}
                                     </dbp-loading-button>
 
@@ -489,6 +491,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                             this.queuedFilesTableExpanded = false;
                                         }}"
                                         title="${i18n.t('qualified-pdf-upload.collapse-all')}">
+                                        <dbp-icon name="chevron-up" aria-hidden="true"></dbp-icon>
                                         ${i18n.t('qualified-pdf-upload.collapse-all')}
                                     </dbp-loading-button>
 
@@ -504,6 +507,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                             this.tableQueuedFilesTable.selectAllRows();
                                         }}"
                                         title="${i18n.t('qualified-pdf-upload.select-all')}">
+                                        <dbp-icon name="select-all" aria-hidden="true"></dbp-icon>
                                         ${i18n.t('qualified-pdf-upload.select-all')}
                                     </dbp-loading-button>
 
@@ -519,6 +523,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                             this.tableQueuedFilesTable.deselectAllRows();
                                         }}"
                                         title="${i18n.t('qualified-pdf-upload.deselect-all')}">
+                                        <dbp-icon name="deselect-all" aria-hidden="true"></dbp-icon>
                                         ${i18n.t('qualified-pdf-upload.deselect-all')}
                                     </dbp-loading-button>
                                 </div>
@@ -531,6 +536,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                         this.signingProcessActive ||
                                         this.selectedFiles.length < 1}"
                                         class="button">
+                                        <dbp-icon name="trash" aria-hidden="true"></dbp-icon>
                                         ${i18n.t('official-pdf-upload.clear-all')}
                                     </button>
                                     <button
@@ -542,6 +548,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                         class="button is-primary ${classMap({
                                             hidden: this.signingProcessActive,
                                         })}">
+                                        <dbp-icon name="checkmark" aria-hidden="true"></dbp-icon>
                                         ${i18n.t(
                                             'official-pdf-upload.start-signing-process-button',
                                         )}
@@ -553,6 +560,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                         class="button is-right ${classMap({
                                             hidden: !this.signingProcessActive,
                                         })}">
+                                        <dbp-icon name="close" aria-hidden="true"></dbp-icon>
                                         ${i18n.t('official-pdf-upload.stop-signing-process-button')}
                                     </button>
                                 </div>
@@ -613,6 +621,9 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                                 this.signedFilesTableExpanded = true;
                                             }}"
                                             title="${i18n.t('qualified-pdf-upload.expand-all')}">
+                                            <dbp-icon
+                                                name="chevron-down"
+                                                aria-hidden="true"></dbp-icon>
                                             ${i18n.t('qualified-pdf-upload.expand-all')}
                                         </dbp-loading-button>
 
@@ -629,6 +640,9 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                                 this.signedFilesTableExpanded = false;
                                             }}"
                                             title="${i18n.t('qualified-pdf-upload.collapse-all')}">
+                                            <dbp-icon
+                                                name="chevron-up"
+                                                aria-hidden="true"></dbp-icon>
                                             ${i18n.t('qualified-pdf-upload.collapse-all')}
                                         </dbp-loading-button>
                                     </div>
@@ -638,6 +652,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                             class="clear-signed-files button"
                                             @click="${this.clearSignedFiles}"
                                             class="button">
+                                            <dbp-icon name="trash" aria-hidden="true"></dbp-icon>
                                             ${i18n.t('official-pdf-upload.clear-all')}
                                         </button>
                                         <dbp-loading-button
@@ -650,7 +665,10 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                             )}"
                                             class="zip-download-button"
                                             @click="${this.zipDownloadClickHandler}"
-                                            type="is-primary"></dbp-loading-button>
+                                            type="is-primary">
+                                            <dbp-icon name="download" aria-hidden="true"></dbp-icon>
+                                            ${i18n.t('official-pdf-upload.download-zip-button')}
+                                        </dbp-loading-button>
                                     </div>
                                 </div>
                             </div>

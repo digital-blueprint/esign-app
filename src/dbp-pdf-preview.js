@@ -852,7 +852,7 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
             .button-container {
                 width: 100%;
                 display: flex;
-                gap: 1em;
+                gap: 0.5em;
             }
 
             :host([don-t-show-buttons]) .action-container {
@@ -1023,7 +1023,10 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                                         }}"
                                         ?disabled="${this.isPageRenderingInProgress ||
                                         !this.isShowPlacement}">
-                                        &#10227; ${i18n.t('pdf-preview.rotate')}
+                                        <dbp-icon
+                                            name="spinner-arrow"
+                                            aria-hidden="true"></dbp-icon>
+                                        ${i18n.t('pdf-preview.rotate')}
                                     </button>
                                     <button
                                         class="button is-cancel"
@@ -1032,6 +1035,7 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                                             this.sendCancelEvent();
                                         }}"
                                         title="${i18n.t('button-close-text')}">
+                                        <dbp-icon name="close" aria-hidden="true"></dbp-icon>
                                         ${i18n.t('button-cancel-text')}
                                     </button>
                                     <button
@@ -1040,6 +1044,7 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                                         @click="${() => {
                                             this.sendAcceptEvent();
                                         }}">
+                                        <dbp-icon name="save" aria-hidden="true"></dbp-icon>
                                         ${i18n.t('pdf-preview.save')}
                                     </button>
                                 </div>

@@ -561,6 +561,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                             ?disabled="${this.signingProcessActive || this.selectedProfile === ''}"
                             class="button is-primary"
                             id="upload-pdf-button">
+                            <dbp-icon name="select-all" aria-hidden="true"></dbp-icon>
                             ${i18n.t('qualified-pdf-upload.upload-button-label')}
                         </button>
                         <dbp-file-source
