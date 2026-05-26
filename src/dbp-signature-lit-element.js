@@ -351,7 +351,8 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
             }
 
             const annotationTypeData = utils.getAnnotationTypes(annotationType);
-
+            console.error(this.getLanguageOfSelectedProfile());
+            console.error(annotationTypeData);
             pdfFactory = await utils.addKeyValuePdfAnnotationsToAnnotationFactory(
                 pdfFactory,
                 this.auth['user-full-name'],

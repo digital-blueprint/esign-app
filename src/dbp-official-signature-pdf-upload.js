@@ -366,6 +366,10 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             ${commonStyles.getButtonCSS()}
             ${commonStyles.getNotificationCSS()}
             ${SignatureStyles.getSignatureCss()}
+            
+            .annotation-text {
+                margin: 0;
+            }
         `;
     }
 
@@ -795,16 +799,22 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                         lang="${this.lang}"></dbp-notification>
                                 </div>
                                 <div class="filename">
-                                    <strong>
-                                        ${this.annotationEntry?.file !== undefined
-                                            ? this.annotationEntry.file.name
-                                            : ''}
-                                    </strong>
-                                    (${humanFileSize(
-                                        this.annotationEntry?.file !== undefined
-                                            ? this.annotationEntry.file.size
-                                            : 0,
-                                    )})
+                                    <span>
+                                        <strong>
+                                            ${this.annotationEntry?.file !== undefined
+                                                ? this.annotationEntry.file.name
+                                                : ''}
+                                        </strong>
+                                        (${humanFileSize(
+                                            this.annotationEntry?.file !== undefined
+                                                ? this.annotationEntry.file.size
+                                                : 0,
+                                        )})
+                                    </span>
+                                    <p class="annotation-text">
+                                        You can define additional text to be included in the
+                                        signature.
+                                    </p>
                                 </div>
                             </div>
                             <div slot="content">
