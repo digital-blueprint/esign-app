@@ -1357,7 +1357,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
                         count: this.signedFilesCountToReport,
                     }),
                     type: 'success',
-                    timeout: 20,
+                    timeout: 5,
                 });
             }
             if (this.errorFilesCountToReport > 0) {
@@ -1367,7 +1367,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
                         count: this.errorFilesCountToReport,
                     }),
                     type: 'danger',
-                    timeout: 20,
+                    timeout: 0,
                 });
             }
             this.signedFilesCountToReport = 0;
