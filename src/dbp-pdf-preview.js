@@ -698,6 +698,23 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                     await page.render(render_context).promise;
                     // Update annotation texts after page render
                     await that.updateAnnotationTexts();
+
+                    // Scroll canvas into view at the bottom after render completes
+                    const wrapper = that._('#canvas-wrapper');
+                    if (wrapper) {
+                        requestAnimationFrame(() => {
+                            try {
+                                wrapper.scrollIntoView({behavior: 'auto', block: 'end'});
+
+                                const root = this.getRootNode?.();
+                                const host = root?.host;
+
+                                host?.scrollIntoView?.({behavior: 'auto', block: 'end'});
+                            } catch {
+                                wrapper.scrollTop = wrapper.scrollHeight;
+                            }
+                        });
+                    }
                 } catch (error) {
                     console.error(error.message);
                     send({
