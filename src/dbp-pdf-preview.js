@@ -662,7 +662,9 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                         scaleX: scale,
                         scaleY: scale,
                         angle: 0,
-                        top: offsetTop,
+                        originX: 'left',
+                        originY: 'bottom',
+                        top: viewport.height - offsetTop,
                         left: offsetLeft,
                         lockUniScaling: true, // lock aspect ratio when resizing
                     });
@@ -806,7 +808,7 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
             }
 
             #pdf-main-container {
-                padding: 1em 0;
+                padding: 0;
             }
 
             #pdf-meta input[type='number'] {
@@ -819,10 +821,6 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                 justify-content: center;
             }
 
-            #canvas-wrapper {
-                position: relative;
-            }
-
             #canvas-wrapper canvas {
                 position: absolute;
                 top: 0;
@@ -830,14 +828,15 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                 border: var(--dbp-border);
             }
 
+            #canvas-wrapper {
+                position: relative;
+            }
+
             .buttons {
                 display: flex;
                 flex-direction: column;
                 flex-wrap: wrap;
                 gap: 10px;
-                width: 100%;
-                justify-content: center;
-                align-items: center;
                 container-type: inline-size;
                 container-name: action-container;
             }
@@ -846,7 +845,7 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                 display: flex;
                 gap: 1em;
                 flex-wrap: nowrap;
-                justify-content: center;
+                justify-content: space-between;
             }
 
             .button-container {
@@ -948,6 +947,11 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                 padding: 0.54em 0;
                 border-bottom-width: 0;
                 border-top-width: 0;
+                position: sticky;
+                top: 0;
+                z-index: 10000;
+                background-color: white;
+                width: 100%;
             }
 
             .error-message {
