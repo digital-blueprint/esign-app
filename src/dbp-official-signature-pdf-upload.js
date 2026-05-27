@@ -164,7 +164,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                     summary: i18n.t('error-manual-positioning-missing-title'),
                     body: i18n.t('error-manual-positioning-missing'),
                     type: 'danger',
-                    timeout: 5,
+                    timeout: 0,
                 });
                 errorInPositioning = true;
             }
@@ -249,7 +249,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                     summary: 'Error!',
                     body: error.message,
                     type: 'danger',
-                    timeout: 15,
+                    timeout: 0,
                 });
                 console.log(`Error message: ${error.message}`);
             }

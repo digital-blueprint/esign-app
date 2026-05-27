@@ -226,7 +226,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                     summary: i18n.t('error-manual-positioning-missing-title'),
                     body: i18n.t('error-manual-positioning-missing'),
                     type: 'danger',
-                    timeout: 5,
+                    timeout: 0,
                 });
                 this.signingProcessActive = false;
                 return;
@@ -281,7 +281,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                     summary: 'Error!',
                     body: error.message,
                     type: 'danger',
-                    timeout: 15,
+                    timeout: 0,
                 });
             }
             for (const entry of this.activeSigningEntries) {

@@ -81,7 +81,7 @@ export class PdfAnnotationView extends LangMixin(
                         body: i18n.t('annotation-view.empty-annotation-message'),
                         type: 'danger',
                         targetNotificationId: 'dbp-modal-notification-annotation',
-                        timeout: 5,
+                        timeout: 0,
                     });
                 }
                 return false;
@@ -100,7 +100,7 @@ export class PdfAnnotationView extends LangMixin(
                         body: i18n.t('annotation-view.invalid-annotation-text-message'),
                         type: 'danger',
                         targetNotificationId: 'dbp-modal-notification-annotation',
-                        timeout: 5,
+                        timeout: 0,
                     });
                 }
                 return false;
