@@ -702,7 +702,7 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                         summary: 'Error!',
                         body: error.message,
                         type: 'danger',
-                        timeout: 15,
+                        timeout: 0,
                     });
                 } finally {
                     that.isPageRenderingInProgress = false;
