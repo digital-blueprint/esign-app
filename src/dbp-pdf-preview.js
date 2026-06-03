@@ -9,6 +9,7 @@ import {importPdfJs, getPdfJsDocument} from '@dbp-toolkit/pdf-viewer';
 import * as commonStyles from '@dbp-toolkit/common/styles';
 import {readBinaryFileContent, getAnnotationTypes} from './utils.js';
 import {send} from '@dbp-toolkit/common/notification';
+import {humanFileSize} from '@dbp-toolkit/common/i18next.js';
 
 /**
  * PdfPreview web component
@@ -273,6 +274,8 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
      * @param viewOnly
      */
     async showEntry(entry, isShowPlacement = false, viewOnly = false) {
+        // store current entry so the render template can show filename/filesize
+        this.previewEntry = entry;
         let item = this.getSignatureRect();
         this.isPageLoaded = false; // prevent redisplay of previous pdf
         this.showErrorMessage = false;
@@ -615,8 +618,14 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                 const originalViewport = page.getViewport({scale: 1});
                 this.currentPageOriginalHeight = originalViewport.height;
 
-                // set the canvas width to the width of the container (minus the borders)
-                let width = this._('#pdf-main-container').clientWidth - 2;
+                // set the canvas width to the width of the container
+                let dataColumnWidth = this._('#pdf-meta').clientWidth - 10;
+                let canvasColumnWidth = this._('#pdf-main-container').clientWidth;
+                const availableHeight = window.innerHeight - dataColumnWidth;
+                const maxWidthFromHeight = availableHeight * (210 / 297); // A4-Ratio
+                let width = Math.min(canvasColumnWidth - dataColumnWidth, maxWidthFromHeight);
+                this.canvasToPdfScale = this.canvas.width / originalViewport.width;
+
                 this.fabricCanvas.setDimensions({width: width});
                 this.canvas.width = width;
 
@@ -826,6 +835,7 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
 
             #pdf-main-container {
                 padding: 0;
+                max-height: 100%;
             }
 
             #pdf-meta input[type='number'] {
@@ -845,10 +855,6 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                 border: var(--dbp-border);
             }
 
-            #canvas-wrapper {
-                position: relative;
-            }
-
             .buttons {
                 display: flex;
                 flex-direction: column;
@@ -863,6 +869,7 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                 gap: 1em;
                 flex-wrap: nowrap;
                 justify-content: space-between;
+                flex-direction: column;
             }
 
             .button-container {
@@ -899,7 +906,6 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
 
             .action-container label {
                 flex-basis: 100%;
-                min-width: fit-content;
             }
 
             .action-container .button {
@@ -923,6 +929,11 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                 margin-top: 0.5em;
             }
 
+            .footer-btn {
+                display: flex;
+                justify-content: space-between;
+                gap: 10px;
+            }
             @container action-container (max-width: 550px) {
                 .action-container {
                     flex-direction: column;
@@ -932,10 +943,12 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                 .button-container {
                     flex-direction: column;
                     align-items: initial;
+                    width: max-content;
                 }
 
                 .action-container .button {
                     flex-basis: 100%;
+                    height: initial;
                 }
 
                 .nav-buttons {
@@ -961,14 +974,17 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
             }
 
             #pdf-meta {
-                padding: 0.54em 0;
-                border-bottom-width: 0;
-                border-top-width: 0;
-                position: sticky;
-                top: 0;
-                z-index: 10000;
-                background-color: white;
-                width: 100%;
+                grid-area: 1 / 2;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+            }
+
+            .pdf-container {
+                display: grid;
+                grid-template-columns: 3fr 2fr;
+                padding-right: 10px;
+                gap: 20px;
             }
 
             .error-message {
@@ -988,6 +1004,13 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                 display: block;
                 width: 17px;
             }
+
+            .pdf-title {
+                padding-bottom: 10px;
+            }
+            .h3-bold {
+                font-weight: bold;
+            }
         `;
     }
 
@@ -1006,8 +1029,15 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                     })}">
                     ${i18n.t('pdf-preview.error-message')}
                 </div>
-                <div class="${classMap({hidden: !this.isPageLoaded})}">
+                <div class="${classMap({hidden: !this.isPageLoaded})} pdf-container">
                     <div id="pdf-meta">
+                        <div>
+                        <div class="pdf-title">
+                            <div class="filename">
+                                <h3><span class="h3-bold">${this.previewEntry?.file?.name ?? ''}</span>
+                                    (${humanFileSize(this.previewEntry?.file?.size ?? 0, false)})</h3>
+                            </div>
+                        </div>
                         <div class="buttons ${classMap({hidden: !this.isPageLoaded})}">
                             <div class="action-container">
                                 <label for="positioning-type">
@@ -1042,32 +1072,98 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                                         @click="${() => {
                                             this.rotateSignature();
                                         }}"
-                                        ?disabled="${this.isPageRenderingInProgress ||
-                                        !this.isShowPlacement}">
+                                        ?disabled="${
+                                            this.isPageRenderingInProgress || !this.isShowPlacement
+                                        }">
                                         <dbp-icon
                                             name="spinner-arrow"
                                             aria-hidden="true"></dbp-icon>
                                         ${i18n.t('pdf-preview.rotate')}
                                     </button>
-                                    <button
-                                        class="button is-cancel"
-                                        id="cancel-signature-button"
-                                        @click="${() => {
-                                            this.sendCancelEvent();
-                                        }}"
-                                        title="${i18n.t('button-close-text')}">
-                                        <dbp-icon name="close" aria-hidden="true"></dbp-icon>
-                                        ${i18n.t('button-cancel-text')}
-                                    </button>
-                                    <button
-                                        class="button is-primary"
-                                        id="save-signature-button"
-                                        @click="${() => {
-                                            this.sendAcceptEvent();
-                                        }}">
-                                        <dbp-icon name="save" aria-hidden="true"></dbp-icon>
-                                        ${i18n.t('pdf-preview.save')}
-                                    </button>
+                                </div>
+
+                                <div class="pagination-wrapper">
+                                    <label>
+                                        ${i18n.t('pdf-preview.pages')}
+                                    <div
+                                        class="nav-buttons ${classMap({
+                                            hidden: this.showSignaturePlacementDescription,
+                                        })}">
+                                        <button
+                                            class="button is-icon"
+                                            title="${i18n.t('pdf-preview.first-page')}"
+                                            aria-label="${i18n.t('pdf-preview.first-page')}"
+                                            @click="${async () => {
+                                                await this.showPage(1);
+                                            }}"
+                                            ?disabled="${
+                                                this.isPageRenderingInProgress ||
+                                                this.currentPage === 1
+                                            }">
+                                            <dbp-icon
+                                                name="angle-double-left"
+                                                aria-hidden="true"></dbp-icon>
+                                        </button>
+                                        <button
+                                            class="button is-icon"
+                                            title="${i18n.t('pdf-preview.previous-page')}"
+                                            aria-label="${i18n.t('pdf-preview.previous-page')}"
+                                            @click="${async () => {
+                                                if (this.currentPage > 1)
+                                                    await this.showPage(--this.currentPage);
+                                            }}"
+                                            ?disabled="${
+                                                this.isPageRenderingInProgress ||
+                                                this.currentPage === 1
+                                            }">
+                                            <dbp-icon
+                                                name="chevron-left"
+                                                aria-hidden="true"></dbp-icon>
+                                        </button>
+                                        <input
+                                            type="number"
+                                            min="1"
+                                            max="${this.totalPages}"
+                                            @input="${this.onPageNumberChanged}"
+                                            .value="${live(this.currentPage)}" />
+                                        <div class="page-info">
+                                            ${i18n.t('pdf-preview.page-count', {
+                                                totalPages: this.totalPages,
+                                            })}
+                                        </div>
+                                        <button
+                                            class="button is-icon"
+                                            title="${i18n.t('pdf-preview.next-page')}"
+                                            aria-label="${i18n.t('pdf-preview.next-page')}"
+                                            @click="${async () => {
+                                                if (this.currentPage < this.totalPages)
+                                                    await this.showPage(++this.currentPage);
+                                            }}"
+                                            ?disabled="${
+                                                this.isPageRenderingInProgress ||
+                                                this.currentPage === this.totalPages
+                                            }">
+                                            <dbp-icon
+                                                name="chevron-right"
+                                                aria-hidden="true"></dbp-icon>
+                                        </button>
+                                        <button
+                                            class="button is-icon"
+                                            title="${i18n.t('pdf-preview.last-page')}"
+                                            aria-label="${i18n.t('pdf-preview.last-page')}"
+                                            @click="${async () => {
+                                                await this.showPage(this.totalPages);
+                                            }}"
+                                            ?disabled="${
+                                                this.isPageRenderingInProgress ||
+                                                this.currentPage === this.totalPages
+                                            }">
+                                            <dbp-icon
+                                                name="angle-double-right"
+                                                aria-hidden="true"></dbp-icon>
+                                        </button>
+                                     </label>
+                                    </div>
                                 </div>
                             </div>
                             <div
@@ -1076,85 +1172,43 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                                 })}">
                                 <p>${i18n.t('pdf-preview.signature-description')}</p>
                             </div>
-                            <div
-                                class="nav-buttons ${classMap({
-                                    hidden: this.showSignaturePlacementDescription,
-                                })}">
-                                <button
-                                    class="button is-icon"
-                                    title="${i18n.t('pdf-preview.first-page')}"
-                                    aria-label="${i18n.t('pdf-preview.first-page')}"
-                                    @click="${async () => {
-                                        await this.showPage(1);
-                                    }}"
-                                    ?disabled="${this.isPageRenderingInProgress ||
-                                    this.currentPage === 1}">
-                                    <dbp-icon
-                                        name="angle-double-left"
-                                        aria-hidden="true"></dbp-icon>
-                                </button>
-                                <button
-                                    class="button is-icon"
-                                    title="${i18n.t('pdf-preview.previous-page')}"
-                                    aria-label="${i18n.t('pdf-preview.previous-page')}"
-                                    @click="${async () => {
-                                        if (this.currentPage > 1)
-                                            await this.showPage(--this.currentPage);
-                                    }}"
-                                    ?disabled="${this.isPageRenderingInProgress ||
-                                    this.currentPage === 1}">
-                                    <dbp-icon name="chevron-left" aria-hidden="true"></dbp-icon>
-                                </button>
-                                <input
-                                    type="number"
-                                    min="1"
-                                    max="${this.totalPages}"
-                                    @input="${this.onPageNumberChanged}"
-                                    .value="${live(this.currentPage)}" />
-                                <div class="page-info">
-                                    ${i18n.t('pdf-preview.page-count', {
-                                        totalPages: this.totalPages,
-                                    })}
-                                </div>
-                                <button
-                                    class="button is-icon"
-                                    title="${i18n.t('pdf-preview.next-page')}"
-                                    aria-label="${i18n.t('pdf-preview.next-page')}"
-                                    @click="${async () => {
-                                        if (this.currentPage < this.totalPages)
-                                            await this.showPage(++this.currentPage);
-                                    }}"
-                                    ?disabled="${this.isPageRenderingInProgress ||
-                                    this.currentPage === this.totalPages}">
-                                    <dbp-icon name="chevron-right" aria-hidden="true"></dbp-icon>
-                                </button>
-                                <button
-                                    class="button is-icon"
-                                    title="${i18n.t('pdf-preview.last-page')}"
-                                    aria-label="${i18n.t('pdf-preview.last-page')}"
-                                    @click="${async () => {
-                                        await this.showPage(this.totalPages);
-                                    }}"
-                                    ?disabled="${this.isPageRenderingInProgress ||
-                                    this.currentPage === this.totalPages}">
-                                    <dbp-icon
-                                        name="angle-double-right"
-                                        aria-hidden="true"></dbp-icon>
-                                </button>
-                            </div>
                         </div>
                     </div>
-                    <div
-                        id="canvas-wrapper"
-                        class="${classMap({
-                            hidden:
-                                this.isPageRenderingInProgress ||
-                                this.showSignaturePlacementDescription,
-                        })}">
-                        <canvas id="pdf-canvas"></canvas>
-                        <canvas
-                            id="fabric-canvas"
-                            class="${classMap({hidden: !this.isShowPlacement})}"></canvas>
+                        <div class="footer-btn">
+                            <button
+                                class="button is-cancel"
+                                id="cancel-signature-button"
+                                @click="${() => {
+                                    this.sendCancelEvent();
+                                }}"
+                                title="${i18n.t('button-close-text')}">
+                                <dbp-icon name="close" aria-hidden="true"></dbp-icon>
+                                ${i18n.t('button-cancel-text')}
+                            </button>
+                            <button
+                                class="button is-primary"
+                                id="save-signature-button"
+                                @click="${() => {
+                                    this.sendAcceptEvent();
+                                }}">
+                                <dbp-icon name="save" aria-hidden="true"></dbp-icon>
+                                ${i18n.t('pdf-preview.save')}
+                            </button>
+                        </div>
+                    </div>
+                    <div id="column-wrapper">
+                        <div
+                            id="canvas-wrapper"
+                            class="${classMap({
+                                hidden:
+                                    this.isPageRenderingInProgress ||
+                                    this.showSignaturePlacementDescription,
+                            })}">
+                            <canvas id="pdf-canvas"></canvas>
+                            <canvas
+                                id="fabric-canvas"
+                                class="${classMap({hidden: !this.isShowPlacement})}"></canvas>
+                        </div>
                     </div>
                     <div class="${classMap({hidden: !this.isPageRenderingInProgress})}">
                         <dbp-mini-spinner id="page-loader"></dbp-mini-spinner>

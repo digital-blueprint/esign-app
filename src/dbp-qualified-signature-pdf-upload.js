@@ -887,12 +887,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                             title="${this.withSigBlock
                                 ? i18n.t('official-pdf-upload.signature-placement-label')
                                 : i18n.t('official-pdf-upload.preview-label')}">
-                            <div slot="header" class="header">
-                                <div class="filename">
-                                    <strong>${this.previewEntry?.file?.name ?? ''}</strong>
-                                    (${humanFileSize(this.previewEntry?.file?.size ?? 0)})
-                                </div>
-                            </div>
+                            <div slot="header" class="header"></div>
                             <div slot="content">
                                 <dbp-pdf-preview
                                     subscribe="auth"

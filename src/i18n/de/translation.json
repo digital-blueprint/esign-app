@@ -70,6 +70,7 @@
         "last-page": "Letzte Seite",
         "next-page": "Nächste Seite",
         "page-count": "von {{totalPages}}",
+        "pages": "Seiten",
         "previous-page": "Vorherige Seite",
         "rotate": "Signatur rotieren",
         "rotate-signature": "Signatur im Uhrzeigersinn rotieren",
