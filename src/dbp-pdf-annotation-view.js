@@ -71,6 +71,7 @@ export class PdfAnnotationView extends LangMixin(
         const i18n = this._i18n;
         for (let annotation of this.annotationRows) {
             const annotationTypeData = utils.getAnnotationTypes(annotation['annotationType']);
+            if (!annotation.isSelected) continue;
 
             if (annotation['value'] === null || annotation['value'] === '') {
                 if (!quiet) {
@@ -113,6 +114,10 @@ export class PdfAnnotationView extends LangMixin(
      * Stores information to document
      */
     saveAll() {
+        this.annotationRows = this.annotationRows.filter(
+            (row) => row.isSelected && row.value !== '',
+        );
+
         if (!this.validateValues()) {
             return;
         }
@@ -398,6 +403,10 @@ export class PdfAnnotationView extends LangMixin(
         ids.forEach((id) => {
             const data = this.annotationRows[id] || [];
             const annotationTypeData = utils.getAnnotationTypes(data.annotationType);
+            const count = this.annotationRows.filter((row) => row.isSelected).length;
+            if (count > 0) {
+                this.enableRemoveAll = true;
+            }
 
             results.push(html`
                 <div class="annotation-fields">
@@ -453,7 +462,6 @@ export class PdfAnnotationView extends LangMixin(
                                 aria-label="annotation-button-title"
                                 @click="${() => {
                                     this.addNewAnnotation();
-                                    this.enableRemoveAllButton();
                                 }}">
                                 <dbp-icon name="plus" aria-hidden="true"></dbp-icon>
                                 ${i18n.t('annotation-button-title')}
