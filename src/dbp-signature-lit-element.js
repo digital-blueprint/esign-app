@@ -122,6 +122,14 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         };
     }
 
+    _isExpandHidden(expanded, collapsible, size) {
+        return expanded || collapsible === false || size === 0;
+    }
+
+    _isCollapseHidden(expanded, collapsible, size) {
+        return !expanded || collapsible === false || size === 0;
+    }
+
     update(changedProperties) {
         super.update(changedProperties);
         changedProperties.forEach((oldValue, propName) => {

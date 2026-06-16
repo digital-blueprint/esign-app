@@ -601,10 +601,12 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                     <dbp-loading-button
                                         id="expand-all-btn-queued-files"
                                         class="${classMap({
-                                            hidden: this.queuedFilesTableExpanded,
+                                            hidden: this._isExpandHidden(
+                                                this.queuedFilesTableExpanded,
+                                                this.queuedFilesTableCollapsible,
+                                                this.queuedFiles.size,
+                                            ),
                                         })}"
-                                        ?disabled="${this.queuedFiles.size === 0 ||
-                                        this.queuedFilesTableCollapsible === false}"
                                         value="${i18n.t('qualified-pdf-upload.expand-all')}"
                                         @click="${() => {
                                             this.tableQueuedFilesTable.expandAll();
@@ -618,10 +620,12 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                     <dbp-loading-button
                                         id="collapse-all-btn-queued-files"
                                         class="${classMap({
-                                            hidden: !this.queuedFilesTableExpanded,
+                                            hidden: this._isCollapseHidden(
+                                                this.queuedFilesTableExpanded,
+                                                this.queuedFilesTableCollapsible,
+                                                this.queuedFiles.size,
+                                            ),
                                         })}"
-                                        ?disabled="${this.queuedFiles.size === 0 ||
-                                        this.queuedFilesTableCollapsible === false}"
                                         value="${i18n.t('qualified-pdf-upload.collapse-all')}"
                                         @click="${() => {
                                             this.tableQueuedFilesTable.collapseAll();
@@ -736,10 +740,12 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                         <dbp-loading-button
                                             id="expand-all-btn-signed-files"
                                             class="${classMap({
-                                                hidden: this.signedFilesTableExpanded,
+                                                hidden: this._isExpandHidden(
+                                                    this.signedFilesTableExpanded,
+                                                    this.signedFilesTableCollapsible,
+                                                    this.signedFiles.size,
+                                                ),
                                             })}"
-                                            ?disabled="${this.signedFiles.size === 0 ||
-                                            this.signedFilesTableCollapsible === false}"
                                             value="${i18n.t('qualified-pdf-upload.expand-all')}"
                                             @click="${() => {
                                                 this.tableSignedFilesTable.expandAll();
@@ -755,10 +761,12 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                         <dbp-loading-button
                                             id="collapse-all-btn-signed-files"
                                             class="${classMap({
-                                                hidden: !this.signedFilesTableExpanded,
+                                                hidden: this._isCollapseHidden(
+                                                    this.signedFilesTableExpanded,
+                                                    this.signedFilesTableCollapsible,
+                                                    this.signedFiles.size,
+                                                ),
                                             })}"
-                                            ?disabled="${this.signedFiles.size === 0 ||
-                                            this.signedFilesTableCollapsible === false}"
                                             value="${i18n.t('qualified-pdf-upload.collapse-all')}"
                                             @click="${() => {
                                                 this.tableSignedFilesTable.collapseAll();
@@ -820,10 +828,12 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                         <dbp-loading-button
                                             id="expand-all-btn-failed-files"
                                             class="${classMap({
-                                                hidden: this.failedFilesTableExpanded,
+                                                hidden: this._isExpandHidden(
+                                                    this.failedFilesTableExpanded,
+                                                    this.failedFilesTableCollapsible,
+                                                    this.errorFiles.size,
+                                                ),
                                             })}"
-                                            ?disabled="${this.errorFiles.size === 0 ||
-                                            this.failedFilesTableCollapsible === false}"
                                             value="${i18n.t('qualified-pdf-upload.expand-all')}"
                                             @click="${() => {
                                                 this.tableFailedFilesTable.expandAll();
@@ -836,10 +846,12 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                         <dbp-loading-button
                                             id="collapse-all-btn-failed-files"
                                             class="${classMap({
-                                                hidden: !this.failedFilesTableExpanded,
+                                                hidden: this._isCollapseHidden(
+                                                    this.failedFilesTableExpanded,
+                                                    this.failedFilesTableCollapsible,
+                                                    this.errorFiles.size,
+                                                ),
                                             })}"
-                                            ?disabled="${this.errorFiles.size === 0 ||
-                                            this.failedFilesTableCollapsible === false}"
                                             value="${i18n.t('qualified-pdf-upload.collapse-all')}"
                                             @click="${() => {
                                                 this.tableFailedFilesTable.collapseAll();

@@ -177,6 +177,10 @@ export function getSignatureCss() {
             flex-wrap: wrap;
         }
 
+        .failed-actions {
+            justify-content: flex-end;
+        }
+
         .signed-actions {
             display: flex;
             gap: 0.5em;
@@ -219,54 +223,54 @@ export function getSignatureCss() {
             }
         }
 
-            @container tabulator-actions (max-width: 660px) {
-                .table-actions,
-                .sign-actions,
-                .signed-actions,
-                .failed-actions {
-                    width: 100%;
-                }
-
-                .queued-files .table-actions > dbp-loading-button:not(.hidden),
-                .queued-files .sign-actions > button,
-                .signed-files .signed-actions > :is(button, dbp-loading-button),
-                .error-files .failed-actions > :is(button, dbp-loading-button) {
-                    flex-basis: calc(50% - 1em);
-                }
-
-                :is(.signed-files, .error-files) .table-actions {
-                    flex-basis: calc(33%);
-                }
-
-                :is(.signed-files, .error-files) .table-actions > dbp-loading-button:not(.hidden) {
-                    width: 100%;
-                }
-
-                .signed-files .signed-actions,
-                .error-files .failed-actions {
-                    flex-basis: calc(66% - 1em);
-                }
+        @container tabulator-actions (max-width: 660px) {
+            .table-actions,
+            .sign-actions,
+            .signed-actions,
+            .failed-actions {
+                width: 100%;
+                justify-content: space-between;
             }
 
-            @container tabulator-actions (max-width: 420px) {
-                .table-actions,
-                .sign-actions,
-                .signed-actions,
-                .failed-actions {
-                    display: flex;
-                    flex-direction: column;
-                }
-
-                :is(.signed-files, .error-files) .tabulator-actions {
-                    flex-direction: column;
-                    flex-wrap: nowrap;
-                }
+            .queued-files .table-actions > dbp-loading-button:not(.hidden),
+            .queued-files .sign-actions > button,
+            .signed-files .signed-actions > :is(button, dbp-loading-button),
+            .error-files .failed-actions > :is(button, dbp-loading-button) {
+                flex-basis: calc(50% - 0.5em);
             }
 
-            .signed-files :is(.table-actions, .signed-actions),
-            .error-files :is(.table-actions, .failed-actions) {
-                flex-basis: 100%;
+            :is(.signed-files, .error-files) .table-actions {
+                flex-basis: calc(33%);
             }
+
+            :is(.signed-files, .error-files) .table-actions > dbp-loading-button:not(.hidden) {
+                width: 100%;
+            }
+
+            .signed-files .signed-actions,
+            .error-files .failed-actions {
+                flex-basis: calc(66% - 1em);
+            }
+        }
+
+        @container tabulator-actions (max-width: 420px) {
+            .table-actions,
+            .sign-actions,
+            .signed-actions,
+            .failed-actions {
+                display: flex;
+                flex-direction: column;
+            }
+
+            :is(.signed-files, .error-files) .tabulator-actions {
+                flex-direction: column;
+                flex-wrap: nowrap;
+            }
+        }
+
+        .signed-files :is(.table-actions, .signed-actions),
+        .error-files :is(.table-actions, .failed-actions) {
+            flex-basis: 100%;
         }
 
         @media only screen and (max-width: 900px) {
