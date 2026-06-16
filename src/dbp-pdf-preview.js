@@ -1061,6 +1061,7 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
             }
             .pagination-desktop {
                 display: block;
+                width: 100%;
             }
 
             @media only screen and (max-width: 768px) {
