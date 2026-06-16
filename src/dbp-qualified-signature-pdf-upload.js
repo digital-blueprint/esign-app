@@ -840,6 +840,9 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                                 this.failedFilesTableExpanded = true;
                                             }}"
                                             title="${i18n.t('qualified-pdf-upload.expand-all')}">
+                                            <dbp-icon
+                                                name="chevron-down"
+                                                aria-hidden="true"></dbp-icon>
                                             ${i18n.t('qualified-pdf-upload.expand-all')}
                                         </dbp-loading-button>
 
@@ -866,6 +869,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                             id="clear-error-files-btn"
                                             @click="${this.clearErrorFiles}"
                                             class="clear-signed-files button">
+                                            <dbp-icon name="trash" aria-hidden="true"></dbp-icon>
                                             ${i18n.t('qualified-pdf-upload.clear-all')}
                                         </button>
                                         <dbp-loading-button
@@ -879,7 +883,10 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                             )}"
                                             class="is-right"
                                             @click="${this.reUploadAllClickHandler}"
-                                            type="is-primary"></dbp-loading-button>
+                                            type="is-primary">
+                                            <dbp-icon name="reload" aria-hidden="true"></dbp-icon>
+                                            ${i18n.t('qualified-pdf-upload.re-upload-all-button')}
+                                        </dbp-loading-button>
                                     </div>
                                 </div>
                             </div>
