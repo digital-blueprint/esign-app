@@ -621,9 +621,14 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                 // set the canvas width to the width of the container
                 let dataColumnWidth = this._('#pdf-meta').clientWidth - 10;
                 let canvasColumnWidth = this._('#pdf-main-container').clientWidth;
-                const availableHeight = window.innerHeight - dataColumnWidth;
+                let availableHeight = window.innerHeight - dataColumnWidth;
                 const maxWidthFromHeight = availableHeight * (210 / 297); // A4-Ratio
                 let width = Math.min(canvasColumnWidth - dataColumnWidth, maxWidthFromHeight);
+
+                if (window.innerWidth < 769) {
+                    width += dataColumnWidth - 12;
+                }
+
                 this.canvasToPdfScale = this.canvas.width / originalViewport.width;
 
                 this.fabricCanvas.setDimensions({width: width});
@@ -823,6 +828,88 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
         }
     }
 
+    renderPagination() {
+        const i18n = this._i18n;
+        return html`
+            <div class="pagination-wrapper ">
+                <label >
+                   <span class="pagination-desktop">${i18n.t('pdf-preview.pages')}</span> 
+                    <div
+                        class="nav-buttons nav-align ${classMap({
+                            hidden: this.showSignaturePlacementDescription,
+                        })}">
+                        <button
+                            class="button is-icon"
+                            title="${i18n.t('pdf-preview.first-page')}"
+                            aria-label="${i18n.t('pdf-preview.first-page')}"
+                            @click="${async () => {
+                                await this.showPage(1);
+                            }}"
+                            ?disabled="${this.isPageRenderingInProgress || this.currentPage === 1}">
+                            <dbp-icon
+                                name="angle-double-left"
+                                aria-hidden="true"></dbp-icon>
+                        </button>
+                        <button
+                            class="button is-icon"
+                            title="${i18n.t('pdf-preview.previous-page')}"
+                            aria-label="${i18n.t('pdf-preview.previous-page')}"
+                            @click="${async () => {
+                                if (this.currentPage > 1) await this.showPage(--this.currentPage);
+                            }}"
+                            ?disabled="${this.isPageRenderingInProgress || this.currentPage === 1}">
+                            <dbp-icon
+                                name="chevron-left"
+                                aria-hidden="true"></dbp-icon>
+                        </button>
+                        <input
+                            type="number"
+                            min="1"
+                            max="${this.totalPages}"
+                            @input="${this.onPageNumberChanged}"
+                            .value="${live(this.currentPage)}" />
+                        <div class="page-info">
+                            ${i18n.t('pdf-preview.page-count', {
+                                totalPages: this.totalPages,
+                            })}
+                        </div>
+                        <button
+                            class="button is-icon"
+                            title="${i18n.t('pdf-preview.next-page')}"
+                            aria-label="${i18n.t('pdf-preview.next-page')}"
+                            @click="${async () => {
+                                if (this.currentPage < this.totalPages)
+                                    await this.showPage(++this.currentPage);
+                            }}"
+                            ?disabled="${
+                                this.isPageRenderingInProgress ||
+                                this.currentPage === this.totalPages
+                            }">
+                            <dbp-icon
+                                name="chevron-right"
+                                aria-hidden="true"></dbp-icon>
+                        </button>
+                        <button
+                            class="button is-icon"
+                            title="${i18n.t('pdf-preview.last-page')}"
+                            aria-label="${i18n.t('pdf-preview.last-page')}"
+                            @click="${async () => {
+                                await this.showPage(this.totalPages);
+                            }}"
+                            ?disabled="${
+                                this.isPageRenderingInProgress ||
+                                this.currentPage === this.totalPages
+                            }">
+                            <dbp-icon
+                                name="angle-double-right"
+                                aria-hidden="true"></dbp-icon>
+                        </button>
+                </label>
+            </div>
+            </div>
+        `;
+    }
+
     static get styles() {
         // language=css
         return css`
@@ -855,6 +942,9 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                 border: var(--dbp-border);
             }
 
+            .button {
+                width: max-content;
+            }
             .buttons {
                 display: flex;
                 flex-direction: column;
@@ -862,59 +952,32 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                 gap: 10px;
                 container-type: inline-size;
                 container-name: action-container;
+                height: 100%;
             }
-
-            .action-container {
-                display: flex;
-                gap: 1em;
-                flex-wrap: nowrap;
-                justify-content: space-between;
-                flex-direction: column;
+            .action-container > :last-child {
+                margin-top: auto;
             }
-
-            .button-container {
-                width: 100%;
-                display: flex;
-                gap: 0.5em;
-            }
-
-            :host([don-t-show-buttons]) .action-container {
+            :host([don-t-show-buttons]) {
                 display: none !important;
             }
 
-            .action-container .profile-type-select,
-            .action-container .positioning-type-select {
+            .buttons .profile-type-select,
+            .buttons .positioning-type-select {
                 padding-right: 2em;
                 padding-left: 0.75em;
                 background-size: 18px;
                 background-position: calc(100% - 0.4rem) center;
             }
 
-            label[for='profile-type'],
-            label[for='positioning-type'] {
+            .buttons label[for='profile-type'],
+            .buttons label[for='positioning-type'] {
                 display: flex;
                 flex-direction: column;
-            }
-
-            .action-container {
                 width: 100%;
             }
 
             .positioning-type-select {
                 height: 35px;
-            }
-
-            .action-container label {
-                flex-basis: 100%;
-            }
-
-            .action-container .button {
-                flex-basis: 33%;
-                height: 30px;
-            }
-
-            .button-container {
-                align-items: end;
             }
 
             .nav-buttons {
@@ -933,28 +996,7 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                 display: flex;
                 justify-content: space-between;
                 gap: 10px;
-            }
-            @container action-container (max-width: 550px) {
-                .action-container {
-                    flex-direction: column;
-                    width: 100%;
-                }
-
-                .button-container {
-                    flex-direction: column;
-                    align-items: initial;
-                    width: max-content;
-                }
-
-                .action-container .button {
-                    flex-basis: 100%;
-                    height: initial;
-                }
-
-                .nav-buttons {
-                    width: 100%;
-                    justify-content: space-between;
-                }
+                width: 100%;
             }
 
             .buttons .page-info {
@@ -977,7 +1019,6 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                 grid-area: 1 / 2;
                 display: flex;
                 flex-direction: column;
-                justify-content: space-between;
             }
 
             .pdf-container {
@@ -985,6 +1026,7 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                 grid-template-columns: 3fr 2fr;
                 padding-right: 10px;
                 gap: 20px;
+                padding-bottom: 7px;
             }
 
             .error-message {
@@ -1011,6 +1053,79 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
             .h3-bold {
                 font-weight: bold;
             }
+
+            .pagination-mobile {
+                display: none;
+                width: 100%;
+            }
+            .pagination-desktop {
+                display: block;
+            }
+
+            @media only screen and (max-width: 768px) {
+                #pdf-meta {
+                    position: sticky;
+                    top: 0;
+                    width: 100%;
+                    z-index: 1000;
+                    background-color: white;
+                    gap: 0;
+                }
+
+                .nav-align > * {
+                    padding: 0px;
+                    width: var(--dbp-button-size, 40px);
+                    height: var(--dbp-button-size, 40px);
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                }
+
+                .pdf-container {
+                    display: flex;
+                    flex-direction: column;
+                }
+                #canvas-wrapper {
+                    position: relative;
+                }
+                #canvas-wrapper canvas {
+                    position: absolute;
+                }
+
+                .action-container {
+                    padding-bottom: 10px;
+                    display: flex;
+                    flex-direction: column;
+                    flex-flow: wrap;
+                    align-items: end;
+                    justify-content: space-between;
+                }
+                .buttons label[for='positioning-type'] {
+                    width: initial;
+                    flex: 1;
+                }
+
+                select:not(.select),
+                .positioning-type-select {
+                    padding: calc(0.385em - 1px) 0.75em;
+                    height: max-content;
+                }
+
+                .footer-btn {
+                    height: max-content;
+                    flex: 1;
+                }
+
+                .pagination-wrapper {
+                }
+
+                .pagination-mobile {
+                    display: block;
+                }
+                .pagination-desktop {
+                    display: none;
+                }
+            }
         `;
     }
 
@@ -1031,170 +1146,82 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                 </div>
                 <div class="${classMap({hidden: !this.isPageLoaded})} pdf-container">
                     <div id="pdf-meta">
-                        <div>
                         <div class="pdf-title">
                             <div class="filename">
-                                <h3><span class="h3-bold">${this.previewEntry?.file?.name ?? ''}</span>
-                                    (${humanFileSize(this.previewEntry?.file?.size ?? 0, false)})</h3>
+                                <h3>
+                                    <span class="h3-bold">
+                                        ${this.previewEntry?.file?.name ?? ''}
+                                    </span>
+                                    (${humanFileSize(this.previewEntry?.file?.size ?? 0, false)})
+                                </h3>
                             </div>
                         </div>
-                        <div class="buttons ${classMap({hidden: !this.isPageLoaded})}">
-                            <div class="action-container">
-                                <label for="positioning-type">
-                                    ${i18n.t('positioning-type-label')}
-                                    <select
-                                        id="positioning-type"
-                                        class="positioning-type-select"
-                                        @change="${(event) => {
-                                            if (event.target.value === 'auto') {
-                                                this.isShowPlacement = false;
-                                                this.signaturePlacementMode = 'auto';
-                                                this.showSignaturePlacementDescription = true;
-                                            } else {
-                                                this.isShowPlacement = true;
-                                                this.signaturePlacementMode = 'manual';
-                                                this.showSignaturePlacementDescription = false;
-                                            }
-                                        }}">
-                                        <option value="auto">
-                                            ${i18n.t('positioning-automatic')}
-                                        </option>
-                                        <option value="manual">
-                                            ${i18n.t('positioning-manual')}
-                                        </option>
-                                    </select>
-                                </label>
-                                <div class="button-container">
-                                    <button
-                                        class="button"
-                                        id="rotate-signature-button"
-                                        title="${i18n.t('pdf-preview.rotate-signature')}"
-                                        @click="${() => {
-                                            this.rotateSignature();
-                                        }}"
-                                        ?disabled="${
-                                            this.isPageRenderingInProgress || !this.isShowPlacement
-                                        }">
-                                        <dbp-icon
-                                            name="spinner-arrow"
-                                            aria-hidden="true"></dbp-icon>
-                                        ${i18n.t('pdf-preview.rotate')}
-                                    </button>
-                                </div>
-
-                                <div class="pagination-wrapper">
-                                    <label>
-                                        ${i18n.t('pdf-preview.pages')}
-                                    <div
-                                        class="nav-buttons ${classMap({
-                                            hidden: this.showSignaturePlacementDescription,
-                                        })}">
-                                        <button
-                                            class="button is-icon"
-                                            title="${i18n.t('pdf-preview.first-page')}"
-                                            aria-label="${i18n.t('pdf-preview.first-page')}"
-                                            @click="${async () => {
-                                                await this.showPage(1);
-                                            }}"
-                                            ?disabled="${
-                                                this.isPageRenderingInProgress ||
-                                                this.currentPage === 1
-                                            }">
-                                            <dbp-icon
-                                                name="angle-double-left"
-                                                aria-hidden="true"></dbp-icon>
-                                        </button>
-                                        <button
-                                            class="button is-icon"
-                                            title="${i18n.t('pdf-preview.previous-page')}"
-                                            aria-label="${i18n.t('pdf-preview.previous-page')}"
-                                            @click="${async () => {
-                                                if (this.currentPage > 1)
-                                                    await this.showPage(--this.currentPage);
-                                            }}"
-                                            ?disabled="${
-                                                this.isPageRenderingInProgress ||
-                                                this.currentPage === 1
-                                            }">
-                                            <dbp-icon
-                                                name="chevron-left"
-                                                aria-hidden="true"></dbp-icon>
-                                        </button>
-                                        <input
-                                            type="number"
-                                            min="1"
-                                            max="${this.totalPages}"
-                                            @input="${this.onPageNumberChanged}"
-                                            .value="${live(this.currentPage)}" />
-                                        <div class="page-info">
-                                            ${i18n.t('pdf-preview.page-count', {
-                                                totalPages: this.totalPages,
-                                            })}
-                                        </div>
-                                        <button
-                                            class="button is-icon"
-                                            title="${i18n.t('pdf-preview.next-page')}"
-                                            aria-label="${i18n.t('pdf-preview.next-page')}"
-                                            @click="${async () => {
-                                                if (this.currentPage < this.totalPages)
-                                                    await this.showPage(++this.currentPage);
-                                            }}"
-                                            ?disabled="${
-                                                this.isPageRenderingInProgress ||
-                                                this.currentPage === this.totalPages
-                                            }">
-                                            <dbp-icon
-                                                name="chevron-right"
-                                                aria-hidden="true"></dbp-icon>
-                                        </button>
-                                        <button
-                                            class="button is-icon"
-                                            title="${i18n.t('pdf-preview.last-page')}"
-                                            aria-label="${i18n.t('pdf-preview.last-page')}"
-                                            @click="${async () => {
-                                                await this.showPage(this.totalPages);
-                                            }}"
-                                            ?disabled="${
-                                                this.isPageRenderingInProgress ||
-                                                this.currentPage === this.totalPages
-                                            }">
-                                            <dbp-icon
-                                                name="angle-double-right"
-                                                aria-hidden="true"></dbp-icon>
-                                        </button>
-                                     </label>
-                                    </div>
-                                </div>
-                            </div>
+                        <div
+                            class="action-container buttons ${classMap({
+                                hidden: !this.isPageLoaded,
+                            })}">
+                            <label for="positioning-type">
+                                ${i18n.t('positioning-type-label')}
+                                <select
+                                    id="positioning-type"
+                                    class="positioning-type-select"
+                                    @change="${(event) => {
+                                        if (event.target.value === 'auto') {
+                                            this.isShowPlacement = false;
+                                            this.signaturePlacementMode = 'auto';
+                                            this.showSignaturePlacementDescription = true;
+                                        } else {
+                                            this.isShowPlacement = true;
+                                            this.signaturePlacementMode = 'manual';
+                                            this.showSignaturePlacementDescription = false;
+                                        }
+                                    }}">
+                                    <option value="auto">${i18n.t('positioning-automatic')}</option>
+                                    <option value="manual">${i18n.t('positioning-manual')}</option>
+                                </select>
+                            </label>
+                            <button
+                                class="button"
+                                id="rotate-signature-button"
+                                title="${i18n.t('pdf-preview.rotate-signature')}"
+                                @click="${() => {
+                                    this.rotateSignature();
+                                }}"
+                                ?disabled="${this.isPageRenderingInProgress ||
+                                !this.isShowPlacement}">
+                                <dbp-icon name="spinner-arrow" aria-hidden="true"></dbp-icon>
+                                ${i18n.t('pdf-preview.rotate')}
+                            </button>
+                            <div class="pagination-desktop">${this.renderPagination()}</div>
                             <div
                                 class="signature-description ${classMap({
                                     hidden: !this.showSignaturePlacementDescription,
                                 })}">
                                 <p>${i18n.t('pdf-preview.signature-description')}</p>
                             </div>
+                            <div class="footer-btn">
+                                <button
+                                    class="button is-cancel"
+                                    id="cancel-signature-button"
+                                    @click="${() => {
+                                        this.sendCancelEvent();
+                                    }}"
+                                    title="${i18n.t('button-close-text')}">
+                                    <dbp-icon name="close" aria-hidden="true"></dbp-icon>
+                                    ${i18n.t('button-cancel-text')}
+                                </button>
+                                <button
+                                    class="button is-primary"
+                                    id="save-signature-button"
+                                    @click="${() => {
+                                        this.sendAcceptEvent();
+                                    }}">
+                                    <dbp-icon name="save" aria-hidden="true"></dbp-icon>
+                                    ${i18n.t('pdf-preview.save')}
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                        <div class="footer-btn">
-                            <button
-                                class="button is-cancel"
-                                id="cancel-signature-button"
-                                @click="${() => {
-                                    this.sendCancelEvent();
-                                }}"
-                                title="${i18n.t('button-close-text')}">
-                                <dbp-icon name="close" aria-hidden="true"></dbp-icon>
-                                ${i18n.t('button-cancel-text')}
-                            </button>
-                            <button
-                                class="button is-primary"
-                                id="save-signature-button"
-                                @click="${() => {
-                                    this.sendAcceptEvent();
-                                }}">
-                                <dbp-icon name="save" aria-hidden="true"></dbp-icon>
-                                ${i18n.t('pdf-preview.save')}
-                            </button>
-                        </div>
+                        <div class="pagination-mobile">${this.renderPagination()}</div>
                     </div>
                     <div id="column-wrapper">
                         <div
