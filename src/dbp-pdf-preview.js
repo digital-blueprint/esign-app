@@ -1052,6 +1052,7 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
             }
             .h3-bold {
                 font-weight: bold;
+                word-break: break-all;
             }
 
             .pagination-mobile {
