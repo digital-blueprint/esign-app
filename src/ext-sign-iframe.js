@@ -177,6 +177,7 @@ export class ExternalSignIFrame extends LangMixin(ScopedElementsMixin(LitElement
                 class=${classMap({hidden: !active})}
                 @load="${onLoad}"
                 @error="${onError}"
+                allow="loopback-network"
                 scrolling="no"></iframe>
         `;
     }
