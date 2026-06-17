@@ -763,12 +763,11 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         // Add selected files
         if (Array.isArray(selectedRows) && selectedRows.length > 0) {
             selectedRows.forEach((selectedRow) => {
-                const rowIndex = String(selectedRow.getIndex());
                 const rowData = selectedRow.getData();
+                const fileKey = String(rowData.index);
                 const fileNameCell = rowData.fileName;
-                const fileKey = rowData.index;
-                const fileName = fileNameCell.file.name;
-                const existingIndex = this.selectedFiles.findIndex((row) => row.key === rowIndex);
+                const fileName = fileNameCell?.file?.name ?? '';
+                const existingIndex = this.selectedFiles.findIndex((row) => row.key === fileKey);
                 if (existingIndex === -1) {
                     this.selectedFiles = [
                         ...this.selectedFiles,
@@ -784,12 +783,15 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         // Remove selected files
         if (Array.isArray(deSelectedRows) && deSelectedRows.length > 0) {
             deSelectedRows.forEach((deSelectedRow) => {
-                const rowIndex = String(deSelectedRow.getIndex());
-                const deselectedIndex = this.selectedFiles.findIndex((row) => row.key === rowIndex);
-                this.selectedFiles = [
-                    ...this.selectedFiles.slice(0, deselectedIndex),
-                    ...this.selectedFiles.slice(deselectedIndex + 1),
-                ];
+                const rowData = deSelectedRow.getData();
+                const fileKey = String(rowData.index);
+                const deselectedIndex = this.selectedFiles.findIndex((row) => row.key === fileKey);
+                if (deselectedIndex !== -1) {
+                    this.selectedFiles = [
+                        ...this.selectedFiles.slice(0, deselectedIndex),
+                        ...this.selectedFiles.slice(deselectedIndex + 1),
+                    ];
+                }
             });
         }
 

@@ -175,8 +175,10 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             return;
         }
 
+        const hasSelection = this.selectedFiles.length > 0;
+
         while (this.signingProcessActive && this.queuedFiles.size > 0) {
-            let key;
+            let key = null;
             if (this.selectedFiles.length > 0) {
                 // If we have selected files in the table use the selected file
                 while (this.selectedFiles.length > 0 && key === null) {
@@ -186,6 +188,9 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                     }
                 }
                 this.selectedFilesProcessing = key !== null;
+            } else if (hasSelection) {
+                // All selected files have been processed, stop
+                break;
             } else {
                 // Process all queued files
                 key = this.queuedFiles.keys().next().value ?? null;
@@ -196,6 +201,9 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             }
 
             const entry = this.takeFileFromQueue(key);
+            if (!entry) {
+                continue;
+            }
             let file = entry.file;
             this.activeSigningEntry = entry;
             this.uploadInProgress = true;
