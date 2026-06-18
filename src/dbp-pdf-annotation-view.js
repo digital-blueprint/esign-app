@@ -19,6 +19,7 @@ export class PdfAnnotationView extends LangMixin(
     constructor() {
         super();
         this.isTextHidden = false;
+        this.hasChanges = false;
         this.enableRemoveAll = false;
         this.isSelected = false;
         this.annotationRows = [];
@@ -44,6 +45,7 @@ export class PdfAnnotationView extends LangMixin(
             key: {type: Number},
             isTextHidden: {type: Boolean, attribute: false},
             isSelected: {type: Boolean, attribute: false},
+            hasChanges: {type: Boolean, attribute: false},
             annotationRows: {type: Array, attribute: false},
         };
     }
@@ -132,7 +134,7 @@ export class PdfAnnotationView extends LangMixin(
             composed: true,
         });
         this.dispatchEvent(event);
-
+        this.hasChanges = false;
         if (this.annotationRows.length === 0) {
             this.isTextHidden = false;
         }
@@ -157,7 +159,9 @@ export class PdfAnnotationView extends LangMixin(
             const count = this.annotationRows.filter((row) => row.isSelected).length;
             if (count <= 1) {
                 this.enableRemoveAll = false;
+                this.isSelected = true;
             }
+            this.hasChanges = true;
         }
     }
 
@@ -169,6 +173,7 @@ export class PdfAnnotationView extends LangMixin(
     }
 
     sendCancelEvent() {
+        this.hasChanges = false;
         const event = new CustomEvent('dbp-pdf-annotations-cancel', {
             detail: {},
             bubbles: true,
@@ -439,6 +444,7 @@ export class PdfAnnotationView extends LangMixin(
                             aria-label="${i18n.t('annotation-view.remove-field')}"
                             @click="${() => {
                                 this.removeAnnotation(id);
+                                this.hasChanges = true;
                             }}">
                             <dbp-icon name="trash" aria-hidden="true"></dbp-icon>
                         </button>
@@ -494,7 +500,8 @@ export class PdfAnnotationView extends LangMixin(
                         </button>
                         <button
                             class="button is-primary save-all-button"
-                            ?disabled="${!this.annotationRows.some((row) => row.isSelected)}"
+                            ?disabled="${!this.annotationRows.some((row) => row.isSelected) &&
+                            !this.hasChanges}"
                             title="${i18n.t('annotation-view.save-all-button-title')}"
                             @click="${() => {
                                 this.saveAll();
