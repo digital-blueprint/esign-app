@@ -54,8 +54,10 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         this.queuedFilesTableAllSelected = false;
         this.queuedFilesTableCollapsible = false;
         this.signedFilesTableExpanded = false;
+        this.signedFilesTableAllSelected = false;
         this.signedFilesTableCollapsible = false;
         this.failedFilesTableExpanded = false;
+        this.failedFilesTableAllSelected = false;
         this.failedFilesTableCollapsible = false;
         this.previewEntry = null;
         this.annotationEntry = null;
@@ -75,7 +77,9 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         this.signedFilesCountToReport = 0;
         this.errorFiles = new Map();
         this.errorFilesCountToReport = 0;
-        this.selectedFiles = [];
+        this.selectedQueuedFiles = [];
+        this.selectedSignedFiles = [];
+        this.selectedFailedFiles = [];
         this.selectedFilesProcessing = false;
         this.anyPlacementMissing = false;
         this.selectedProfile = '';
@@ -113,10 +117,14 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
             queuedFilesTableAllSelected: {type: Boolean, attribute: false},
             queuedFilesTableCollapsible: {type: Boolean, attribute: false},
             signedFilesTableExpanded: {type: Boolean, attribute: false},
+            signedFilesTableAllSelected: {type: Boolean, attribute: false},
             signedFilesTableCollapsible: {type: Boolean, attribute: false},
             failedFilesTableExpanded: {type: Boolean, attribute: false},
+            failedFilesTableAllSelected: {type: Boolean, attribute: false},
             failedFilesTableCollapsible: {type: Boolean, attribute: false},
-            selectedFiles: {type: Array, attribute: false},
+            selectedQueuedFiles: {type: Array, attribute: false},
+            selectedSignedFiles: {type: Array, attribute: false},
+            selectedFailedFiles: {type: Array, attribute: false},
             anyPlacementMissing: {type: Boolean, state: true},
             selectedProfile: {type: String, attribute: 'selected-profile'},
         };
@@ -426,7 +434,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         }
         this.queuedFiles = queuedFiles;
 
-        this.selectedFiles = [];
+        this.selectedQueuedFiles = [];
 
         this.tableQueuedFilesTable.tabulatorTable.redraw(true);
     }
@@ -468,14 +476,21 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
      * Open Filesink for multiple files
      */
     async zipDownloadClickHandler() {
-        const files = Array.from(this.signedFiles.values(), (signedEntry) => signedEntry.file);
+        const files =
+            this.selectedSignedFiles.length > 0
+                ? Array.from(this.signedFiles.values()).filter((signedEntry) =>
+                      this.selectedSignedFiles.some((sel) => sel.key === signedEntry.key),
+                  )
+                : Array.from(this.signedFiles.values()); // Otherwise use all signed files
 
-        this._('#file-sink').files = [...files];
+        this._('#file-sink').files = files.map((entry) => entry.file);
         this.signedFilesToDownload = files.length;
 
-        // Mark all files in the table as downloaded
+        // Mark all downloaded files in the table as downloaded
         for (let row of this.tableSignedFilesTable.getData()) {
-            row['fileName'].isDownloaded = true;
+            if (row['index'] && files.some((file) => file.key === row['index'])) {
+                row['fileName'].isDownloaded = true;
+            }
         }
 
         this._('#zip-download-button').stop();
@@ -570,18 +585,33 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
     /**
      * Re-Upload all failed files
      */
-    reUploadAllClickHandler() {
-        const that = this;
+    reUploadClickHandler() {
+        if (this.selectedFailedFiles.length > 0) {
+            // Re-queue only selected files
+            const filesToRequeue = Array.from(this.errorFiles.values()).filter((errorEntry) =>
+                this.selectedFailedFiles.some((sel) => sel.key === errorEntry.key),
+            );
+            const errorFiles = new Map(this.errorFiles);
+            this.selectedFailedFiles.forEach((file) => {
+                errorFiles.delete(file.key);
+            });
+            this.errorFiles = errorFiles;
+            this.selectedFailedFiles = [];
 
-        // we need to make a copy and reset the queue or else our queue will run crazy
-        const errorFilesCopy = new Map(this.errorFiles);
-        this.errorFiles = new Map();
+            filesToRequeue.forEach(async (errorEntry) => {
+                await this.reQueueFile(errorEntry.sigEntry);
+            });
+        } else {
+            // Re-queue all failed files
+            const errorFilesCopy = new Map(this.errorFiles);
+            this.errorFiles = new Map();
 
-        errorFilesCopy.forEach(async (errorEntry) => {
-            await this.reQueueFile(errorEntry.sigEntry);
-        });
+            errorFilesCopy.forEach(async (errorEntry) => {
+                await this.reQueueFile(errorEntry.sigEntry);
+            });
+        }
 
-        that._('#re-upload-all-button').stop();
+        this._('#re-upload-all-button').stop();
     }
 
     /**
@@ -640,11 +670,31 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
     }
 
     clearSignedFiles() {
-        this.signedFiles = new Map();
+        // Only clear the files that are selected, or all files if nothing is selected
+        if (this.selectedSignedFiles.length > 0) {
+            const signedFiles = new Map(this.signedFiles);
+            this.selectedSignedFiles.forEach((file) => {
+                signedFiles.delete(file.key);
+            });
+            this.signedFiles = signedFiles;
+            this.selectedSignedFiles = [];
+        } else {
+            this.signedFiles = new Map();
+        }
     }
 
     clearErrorFiles() {
-        this.errorFiles = new Map();
+        // Only clear the files that are selected, or all files if nothing is selected
+        if (this.selectedFailedFiles.length > 0) {
+            const errorFiles = new Map(this.errorFiles);
+            this.selectedFailedFiles.forEach((file) => {
+                errorFiles.delete(file.key);
+            });
+            this.errorFiles = errorFiles;
+            this.selectedFailedFiles = [];
+        } else {
+            this.errorFiles = new Map();
+        }
     }
 
     /**
@@ -662,12 +712,12 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
     }
 
     /**
-     * Return true if the key of the file is in the selectedFiles
+     * Return true if the key of the file is in the selectedQueuedFiles
      * @param {string} key
      * @returns {boolean}
      */
     fileIsSelectedFile(key) {
-        return this.selectedFiles.some((file) => file.key === key);
+        return this.selectedQueuedFiles.some((file) => file.key === key);
     }
 
     tabulatorTableHandleCollapse(event) {
@@ -752,13 +802,57 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
     }
 
     /**
+     * Return the per-table selection array for the given table identifier
+     * @param {string} tableId
+     * @returns {Array}
+     */
+    _getSelectedFilesForTable(tableId) {
+        switch (tableId) {
+            case 'table-queued-files':
+                return this.selectedQueuedFiles;
+            case 'table-signed-files':
+                return this.selectedSignedFiles;
+            case 'table-failed-files':
+                return this.selectedFailedFiles;
+            default:
+                return [];
+        }
+    }
+
+    /**
+     * Set the per-table selection array for the given table identifier
+     * @param {string} tableId
+     * @param {Array} files
+     */
+    _setSelectedFilesForTable(tableId, files) {
+        switch (tableId) {
+            case 'table-queued-files':
+                this.selectedQueuedFiles = files;
+                break;
+            case 'table-signed-files':
+                this.selectedSignedFiles = files;
+                break;
+            case 'table-failed-files':
+                this.selectedFailedFiles = files;
+                break;
+        }
+    }
+
+    /**
      * Update selectedRows on selection changes
      * @param {object} tableEvent
      */
     handleTableSelection(tableEvent) {
+        // Determine which table fired the event
+        const sourceTable = tableEvent
+            .composedPath()
+            .find((el) => el.tagName && el.tagName.toLowerCase() === 'dbp-esign-tabulator-table');
+        const tableId = sourceTable?.getAttribute('identifier') ?? '';
+
         const allSelectedRows = tableEvent.detail.allselected;
         const selectedRows = tableEvent.detail.selected;
         const deSelectedRows = tableEvent.detail.deselected;
+        let currentSelection = this._getSelectedFilesForTable(tableId);
 
         // Add selected files
         if (Array.isArray(selectedRows) && selectedRows.length > 0) {
@@ -767,10 +861,10 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
                 const fileKey = String(rowData.index);
                 const fileNameCell = rowData.fileName;
                 const fileName = fileNameCell?.file?.name ?? '';
-                const existingIndex = this.selectedFiles.findIndex((row) => row.key === fileKey);
+                const existingIndex = currentSelection.findIndex((row) => row.key === fileKey);
                 if (existingIndex === -1) {
-                    this.selectedFiles = [
-                        ...this.selectedFiles,
+                    currentSelection = [
+                        ...currentSelection,
                         {
                             key: fileKey,
                             filename: fileName,
@@ -780,27 +874,33 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
             });
         }
 
-        // Remove selected files
+        // Remove deselected files
         if (Array.isArray(deSelectedRows) && deSelectedRows.length > 0) {
             deSelectedRows.forEach((deSelectedRow) => {
                 const rowData = deSelectedRow.getData();
                 const fileKey = String(rowData.index);
-                const deselectedIndex = this.selectedFiles.findIndex((row) => row.key === fileKey);
+                const deselectedIndex = currentSelection.findIndex((row) => row.key === fileKey);
                 if (deselectedIndex !== -1) {
-                    this.selectedFiles = [
-                        ...this.selectedFiles.slice(0, deselectedIndex),
-                        ...this.selectedFiles.slice(deselectedIndex + 1),
+                    currentSelection = [
+                        ...currentSelection.slice(0, deselectedIndex),
+                        ...currentSelection.slice(deselectedIndex + 1),
                     ];
                 }
             });
         }
 
-        // If all rows are selected toggle select-all button to deselect-all
-        if (allSelectedRows.length === this.queuedFiles.size) {
-            this.queuedFilesTableAllSelected = true;
-        }
-        if (selectedRows.length === 0) {
-            this.queuedFilesTableAllSelected = false;
+        this._setSelectedFilesForTable(tableId, currentSelection);
+
+        // Toggle select-all / deselect-all button state per table
+        if (tableId === 'table-queued-files') {
+            this.queuedFilesTableAllSelected =
+                allSelectedRows.length > 0 && allSelectedRows.length === this.queuedFiles.size;
+        } else if (tableId === 'table-signed-files') {
+            this.signedFilesTableAllSelected =
+                allSelectedRows.length > 0 && allSelectedRows.length === this.signedFiles.size;
+        } else if (tableId === 'table-failed-files') {
+            this.failedFilesTableAllSelected =
+                allSelectedRows.length > 0 && allSelectedRows.length === this.errorFiles.size;
         }
     }
 
@@ -1090,9 +1190,9 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
             this.tableQueuedFilesTable.setData(tableFiles);
 
             // Set selected rows
-            if (this.selectedFiles.length > 0) {
+            if (this.selectedQueuedFiles.length > 0) {
                 let selectedRows = [];
-                for (const fileObj of Object.values(this.selectedFiles)) {
+                for (const fileObj of Object.values(this.selectedQueuedFiles)) {
                     selectedRows.push(fileObj.key);
                 }
                 this.tableQueuedFilesTable.tabulatorTable.selectRow(selectedRows);
@@ -1361,7 +1461,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         const i18n = this._i18n;
         if (
             this.queuedFiles.size === 0 ||
-            (this.selectedFilesProcessing && this.selectedFiles.length === 0)
+            (this.selectedFilesProcessing && this.selectedQueuedFiles.length === 0)
         ) {
             this.selectedFilesProcessing = false;
             if (this.signedFilesCountToReport > 0) {

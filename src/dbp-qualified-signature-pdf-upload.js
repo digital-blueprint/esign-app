@@ -202,8 +202,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
 
         // Build ordered candidate keys — selected subset or all queued
         let candidateKeys = [];
-        if (this.selectedFiles.length > 0) {
-            for (const selectedFile of this.selectedFiles) {
+        if (this.selectedQueuedFiles.length > 0) {
+            for (const selectedFile of this.selectedQueuedFiles) {
                 if (this.queuedFiles.has(selectedFile.key)) {
                     candidateKeys.push(selectedFile.key);
                 }
@@ -290,6 +290,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             this.activeSigningEntries = [];
             this.sendReportNotification();
             this._('#external-auth').close();
+            this.signingProcessActive = false;
             return;
         }
 
@@ -395,7 +396,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             this.externalAuthInProgress = false;
             this._('#external-auth').close();
 
-            const hasMore = this.queuedFiles.size > 0 || this.selectedFiles.length > 0;
+            const hasMore = this.queuedFiles.size > 0 || this.selectedQueuedFiles.length > 0;
             if (hasMore) {
                 this.processSigningQueue();
             } else {
@@ -463,12 +464,11 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
     }
 
     clearQueuedFiles() {
-        // Delete selected files from the queues
-        if (this.selectedFiles.length) {
-            let filesToRemove = this.selectedFiles.map((selectedFile) => selectedFile.key);
-
-            super.clearQueuedFiles(filesToRemove);
-        }
+        const filesToRemove =
+            this.selectedQueuedFiles.length > 0
+                ? this.selectedQueuedFiles.map((selectedFile) => selectedFile.key)
+                : [...this.queuedFiles.keys()];
+        super.clearQueuedFiles(filesToRemove);
     }
 
     static get styles() {
@@ -674,8 +674,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                         id="clear-queue-button-queued-files"
                                         @click="${this.clearQueuedFiles}"
                                         ?disabled="${this.queuedFiles.size === 0 ||
-                                        this.signingProcessActive ||
-                                        this.selectedFiles.length < 1}"
+                                        this.signingProcessActive}"
                                         class="button">
                                         <dbp-icon name="trash" aria-hidden="true"></dbp-icon>
                                         ${i18n.t('qualified-pdf-upload.clear-all')}
@@ -778,13 +777,46 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                                 aria-hidden="true"></dbp-icon>
                                             ${i18n.t('qualified-pdf-upload.collapse-all')}
                                         </dbp-loading-button>
+
+                                        <dbp-loading-button
+                                            id="select-all-btn-signed-files"
+                                            class="${classMap({
+                                                hidden: this.signedFilesTableAllSelected,
+                                            })}"
+                                            value="${i18n.t('qualified-pdf-upload.select-all')}"
+                                            @click="${() => {
+                                                this.signedFilesTableAllSelected = true;
+                                                this.tableSignedFilesTable.selectAllRows();
+                                            }}"
+                                            title="${i18n.t('qualified-pdf-upload.select-all')}">
+                                            <dbp-icon
+                                                name="select-all"
+                                                aria-hidden="true"></dbp-icon>
+                                            ${i18n.t('qualified-pdf-upload.select-all')}
+                                        </dbp-loading-button>
+
+                                        <dbp-loading-button
+                                            id="deselect-all-btn-signed-files"
+                                            class="${classMap({
+                                                hidden: !this.signedFilesTableAllSelected,
+                                            })}"
+                                            value="${i18n.t('qualified-pdf-upload.deselect-all')}"
+                                            @click="${() => {
+                                                this.signedFilesTableAllSelected = false;
+                                                this.tableSignedFilesTable.deselectAllRows();
+                                            }}"
+                                            title="${i18n.t('qualified-pdf-upload.deselect-all')}">
+                                            <dbp-icon
+                                                name="deselect-all"
+                                                aria-hidden="true"></dbp-icon>
+                                            ${i18n.t('qualified-pdf-upload.deselect-all')}
+                                        </dbp-loading-button>
                                     </div>
                                     <div class="signed-actions">
                                         <button
                                             id="clear-signed-files-btn"
                                             class="clear-signed-files button"
-                                            @click="${this.clearSignedFiles}"
-                                            class="button">
+                                            @click="${this.clearSignedFiles}">
                                             <dbp-icon name="trash" aria-hidden="true"></dbp-icon>
                                             ${i18n.t('qualified-pdf-upload.clear-all')}
                                         </button>
@@ -811,6 +843,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                 id="table-signed-files"
                                 identifier="table-signed-files"
                                 class="table-signed-files"
+                                select-rows-enabled
                                 lang="${this.lang}"></dbp-esign-tabulator-table>
                         </div>
                         <!-- List of errored files -->
@@ -863,6 +896,40 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                             title="${i18n.t('qualified-pdf-upload.collapse-all')}">
                                             ${i18n.t('qualified-pdf-upload.collapse-all')}
                                         </dbp-loading-button>
+
+                                        <dbp-loading-button
+                                            id="select-all-btn-failed-files"
+                                            class="${classMap({
+                                                hidden: this.failedFilesTableAllSelected,
+                                            })}"
+                                            value="${i18n.t('qualified-pdf-upload.select-all')}"
+                                            @click="${() => {
+                                                this.failedFilesTableAllSelected = true;
+                                                this.tableFailedFilesTable.selectAllRows();
+                                            }}"
+                                            title="${i18n.t('qualified-pdf-upload.select-all')}">
+                                            <dbp-icon
+                                                name="select-all"
+                                                aria-hidden="true"></dbp-icon>
+                                            ${i18n.t('qualified-pdf-upload.select-all')}
+                                        </dbp-loading-button>
+
+                                        <dbp-loading-button
+                                            id="deselect-all-btn-failed-files"
+                                            class="${classMap({
+                                                hidden: !this.failedFilesTableAllSelected,
+                                            })}"
+                                            value="${i18n.t('qualified-pdf-upload.deselect-all')}"
+                                            @click="${() => {
+                                                this.failedFilesTableAllSelected = false;
+                                                this.tableFailedFilesTable.deselectAllRows();
+                                            }}"
+                                            title="${i18n.t('qualified-pdf-upload.deselect-all')}">
+                                            <dbp-icon
+                                                name="deselect-all"
+                                                aria-hidden="true"></dbp-icon>
+                                            ${i18n.t('qualified-pdf-upload.deselect-all')}
+                                        </dbp-loading-button>
                                     </div>
                                     <div class="failed-actions">
                                         <button
@@ -882,7 +949,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                                 'qualified-pdf-upload.re-upload-all-button-title',
                                             )}"
                                             class="is-right"
-                                            @click="${this.reUploadAllClickHandler}"
+                                            @click="${this.reUploadClickHandler}"
                                             type="is-primary">
                                             <dbp-icon name="reload" aria-hidden="true"></dbp-icon>
                                             ${i18n.t('qualified-pdf-upload.re-upload-all-button')}
@@ -894,6 +961,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                 id="table-failed-files"
                                 identifier="table-failed-files"
                                 class="table-failed-files"
+                                select-rows-enabled
                                 lang="${this.lang}"></dbp-esign-tabulator-table>
                         </div>
                     </div>
