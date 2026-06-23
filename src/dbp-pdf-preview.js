@@ -677,7 +677,7 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                     const offsetLeft = sigPosMM.left * pointsPerMM;
 
                     // total page size - 5mm - signature block height
-                    const offsetTop = this.canvas.height - offsetBottom - sigSize.height;
+                    const offsetTop = this.canvas.height - offsetBottom - sigSize.height * scale;
 
                     signature.set({
                         scaleX: scale,
