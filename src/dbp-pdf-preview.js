@@ -371,6 +371,7 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
 
         // total pages in pdf
         this.totalPages = this.pdfDoc.numPages;
+
         const page = placementData.currentPage || 1;
 
         // show the first page
@@ -614,7 +615,7 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
         try {
             // get handle of page
             await this.pdfDoc.getPage(pageNumber).then(async (page) => {
-                // original width of the pdf page at scale 1
+                // original width of the pdf page at scale 1 in pt
                 const originalViewport = page.getViewport({scale: 1});
                 this.currentPageOriginalHeight = originalViewport.height;
 
@@ -659,26 +660,32 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
 
                 // set the initial position of the signature
                 if (initSignature && !this.signatureInvisible) {
-                    const sigPosMM = {top: 5, left: 5};
+                    const sigPosMM = {bottom: 5, left: 5};
 
                     const inchPerMM = 0.03937007874;
                     const DPI = 72;
                     const pointsPerMM = inchPerMM * DPI;
 
                     const sigSize = signature.getOriginalSize();
-                    const sigWidth = this.canvas.width * this.previewScale;
-                    const scale = sigWidth / sigSize.width;
 
-                    const offsetTop = sigPosMM.top * pointsPerMM;
+                    // scale the image the same was as the canvas was scaled
+                    // at 72DPI, pt = px
+                    // just make sure that the preview image is the same size (in px) as the real signature
+                    const scale = this.canvas.width / originalViewport.width;
+
+                    const offsetBottom = sigPosMM.bottom * pointsPerMM;
                     const offsetLeft = sigPosMM.left * pointsPerMM;
+
+                    // total page size - 5mm - signature block height
+                    const offsetTop = this.canvas.height - offsetBottom - sigSize.height;
 
                     signature.set({
                         scaleX: scale,
                         scaleY: scale,
                         angle: 0,
                         originX: 'left',
-                        originY: 'bottom',
-                        top: viewport.height - offsetTop,
+                        originY: 'top',
+                        top: offsetTop,
                         left: offsetLeft,
                         lockUniScaling: true, // lock aspect ratio when resizing
                     });
