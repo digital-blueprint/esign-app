@@ -414,7 +414,7 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
 
         // Get signature position and size (bounding rect gives the actual visual bounds)
         const sigBoundingRect = signature.getBoundingRect();
-        const fontSize = 9;
+        const fontSize = 7;
         const lineHeight = fontSize + 3;
         const innerPadding = 4;
         const rowSpacing = 2;
@@ -434,7 +434,7 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
         const annotationBoxWidth = rightBoxWidth;
 
         let currentTop = annotationBoxTop + innerPadding;
-        const textLeft = annotationBoxLeft + innerPadding;
+        const textLeft = wholeBoxLeft + innerPadding;
 
         // First pass: create all label text objects and find maximum label width
         const labelData = [];
@@ -541,26 +541,11 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
             },
         );
 
-        // Create left box rectangle (for logo/seal area)
-        const leftBox = new fabric.Rect({
-            left: wholeBoxLeft,
-            top: wholeBoxTop,
-            width: leftBoxWidth,
-            height: borderHeight,
-            fill: 'transparent',
-            stroke: '#000000',
-            strokeWidth: 1,
-            selectable: false,
-            evented: false,
-            originX: 'left',
-            originY: 'top',
-        });
-
         // Create right border rectangle for annotations
         const rightBorder = new fabric.Rect({
-            left: annotationBoxLeft,
+            left: wholeBoxLeft,
             top: annotationBoxTop,
-            width: annotationBoxWidth,
+            width: annotationBoxWidth + leftBoxWidth,
             height: borderHeight,
             fill: 'transparent',
             stroke: '#000000',
@@ -571,7 +556,6 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
             originY: 'top',
         });
 
-        this.fabricCanvas.add(leftBox);
         this.fabricCanvas.add(rightBorder);
 
         // Add vertical line between labels and values
