@@ -350,7 +350,7 @@ class PredefinedSignature extends ScopedElementsMixin(LangMixin(BaseLitElement, 
     render() {
         const i18n = this._i18n;
 
-        let previewUrl = this.entryPointUrl + '/esign/preview/' + 'official';
+        let previewUrl = this.entryPointUrl + '/esign/preview/' + encodeURIComponent('official');
 
         switch (this._state) {
             case STATE.LOADING:

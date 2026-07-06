@@ -157,7 +157,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
     }
 
     fetchProfiles(type) {
-        fetch(this.entryPointUrl + '/esign/profiles?type=' + type, {
+        fetch(this.entryPointUrl + '/esign/profiles?type=' + encodeURIComponent(type), {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',

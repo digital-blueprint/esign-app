@@ -402,7 +402,8 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         let previewUrl = '';
 
         if (this.selectedProfile) {
-            previewUrl = this.entryPointUrl + '/esign/preview/' + this.selectedProfile;
+            previewUrl =
+                this.entryPointUrl + '/esign/preview/' + encodeURIComponent(this.selectedProfile);
         }
 
         const i18n = this._i18n;
