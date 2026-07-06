@@ -3,7 +3,6 @@ import {LangMixin, ScopedElementsMixin} from '@dbp-toolkit/common';
 import {MiniSpinner, Icon} from '@dbp-toolkit/common';
 import * as commonStyles from '@dbp-toolkit/common/styles';
 import * as commonUtils from '@dbp-toolkit/common/utils';
-import {name as pkgName} from './../package.json';
 import {createInstance} from './i18n.js';
 import {BaseLitElement} from './base-element.js';
 import {PdfPreview} from './dbp-pdf-preview.js';
@@ -350,6 +349,9 @@ class PredefinedSignature extends ScopedElementsMixin(LangMixin(BaseLitElement, 
 
     render() {
         const i18n = this._i18n;
+
+        let previewUrl = this.entryPointUrl + '/esign/preview/' + 'official';
+
         switch (this._state) {
             case STATE.LOADING:
                 return html`
@@ -364,10 +366,6 @@ class PredefinedSignature extends ScopedElementsMixin(LangMixin(BaseLitElement, 
                 if (!task) return html``;
                 const total = this._tasks.length;
                 const current = this._currentTaskIndex + 1;
-                const placeholderUrl = commonUtils.getAssetURL(
-                    pkgName,
-                    'official-signature-placeholder.png',
-                );
                 const prevIdx = this._currentTaskIndex - 1;
                 const nextIdx = this._currentTaskIndex + 1;
                 return html`
@@ -426,7 +424,7 @@ class PredefinedSignature extends ScopedElementsMixin(LangMixin(BaseLitElement, 
                     </div>
                     <dbp-pdf-preview
                         lang="${this.lang}"
-                        signature-placeholder-image-src="${placeholderUrl}"
+                        signature-placeholder-image-src="${previewUrl}"
                         don-t-show-buttons></dbp-pdf-preview>
                 `;
             }
