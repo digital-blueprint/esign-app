@@ -473,9 +473,9 @@ export class PdfAnnotationView extends LangMixin(
                                 ${i18n.t('annotation-button-title')}
                             </button>
                             <button
-                                class="button clear-all-button ${this.enableRemoveAll
-                                    ? 'btn-visible'
-                                    : 'btn-hidden'}"
+                                class="button clear-all-button ${
+                                    this.enableRemoveAll ? 'btn-visible' : 'btn-hidden'
+                                }"
                                 title="${i18n.t('annotation-view.delete-all-button-title')}"
                                 @click="${() => {
                                     this.deleteAll();
@@ -500,8 +500,10 @@ export class PdfAnnotationView extends LangMixin(
                         </button>
                         <button
                             class="button is-primary save-all-button"
-                            ?disabled="${!this.annotationRows.some((row) => row.isSelected) &&
-                            !this.hasChanges}"
+                            ?disabled="${
+                                !this.annotationRows.some((row) => row.isSelected) &&
+                                !this.hasChanges
+                            }"
                             title="${i18n.t('annotation-view.save-all-button-title')}"
                             @click="${() => {
                                 this.saveAll();

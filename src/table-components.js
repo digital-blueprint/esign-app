@@ -105,23 +105,27 @@ export class FilenameLabel extends LangMixin(ScopedElementsMixin(DBPLitElement),
         let i18n = this._i18n;
         return html`
             <div class="filename">${this.file ? this.file.name : ``}</div>
-            ${this.isPlacementMissing
-                ? html`
-                      <dbp-tooltip
-                          text-content="${i18n.t('label-manual-positioning-missing')}"
-                          icon-name="warning-high"
-                          role="tooltip"
-                          aria-label="${i18n.t('label-manual-positioning-missing')}"></dbp-tooltip>
-                  `
-                : ''}
-            ${this.isDownloaded
-                ? html`
-                      <dbp-icon
-                          name="download-complete"
-                          title="${i18n.t('download-file-completed')}"
-                          aria-label="${i18n.t('download-file-completed')}"></dbp-icon>
-                  `
-                : ``}
+            ${
+                this.isPlacementMissing
+                    ? html`
+                          <dbp-tooltip
+                              text-content="${i18n.t('label-manual-positioning-missing')}"
+                              icon-name="warning-high"
+                              role="tooltip"
+                              aria-label="${i18n.t('label-manual-positioning-missing')}"></dbp-tooltip>
+                      `
+                    : ''
+            }
+            ${
+                this.isDownloaded
+                    ? html`
+                          <dbp-icon
+                              name="download-complete"
+                              title="${i18n.t('download-file-completed')}"
+                              aria-label="${i18n.t('download-file-completed')}"></dbp-icon>
+                      `
+                    : ``
+            }
         `;
     }
 }
@@ -278,19 +282,21 @@ export class AnnotationsButton extends LangMixin(
                     class="annotation-button"
                     aria-label="${this._i18n.t('annotation-button-title')}"
                     title="${this._i18n.t('annotation-button-title')}"></dbp-icon-button>
-                ${this.annotations.length < 1
-                    ? html`
-                          <span class="annotation-plus">+</span>
-                      `
-                    : html`
-                          <span
-                              class="annotation-count"
-                              title="${this._i18n.t('annotations-count-text', {
-                                  annotationCount: this.annotations.length,
-                              })}">
-                              ${this.annotations.length}
-                          </span>
-                      `}
+                ${
+                    this.annotations.length < 1
+                        ? html`
+                              <span class="annotation-plus">+</span>
+                          `
+                        : html`
+                              <span
+                                  class="annotation-count"
+                                  title="${this._i18n.t('annotations-count-text', {
+                                      annotationCount: this.annotations.length,
+                                  })}">
+                                  ${this.annotations.length}
+                              </span>
+                          `
+                }
             </span>
         `;
     }
