@@ -1180,8 +1180,9 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                                 @click="${() => {
                                     this.rotateSignature();
                                 }}"
-                                ?disabled="${this.isPageRenderingInProgress ||
-                                !this.isShowPlacement}">
+                                ?disabled="${
+                                    this.isPageRenderingInProgress || !this.isShowPlacement
+                                }">
                                 <dbp-icon name="spinner-arrow" aria-hidden="true"></dbp-icon>
                                 ${i18n.t('pdf-preview.rotate')}
                             </button>

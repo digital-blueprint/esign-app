@@ -375,25 +375,29 @@ class PredefinedSignature extends ScopedElementsMixin(LangMixin(BaseLitElement, 
                         <span class="filename">${task.file.name}</span>
                         <span class="progress">
                             ${i18n.t('predefined-signature.document-progress', {current, total})}
-                            ${task.confirmed
-                                ? html`
-                                      &#10003;
-                                  `
-                                : ''}
+                            ${
+                                task.confirmed
+                                    ? html`
+                                          &#10003;
+                                      `
+                                    : ''
+                            }
                         </span>
                     </div>
                     <div class="review-actions">
-                        ${total > 1
-                            ? html`
-                                  <button
-                                      class="btn btn-secondary"
-                                      title="${i18n.t('predefined-signature.prev-document')}"
-                                      ?disabled="${prevIdx < 0}"
-                                      @click="${() => this._navigateTo(prevIdx)}">
-                                      &lt;&lt;
-                                  </button>
-                              `
-                            : ''}
+                        ${
+                            total > 1
+                                ? html`
+                                      <button
+                                          class="btn btn-secondary"
+                                          title="${i18n.t('predefined-signature.prev-document')}"
+                                          ?disabled="${prevIdx < 0}"
+                                          @click="${() => this._navigateTo(prevIdx)}">
+                                          &lt;&lt;
+                                      </button>
+                                  `
+                                : ''
+                        }
                         <button class="btn btn-primary" @click="${this._confirmCurrent}">
                             ${i18n.t('predefined-signature.confirm-button')}
                         </button>
@@ -406,17 +410,19 @@ class PredefinedSignature extends ScopedElementsMixin(LangMixin(BaseLitElement, 
                         <button class="btn btn-secondary" @click="${this._cancelSigning}">
                             ${i18n.t('predefined-signature.cancel-button')}
                         </button>
-                        ${total > 1
-                            ? html`
-                                  <button
-                                      class="btn btn-secondary"
-                                      title="${i18n.t('predefined-signature.next-document')}"
-                                      ?disabled="${nextIdx >= total}"
-                                      @click="${() => this._navigateTo(nextIdx)}">
-                                      &gt;&gt;
-                                  </button>
-                              `
-                            : ''}
+                        ${
+                            total > 1
+                                ? html`
+                                      <button
+                                          class="btn btn-secondary"
+                                          title="${i18n.t('predefined-signature.next-document')}"
+                                          ?disabled="${nextIdx >= total}"
+                                          @click="${() => this._navigateTo(nextIdx)}">
+                                          &gt;&gt;
+                                      </button>
+                                  `
+                                : ''
+                        }
                     </div>
                     <dbp-pdf-preview
                         lang="${this.lang}"
@@ -443,18 +449,20 @@ class PredefinedSignature extends ScopedElementsMixin(LangMixin(BaseLitElement, 
                     <div class="state-done">
                         <dbp-icon name="checkmark-circle" style="font-size:2em"></dbp-icon>
                         <p>${i18n.t('predefined-signature.done', {count: this._tasks.length})}</p>
-                        ${this._signingErrors.length > 0
-                            ? html`
-                                  <p>${i18n.t('predefined-signature.done-with-errors')}</p>
-                                  <ul class="error-list">
-                                      ${this._signingErrors.map(
-                                          (e) => html`
-                                              <li>${e.filename}: ${e.message}</li>
-                                          `,
-                                      )}
-                                  </ul>
-                              `
-                            : ''}
+                        ${
+                            this._signingErrors.length > 0
+                                ? html`
+                                      <p>${i18n.t('predefined-signature.done-with-errors')}</p>
+                                      <ul class="error-list">
+                                          ${this._signingErrors.map(
+                                              (e) => html`
+                                                  <li>${e.filename}: ${e.message}</li>
+                                              `,
+                                          )}
+                                      </ul>
+                                  `
+                                : ''
+                        }
                     </div>
                 `;
 

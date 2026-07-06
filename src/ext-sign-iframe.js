@@ -157,19 +157,23 @@ export class ExternalSignIFrame extends LangMixin(ScopedElementsMixin(LitElement
             : undefined;
 
         return html`
-            ${loading
-                ? html`
-                      <dbp-mini-spinner></dbp-mini-spinner>
-                  `
-                : html``}
-            <div class="title">
-                ${currentTitle && active
+            ${
+                loading
                     ? html`
-                          <p>${currentTitle}</p>
+                          <dbp-mini-spinner></dbp-mini-spinner>
                       `
-                    : html`
-                          &nbsp;
-                      `}
+                    : html``
+            }
+            <div class="title">
+                ${
+                    currentTitle && active
+                        ? html`
+                              <p>${currentTitle}</p>
+                          `
+                        : html`
+                              &nbsp;
+                          `
+                }
             </div>
             <!-- "scrolling" is deprecated, but still seem to help -->
             <iframe

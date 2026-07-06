@@ -546,9 +546,11 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                         <p class="description">${i18n.t('qualified-pdf-upload.upload-text')}</p>
                         <dbp-select
                             id="profile-select-dropdown"
-                            label="${this.selectedProfile
-                                ? this.getProfileDisplayNameInLanguage(this.selectedProfile)
-                                : i18n.t('official-pdf-upload.default-dropdown-text')}"
+                            label="${
+                                this.selectedProfile
+                                    ? this.getProfileDisplayNameInLanguage(this.selectedProfile)
+                                    : i18n.t('official-pdf-upload.default-dropdown-text')
+                            }"
                             .options=${profileOptions}
                             align="left"
                             @change="${this.profileSelection}"></dbp-select>
@@ -582,8 +584,9 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                             text="${i18n.t('qualified-pdf-upload.upload-area-text')}"
                             button-label="${i18n.t('qualified-pdf-upload.upload-button-label')}"
                             @dbp-file-source-file-selected="${this.onFileSelected}"
-                            @dbp-file-source-switched="${this
-                                .onFileSourceSwitch}"></dbp-file-source>
+                            @dbp-file-source-switched="${
+                                this.onFileSourceSwitch
+                            }"></dbp-file-source>
                     </div>
                 </div>
                 <div id="grid-container">
@@ -673,8 +676,9 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                     <button
                                         id="clear-queue-button-queued-files"
                                         @click="${this.clearQueuedFiles}"
-                                        ?disabled="${this.queuedFiles.size === 0 ||
-                                        this.signingProcessActive}"
+                                        ?disabled="${
+                                            this.queuedFiles.size === 0 || this.signingProcessActive
+                                        }"
                                         class="button">
                                         <dbp-icon name="trash" aria-hidden="true"></dbp-icon>
                                         ${i18n.t('qualified-pdf-upload.clear-all')}
@@ -702,18 +706,20 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                     lang="${this.lang}"
                                     select-rows-enabled></dbp-esign-tabulator-table>
                             </div>
-                            ${this.anyPlacementMissing
-                                ? html`
-                                      <div class="legend">
-                                          <dbp-icon
-                                              name="warning-high"
-                                              aria-hidden="true"></dbp-icon>
-                                          <span class="legend-description">
-                                              ${i18n.t('label-manual-positioning-missing')}
-                                          </span>
-                                      </div>
-                                  `
-                                : ''}
+                            ${
+                                this.anyPlacementMissing
+                                    ? html`
+                                          <div class="legend">
+                                              <dbp-icon
+                                                  name="warning-high"
+                                                  aria-hidden="true"></dbp-icon>
+                                              <span class="legend-description">
+                                                  ${i18n.t('label-manual-positioning-missing')}
+                                              </span>
+                                          </div>
+                                      `
+                                    : ''
+                            }
                             <!-- Text "queue empty" -->
                             <div
                                 class="empty-queue control ${classMap({
@@ -971,9 +977,11 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                             id="pdf-preview"
                             modal-id="pdf-preview-modal"
                             class="modal--pdf-preview"
-                            title="${this.withSigBlock
-                                ? i18n.t('official-pdf-upload.signature-placement-label')
-                                : i18n.t('official-pdf-upload.preview-label')}">
+                            title="${
+                                this.withSigBlock
+                                    ? i18n.t('official-pdf-upload.signature-placement-label')
+                                    : i18n.t('official-pdf-upload.preview-label')
+                            }">
                             <div slot="header" class="header"></div>
                             <div slot="content">
                                 <dbp-pdf-preview
@@ -1005,9 +1013,11 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                 </div>
                                 <div class="filename">
                                     <strong>
-                                        ${this.annotationEntry?.file !== undefined
-                                            ? this.annotationEntry.file.name
-                                            : ''}
+                                        ${
+                                            this.annotationEntry?.file !== undefined
+                                                ? this.annotationEntry.file.name
+                                                : ''
+                                        }
                                     </strong>
                                     (${humanFileSize(
                                         this.annotationEntry?.file !== undefined
@@ -1020,8 +1030,9 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                 <dbp-pdf-annotation-view
                                     lang="${this.lang}"
                                     @dbp-pdf-annotations-save="${this.processAnnotationEvent}"
-                                    @dbp-pdf-annotations-cancel="${this
-                                        .processAnnotationCancelEvent}"></dbp-pdf-annotation-view>
+                                    @dbp-pdf-annotations-cancel="${
+                                        this.processAnnotationCancelEvent
+                                    }"></dbp-pdf-annotation-view>
                             </div>
                         </dbp-modal>
                         <!-- File upload progress -->
