@@ -17,7 +17,7 @@ import {humanFileSize} from '@dbp-toolkit/common/i18next.js';
  * PREVIEW_RESOLUTION_DPI / 72 times larger than the PDF-space size and needs to
  * be scaled down accordingly when placing it on the canvas.
  */
-const PREVIEW_RESOLUTION_DPI = 216;
+const PREVIEW_RESOLUTION_DPI = 72 * 3;
 const PDF_DPI = 72;
 
 /**
@@ -181,6 +181,7 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
         this.fabricCanvas = new that.fabric.Canvas(fabricCanvas, {
             selection: false,
             allowTouchScrolling: true,
+            enableRetinaScaling: true,
         });
 
         if (!this.signatureInvisible) {
@@ -206,6 +207,12 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
 
             // disable controls, we currently don't want resizing and do rotation with a button
             image.hasControls = false;
+
+            // use a high-quality resize filter to avoid aliasing artifacts when scaling the image down
+            image.resizeFilter = new that.fabric.filters.Resize({
+                resizeType: 'lanczos',
+                lanczosLobes: 3,
+            });
 
             // we will resize the image when the initial pdf page is loaded
             that.fabricCanvas.add(image);
@@ -629,25 +636,41 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                     width += dataColumnWidth - 12;
                 }
 
-                this.canvasToPdfScale = this.canvas.width / originalViewport.width;
+                // render the canvas backing store at the device pixel ratio so
+                // the rasterized PDF page stays sharp on HiDPI/retina displays,
+                // while keeping the logical (CSS) size as our coordinate system
+                const dpr = window.devicePixelRatio || 1;
 
-                this.fabricCanvas.setDimensions({width: width});
-                this.canvas.width = width;
-
-                // as the canvas is of a fixed width we need to adjust the scale of the viewport where page is rendered
                 const oldScale = this.canvasToPdfScale;
-                this.canvasToPdfScale = this.canvas.width / originalViewport.width;
 
-                // get viewport to render the page at required scale
-                const viewport = page.getViewport({scale: this.canvasToPdfScale});
+                // the logical scale between the (CSS) canvas and the PDF page
+                this.canvasToPdfScale = width / originalViewport.width;
 
-                // set canvas height same as viewport height
-                this.fabricCanvas.setDimensions({height: viewport.height});
+                // logical size of the canvas (in CSS px, matching PDF-space via
+                // canvasToPdfScale)
+                const logicalWidth = width;
+                const logicalHeight = page.getViewport({scale: this.canvasToPdfScale}).height;
+
+                // fabric works in logical (CSS) coordinates; it applies the
+                // device pixel ratio internally via enableRetinaScaling
+                this.fabricCanvas.setDimensions({
+                    width: logicalWidth,
+                    height: logicalHeight,
+                });
+
+                // get viewport to render the PDF page at the device resolution
+                const viewport = page.getViewport({scale: this.canvasToPdfScale * dpr});
+
+                // the pdf canvas backing store is at device resolution, but it is
+                // displayed at the logical size via CSS
+                this.canvas.width = viewport.width;
                 this.canvas.height = viewport.height;
+                this.canvas.style.width = logicalWidth + 'px';
+                this.canvas.style.height = logicalHeight + 'px';
 
                 // setting page loader height for smooth experience
-                this._('#page-loader').style.height = this.canvas.height + 'px';
-                this._('#page-loader').style.lineHeight = this.canvas.height + 'px';
+                this._('#page-loader').style.height = logicalHeight + 'px';
+                this._('#page-loader').style.lineHeight = logicalHeight + 'px';
 
                 // page is rendered on <canvas> element
                 const render_context = {
@@ -675,13 +698,14 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                     // scale the image the same way as the canvas was scaled and
                     // correct for the higher resolution of the preview image, so the
                     // signature ends up the same size (in px) as the real signature
-                    const scale = (this.canvas.width / originalViewport.width) * previewDpiScale;
+                    // (all fabric coordinates are in logical/CSS pixels)
+                    const scale = (logicalWidth / originalViewport.width) * previewDpiScale;
 
                     const offsetBottom = sigPosMM.bottom * pointsPerMM;
                     const offsetLeft = sigPosMM.left * pointsPerMM;
 
                     // total page size - 5mm - signature block height
-                    const offsetTop = this.canvas.height - offsetBottom - sigSize.height * scale;
+                    const offsetTop = logicalHeight - offsetBottom - sigSize.height * scale;
 
                     signature.set({
                         scaleX: scale,
