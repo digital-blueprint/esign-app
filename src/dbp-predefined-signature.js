@@ -350,8 +350,6 @@ class PredefinedSignature extends ScopedElementsMixin(LangMixin(BaseLitElement, 
     render() {
         const i18n = this._i18n;
 
-        let previewUrl = this.entryPointUrl + '/esign/preview/' + encodeURIComponent('official');
-
         switch (this._state) {
             case STATE.LOADING:
                 return html`
@@ -424,7 +422,8 @@ class PredefinedSignature extends ScopedElementsMixin(LangMixin(BaseLitElement, 
                     </div>
                     <dbp-pdf-preview
                         lang="${this.lang}"
-                        signature-placeholder-image-src="${previewUrl}"
+                        entry-point-url="${this.entryPointUrl}"
+                        profile-id="official"
                         don-t-show-buttons></dbp-pdf-preview>
                 `;
             }

@@ -12,6 +12,15 @@ import {send} from '@dbp-toolkit/common/notification';
 import {humanFileSize} from '@dbp-toolkit/common/i18next.js';
 
 /**
+ * The resolution (in DPI) we request the signature placeholder preview image at.
+ * The PDF coordinate system uses 72 DPI (1pt = 1px), so the returned image is
+ * PREVIEW_RESOLUTION_DPI / 72 times larger than the PDF-space size and needs to
+ * be scaled down accordingly when placing it on the canvas.
+ */
+const PREVIEW_RESOLUTION_DPI = 216;
+const PDF_DPI = 72;
+
+/**
  * PdfPreview web component
  */
 export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), createInstance) {
@@ -30,7 +39,8 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
         this.canvasToPdfScale = 1.0;
         this.previewScale = 0.5;
         this.currentPageOriginalHeight = 0;
-        this.placeholder = '';
+        this.entryPointUrl = '';
+        this.profileId = '';
         this.border_width = 2;
         this.allowSignatureRotation = false;
         this.signaturePlacementMode = 'auto';
@@ -65,7 +75,8 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
             isPageLoaded: {type: Boolean, attribute: false},
             showErrorMessage: {type: Boolean, attribute: false},
             isShowPlacement: {type: Boolean, attribute: false},
-            placeholder: {type: String, attribute: 'signature-placeholder-image-src'},
+            entryPointUrl: {type: String, attribute: 'entry-point-url'},
+            profileId: {type: String, attribute: 'profile-id'},
             allowSignatureRotation: {type: Boolean, attribute: 'allow-signature-rotation'},
             previewScale: {type: Number, attribute: 'preview-scale'},
             showSignaturePlacementDescription: {type: Boolean},
@@ -109,10 +120,26 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
 
         this.updateComplete.then(async () => {
             that.fabric = await import('fabric');
-            if (that.placeholder) {
+            if (that.profileId) {
                 await that.createFabric(that);
             }
         });
+    }
+
+    /**
+     * Builds the URL of the signature placeholder preview image for the
+     * current profile, requesting it at PREVIEW_RESOLUTION_DPI.
+     *
+     * @returns {string}
+     */
+    getPreviewImageUrl() {
+        return (
+            this.entryPointUrl +
+            '/esign/preview/' +
+            encodeURIComponent(this.profileId) +
+            '?resolution=' +
+            encodeURIComponent(PREVIEW_RESOLUTION_DPI)
+        );
     }
 
     update(changedProperties) {
@@ -120,9 +147,9 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
         const that = this;
         changedProperties.forEach((oldValue, propName) => {
             switch (propName) {
-                case 'placeholder':
+                case 'profileId':
                     this.updateComplete.then(async () => {
-                        if (that.fabric && that.placeholder && that.auth) {
+                        if (that.fabric && that.profileId && that.auth) {
                             if (that.fabricCanvas) {
                                 that.isShowPlacement = true;
                                 await that.fabricCanvas.dispose();
@@ -157,7 +184,7 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
         });
 
         if (!this.signatureInvisible) {
-            const res = await fetch(this.placeholder, {
+            const res = await fetch(this.getPreviewImageUrl(), {
                 headers: {
                     Authorization: `Bearer ${this.auth.token}`,
                 },
@@ -635,15 +662,20 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                     const sigPosMM = {bottom: 5, left: 5};
 
                     const inchPerMM = 0.03937007874;
-                    const DPI = 72;
-                    const pointsPerMM = inchPerMM * DPI;
+                    const pointsPerMM = inchPerMM * PDF_DPI;
 
                     const sigSize = signature.getOriginalSize();
 
-                    // scale the image the same was as the canvas was scaled
-                    // at 72DPI, pt = px
-                    // just make sure that the preview image is the same size (in px) as the real signature
-                    const scale = this.canvas.width / originalViewport.width;
+                    // The preview image is rendered at PREVIEW_RESOLUTION_DPI while the
+                    // PDF coordinate system uses PDF_DPI (1pt = 1px). This makes the
+                    // image PREVIEW_RESOLUTION_DPI / PDF_DPI times larger (in px) than
+                    // its actual size in PDF space, so we compensate for that factor.
+                    const previewDpiScale = PDF_DPI / PREVIEW_RESOLUTION_DPI;
+
+                    // scale the image the same way as the canvas was scaled and
+                    // correct for the higher resolution of the preview image, so the
+                    // signature ends up the same size (in px) as the real signature
+                    const scale = (this.canvas.width / originalViewport.width) * previewDpiScale;
 
                     const offsetBottom = sigPosMM.bottom * pointsPerMM;
                     const offsetLeft = sigPosMM.left * pointsPerMM;

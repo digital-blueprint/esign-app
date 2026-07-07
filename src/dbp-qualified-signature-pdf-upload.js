@@ -525,13 +525,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
     }
 
     render() {
-        let previewUrl = '';
-
-        if (this.selectedProfile) {
-            previewUrl =
-                this.entryPointUrl + '/esign/preview/' + encodeURIComponent(this.selectedProfile);
-        }
-
         const i18n = this._i18n;
 
         let profileOptions = this.getProfileOptions();
@@ -989,7 +982,8 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                     subscribe="auth"
                                     lang="${this.lang}"
                                     allow-signature-rotation
-                                    signature-placeholder-image-src="${previewUrl}"
+                                    entry-point-url="${this.entryPointUrl}"
+                                    profile-id="${this.selectedProfile}"
                                     preview-scale="0.375"
                                     profile-lang="${this.getLanguageOfSelectedProfile()}"
                                     ?signature-invisible="${this.getInvisibilityOfSelectedProfile()}"
