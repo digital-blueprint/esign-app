@@ -51,6 +51,8 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
         this.fabric = null;
         this.profileLanguage = '';
         this.signatureInvisible = false;
+        this.previewImage = null;
+        this.fakeAnnotations = false;
 
         this._onWindowResize = this._onWindowResize.bind(this);
     }
@@ -165,6 +167,67 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
         });
     }
 
+    async fetchPreviewImage(that) {
+        let body = {annotations: []};
+
+        this.annotations.forEach((annotation) => {
+            body['annotations'].push({
+                [getAnnotationTypes(annotation.annotationType).name[this.profileLanguage]]:
+                    annotation.value,
+            });
+        });
+
+        const res = await fetch(this.getPreviewImageUrl(), {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${this.auth.token}`,
+                'Content-Type': `application/json`,
+            },
+            body: JSON.stringify(body),
+        });
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        let image = await that.fabric.FabricImage.fromURL(url);
+        URL.revokeObjectURL(url);
+
+        return image;
+    }
+
+    // same as fetchPreviewImage but with GET
+    // this should only fetch the base image, no annotations added
+    // this function is needed to see if we need to fake the annotations in js or if they are included in the image
+    async getPreviewImage(that) {
+        const res = await fetch(this.getPreviewImageUrl(), {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${this.auth.token}`,
+            },
+        });
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        let image = await that.fabric.FabricImage.fromURL(url);
+        URL.revokeObjectURL(url);
+
+        return image;
+    }
+
+    stylePreviewImage(that, image) {
+        // add a red border around the signature placeholder
+        image.set({
+            stroke: '#e4154b',
+            strokeWidth: that.border_width,
+            strokeUniform: true,
+            centeredRotation: true,
+            originX: 'left',
+            originY: 'top',
+        });
+
+        // disable controls, we currently don't want resizing and do rotation with a button
+        image.hasControls = false;
+
+        return image;
+    }
+
     async createFabric(that) {
         that.canvas = that._('#pdf-canvas');
 
@@ -185,28 +248,11 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
         });
 
         if (!this.signatureInvisible) {
-            const res = await fetch(this.getPreviewImageUrl(), {
-                headers: {
-                    Authorization: `Bearer ${this.auth.token}`,
-                },
-            });
-            const blob = await res.blob();
-            const url = URL.createObjectURL(blob);
-            let image = await that.fabric.FabricImage.fromURL(url);
-            URL.revokeObjectURL(url);
-
-            // add a red border around the signature placeholder
-            image.set({
-                stroke: '#e4154b',
-                strokeWidth: that.border_width,
-                strokeUniform: true,
-                centeredRotation: true,
-                originX: 'left',
-                originY: 'top',
-            });
-
-            // disable controls, we currently don't want resizing and do rotation with a button
-            image.hasControls = false;
+            // TODO remove code for local placeholder as soon as we can fetch the qualified one as well
+            // add signature image
+            let image = await this.fetchPreviewImage(that);
+            image = this.stylePreviewImage(that, image);
+            this.previewImage = image;
 
             // use a high-quality resize filter to avoid aliasing artifacts when scaling the image down
             image.resizeFilter = new that.fabric.filters.Resize({
@@ -223,18 +269,14 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                 },
                 'object:modified': function (e) {
                     e.target.opacity = 1;
-                    that.updateAnnotationTexts();
                 },
             });
-
-            // this.fabricCanvas.on("object:moved", function(opt){ console.log(opt); });
 
             // disallow moving of signature outside of canvas boundaries
             this.fabricCanvas.on('object:moving', function (e) {
                 let obj = e.target;
                 obj.setCoords();
                 that.enforceCanvasBoundaries(obj);
-                that.updateAnnotationTexts();
             });
 
             // TODO: prevent scaling the signature in a way that it is crossing the canvas boundaries
@@ -306,6 +348,40 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
         this.viewOnlyPlacementPage = null;
         const placementMode = entry.placementMode;
         let placementData = {};
+
+        // always remove old previewImage and fetch new one
+        this.fabricCanvas.remove(this.previewImage);
+        const that = this;
+        that.fabric = await import('fabric');
+
+        // check if GET and POST return different sized images if annotations are given
+        // that would indicate that pdf-as does not support user_text in previewImages yet
+        let getImage = await this.getPreviewImage(that);
+        let postImage = null;
+        try {
+            postImage = await this.fetchPreviewImage(that);
+        } catch (e) {
+            console.warn(e);
+        }
+
+        if (
+            postImage === null ||
+            (this.fakeAnnotations === false &&
+                this.annotations.length !== 0 &&
+                getImage.height === postImage.height)
+        ) {
+            // if the images are the same size, then fake user_text in js with fabric
+            this.fabricCanvas.on('object:moving', function (e) {
+                that.updateAnnotationTexts();
+            });
+            this.fakeAnnotations = true;
+        }
+
+        // add new image to canvas
+        let image = postImage !== null ? postImage : getImage;
+        image = this.stylePreviewImage(that, image);
+        this.fabricCanvas.add(image);
+        this.previewImage = image;
 
         const hasManualPlacement =
             placementMode === 'manual' && entry.signaturePlacement !== undefined;
@@ -402,6 +478,12 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
 
         this.isPageLoaded = true;
 
+        // needed here to reset user_text back under image correctly after manual placement has already been done
+        // and after the annotations were changed
+        if (this.fakeAnnotations) {
+            this.updateAnnotationTexts();
+        }
+
         // fix width adaption after "this.isPageLoaded = true"
         await this.showPage(page);
     }
@@ -410,7 +492,7 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
      * @returns {import('fabric').FabricImage}
      */
     getSignatureRect() {
-        return /** @type {import('fabric').FabricImage} */ (this.fabricCanvas.item(0));
+        return /** @type {import('fabric').FabricImage} */ (this.previewImage);
     }
 
     /**
@@ -423,7 +505,7 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
         // Remove existing annotation text objects (items beyond index 0)
         const objectsToRemove = [];
         this.fabricCanvas.forEachObject((obj, index) => {
-            if (index > 0) {
+            if (obj !== signature) {
                 objectsToRemove.push(obj);
             }
         });
@@ -678,7 +760,7 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                     viewport: viewport,
                 };
 
-                let signature = this.getSignatureRect();
+                let signature = this.previewImage;
 
                 // set the initial position of the signature
                 if (initSignature && !this.signatureInvisible) {
@@ -686,7 +768,6 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
 
                     const inchPerMM = 0.03937007874;
                     const pointsPerMM = inchPerMM * PDF_DPI;
-
                     const sigSize = signature.getOriginalSize();
 
                     // The preview image is rendered at PREVIEW_RESOLUTION_DPI while the
@@ -745,8 +826,6 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                 // render the page contents in the canvas
                 try {
                     await page.render(render_context).promise;
-                    // Update annotation texts after page render
-                    await that.updateAnnotationTexts();
 
                     // Scroll canvas into view at the bottom after render completes
                     const wrapper = that._('#canvas-wrapper');
