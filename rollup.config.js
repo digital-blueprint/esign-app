@@ -5,7 +5,14 @@ import license from 'rollup-plugin-license';
 import emitEJS from 'rollup-plugin-emit-ejs';
 import {getBabelOutputPlugin} from '@rollup/plugin-babel';
 import {replacePlugin} from 'rolldown/plugins';
-import {getPackagePath, getBuildInfo, getDistPath, assetPlugin} from '@dbp-toolkit/dev-utils';
+import {
+    getPackagePath,
+    getBuildInfo,
+    getDistPath,
+    assetPlugin,
+    getPort,
+    getResolveModules,
+} from '@dbp-toolkit/dev-utils';
 import {createRequire} from 'node:module';
 
 const require = createRequire(import.meta.url);
@@ -167,6 +174,9 @@ export default (async () => {
             sourcemap: true,
             minify: doMinify,
             cleanDir: true,
+        },
+        resolve: {
+            modules: getResolveModules(),
         },
         treeshake: treeshake,
         // external: ['zlib', 'http', 'fs', 'https', 'url'],
@@ -413,7 +423,7 @@ Dependencies:
                 ? serve({
                       contentBase: '.',
                       host: '127.0.0.1',
-                      port: 8001,
+                      port: await getPort('127.0.0.1', [8001, 8004]),
                       historyApiFallback: config.basePath + pkg.internalName + '.html',
                       headers: {
                           'Content-Security-Policy': config.CSP,
