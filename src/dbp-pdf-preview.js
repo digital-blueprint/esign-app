@@ -2,7 +2,7 @@ import {createInstance} from './i18n.js';
 import {css, html} from 'lit';
 import {classMap} from 'lit/directives/class-map.js';
 import {live} from 'lit/directives/live.js';
-import {LangMixin, ScopedElementsMixin} from '@dbp-toolkit/common';
+import {LangMixin, ScopedElementsMixin, AuthMixin} from '@dbp-toolkit/common';
 import DBPLitElement from '@dbp-toolkit/common/dbp-lit-element';
 import {MiniSpinner, Icon} from '@dbp-toolkit/common';
 import {importPdfJs, getPdfJsDocument} from '@dbp-toolkit/pdf-viewer';
@@ -23,7 +23,9 @@ const PDF_DPI = 72;
 /**
  * PdfPreview web component
  */
-export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), createInstance) {
+export class PdfPreview extends AuthMixin(
+    LangMixin(ScopedElementsMixin(DBPLitElement), createInstance),
+) {
     constructor() {
         super();
         this.pdfDoc = null;
@@ -340,7 +342,6 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
     async showEntry(entry, isShowPlacement = false, viewOnly = false) {
         // store current entry so the render template can show filename/filesize
         this.previewEntry = entry;
-        let item = this.getSignatureRect();
         this.isPageLoaded = false; // prevent redisplay of previous pdf
         this.showErrorMessage = false;
         this.annotations = entry.annotations || [];
@@ -349,39 +350,46 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
         const placementMode = entry.placementMode;
         let placementData = {};
 
-        // always remove old previewImage and fetch new one
-        this.fabricCanvas.remove(this.previewImage);
-        const that = this;
-        that.fabric = await import('fabric');
+        if (!this.signatureInvisible) {
+            // always remove old previewImage and fetch new one
+            this.fabricCanvas.remove(this.previewImage);
+            const that = this;
+            that.fabric = await import('fabric');
 
-        // check if GET and POST return different sized images if annotations are given
-        // that would indicate that pdf-as does not support user_text in previewImages yet
-        let getImage = await this.getPreviewImage(that);
-        let postImage = null;
-        try {
-            postImage = await this.fetchPreviewImage(that);
-        } catch (e) {
-            console.warn(e);
+            // check if GET and POST return different sized images if annotations are given
+            // that would indicate that pdf-as does not support user_text in previewImages yet
+            let getImage = await this.getPreviewImage(that);
+            let postImage = null;
+            try {
+                postImage = await this.fetchPreviewImage(that);
+            } catch (e) {
+                console.warn(e);
+            }
+
+            if (
+                postImage === null ||
+                (this.fakeAnnotations === false &&
+                    this.annotations.length !== 0 &&
+                    getImage.height === postImage.height)
+            ) {
+                // if the images are the same size, then fake user_text in js with fabric
+                this.fabricCanvas.on('object:moving', function (e) {
+                    that.updateAnnotationTexts();
+                });
+                this.fakeAnnotations = true;
+            }
+
+            // add new image to canvas
+            let image = postImage !== null ? postImage : getImage;
+            image = this.stylePreviewImage(that, image);
+            this.fabricCanvas.add(image);
+            this.previewImage = image;
         }
 
-        if (
-            postImage === null ||
-            (this.fakeAnnotations === false &&
-                this.annotations.length !== 0 &&
-                getImage.height === postImage.height)
-        ) {
-            // if the images are the same size, then fake user_text in js with fabric
-            this.fabricCanvas.on('object:moving', function (e) {
-                that.updateAnnotationTexts();
-            });
-            this.fakeAnnotations = true;
-        }
-
-        // add new image to canvas
-        let image = postImage !== null ? postImage : getImage;
-        image = this.stylePreviewImage(that, image);
-        this.fabricCanvas.add(image);
-        this.previewImage = image;
+        // Capture the signature image *after* a new one has (possibly) been
+        // added above, so the placement data below is applied to the image that
+        // is actually on the canvas (getSignatureRect() returns this.previewImage).
+        let item = this.getSignatureRect();
 
         const hasManualPlacement =
             placementMode === 'manual' && entry.signaturePlacement !== undefined;
@@ -707,16 +715,38 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                 const originalViewport = page.getViewport({scale: 1});
                 this.currentPageOriginalHeight = originalViewport.height;
 
-                // set the canvas width to the width of the container
-                let dataColumnWidth = this._('#pdf-meta').clientWidth - 10;
-                let canvasColumnWidth = this._('#pdf-main-container').clientWidth;
-                let availableHeight = window.innerHeight - dataColumnWidth;
-                const maxWidthFromHeight = availableHeight * (210 / 297); // A4-Ratio
-                let width = Math.min(canvasColumnWidth - dataColumnWidth, maxWidthFromHeight);
+                // Determine the width of the grid column that holds the canvas
+                // (the "3fr" column). We can't measure #column-wrapper directly
+                // because on the first showPage() call .pdf-container is still
+                // display:none (isPageLoaded === false), so its children report a
+                // clientWidth of 0, which would collapse the signature image to
+                // zero size. Instead we derive the column width from
+                // #pdf-main-container, which is always laid out and is the query
+                // container (container-name: pdf-preview) that drives the layout,
+                // mirroring the .pdf-container grid (grid-template-columns: 3fr 2fr;
+                // gap: 20px; padding-right: 10px).
+                const GRID_GAP = 20;
+                const GRID_PADDING_RIGHT = 10;
+                // Keep this in sync with the @container pdf-preview breakpoint below.
+                const NARROW_BREAKPOINT = 650;
+                const containerWidth = this._('#pdf-main-container').clientWidth;
 
-                if (window.innerWidth < 769) {
-                    width += dataColumnWidth - 12;
+                let canvasColumnWidth;
+                if (this.viewOnly || containerWidth <= NARROW_BREAKPOINT) {
+                    // In view-only mode the meta column is hidden and in the narrow
+                    // layout the grid collapses to a single column, so in both cases
+                    // the canvas spans the full container width.
+                    canvasColumnWidth = containerWidth - GRID_PADDING_RIGHT;
+                } else {
+                    // 3fr of (available width after gap + right padding)
+                    const available = containerWidth - GRID_GAP - GRID_PADDING_RIGHT;
+                    canvasColumnWidth = available * (3 / 5);
                 }
+
+                // Limit the width so the (roughly A4) page still fits vertically.
+                const availableHeight = window.innerHeight;
+                const maxWidthFromHeight = availableHeight * (210 / 297); // A4-Ratio
+                let width = Math.min(canvasColumnWidth, maxWidthFromHeight);
 
                 // render the canvas backing store at the device pixel ratio so
                 // the rasterized PDF page stays sharp on HiDPI/retina displays,
@@ -1037,6 +1067,8 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
             #pdf-main-container {
                 padding: 0;
                 max-height: 100%;
+                container-type: inline-size;
+                container-name: pdf-preview;
             }
 
             #pdf-meta input[type='number'] {
@@ -1047,6 +1079,10 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                 display: flex;
                 align-items: center;
                 justify-content: center;
+            }
+
+            #canvas-wrapper {
+                position: relative;
             }
 
             #canvas-wrapper canvas {
@@ -1070,9 +1106,6 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
             }
             .action-container > :last-child {
                 margin-top: auto;
-            }
-            :host([don-t-show-buttons]) {
-                display: none !important;
             }
 
             .buttons .profile-type-select,
@@ -1143,6 +1176,12 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                 padding-bottom: 7px;
             }
 
+            /* In view-only mode the meta column is hidden, so let the canvas
+               span the full width. */
+            .pdf-container.view-only {
+                grid-template-columns: 1fr;
+            }
+
             .error-message {
                 text-align: center;
                 border: 1px solid black;
@@ -1178,7 +1217,7 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                 width: 100%;
             }
 
-            @media only screen and (max-width: 768px) {
+            @container pdf-preview (max-width: 650px) {
                 #pdf-meta {
                     position: sticky;
                     top: 0;
@@ -1200,12 +1239,6 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                 .pdf-container {
                     display: flex;
                     flex-direction: column;
-                }
-                #canvas-wrapper {
-                    position: relative;
-                }
-                #canvas-wrapper canvas {
-                    position: absolute;
                 }
 
                 .action-container {
@@ -1260,8 +1293,12 @@ export class PdfPreview extends LangMixin(ScopedElementsMixin(DBPLitElement), cr
                     })}">
                     ${i18n.t('pdf-preview.error-message')}
                 </div>
-                <div class="${classMap({hidden: !this.isPageLoaded})} pdf-container">
-                    <div id="pdf-meta">
+                <div
+                    class="${classMap({
+                        hidden: !this.isPageLoaded,
+                        'view-only': this.viewOnly,
+                    })} pdf-container">
+                    <div id="pdf-meta" class="${classMap({hidden: this.viewOnly})}">
                         <div class="pdf-title">
                             <div class="filename">
                                 <h3>

@@ -917,9 +917,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         previewButton.addEventListener('click', (event) => {
             event.stopPropagation();
             this._('#pdf-preview').open();
-            this._('#pdf-preview dbp-pdf-preview').shadowRoot.querySelector(
-                '#pdf-meta',
-            ).style.display = 'none';
+            // viewOnly = true hides the toolbar (#pdf-meta) inside the component.
             this.showPreview(id, false, true);
         });
 
@@ -976,15 +974,8 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
 
                 if (placement === 'manual' && !this.getInvisibilityOfSelectedProfile()) {
                     this._('#pdf-preview').open();
-                    this._('#pdf-preview dbp-pdf-preview').shadowRoot.querySelector(
-                        '#pdf-meta',
-                    ).style.display = 'flex';
-                    this._('#pdf-preview dbp-pdf-preview').showSignaturePlacementDescription =
-                        false;
                     this.queuePlacement(id, placement);
                 } else {
-                    // Hide signature when auto placement is active
-                    // this._('#pdf-preview dbp-pdf-preview').showSignaturePlacementDescription = true;
                     this.queuePlacement(id, placement, false);
                 }
             }, 400);

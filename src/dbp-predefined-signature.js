@@ -421,10 +421,11 @@ class PredefinedSignature extends ScopedElementsMixin(LangMixin(BaseLitElement, 
                         }
                     </div>
                     <dbp-pdf-preview
+                        subscribe="auth"
                         lang="${this.lang}"
                         entry-point-url="${this.entryPointUrl}"
                         profile-id="official"
-                        don-t-show-buttons></dbp-pdf-preview>
+                        signature-invisible></dbp-pdf-preview>
                 `;
             }
 
