@@ -494,6 +494,14 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                 /* keeps the A-Trust webpage aligned left */
                 max-width: 575px;
             }
+
+            .profile-select {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5em;
+                margin-bottom: 1em;
+            }
         `;
     }
 
@@ -538,18 +546,26 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                 <div class="field">
                     <div class="control">
                         <p class="description">${i18n.t('qualified-pdf-upload.upload-text')}</p>
-                        <dbp-select
-                            id="profile-select-dropdown"
-                            label="${
-                                this.selectedProfile
-                                    ? this.getProfileDisplayNameInLanguage(this.selectedProfile)
-                                    : i18n.t('official-pdf-upload.default-dropdown-text')
-                            }"
-                            .options=${profileOptions}
-                            align="left"
-                            @change="${this.profileSelection}"></dbp-select>
-                        <br />
-                        <br />
+                        ${
+                            profileOptions.length > 1
+                                ? html`
+                                      <div class="profile-select">
+                                          <label class="profile-select-label">
+                                              ${i18n.t('official-pdf-upload.profile-select-label')}
+                                          </label>
+                                          <dbp-select
+                                              id="profile-select-dropdown"
+                                              label="${this.getProfileDisplayNameInLanguage(
+                                                  this.selectedProfile,
+                                              )}"
+                                              value="${this.selectedProfile}"
+                                              .options=${profileOptions}
+                                              align="left"
+                                              @change="${this.profileSelection}"></dbp-select>
+                                      </div>
+                                  `
+                                : ''
+                        }
                         <button
                             @click="${() => {
                                 this._('#file-source').setAttribute('dialog-open', '');

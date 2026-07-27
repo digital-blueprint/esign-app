@@ -176,6 +176,11 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
                         invisible: entry.invisible,
                     };
                 });
+                // Preselect the first available profile by default
+                const profileKeys = Object.keys(this.availableProfiles);
+                if (this.selectedProfile === '' && profileKeys.length > 0) {
+                    this.selectedProfile = profileKeys[0];
+                }
                 this.requestUpdate();
             });
     }
