@@ -19,14 +19,6 @@ export class BaseLitElement extends DBPLitElement {
             : this.shadowRoot.querySelector(selector);
     }
 
-    _hasSignaturePermissions(roleName) {
-        return (
-            this.auth.person &&
-            Array.isArray(this.auth.person.roles) &&
-            this.auth.person.roles.indexOf(roleName) !== -1
-        );
-    }
-
     _updateAuth() {
         this._loginStatus = this.auth['login-status'];
         // Every time isLoggedIn()/isLoading() return something different we request a re-render

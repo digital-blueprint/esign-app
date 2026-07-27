@@ -388,10 +388,6 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         `;
     }
 
-    hasSignaturePermissions() {
-        return this._hasSignaturePermissions('ROLE_SCOPE_OFFICIAL-SIGNATURE');
-    }
-
     async stopSigningProcess() {
         this.signingProcessActive = false;
 

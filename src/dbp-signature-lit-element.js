@@ -85,6 +85,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         this.selectedProfile = '';
 
         this.availableProfiles = {};
+        this.profilesLoading = false;
     }
 
     static get properties() {
@@ -127,7 +128,22 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
             selectedFailedFiles: {type: Array, attribute: false},
             anyPlacementMissing: {type: Boolean, state: true},
             selectedProfile: {type: String, attribute: 'selected-profile'},
+            profilesLoading: {type: Boolean, state: true},
         };
+    }
+
+    /**
+     * Whether the logged-in user has any profile to sign with. If the profiles
+     * API returns no profiles, the user has no permission to sign.
+     *
+     * @returns {boolean}
+     */
+    hasSignaturePermissions() {
+        return Object.keys(this.availableProfiles).length > 0;
+    }
+
+    isLoading() {
+        return super.isLoading() || this.profilesLoading;
     }
 
     _isExpandHidden(expanded, collapsible, size) {
@@ -156,33 +172,39 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         });
     }
 
-    fetchProfiles(type) {
-        fetch(this.entryPointUrl + '/esign/profiles?type=' + encodeURIComponent(type), {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${this.auth.token}`,
-            },
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                data['hydra:member'].forEach((entry) => {
-                    this.availableProfiles[entry.identifier] = {
-                        allowAnnotations: entry.allowAnnotations,
-                        allowManualPositioning: entry.allowManualPositioning,
-                        displayNameEn: entry.displayNameEn,
-                        displayNameDe: entry.displayNameDe,
-                        language: entry.language,
-                        invisible: entry.invisible,
-                    };
-                });
-                // Preselect the first available profile by default
-                const profileKeys = Object.keys(this.availableProfiles);
-                if (this.selectedProfile === '' && profileKeys.length > 0) {
-                    this.selectedProfile = profileKeys[0];
-                }
-                this.requestUpdate();
+    async fetchProfiles(type) {
+        this.profilesLoading = true;
+        try {
+            const response = await fetch(
+                this.entryPointUrl + '/esign/profiles?type=' + encodeURIComponent(type),
+                {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${this.auth.token}`,
+                    },
+                },
+            );
+            const data = await response.json();
+            data['hydra:member'].forEach((entry) => {
+                this.availableProfiles[entry.identifier] = {
+                    allowAnnotations: entry.allowAnnotations,
+                    allowManualPositioning: entry.allowManualPositioning,
+                    displayNameEn: entry.displayNameEn,
+                    displayNameDe: entry.displayNameDe,
+                    language: entry.language,
+                    invisible: entry.invisible,
+                };
             });
+            // Preselect the first available profile by default
+            const profileKeys = Object.keys(this.availableProfiles);
+            if (this.selectedProfile === '' && profileKeys.length > 0) {
+                this.selectedProfile = profileKeys[0];
+            }
+        } finally {
+            this.profilesLoading = false;
+            this.requestUpdate();
+        }
     }
 
     getProfileDisplayNameInLanguage(profile) {

@@ -27,8 +27,8 @@
     "error-login-message": "Please log in to use this functionality.",
     "error-manual-positioning-missing": "One or more signatures in the queue must be positioned manually.",
     "error-manual-positioning-missing-title": "Signature error",
-    "error-permission-message-official": "You need have permissions to use the official signature to use this function.",
-    "error-permission-message-qualified": "You need have permissions to use the qualified signature to use this function.",
+    "error-permission-message-official": "You are not authorized to sign documents as an employee.",
+    "error-permission-message-qualified": "You are not authorized to sign documents as a private individual.",
     "error-rights-message": "Abort due to insufficient rights of your account.",
     "error-unknown-message": "Unknown error.",
     "ext-sign": {

@@ -505,10 +505,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         `;
     }
 
-    hasSignaturePermissions() {
-        return this._hasSignaturePermissions('ROLE_SCOPE_QUALIFIED-SIGNATURE');
-    }
-
     async stopSigningProcess() {
         if (!this.externalAuthInProgress) {
             return;
