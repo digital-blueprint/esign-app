@@ -249,6 +249,8 @@ export class PdfPreview extends AuthMixin(
             enableRetinaScaling: true,
         });
 
+        this.fabricCanvas.clear();
+
         if (!this.signatureInvisible) {
             // TODO remove code for local placeholder as soon as we can fetch the qualified one as well
             // add signature image
@@ -350,9 +352,6 @@ export class PdfPreview extends AuthMixin(
         const placementMode = entry.placementMode;
         let placementData = {};
 
-        // always remove old previewImage and fetch new one
-        this.fabricCanvas.clear();
-
         if (!this.signatureInvisible) {
             const that = this;
             that.fabric = await import('fabric');
@@ -381,6 +380,9 @@ export class PdfPreview extends AuthMixin(
             // add new image to canvas
             let image = postImage !== null ? postImage : getImage;
             image = this.stylePreviewImage(that, image);
+
+            // always remove old previewImage and fetch new one
+            this.fabricCanvas.clear();
             this.fabricCanvas.add(image);
             this.previewImage = image;
         }
