@@ -350,9 +350,10 @@ export class PdfPreview extends AuthMixin(
         const placementMode = entry.placementMode;
         let placementData = {};
 
+        // always remove old previewImage and fetch new one
+        this.fabricCanvas.clear();
+
         if (!this.signatureInvisible) {
-            // always remove old previewImage and fetch new one
-            this.fabricCanvas.remove(this.previewImage);
             const that = this;
             that.fabric = await import('fabric');
 
@@ -368,9 +369,7 @@ export class PdfPreview extends AuthMixin(
 
             if (
                 postImage === null ||
-                (this.fakeAnnotations === false &&
-                    this.annotations.length !== 0 &&
-                    getImage.height === postImage.height)
+                (this.annotations.length !== 0 && getImage.height === postImage.height)
             ) {
                 // if the images are the same size, then fake user_text in js with fabric
                 this.fabricCanvas.on('object:moving', function (e) {
