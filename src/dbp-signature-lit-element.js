@@ -592,7 +592,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         this.requestUpdate();
     }
 
-    queuePlacement(key, name, showSignature = true) {
+    async queuePlacement(key, name, showSignature = true) {
         const entry = this.queuedFiles.get(key);
         if (entry) {
             entry.placementMode = name;
@@ -1000,8 +1000,9 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
                 }
 
                 if (placement === 'manual' && !this.getInvisibilityOfSelectedProfile()) {
-                    this._('#pdf-preview').open();
-                    this.queuePlacement(id, placement);
+                    this.queuePlacement(id, placement).then((res) => {
+                        this._('#pdf-preview').open();
+                    });
                 } else {
                     this.queuePlacement(id, placement, false);
                 }

@@ -382,9 +382,19 @@ export class PdfPreview extends AuthMixin(
             image = this.stylePreviewImage(that, image);
 
             // always remove old previewImage and fetch new one
-            this.fabricCanvas.clear();
-            this.fabricCanvas.add(image);
-            this.previewImage = image;
+            if (
+                this.previewImage === null ||
+                (postImage !== null && this.previewImage.height !== postImage.height)
+            ) {
+                this.fabricCanvas.clear();
+                this.fabricCanvas.add(image);
+                this.previewImage = image;
+            } else if (this.previewImage !== null) {
+                this.previewImage.set({
+                    flipX: false,
+                    flipY: false,
+                });
+            }
         }
 
         // Capture the signature image *after* a new one has (possibly) been
@@ -799,7 +809,7 @@ export class PdfPreview extends AuthMixin(
 
                     const inchPerMM = 0.03937007874;
                     const pointsPerMM = inchPerMM * PDF_DPI;
-                    const sigSize = signature.getOriginalSize();
+                    const sigHeight = signature.get('height');
 
                     // The preview image is rendered at PREVIEW_RESOLUTION_DPI while the
                     // PDF coordinate system uses PDF_DPI (1pt = 1px). This makes the
@@ -817,7 +827,7 @@ export class PdfPreview extends AuthMixin(
                     const offsetLeft = sigPosMM.left * pointsPerMM;
 
                     // total page size - 5mm - signature block height
-                    const offsetTop = logicalHeight - offsetBottom - sigSize.height * scale;
+                    const offsetTop = logicalHeight - offsetBottom - sigHeight * scale;
 
                     signature.set({
                         scaleX: scale,
