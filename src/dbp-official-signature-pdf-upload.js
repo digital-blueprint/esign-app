@@ -331,6 +331,11 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         });
     }
 
+    loginCallback(auth) {
+        super.loginCallback(auth);
+        this.fetchProfiles('advanced');
+    }
+
     update(changedProperties) {
         super.update(changedProperties);
 
@@ -347,11 +352,6 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                     break;
                 case 'errorFiles':
                     this.setFailedFilesTabulatorTable();
-                    break;
-                case 'auth':
-                    if (this.auth.token) {
-                        this.fetchProfiles('advanced');
-                    }
                     break;
             }
         });

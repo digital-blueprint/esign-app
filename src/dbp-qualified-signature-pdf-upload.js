@@ -438,6 +438,11 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         });
     }
 
+    loginCallback(auth) {
+        super.loginCallback(auth);
+        this.fetchProfiles('qualified');
+    }
+
     update(changedProperties) {
         super.update(changedProperties);
         changedProperties.forEach((oldValue, propName) => {
@@ -453,11 +458,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                     break;
                 case 'errorFiles':
                     this.setFailedFilesTabulatorTable();
-                    break;
-                case 'auth':
-                    if (this.auth.token) {
-                        this.fetchProfiles('qualified');
-                    }
                     break;
             }
         });

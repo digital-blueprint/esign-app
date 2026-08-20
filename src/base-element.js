@@ -1,16 +1,9 @@
 import DBPLitElement from '@dbp-toolkit/common/dbp-lit-element';
+import {AuthMixin} from '@dbp-toolkit/common';
 
-export class BaseLitElement extends DBPLitElement {
+export class BaseLitElement extends AuthMixin(DBPLitElement) {
     constructor() {
         super();
-        this.auth = {};
-    }
-
-    static get properties() {
-        return {
-            ...super.properties,
-            auth: {type: Object},
-        };
     }
 
     _(selector) {
@@ -19,41 +12,7 @@ export class BaseLitElement extends DBPLitElement {
             : this.shadowRoot.querySelector(selector);
     }
 
-    _updateAuth() {
-        this._loginStatus = this.auth['login-status'];
-        // Every time isLoggedIn()/isLoading() return something different we request a re-render
-        let newLoginState = [this.isLoggedIn(), this.isLoading()];
-        if (this._loginState.toString() !== newLoginState.toString()) {
-            this.requestUpdate();
-        }
-        this._loginState = newLoginState;
-    }
-
-    update(changedProperties) {
-        changedProperties.forEach((oldValue, propName) => {
-            switch (propName) {
-                case 'auth':
-                    this._updateAuth();
-                    break;
-            }
-        });
-
-        super.update(changedProperties);
-    }
-
-    connectedCallback() {
-        super.connectedCallback();
-
-        this._loginStatus = '';
-        this._loginState = [];
-    }
-
-    isLoggedIn() {
-        return this.auth.person !== undefined && this.auth.person !== null;
-    }
-
     isLoading() {
-        if (this._loginStatus === 'logged-out') return false;
-        return !this.isLoggedIn() && this.auth.token !== undefined;
+        return this.isAuthPending();
     }
 }
