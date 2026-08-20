@@ -294,13 +294,13 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
      * @param {SignatureEntry} entry
      * @returns {Promise<string>} key of the re-queued item
      */
-    async reQueueFile(entry) {
+    reQueueFile(entry) {
         const key = entry.key;
         const queuedFiles = new Map(this.queuedFiles);
         queuedFiles.set(key, entry);
         this.queuedFiles = queuedFiles;
 
-        return key;
+        return Promise.resolve(key);
     }
 
     /**
@@ -322,7 +322,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
     /**
      * @param {string} key
      */
-    async showAnnotationView(key) {
+    showAnnotationView(key) {
         if (this.signingProcessActive) {
             return;
         }
@@ -502,7 +502,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
     /**
      * Open Filesink for multiple files
      */
-    async zipDownloadClickHandler() {
+    zipDownloadClickHandler() {
         const files =
             this.selectedSignedFiles.length > 0
                 ? Array.from(this.signedFiles.values()).filter((signedEntry) =>
@@ -528,7 +528,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
      *
      * @param file
      */
-    async downloadFileClickHandler(file) {
+    downloadFileClickHandler(file) {
         const files = [file];
         this.signedFilesToDownload = files.length;
         this._('#file-sink').files = [...files];
@@ -592,7 +592,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         this.requestUpdate();
     }
 
-    async queuePlacement(key, name, showSignature = true) {
+    queuePlacement(key, name, showSignature = true) {
         const entry = this.queuedFiles.get(key);
         if (entry) {
             entry.placementMode = name;
@@ -600,6 +600,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         this.signaturePlacementInProgress = true;
         this.showPreview(key, showSignature);
         this.requestUpdate();
+        return Promise.resolve();
     }
 
     /**
@@ -625,16 +626,16 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
             this.errorFiles = errorFiles;
             this.selectedFailedFiles = [];
 
-            filesToRequeue.forEach(async (errorEntry) => {
-                await this.reQueueFile(errorEntry.sigEntry);
+            filesToRequeue.forEach((errorEntry) => {
+                this.reQueueFile(errorEntry.sigEntry);
             });
         } else {
             // Re-queue all failed files
             const errorFilesCopy = new Map(this.errorFiles);
             this.errorFiles = new Map();
 
-            errorFilesCopy.forEach(async (errorEntry) => {
-                await this.reQueueFile(errorEntry.sigEntry);
+            errorFilesCopy.forEach((errorEntry) => {
+                this.reQueueFile(errorEntry.sigEntry);
             });
         }
 
@@ -786,19 +787,13 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
             }
         });
         if (event.detail.tableId === 'table-queued-files') {
-            expandedColumns == collapsableRowsCount
-                ? (this.queuedFilesTableExpanded = true)
-                : (this.queuedFilesTableExpanded = false);
+            this.queuedFilesTableExpanded = expandedColumns === collapsableRowsCount;
         }
         if (event.detail.tableId === 'table-signed-files') {
-            expandedColumns == collapsableRowsCount
-                ? (this.signedFilesTableExpanded = true)
-                : (this.signedFilesTableExpanded = false);
+            this.signedFilesTableExpanded = expandedColumns === collapsableRowsCount;
         }
         if (event.detail.tableId === 'table-failed-files') {
-            expandedColumns == collapsableRowsCount
-                ? (this.failedFilesTableExpanded = true)
-                : (this.failedFilesTableExpanded = false);
+            this.failedFilesTableExpanded = expandedColumns === collapsableRowsCount;
         }
     }
 
@@ -1021,7 +1016,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
             'dbp-esign-reupload-button',
         );
         btnReupload.setAttribute('subscribe', 'lang');
-        btnReupload.addEventListener('click', async (event) => {
+        btnReupload.addEventListener('click', (event) => {
             event.stopPropagation();
             this.fileQueueingClickHandler(id);
         });
@@ -1032,7 +1027,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
             'dbp-esign-remove-failed-file-button',
         );
         btnDelete.setAttribute('subscribe', 'lang');
-        btnDelete.addEventListener('click', async (event) => {
+        btnDelete.addEventListener('click', (event) => {
             event.stopPropagation();
             this.takeFailedFileFromQueue(id);
         });
@@ -1324,9 +1319,9 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
                 downloadButton.setAttribute('subscribe', 'lang');
                 downloadButton.file = file;
 
-                downloadButton.addEventListener('click', async (event) => {
+                downloadButton.addEventListener('click', (event) => {
                     event.stopPropagation();
-                    await this.downloadFileClickHandler(file);
+                    this.downloadFileClickHandler(file);
                     filenameLabel.isDownloaded = true;
                 });
 

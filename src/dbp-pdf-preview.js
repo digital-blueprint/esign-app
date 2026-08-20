@@ -118,14 +118,13 @@ export class PdfPreview extends AuthMixin(
 
     connectedCallback() {
         super.connectedCallback();
-        const that = this;
 
         window.addEventListener('resize', this._onWindowResize);
 
         this.updateComplete.then(async () => {
-            that.fabric = await import('fabric');
-            if (that.profileId) {
-                await that.createFabric(that);
+            this.fabric = await import('fabric');
+            if (this.profileId) {
+                await this.createFabric();
             }
         });
     }
@@ -148,20 +147,19 @@ export class PdfPreview extends AuthMixin(
 
     update(changedProperties) {
         super.update(changedProperties);
-        const that = this;
         changedProperties.forEach((oldValue, propName) => {
             switch (propName) {
                 case 'profileId':
                     this.updateComplete.then(async () => {
-                        if (that.fabric && that.profileId && that.auth) {
-                            if (that.fabricCanvas) {
-                                that.isShowPlacement = true;
-                                await that.fabricCanvas.dispose();
+                        if (this.fabric && this.profileId && this.auth) {
+                            if (this.fabricCanvas) {
+                                this.isShowPlacement = true;
+                                await this.fabricCanvas.dispose();
 
                                 // reset annotations
-                                that.annotations = [];
+                                this.annotations = [];
                             }
-                            await that.createFabric(that);
+                            await this.createFabric();
                         }
                     });
                     break;
@@ -169,7 +167,7 @@ export class PdfPreview extends AuthMixin(
         });
     }
 
-    async fetchPreviewImage(that) {
+    async fetchPreviewImage() {
         let body = {annotations: []};
 
         this.annotations.forEach((annotation) => {
@@ -189,7 +187,7 @@ export class PdfPreview extends AuthMixin(
         });
         const blob = await res.blob();
         const url = URL.createObjectURL(blob);
-        let image = await that.fabric.FabricImage.fromURL(url);
+        let image = await this.fabric.FabricImage.fromURL(url);
         URL.revokeObjectURL(url);
 
         return image;
@@ -198,7 +196,7 @@ export class PdfPreview extends AuthMixin(
     // same as fetchPreviewImage but with GET
     // this should only fetch the base image, no annotations added
     // this function is needed to see if we need to fake the annotations in js or if they are included in the image
-    async getPreviewImage(that) {
+    async getPreviewImage() {
         const res = await fetch(this.getPreviewImageUrl(), {
             method: 'GET',
             headers: {
@@ -207,17 +205,17 @@ export class PdfPreview extends AuthMixin(
         });
         const blob = await res.blob();
         const url = URL.createObjectURL(blob);
-        let image = await that.fabric.FabricImage.fromURL(url);
+        let image = await this.fabric.FabricImage.fromURL(url);
         URL.revokeObjectURL(url);
 
         return image;
     }
 
-    stylePreviewImage(that, image) {
+    stylePreviewImage(image) {
         // add a red border around the signature placeholder
         image.set({
             stroke: '#e4154b',
-            strokeWidth: that.border_width,
+            strokeWidth: this.border_width,
             strokeUniform: true,
             centeredRotation: true,
             originX: 'left',
@@ -230,8 +228,8 @@ export class PdfPreview extends AuthMixin(
         return image;
     }
 
-    async createFabric(that) {
-        that.canvas = that._('#pdf-canvas');
+    async createFabric() {
+        this.canvas = this._('#pdf-canvas');
 
         // add fabric.js canvas for signature positioning
         // , {stateful : true}
@@ -243,7 +241,7 @@ export class PdfPreview extends AuthMixin(
         // Fabric add event listeners to the document, so we need to re-dispatch the event over the shadowRoot.
         this._('#pdf-main-container').addEventListener('mouseup', this._onMouseUp.bind(this));
 
-        this.fabricCanvas = new that.fabric.Canvas(fabricCanvas, {
+        this.fabricCanvas = new this.fabric.Canvas(fabricCanvas, {
             selection: false,
             allowTouchScrolling: true,
             enableRetinaScaling: true,
@@ -254,18 +252,18 @@ export class PdfPreview extends AuthMixin(
         if (!this.signatureInvisible) {
             // TODO remove code for local placeholder as soon as we can fetch the qualified one as well
             // add signature image
-            let image = await this.fetchPreviewImage(that);
-            image = this.stylePreviewImage(that, image);
+            let image = await this.fetchPreviewImage();
+            image = this.stylePreviewImage(image);
             this.previewImage = image;
 
             // use a high-quality resize filter to avoid aliasing artifacts when scaling the image down
-            image.resizeFilter = new that.fabric.filters.Resize({
+            image.resizeFilter = new this.fabric.filters.Resize({
                 resizeType: 'lanczos',
                 lanczosLobes: 3,
             });
 
             // we will resize the image when the initial pdf page is loaded
-            that.fabricCanvas.add(image);
+            this.fabricCanvas.add(image);
 
             this.fabricCanvas.on({
                 'object:moving': function (e) {
@@ -277,10 +275,10 @@ export class PdfPreview extends AuthMixin(
             });
 
             // disallow moving of signature outside of canvas boundaries
-            this.fabricCanvas.on('object:moving', function (e) {
+            this.fabricCanvas.on('object:moving', (e) => {
                 let obj = e.target;
                 obj.setCoords();
-                that.enforceCanvasBoundaries(obj);
+                this.enforceCanvasBoundaries(obj);
             });
 
             // TODO: prevent scaling the signature in a way that it is crossing the canvas boundaries
@@ -353,15 +351,14 @@ export class PdfPreview extends AuthMixin(
         let placementData = {};
 
         if (!this.signatureInvisible) {
-            const that = this;
-            that.fabric = await import('fabric');
+            this.fabric = await import('fabric');
 
             // check if GET and POST return different sized images if annotations are given
             // that would indicate that pdf-as does not support user_text in previewImages yet
-            let getImage = await this.getPreviewImage(that);
+            let getImage = await this.getPreviewImage();
             let postImage = null;
             try {
-                postImage = await this.fetchPreviewImage(that);
+                postImage = await this.fetchPreviewImage();
             } catch (e) {
                 console.warn(e);
             }
@@ -371,15 +368,15 @@ export class PdfPreview extends AuthMixin(
                 (this.annotations.length !== 0 && getImage.height === postImage.height)
             ) {
                 // if the images are the same size, then fake user_text in js with fabric
-                this.fabricCanvas.on('object:moving', function (e) {
-                    that.updateAnnotationTexts();
+                this.fabricCanvas.on('object:moving', () => {
+                    this.updateAnnotationTexts();
                 });
                 this.fakeAnnotations = true;
             }
 
             // add new image to canvas
             let image = postImage !== null ? postImage : getImage;
-            image = this.stylePreviewImage(that, image);
+            image = this.stylePreviewImage(image);
 
             // always remove old previewImage and fetch new one
             if (
@@ -710,7 +707,6 @@ export class PdfPreview extends AuthMixin(
             return;
         }
 
-        const that = this;
         this.isPageRenderingInProgress = true;
         this.currentPage = pageNumber;
 
@@ -869,7 +865,7 @@ export class PdfPreview extends AuthMixin(
                     await page.render(render_context).promise;
 
                     // Scroll canvas into view at the bottom after render completes
-                    const wrapper = that._('#canvas-wrapper');
+                    const wrapper = this._('#canvas-wrapper');
                     if (wrapper) {
                         requestAnimationFrame(() => {
                             try {
@@ -893,12 +889,12 @@ export class PdfPreview extends AuthMixin(
                         timeout: 0,
                     });
                 } finally {
-                    that.isPageRenderingInProgress = false;
+                    this.isPageRenderingInProgress = false;
                 }
             });
         } catch (error) {
             console.error(error.message);
-            that.isPageRenderingInProgress = false;
+            this.isPageRenderingInProgress = false;
         }
     }
 

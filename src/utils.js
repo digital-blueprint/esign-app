@@ -74,16 +74,20 @@ export const fabricjs2pdfasPosition = (data) => {
  * Returns the content of the file
  *
  * @param {File} file The file to read
- * @returns {string} The content
+ * @returns {Promise<string>} The content
  */
 export const readBinaryFileContent = async (file) => {
     return new Promise((resolve, reject) => {
         let reader = new FileReader();
         reader.onload = () => {
-            resolve(reader.result);
+            if (typeof reader.result === 'string') {
+                resolve(reader.result);
+            } else {
+                reject(new Error('Failed to read file as binary string'));
+            }
         };
         reader.onerror = () => {
-            reject(reader.error);
+            reject(reader.error ?? new Error('Failed to read file'));
         };
         reader.readAsBinaryString(file);
     });
@@ -93,16 +97,20 @@ export const readBinaryFileContent = async (file) => {
  * Returns the content of the file as array buffer
  *
  * @param {File} file The file to read
- * @returns {string} The content
+ * @returns {Promise<ArrayBuffer>} The content
  */
 export const readArrayBufferFileContent = async (file) => {
     return new Promise((resolve, reject) => {
         let reader = new FileReader();
         reader.onload = () => {
-            resolve(reader.result);
+            if (reader.result instanceof ArrayBuffer) {
+                resolve(reader.result);
+            } else {
+                reject(new Error('Failed to read file as array buffer'));
+            }
         };
         reader.onerror = () => {
-            reject(reader.error);
+            reject(reader.error ?? new Error('Failed to read file'));
         };
         reader.readAsArrayBuffer(file);
     });
@@ -115,7 +123,7 @@ export const readArrayBufferFileContent = async (file) => {
  * (improvements welcome).
  *
  * @param {File} file The PDF file object
- * @returns {number} The amount of signatures found
+ * @returns {Promise<number>} The amount of signatures found
  */
 export const getPDFSignatureCount = async (file) => {
     const sigRegex = new RegExp(
