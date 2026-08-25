@@ -8,6 +8,14 @@ import {humanFileSize} from '@dbp-toolkit/common/i18next';
 import {LangMixin} from '@dbp-toolkit/common';
 
 export class SignatureEntry {
+    /**
+     * @param {string} key
+     * @param {File} file
+     * @param {string} placementMode
+     * @param {boolean} needsPlacement
+     * @param {Array} annotations
+     * @param {object} [signaturePlacement]
+     */
     constructor(
         key,
         file,
@@ -20,7 +28,7 @@ export class SignatureEntry {
         this.file = file;
         this.placementMode = placementMode;
         this.needsPlacement = needsPlacement;
-        /** @type {any[]|undefined} */
+        /** @type {Array|undefined} */
         this.annotations = annotations;
         this.signaturePlacement = signaturePlacement;
     }
@@ -146,14 +154,27 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         return Object.keys(this.availableProfiles).length > 0;
     }
 
+    /** @returns {boolean} */
     isLoading() {
         return super.isLoading() || this.profilesLoading;
     }
 
+    /**
+     * @param {boolean} expanded
+     * @param {boolean} collapsible
+     * @param {number} size
+     * @returns {boolean}
+     */
     _isExpandHidden(expanded, collapsible, size) {
         return expanded || collapsible === false || size === 0;
     }
 
+    /**
+     * @param {boolean} expanded
+     * @param {boolean} collapsible
+     * @param {number} size
+     * @returns {boolean}
+     */
     _isCollapseHidden(expanded, collapsible, size) {
         return !expanded || collapsible === false || size === 0;
     }
@@ -176,6 +197,10 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         });
     }
 
+    /**
+     * @param {string} type
+     * @returns {Promise<void>}
+     */
     async fetchProfiles(type) {
         this.profilesLoading = true;
         try {
@@ -211,6 +236,10 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         }
     }
 
+    /**
+     * @param {string} profile
+     * @returns {string}
+     */
     getProfileDisplayNameInLanguage(profile) {
         return this.lang === 'en'
             ? this.availableProfiles[profile].displayNameEn
@@ -229,23 +258,30 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
     }
 
     profileSelection(e) {
-        e.target.label = this.getProfileOptions().find(
+        const selectedOption = this.getProfileOptions().find(
             (option) => option.value === e.target.value,
-        ).label;
+        );
+        if (selectedOption === undefined) {
+            throw new Error(`Profile not found: ${e.target.value}`);
+        }
+        e.target.label = selectedOption.label;
         this.selectedProfile = e.target.value;
         this.requestUpdate();
     }
 
+    /** @returns {string} */
     getLanguageOfSelectedProfile() {
         return this.selectedProfile ? this.availableProfiles[this.selectedProfile].language : '';
     }
 
+    /** @returns {boolean} */
     getInvisibilityOfSelectedProfile() {
         return this.selectedProfile
             ? this.availableProfiles[this.selectedProfile].invisible
             : false;
     }
 
+    /** @returns {boolean} */
     getAllowAnnotationsOfSelectedProfile() {
         return this.selectedProfile
             ? this.availableProfiles[this.selectedProfile].allowAnnotations
@@ -272,16 +308,18 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         });
     }
 
+    /** @returns {boolean} */
     getAllowAnnotations() {
         return this.availableProfiles[this.selectedProfile].allowAnnotations;
     }
 
+    /** @returns {boolean} */
     getAllowManualPositioning() {
         return this.availableProfiles[this.selectedProfile].allowManualPositioning;
     }
 
     /**
-     * @param file
+     * @param {File} file
      * @returns {Promise<string>} key of the queued item
      */
     async queueFile(file) {
@@ -310,7 +348,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
     /**
      * Takes a file off of the queue
      *
-     * @param key
+     * @param {string} key
      * @returns {SignatureEntry} entry
      */
     takeFileFromQueue(key) {
@@ -323,6 +361,10 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         return entry;
     }
 
+    /**
+     * @param {string} key
+     * @returns {SignatureEntry}
+     */
     getQueuedFile(key) {
         const entry = this.queuedFiles.get(key);
         if (entry === undefined) {
@@ -331,6 +373,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         return entry;
     }
 
+    /** @returns {Map<string, SignedEntry>} */
     getSignedFiles() {
         return this.signedFiles;
     }
@@ -428,8 +471,8 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
     /**
      * Remove an annotation of a file on the queue
      *
-     * @param key
-     * @param id
+     * @param {string} key
+     * @param {number} id
      */
     removeAnnotation(key, id) {
         const entry = this.queuedFiles.get(key);
@@ -441,7 +484,8 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
     /**
      * Takes the annotations of a file off of the queue
      *
-     * @param key
+     * @param {string} key
+     * @returns {Array}
      */
     getAnnotations(key) {
         const entry = this.queuedFiles.get(key);
@@ -451,8 +495,8 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
     /**
      * Update an annotation of a file on the queue
      *
-     * @param key
-     * @param id
+     * @param {string} key
+     * @param {number} id
      * @param annotationKey
      * @param value
      */
@@ -465,7 +509,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
 
     /**
      * Remove selected files from the file queue
-     * @param {Array} filesToRemove - array of index to remove
+     * @param {string[]} filesToRemove - array of keys to remove
      */
     clearQueuedFiles(filesToRemove) {
         if (!Array.isArray(filesToRemove) || filesToRemove.length < 1) return;
@@ -482,6 +526,10 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         this.tableQueuedFilesTable.tabulatorTable.redraw(true);
     }
 
+    /**
+     * @param {Array} annotations
+     * @returns {Array}
+     */
     getUserTextForAnnotations(annotations) {
         let userText = [];
         for (let annotation of annotations) {
@@ -542,7 +590,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
     /**
      * Open Filesink for a single File
      *
-     * @param file
+     * @param {File} file
      */
     downloadFileClickHandler(file) {
         const files = [file];
@@ -550,6 +598,10 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         this._('#file-sink').files = [...files];
     }
 
+    /**
+     * @param {string} id
+     * @returns {Promise<void>}
+     */
     async _updateNeedsPlacementStatus(id) {
         let entry = this.queuedFiles.get(id);
         if (!entry) {
@@ -599,6 +651,11 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         this.previewEntry = null;
     }
 
+    /**
+     * @param {string} key
+     * @param {string} name
+     * @returns {void}
+     */
     queuePlacementSwitch(key, name) {
         const entry = this.queuedFiles.get(key);
         if (entry) {
@@ -608,6 +665,12 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         this.requestUpdate();
     }
 
+    /**
+     * @param {string} key
+     * @param {string} name
+     * @param {boolean} showSignature
+     * @returns {Promise<void>}
+     */
     queuePlacement(key, name, showSignature = true) {
         const entry = this.queuedFiles.get(key);
         if (entry) {
@@ -675,9 +738,10 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
     /**
      * Shows the preview
      *
-     * @param key
-     * @param withSigBlock
-     * @param viewOnly
+     * @param {string} key
+     * @param {boolean} withSigBlock
+     * @param {boolean} viewOnly
+     * @returns {Promise<void>}
      */
     async showPreview(key, withSigBlock = false, viewOnly = false) {
         if (this.signingProcessActive) {
@@ -698,7 +762,8 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
     /**
      * Takes a failed file off of the queue
      *
-     * @param key
+     * @param {string} key
+     * @returns {ErrorEntry|null}
      */
     takeFailedFileFromQueue(key) {
         const errorEntry = this.errorFiles.get(key);
