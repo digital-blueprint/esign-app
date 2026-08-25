@@ -6,6 +6,12 @@ import DBPLitElement from '@dbp-toolkit/common/dbp-lit-element';
 import {TooltipElement} from '@dbp-toolkit/tooltip';
 
 export class CustomTabulatorTable extends TabulatorTable {
+    constructor() {
+        super();
+        /** @type {ResizeObserver|null} */
+        this._resizeObserver = null;
+    }
+
     static get scopedElements() {
         return {
             ...super.scopedElements,
@@ -46,8 +52,12 @@ export class CustomTabulatorTable extends TabulatorTable {
     }
 
     disconnectedCallback() {
+        if (this._resizeObserver === null) {
+            throw new Error('Resize observer is not initialized');
+        }
         this._resizeObserver.unobserve(this);
         this._resizeObserver.disconnect();
+        this._resizeObserver = null;
 
         super.disconnectedCallback();
     }

@@ -12,6 +12,13 @@ export class BaseLitElement extends AuthMixin(DBPLitElement) {
             : this.shadowRoot.querySelector(selector);
     }
 
+    get authenticatedUser() {
+        if (this.auth === null) {
+            throw new Error('Authentication is required');
+        }
+        return this.auth;
+    }
+
     isLoading() {
         return this.isAuthPending();
     }

@@ -106,6 +106,7 @@ export class PdfAnnotationView extends LangMixin(
             let matchResult = annotation['value'].match(pattern);
 
             if (
+                matchResult === null ||
                 matchResult[0] === undefined ||
                 annotation['value'].length !== matchResult[0].length
             ) {

@@ -220,7 +220,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
 
         // Validate placement before touching the queue
         for (const key of candidateKeys) {
-            const entry = this.queuedFiles.get(key);
+            const entry = this.getQueuedFile(key);
             if (entry.needsPlacement && entry.placementMode !== 'manual') {
                 notify({
                     summary: i18n.t('error-manual-positioning-missing-title'),
@@ -234,11 +234,11 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         }
 
         // Peek: determine the chunk — ≤10 files with the same user_text as the first
-        const firstUserText = this._getEntryUserText(this.queuedFiles.get(candidateKeys[0]));
+        const firstUserText = this._getEntryUserText(this.getQueuedFile(candidateKeys[0]));
         const chunkKeys = [];
         for (const key of candidateKeys) {
             if (chunkKeys.length >= 10) break;
-            if (this._getEntryUserText(this.queuedFiles.get(key)) !== firstUserText) break;
+            if (this._getEntryUserText(this.getQueuedFile(key)) !== firstUserText) break;
             chunkKeys.push(key);
         }
 
@@ -252,6 +252,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         const inputs = [];
         for (const entry of entries) {
             let file = entry.file;
+            /** @type {object|null} */
             let userText = null;
             const annotations = entry.annotations ?? [];
 
@@ -365,7 +366,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
             this.externalAuthInProgress = false;
             this._('#iframe').reset();
 
-            const signedFiles = new Map(this.signedFiles);
+            const signedFiles = new Map(this.getSignedFiles());
             for (let i = 0; i < this.activeSigningEntries.length; i++) {
                 const entry = this.activeSigningEntries[i];
                 const doc = batchResult.documents[i];

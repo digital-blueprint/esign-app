@@ -140,7 +140,7 @@ export class EsignApi {
     /**
      * @param {File} file
      * @param {EsignSigningParameters} params
-     * @param {object} userText
+     * @param {object|null} userText
      * @returns {Promise<EsignQualifiedSigningRequest>}
      */
     async createQualifiedSigningRequest(file, params = {}, userText = null) {
@@ -229,7 +229,7 @@ export class EsignApi {
     /**
      * @param {File} file
      * @param {EsignSigningParameters} params
-     * @param {object} userText
+     * @param {object|null} userText
      * @returns {Promise<EsignAdvancedlySignedDocument>}
      */
     async createAdvancedlySignedDocument(file, params = {}, userText = null) {

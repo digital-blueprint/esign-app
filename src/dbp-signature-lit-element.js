@@ -20,6 +20,7 @@ export class SignatureEntry {
         this.file = file;
         this.placementMode = placementMode;
         this.needsPlacement = needsPlacement;
+        /** @type {any[]|undefined} */
         this.annotations = annotations;
         this.signaturePlacement = signaturePlacement;
     }
@@ -44,6 +45,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
     constructor() {
         super();
         this.entryPointUrl = '';
+        /** @type {Map<string, SignatureEntry>} */
         this.queuedFiles = new Map();
         this.uploadInProgress = false;
         this._queueKey = 0;
@@ -74,6 +76,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         // will be set in function update
         this.fileSource = '';
         this.nextcloudDefaultDir = '';
+        /** @type {Map<string, SignedEntry>} */
         this.signedFiles = new Map();
         this.signedFilesCountToReport = 0;
         this.errorFiles = new Map();
@@ -182,7 +185,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
-                        Authorization: `Bearer ${this.auth.token}`,
+                        Authorization: `Bearer ${this.authenticatedUser.token}`,
                     },
                 },
             );
@@ -311,13 +314,25 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
      * @returns {SignatureEntry} entry
      */
     takeFileFromQueue(key) {
-        const entry = this.queuedFiles.get(key);
+        const entry = this.getQueuedFile(key);
 
         const queuedFiles = new Map(this.queuedFiles);
         queuedFiles.delete(key);
         this.queuedFiles = queuedFiles;
 
         return entry;
+    }
+
+    getQueuedFile(key) {
+        const entry = this.queuedFiles.get(key);
+        if (entry === undefined) {
+            throw new Error(`Queued file not found: ${key}`);
+        }
+        return entry;
+    }
+
+    getSignedFiles() {
+        return this.signedFiles;
     }
 
     /**
@@ -399,7 +414,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
             console.error(annotationTypeData);
             pdfFactory = await utils.addKeyValuePdfAnnotationsToAnnotationFactory(
                 pdfFactory,
-                this.auth['user-full-name'],
+                this.authenticatedUser['user-full-name'],
                 annotationType,
                 annotationTypeData.name[this.getLanguageOfSelectedProfile()],
                 value,
@@ -419,7 +434,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
     removeAnnotation(key, id) {
         const entry = this.queuedFiles.get(key);
         if (entry?.annotations && entry.annotations[id]) {
-            delete entry.annotations[id];
+            entry.annotations.splice(id, 1);
         }
     }
 
@@ -945,7 +960,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
 
     getActionButtonsHtml(id, allowAnnotating = true) {
         const i18n = this._i18n;
-        const entry = this.queuedFiles.get(id);
+        const entry = this.getQueuedFile(id);
         const fileName = entry.file.name;
         const annotations = entry.annotations ?? [];
 
@@ -1003,7 +1018,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         positioningSwitch.addEventListener('toggle-change', (event) => {
             setTimeout(() => {
                 let placement = positioningSwitch.checked ? 'manual' : 'auto';
-                const entry = this.queuedFiles.get(id);
+                const entry = this.getQueuedFile(id);
                 if (entry) {
                     entry.placementMode = placement;
                     if (placement === 'auto') {
@@ -1178,7 +1193,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         const ids = [...this.queuedFiles.keys()];
         if (this.tableQueuedFilesTable) {
             ids.forEach((id) => {
-                const entry = this.queuedFiles.get(id);
+                const entry = this.getQueuedFile(id);
                 const file = entry.file;
                 const isManual = entry.placementMode === 'manual';
                 const placementMissing = entry.needsPlacement && !isManual;

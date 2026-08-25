@@ -17,6 +17,8 @@ import * as SignatureStyles from './styles';
 import {CustomTabulatorTable} from './table-components.js';
 import {EsignApi} from './api.js';
 
+/** @typedef {import('./dbp-signature-lit-element').SignatureEntry} SignatureEntry */
+
 class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElement) {
     constructor() {
         super();
@@ -27,6 +29,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         this.nextcloudFileURL = '';
         this.nextcloudAuthInfo = '';
         this.fileHandlingEnabledTargets = 'local';
+        /** @type {SignatureEntry|null} */
         this.activeSigningEntry = null;
 
         // Bind all event handlers
@@ -152,7 +155,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         let errorInPositioning = false;
         for (const key of this.queuedFiles.keys()) {
             if (errorInPositioning === true) continue;
-            const entry = this.queuedFiles.get(key);
+            const entry = this.getQueuedFile(key);
             const isManual = entry.placementMode === 'manual';
             if (
                 entry.needsPlacement &&
@@ -235,6 +238,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
      * @returns {Promise<void>}
      */
     async signFile(file, params = {}, annotations = []) {
+        /** @type {object|null} */
         let userText = null;
         // add annotations
         if (annotations.length > 0) {
@@ -263,12 +267,17 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             return;
         }
 
-        let filename = utils.generateSignedFileName(this.activeSigningEntry.file.name);
+        const activeSigningEntry = this.activeSigningEntry;
+        if (activeSigningEntry === null) {
+            throw new Error('No active signing entry');
+        }
+
+        let filename = utils.generateSignedFileName(activeSigningEntry.file.name);
         const arr = utils.convertDataURIToBinary(signedDocument.contentUrl);
         let signedFile = new File([arr], filename, {
             type: utils.getDataURIContentType(signedDocument.contentUrl),
         });
-        this.addSignedFile(this.activeSigningEntry.key, signedFile);
+        this.addSignedFile(activeSigningEntry.key, signedFile);
         this.signedFilesCountToReport++;
 
         this.sendSetPropertyEvent('analytics-event', {
