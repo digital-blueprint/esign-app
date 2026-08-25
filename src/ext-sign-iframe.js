@@ -4,7 +4,8 @@ import {classMap} from 'lit/directives/class-map.js';
 import {MiniSpinner, LangMixin} from '@dbp-toolkit/common';
 import {ScopedElementsMixin} from '@dbp-toolkit/common';
 import {humanFileSize} from '@dbp-toolkit/common/i18next.js';
-import {SignatureEntry} from './dbp-signature-lit-element.js';
+
+/** @typedef {import('./dbp-signature-lit-element.js').SignatureEntry} SignatureEntry */
 
 /**
  * Set the URL via setUrl(), reset via reset().

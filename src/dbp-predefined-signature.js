@@ -61,7 +61,7 @@ class PredefinedSignature extends ScopedElementsMixin(LangMixin(BaseLitElement, 
         if (hash && hash.length > 1) {
             const url = decodeURIComponent(hash.slice(1));
             this._url = url;
-            this._fetchPlan(url);
+            void this._fetchPlan(url);
         } else {
             this._state = STATE.ERROR;
             this._error = this._i18n.t('predefined-signature.no-url');
@@ -183,7 +183,7 @@ class PredefinedSignature extends ScopedElementsMixin(LangMixin(BaseLitElement, 
 
         // All confirmed — start signing
         if (tasks.every((t) => t.confirmed)) {
-            this._signAll();
+            void this._signAll();
             return;
         }
 

@@ -92,7 +92,7 @@ export class PdfPreview extends AuthMixin(
     }
 
     _onWindowResize() {
-        this.showPage(this.currentPage);
+        void this.showPage(this.currentPage);
     }
 
     _onMouseUp(event) {
@@ -121,7 +121,7 @@ export class PdfPreview extends AuthMixin(
 
         window.addEventListener('resize', this._onWindowResize);
 
-        this.updateComplete.then(async () => {
+        void this.updateComplete.then(async () => {
             this.fabric = await import('fabric');
             if (this.profileId) {
                 await this.createFabric();
@@ -150,7 +150,7 @@ export class PdfPreview extends AuthMixin(
         changedProperties.forEach((oldValue, propName) => {
             switch (propName) {
                 case 'profileId':
-                    this.updateComplete.then(async () => {
+                    void this.updateComplete.then(async () => {
                         if (this.fabric && this.profileId && this.auth) {
                             if (this.fabricCanvas) {
                                 this.isShowPlacement = true;
@@ -369,7 +369,7 @@ export class PdfPreview extends AuthMixin(
             ) {
                 // if the images are the same size, then fake user_text in js with fabric
                 this.fabricCanvas.on('object:moving', () => {
-                    this.updateAnnotationTexts();
+                    void this.updateAnnotationTexts();
                 });
                 this.fakeAnnotations = true;
             }
@@ -497,7 +497,7 @@ export class PdfPreview extends AuthMixin(
         // needed here to reset user_text back under image correctly after manual placement has already been done
         // and after the annotations were changed
         if (this.fakeAnnotations) {
-            this.updateAnnotationTexts();
+            void this.updateAnnotationTexts();
         }
 
         // fix width adaption after "this.isPageLoaded = true"
@@ -1345,7 +1345,7 @@ export class PdfPreview extends AuthMixin(
                                 id="rotate-signature-button"
                                 title="${i18n.t('pdf-preview.rotate-signature')}"
                                 @click="${() => {
-                                    this.rotateSignature();
+                                    void this.rotateSignature();
                                 }}"
                                 ?disabled="${
                                     this.isPageRenderingInProgress || !this.isShowPlacement

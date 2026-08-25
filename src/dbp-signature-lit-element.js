@@ -588,7 +588,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         if (entry) {
             entry.placementMode = name;
         }
-        this.showPreview(key, true);
+        void this.showPreview(key, true);
         this.requestUpdate();
     }
 
@@ -598,7 +598,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
             entry.placementMode = name;
         }
         this.signaturePlacementInProgress = true;
-        this.showPreview(key, showSignature);
+        void this.showPreview(key, showSignature);
         this.requestUpdate();
         return Promise.resolve();
     }
@@ -607,7 +607,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
      * @param ev
      */
     onFileSelected(ev) {
-        this.queueFile(ev.detail.file);
+        void this.queueFile(ev.detail.file);
     }
 
     /**
@@ -627,7 +627,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
             this.selectedFailedFiles = [];
 
             filesToRequeue.forEach((errorEntry) => {
-                this.reQueueFile(errorEntry.sigEntry);
+                void this.reQueueFile(errorEntry.sigEntry);
             });
         } else {
             // Re-queue all failed files
@@ -635,7 +635,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
             this.errorFiles = new Map();
 
             errorFilesCopy.forEach((errorEntry) => {
-                this.reQueueFile(errorEntry.sigEntry);
+                void this.reQueueFile(errorEntry.sigEntry);
             });
         }
 
@@ -940,7 +940,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
             event.stopPropagation();
             this._('#pdf-preview').open();
             // viewOnly = true hides the toolbar (#pdf-meta) inside the component.
-            this.showPreview(id, false, true);
+            void this.showPreview(id, false, true);
         });
 
         let annotationsButton = this.tableQueuedFilesTable.createScopedElement(
@@ -995,11 +995,11 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
                 }
 
                 if (placement === 'manual' && !this.getInvisibilityOfSelectedProfile()) {
-                    this.queuePlacement(id, placement).then((res) => {
+                    void this.queuePlacement(id, placement).then((res) => {
                         this._('#pdf-preview').open();
                     });
                 } else {
-                    this.queuePlacement(id, placement, false);
+                    void this.queuePlacement(id, placement, false);
                 }
             }, 400);
         });
@@ -1018,7 +1018,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         btnReupload.setAttribute('subscribe', 'lang');
         btnReupload.addEventListener('click', (event) => {
             event.stopPropagation();
-            this.fileQueueingClickHandler(id);
+            void this.fileQueueingClickHandler(id);
         });
         controlDiv.appendChild(btnReupload);
 

@@ -398,7 +398,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
 
             const hasMore = this.queuedFiles.size > 0 || this.selectedQueuedFiles.length > 0;
             if (hasMore) {
-                this.processSigningQueue();
+                void this.processSigningQueue();
             } else {
                 this.signingProcessActive = false;
                 this.sendReportNotification();
@@ -440,7 +440,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
 
     loginCallback(auth) {
         super.loginCallback(auth);
-        this.fetchProfiles('qualified');
+        void this.fetchProfiles('qualified');
     }
 
     update(changedProperties) {
@@ -692,7 +692,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                                     <button
                                         id="start-signing-button"
                                         @click="${() => {
-                                            this.processSigningQueue();
+                                            void this.processSigningQueue();
                                         }}"
                                         ?disabled="${this.queuedFiles.size === 0}"
                                         class="button is-primary">

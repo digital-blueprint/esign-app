@@ -333,7 +333,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
 
     loginCallback(auth) {
         super.loginCallback(auth);
-        this.fetchProfiles('advanced');
+        void this.fetchProfiles('advanced');
     }
 
     update(changedProperties) {
@@ -564,7 +564,7 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
                                     <button
                                         id="start-signing-button"
                                         @click="${() => {
-                                            this.processSigningQueue();
+                                            void this.processSigningQueue();
                                         }}"
                                         ?disabled="${this.queuedFiles.size === 0}"
                                         class="button is-primary ${classMap({
