@@ -117,7 +117,7 @@ class PredefinedSignature extends ScopedElementsMixin(LangMixin(BaseLitElement, 
         }
     }
 
-    async updated(changedProperties) {
+    updated(changedProperties) {
         super.updated(changedProperties);
 
         // When we enter review state or switch to a new task, load the PDF into the preview
@@ -128,7 +128,7 @@ class PredefinedSignature extends ScopedElementsMixin(LangMixin(BaseLitElement, 
                 changedProperties.has('_previewReady');
 
             if (needsLoad) {
-                await this._loadPreview();
+                void this._loadPreview();
             }
         }
     }
