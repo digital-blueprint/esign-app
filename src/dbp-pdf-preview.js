@@ -7,7 +7,7 @@ import DBPLitElement from '@dbp-toolkit/common/dbp-lit-element';
 import {MiniSpinner, Icon} from '@dbp-toolkit/common';
 import {importPdfJs, getPdfJsDocument} from '@dbp-toolkit/pdf-viewer';
 import * as commonStyles from '@dbp-toolkit/common/styles';
-import {readBinaryFileContent, getAnnotationTypes} from './utils.js';
+import {readBinaryFileContent, getAnnotationType} from './utils.js';
 import {send} from '@dbp-toolkit/common/notification';
 import {humanFileSize} from '@dbp-toolkit/common/i18next.js';
 
@@ -172,7 +172,7 @@ export class PdfPreview extends AuthMixin(
 
         this.annotations.forEach((annotation) => {
             body['annotations'].push({
-                [getAnnotationTypes(annotation.annotationType).name[this.profileLanguage]]:
+                [getAnnotationType(annotation.annotationType).name[this.profileLanguage]]:
                     annotation.value,
             });
         });
@@ -565,7 +565,7 @@ export class PdfPreview extends AuthMixin(
                 continue;
             }
 
-            const annotationTypeData = getAnnotationTypes(annotation.annotationType);
+            const annotationTypeData = getAnnotationType(annotation.annotationType);
             const label = annotationTypeData ? annotationTypeData.name[this.profileLanguage] : '';
 
             // Create temporary text objects to measure width
@@ -793,6 +793,7 @@ export class PdfPreview extends AuthMixin(
 
                 // page is rendered on <canvas> element
                 const render_context = {
+                    canvas: this.canvas,
                     canvasContext: this.canvas.getContext('2d'),
                     viewport: viewport,
                 };
@@ -872,9 +873,9 @@ export class PdfPreview extends AuthMixin(
                                 wrapper.scrollIntoView({behavior: 'auto', block: 'end'});
 
                                 const root = this.getRootNode?.();
-                                const host = root?.host;
-
-                                host?.scrollIntoView?.({behavior: 'auto', block: 'end'});
+                                if (root instanceof ShadowRoot) {
+                                    root.host.scrollIntoView({behavior: 'auto', block: 'end'});
+                                }
                             } catch {
                                 wrapper.scrollTop = wrapper.scrollHeight;
                             }

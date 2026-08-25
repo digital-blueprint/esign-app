@@ -260,11 +260,11 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                 userText = this.getUserTextForAnnotations(annotations);
             }
 
-            let params = {};
-            if (entry.placementMode === 'manual' && entry.signaturePlacement !== undefined) {
-                params = utils.fabricjs2pdfasPosition(entry.signaturePlacement);
-            }
-            params['profile'] = this.selectedProfile;
+            const position =
+                entry.placementMode === 'manual' && entry.signaturePlacement !== undefined
+                    ? utils.fabricjs2pdfasPosition(entry.signaturePlacement)
+                    : {};
+            const params = {...position, profile: this.selectedProfile};
 
             inputs.push(new EsignQualifiedBatchSigningRequestInput(file, params, userText));
         }
@@ -439,7 +439,6 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
     }
 
     loginCallback(auth) {
-        super.loginCallback(auth);
         void this.fetchProfiles('qualified');
     }
 

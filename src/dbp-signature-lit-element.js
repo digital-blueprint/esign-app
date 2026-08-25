@@ -43,6 +43,7 @@ export class ErrorEntry {
 export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, createInstance) {
     constructor() {
         super();
+        this.entryPointUrl = '';
         this.queuedFiles = new Map();
         this.uploadInProgress = false;
         this._queueKey = 0;
@@ -393,7 +394,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
                 return;
             }
 
-            const annotationTypeData = utils.getAnnotationTypes(annotationType);
+            const annotationTypeData = utils.getAnnotationType(annotationType);
             console.error(this.getLanguageOfSelectedProfile());
             console.error(annotationTypeData);
             pdfFactory = await utils.addKeyValuePdfAnnotationsToAnnotationFactory(
@@ -469,7 +470,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
     getUserTextForAnnotations(annotations) {
         let userText = [];
         for (let annotation of annotations) {
-            const annotationTypeData = utils.getAnnotationTypes(annotation['annotationType']);
+            const annotationTypeData = utils.getAnnotationType(annotation['annotationType']);
 
             userText.push({
                 description: `${annotationTypeData.name[this.getLanguageOfSelectedProfile()] || ''}`,
@@ -814,13 +815,23 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         }
 
         if (event.detail.id === 'external-auth-modal') {
-            this.stopSigningProcess();
+            void this.stopSigningProcess();
         }
 
         if (event.detail.id === 'annotation-view-modal') {
             this.setQueuedFilesTabulatorTable();
             this.hideAnnotationView();
         }
+    }
+
+    /**
+     * Stops the active signing process.
+     *
+     * @abstract
+     * @returns {Promise<void>}
+     */
+    stopSigningProcess() {
+        throw new Error('stopSigningProcess() must be implemented by subclasses');
     }
 
     /**
@@ -862,13 +873,19 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
 
     /**
      * Update selectedRows on selection changes
-     * @param {object} tableEvent
+     * @param {CustomEvent<{allselected: Array, selected: Array, deselected: Array}>} tableEvent
      */
     handleTableSelection(tableEvent) {
         // Determine which table fired the event
-        const sourceTable = tableEvent
-            .composedPath()
-            .find((el) => el.tagName && el.tagName.toLowerCase() === 'dbp-esign-tabulator-table');
+        const sourceTable = /** @type {Element|undefined} */ (
+            tableEvent
+                .composedPath()
+                .find(
+                    (element) =>
+                        element instanceof Element &&
+                        element.tagName.toLowerCase() === 'dbp-esign-tabulator-table',
+                )
+        );
         const tableId = sourceTable?.getAttribute('identifier') ?? '';
 
         const allSelectedRows = tableEvent.detail.allselected;

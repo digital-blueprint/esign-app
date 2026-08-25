@@ -10,6 +10,13 @@ import * as utils from './utils';
 import {createRef} from 'lit/directives/ref.js';
 
 /**
+ * @typedef {object} AnnotationRow
+ * @property {string} annotationType
+ * @property {string} value
+ * @property {boolean} isSelected
+ */
+
+/**
  * PdfAnnotationView web component
  */
 export class PdfAnnotationView extends LangMixin(
@@ -22,6 +29,7 @@ export class PdfAnnotationView extends LangMixin(
         this.hasChanges = false;
         this.enableRemoveAll = false;
         this.isSelected = false;
+        /** @type {AnnotationRow[]} */
         this.annotationRows = [];
         this.key = -1;
         this.modalRef = createRef();
@@ -50,6 +58,10 @@ export class PdfAnnotationView extends LangMixin(
         };
     }
 
+    /**
+     * @param {AnnotationRow[]} rows
+     * @returns {AnnotationRow[]}
+     */
     cloneAnnotationRows(rows = []) {
         return rows.map((row) => ({...row}));
     }
@@ -72,8 +84,8 @@ export class PdfAnnotationView extends LangMixin(
     validateValues(quiet = false) {
         const i18n = this._i18n;
         for (let annotation of this.annotationRows) {
-            const annotationTypeData = utils.getAnnotationTypes(annotation['annotationType']);
             if (!annotation.isSelected) continue;
+            const annotationTypeData = utils.getAnnotationType(annotation['annotationType']);
 
             if (annotation['value'] === null || annotation['value'] === '') {
                 if (!quiet) {
@@ -406,8 +418,10 @@ export class PdfAnnotationView extends LangMixin(
         let results = [];
 
         ids.forEach((id) => {
-            const data = this.annotationRows[id] || [];
-            const annotationTypeData = utils.getAnnotationTypes(data.annotationType);
+            const data = this.annotationRows[id];
+            const placeholder = data.isSelected
+                ? i18n.t(utils.getAnnotationType(data.annotationType).placeholderTextId)
+                : '';
             const count = this.annotationRows.filter((row) => row.isSelected).length;
             if (count > 0) {
                 this.enableRemoveAll = true;
@@ -434,7 +448,7 @@ export class PdfAnnotationView extends LangMixin(
                             .value="${data.value}"
                             class="input annotation-text-input "
                             pattern="[A-Za-z0-9ÄäÖöÜüß*\\/! &@\\(\\)=+_\\-\\:]*"
-                            placeholder="${i18n.t(annotationTypeData.placeholderTextId)}"
+                            placeholder="${placeholder}"
                             @change=${(e) => {
                                 this.updateAnnotation(id, 'value', e.target.value);
                             }} />

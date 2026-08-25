@@ -4,7 +4,7 @@ export class ApiError extends Error {
     /**
      * @param {number} status
      * @param {string} statusText
-     * @param {object} body
+     * @param {{title?: string, detail?: string, 'relay:errorId'?: string, 'relay:errorDetails'?: object}} body
      */
     constructor(status, statusText, body) {
         super(`[${status}] ${body.title ?? statusText} - ${body.detail}`);
@@ -64,12 +64,12 @@ export class ApiError extends Error {
 
 /**
  * @typedef {object} EsignSigningParameters
+ * @property {string} [profile]
  * @property {number} [x]
  * @property {number} [y]
- * @property {number} [r]
- * @property {number} [w]
- * @property {number} [p]
- * @property {boolean} [invisible]
+ * @property {number} [rotation]
+ * @property {number} [width]
+ * @property {number} [page]
  */
 
 /**

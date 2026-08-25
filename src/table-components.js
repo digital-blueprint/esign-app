@@ -8,6 +8,7 @@ import {TooltipElement} from '@dbp-toolkit/tooltip';
 export class CustomTabulatorTable extends TabulatorTable {
     static get scopedElements() {
         return {
+            ...super.scopedElements,
             'dbp-esign-download-button': DownloadButton,
             'dbp-esign-filename-label': FilenameLabel,
             'dbp-esign-reupload-button': ReUploadButton,
@@ -20,15 +21,14 @@ export class CustomTabulatorTable extends TabulatorTable {
     }
 
     static get styles() {
-        return [
-            TabulatorTable.styles,
-            // block needed for ResizeObserver
-            css`
-                :host {
-                    display: block;
-                }
-            `,
-        ];
+        return css`
+            ${TabulatorTable.styles}
+
+            /* Block layout is needed for ResizeObserver. */
+            :host {
+                display: block;
+            }
+        `;
     }
 
     _handleResize() {
@@ -217,6 +217,7 @@ export class AnnotationsButton extends LangMixin(
 
     static get properties() {
         return {
+            ...super.properties,
             annotations: {type: Array},
         };
     }
@@ -458,6 +459,7 @@ export class PositioningSwitch extends LangMixin(
 
     static get properties() {
         return {
+            ...super.properties,
             needPositioning: {type: Boolean, attribute: 'need-positioning'},
             checked: {type: Boolean, reflect: true},
         };

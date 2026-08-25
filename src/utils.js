@@ -235,12 +235,17 @@ export const addPdfAnnotationToAnnotationFactory = (annotationFactory, author, c
 };
 
 /**
- * Returns an object with all annotations types or only the values for one type
- *
- * @param key
- * @returns {object} describing the annotation type named key
+ * @typedef {object} AnnotationType
+ * @property {Record<string, string>} name
+ * @property {string} placeholderTextId
  */
-export const getAnnotationTypes = (key = null) => {
+
+/**
+ * Returns all annotation types.
+ *
+ * @returns {Record<string, AnnotationType>}
+ */
+export const getAnnotationTypes = () => {
     // for i18next-cli
     let i18n = createInstance();
     i18n.t('annotation-view.reference-number-placeholder');
@@ -271,7 +276,21 @@ export const getAnnotationTypes = (key = null) => {
         },
     };
 
-    return key === null ? types : types[key] || {};
+    return types;
+};
+
+/**
+ * Returns one annotation type by key.
+ *
+ * @param {string} key
+ * @returns {AnnotationType}
+ */
+export const getAnnotationType = (key) => {
+    const annotationTypes = getAnnotationTypes();
+    if (!Object.hasOwn(annotationTypes, key)) {
+        throw new Error(`Unknown annotation type: ${key}`);
+    }
+    return annotationTypes[key];
 };
 
 /**

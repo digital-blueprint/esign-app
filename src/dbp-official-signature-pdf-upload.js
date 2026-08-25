@@ -207,17 +207,12 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             let file = entry.file;
             this.activeSigningEntry = entry;
             this.uploadInProgress = true;
-            let params = {};
-
             // prepare parameters to tell PDF-AS where and how the signature should be placed
-            if (entry.placementMode === 'manual') {
-                const data = entry.signaturePlacement;
-                if (data !== undefined) {
-                    params = utils.fabricjs2pdfasPosition(data);
-                }
-            }
-
-            params['profile'] = this.selectedProfile;
+            const position =
+                entry.placementMode === 'manual' && entry.signaturePlacement !== undefined
+                    ? utils.fabricjs2pdfasPosition(entry.signaturePlacement)
+                    : {};
+            const params = {...position, profile: this.selectedProfile};
             this.uploadStatusFileName = file.name;
             this.uploadStatusText = i18n.t('official-pdf-upload.upload-status-file-text', {
                 fileName: file.name,
@@ -332,7 +327,6 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
     }
 
     loginCallback(auth) {
-        super.loginCallback(auth);
         void this.fetchProfiles('advanced');
     }
 

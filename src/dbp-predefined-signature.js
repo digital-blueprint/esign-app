@@ -147,7 +147,7 @@ class PredefinedSignature extends ScopedElementsMixin(LangMixin(BaseLitElement, 
         await new Promise((resolve) => {
             const check = () => {
                 if (preview.fabricCanvas !== null) {
-                    resolve();
+                    resolve(undefined);
                 } else {
                     requestAnimationFrame(check);
                 }
