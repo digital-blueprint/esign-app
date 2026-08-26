@@ -22,7 +22,7 @@ export class SignatureEntry {
         placementMode = 'auto',
         needsPlacement = false,
         annotations = [],
-        signaturePlacement = undefined,
+        signaturePlacement,
     ) {
         this.key = key;
         this.file = file;
