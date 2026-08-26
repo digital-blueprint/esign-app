@@ -83,6 +83,6 @@
         "watch-bs": "rolldown -c  rolldown.config.js --watch --environment APP_ENV:bs",
         "test": "rolldown -c  rolldown.config.js --environment APP_ENV:test && web-test-runner",
         "test-full": "rolldown -c  rolldown.config.js --environment FORCE_FULL,APP_ENV:test && web-test-runner",
-        "tsc": "tsc -p jsconfig.json"
+        "tsc": "tsc -p tsconfig.json"
     }
 }
