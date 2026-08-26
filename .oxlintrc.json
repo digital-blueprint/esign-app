@@ -6,7 +6,8 @@
         "correctness": "error"
     },
     "options": {
-        "typeAware": true
+        "typeAware": true,
+        "typeCheck": true
     },
     "env": {
         "es2026": true,
