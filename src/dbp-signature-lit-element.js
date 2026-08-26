@@ -629,10 +629,8 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
 
     /**
      * Called when preview is "canceled"
-     *
-     * @param event
      */
-    hidePDF(event) {
+    hidePDF() {
         const entry = this.queuedFiles.get(this.currentPreviewQueueKey);
         if (entry) {
             // If canceled when try to set to manual mode remove placement settings (auto is the default)

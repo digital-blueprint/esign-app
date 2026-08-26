@@ -325,11 +325,11 @@ export function generateSignedFileName(fileName) {
     let name, ext;
 
     if (parts.length < 2) {
-        name = parts[0];
+        name = parts[0] ?? '';
         ext = '';
     } else {
         ext = parts.at(-1);
-        name = parts.at(-2);
+        name = parts.at(-2) ?? '';
     }
 
     const prevName = parts.length >= 2 ? parts.slice(0, -2) : [];
