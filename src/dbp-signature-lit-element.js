@@ -1408,6 +1408,16 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
                 filenameLabel.setAttribute('subscribe', 'lang');
                 filenameLabel.file = file;
 
+                let idx = parseInt(id);
+                if (
+                    !isNaN(idx) &&
+                    this.tableSignedFilesTable.getData() &&
+                    this.tableSignedFilesTable.getData().length > idx - 1
+                ) {
+                    filenameLabel.isDownloaded =
+                        this.tableSignedFilesTable.getData()[idx - 1].fileName.isDownloaded;
+                }
+
                 let downloadButton = this.tableSignedFilesTable.createScopedElement(
                     'dbp-esign-download-button',
                 );
