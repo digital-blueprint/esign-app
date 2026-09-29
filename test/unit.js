@@ -2,7 +2,35 @@ import {assert} from 'chai';
 
 import '../src/dbp-official-signature-pdf-upload';
 import '../src/dbp-signature.js';
-import {getPDFSignatureCount, generateSignedFileName} from '../src/utils.js';
+import {
+    getPDFSignatureCount,
+    generateSignedFileName,
+    fabricjs2pdfasPosition,
+    pdfasPosition2fabricjs,
+} from '../src/utils.js';
+
+suite('signature position conversion', () => {
+    test('pdfasPosition2fabricjs is the inverse of fabricjs2pdfasPosition', () => {
+        const pageHeight = 842;
+        for (const rotation of [0, 90, 180, 270]) {
+            const position = {x: 100, y: 300, width: 200, rotation, page: 2};
+            const placement = pdfasPosition2fabricjs(position, pageHeight, 150, 0.5);
+            assert.equal(placement.currentPage, 2);
+            assert.equal(placement.width, 200);
+            assert.equal(placement.height, 100);
+            assert.deepEqual(fabricjs2pdfasPosition(placement), position);
+        }
+    });
+
+    test('pdfasPosition2fabricjs uses defaults', () => {
+        const placement = pdfasPosition2fabricjs({x: 10, y: 20}, 842, 150, 0.5);
+        assert.equal(placement.currentPage, 1);
+        assert.equal(placement.width, 150);
+        assert.equal(placement.angle, 0);
+        assert.equal(placement.left, 10);
+        assert.equal(placement.top, 822);
+    });
+});
 
 suite('dbp-official-signature-pdf-upload basics', () => {
     let node;

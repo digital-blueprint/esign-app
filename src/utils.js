@@ -71,6 +71,50 @@ export const fabricjs2pdfasPosition = (data) => {
 };
 
 /**
+ * The inverse of fabricjs2pdfasPosition(): converts a PDF-AS position (as passed to the
+ * signing API) into the placement data used by the PDF preview (PDF units, origin top-left).
+ *
+ * @param {object} position
+ * @param {number} position.x - left edge in pt, origin bottom-left
+ * @param {number} position.y - top edge in pt, origin bottom-left
+ * @param {number} [position.rotation] - counter-clockwise in degrees, multiples of 90
+ * @param {number} [position.width] - width of the signature block in pt
+ * @param {number} [position.page] - 1-based page number
+ * @param {number} pageHeight - height of the target page in pt
+ * @param {number} defaultWidth - block width in pt, used if position.width is not set
+ * @param {number} aspectRatio - block height divided by block width
+ * @returns {{currentPage: number, left: number, top: number, bottom: number, width: number, height: number, angle: number}}
+ */
+export const pdfasPosition2fabricjs = (position, pageHeight, defaultWidth, aspectRatio) => {
+    const rotation = Number(position.rotation ?? 0);
+    const angle = (((360 - rotation) % 360) + 360) % 360;
+    const width = position.width !== undefined ? Number(position.width) : defaultWidth;
+    const height = width * aspectRatio;
+    let bottom = Number(position.y);
+    let left = Number(position.x);
+
+    if (angle === 90) {
+        bottom -= height;
+        left += height;
+    } else if (angle === 180) {
+        bottom -= height * 2;
+    } else if (angle === 270) {
+        bottom -= height;
+        left -= height;
+    }
+
+    return {
+        currentPage: Number(position.page ?? 1),
+        left: left,
+        top: pageHeight - bottom,
+        bottom: bottom,
+        width: width,
+        height: height,
+        angle: angle,
+    };
+};
+
+/**
  * Returns the content of the file
  *
  * @param {File} file The file to read

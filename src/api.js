@@ -63,6 +63,17 @@ export class ApiError extends Error {
  */
 
 /**
+ * @typedef {object} EsignProfile
+ * @property {string} identifier
+ * @property {boolean} allowAnnotations
+ * @property {boolean} allowManualPositioning
+ * @property {string} displayNameDe
+ * @property {string} displayNameEn
+ * @property {string} language
+ * @property {boolean} invisible
+ */
+
+/**
  * @typedef {object} EsignSigningParameters
  * @property {string} [profile]
  * @property {number} [x]
@@ -224,6 +235,34 @@ export class EsignApi {
         }
 
         return await result.json();
+    }
+
+    /**
+     * Returns all profiles of the given type the current user is allowed to sign with.
+     *
+     * @param {'advanced'|'qualified'} type
+     * @returns {Promise<EsignProfile[]>}
+     */
+    async getProfiles(type) {
+        const apiUrl =
+            combineURLs(this._element.entryPointUrl, '/esign/profiles') +
+            '?type=' +
+            encodeURIComponent(type);
+
+        const result = await fetch(apiUrl, {
+            headers: {
+                Accept: 'application/ld+json',
+                Authorization: 'Bearer ' + this._element.auth.token,
+                'Accept-Language': this._element.lang,
+            },
+        });
+
+        if (!result.ok) {
+            throw await ApiError.fromResponse(result);
+        }
+
+        const data = await result.json();
+        return data['hydra:member'] ?? [];
     }
 
     /**

@@ -7,7 +7,7 @@ import DBPLitElement from '@dbp-toolkit/common/dbp-lit-element';
 import {MiniSpinner, Icon} from '@dbp-toolkit/common';
 import {importPdfJs, getPdfJsDocument} from '@dbp-toolkit/pdf-viewer';
 import * as commonStyles from '@dbp-toolkit/common/styles';
-import {readBinaryFileContent, getAnnotationType} from './utils.js';
+import {readBinaryFileContent, getAnnotationType, pdfasPosition2fabricjs} from './utils.js';
 import {send} from '@dbp-toolkit/common/notification';
 import {humanFileSize} from '@dbp-toolkit/common/i18next.js';
 
@@ -528,11 +528,18 @@ export class PdfPreview extends AuthMixin(
             return;
         }
 
-        const page = placementData.currentPage || 1;
+        let page = placementData.currentPage || 1;
+        // if the placementData has no values we want to initialize the signature position
+        let initSignature = placementData['scaleX'] === undefined;
+
+        // A fixed PDF-AS position (x/y/width/rotation/page as sent to the signing API)
+        if (entry.signaturePosition !== undefined && item !== null) {
+            page = await this.applyPdfAsPosition(item, entry.signaturePosition);
+            initSignature = false;
+        }
 
         // show the first page
-        // if the placementData has no values we want to initialize the signature position
-        await this.showPage(page, placementData['scaleX'] === undefined);
+        await this.showPage(page, initSignature);
 
         this.isPageLoaded = true;
 
@@ -544,6 +551,70 @@ export class PdfPreview extends AuthMixin(
 
         // fix width adaption after "this.isPageLoaded = true"
         await this.showPage(page);
+    }
+
+    /**
+     * Places the signature image according to a PDF-AS position, the same
+     * format that is passed to the signing API (origin bottom-left, in pt).
+     *
+     * @param {FabricImage} item
+     * @param {{x: number, y: number, width?: number, rotation?: number, page?: number}} position
+     * @returns {Promise<number>} the page number of the signature
+     */
+    async applyPdfAsPosition(item, position) {
+        if (this.pdfDoc === null) {
+            throw new Error('PDF is not loaded');
+        }
+        const pageNumber = Math.min(Math.max(Number(position.page ?? 1), 1), this.totalPages);
+        const pdfPage = await this.pdfDoc.getPage(pageNumber);
+        const pageHeight = pdfPage.getViewport({scale: 1}).height;
+
+        // Without a width PDF-AS uses the profile default, which matches the preview image
+        const imageWidth = item.get('width');
+        const imageHeight = item.get('height');
+        const defaultWidth = imageWidth * (PDF_DPI / PREVIEW_RESOLUTION_DPI);
+        const placement = pdfasPosition2fabricjs(
+            {...position, page: pageNumber},
+            pageHeight,
+            defaultWidth,
+            imageHeight / imageWidth,
+        );
+
+        // fabric coordinates are in canvas units and include the border,
+        // see sendAcceptEvent() for the reverse
+        const scale = this.canvasToPdfScale;
+        const border = this.border_width / 2;
+        let left = placement.left * scale;
+        let top = placement.top * scale;
+        if (placement.angle === 0) {
+            left -= border;
+            top -= border;
+        } else if (placement.angle === 90) {
+            left += border;
+            top -= border;
+        } else if (placement.angle === 180) {
+            left += border;
+            top += border;
+        } else if (placement.angle === 270) {
+            left -= border;
+            top += border;
+        }
+
+        const imageScale = (placement.width / imageWidth) * scale;
+        item.set({
+            scaleX: imageScale,
+            scaleY: imageScale,
+            angle: placement.angle,
+            originX: 'left',
+            originY: 'top',
+            left: left,
+            top: top,
+        });
+        item.setCoords();
+
+        this.viewOnlyPlacementPage = pageNumber;
+
+        return pageNumber;
     }
 
     /**
