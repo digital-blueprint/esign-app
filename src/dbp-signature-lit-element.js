@@ -1349,6 +1349,16 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
                     visible: false,
                 },
                 {
+                    title: '#',
+                    field: 'number',
+                    hozAlign: 'center',
+                    headerHozAlign: 'center',
+                    sorter: 'number',
+                    formatter: (cell) => `${cell.getValue()}.`,
+                    width: 50,
+                    responsive: 0,
+                },
+                {
                     title: '',
                     field: 'toggle',
                     hozAlign: 'center',
@@ -1432,6 +1442,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
 
                 let fileData = {
                     index: id,
+                    number: tableFiles.length + 1,
                     fileName: filenameLabel,
                     fileSize: humanFileSize(file.size),
                     downloadButton: downloadButton,
@@ -1485,6 +1496,16 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
                     headerHozAlign: 'center',
                     width: 40,
                     visible: false,
+                },
+                {
+                    title: '#',
+                    field: 'number',
+                    hozAlign: 'center',
+                    headerHozAlign: 'center',
+                    sorter: 'number',
+                    formatter: (cell) => `${cell.getValue()}.`,
+                    width: 50,
+                    responsive: 0,
                 },
                 {
                     title: '',
@@ -1559,6 +1580,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
 
                 let fileData = {
                     index: id,
+                    number: tableFiles.length + 1,
                     fileName: filenameLabel,
                     fileSize: humanFileSize(file.size),
                     errorMessage: errorEntry.errorMessage,
