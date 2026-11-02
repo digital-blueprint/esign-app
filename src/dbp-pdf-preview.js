@@ -95,6 +95,7 @@ export class PdfPreview extends AuthMixin(
             allowSignatureRotation: {type: Boolean, attribute: 'allow-signature-rotation'},
             previewScale: {type: Number, attribute: 'preview-scale'},
             showSignaturePlacementDescription: {type: Boolean},
+            signaturePlacementMode: {type: String, attribute: false},
             annotations: {type: Array, attribute: false},
             viewOnly: {type: Boolean, attribute: false},
             profileLanguage: {type: String, attribute: 'profile-lang'},
@@ -454,7 +455,7 @@ export class PdfPreview extends AuthMixin(
                     };
                 }
             } else {
-                placementData = {signaturePlacementMode: 'auto'};
+                placementData = {signaturePlacementMode: placementMode};
             }
         } else if (hasManualPlacement) {
             // In view-only mode with manual placement, load placement data to show the overlay
@@ -1093,9 +1094,9 @@ export class PdfPreview extends AuthMixin(
         const selectElement = /** @type {HTMLSelectElement} */ (this._('#positioning-type'));
         selectElement.value = value;
 
-        if (value === 'auto') {
+        if (value === 'auto' || value === 'new-page') {
             this.isShowPlacement = false;
-            this.signaturePlacementMode = 'auto';
+            this.signaturePlacementMode = value;
             this.showSignaturePlacementDescription = true;
         } else if (value === 'manual') {
             this.isShowPlacement = true;
@@ -1451,17 +1452,12 @@ export class PdfPreview extends AuthMixin(
                                     id="positioning-type"
                                     class="positioning-type-select"
                                     @change="${(event) => {
-                                        if (event.target.value === 'auto') {
-                                            this.isShowPlacement = false;
-                                            this.signaturePlacementMode = 'auto';
-                                            this.showSignaturePlacementDescription = true;
-                                        } else {
-                                            this.isShowPlacement = true;
-                                            this.signaturePlacementMode = 'manual';
-                                            this.showSignaturePlacementDescription = false;
-                                        }
+                                        this.setPositionTypeSelect(event.target.value);
                                     }}">
                                     <option value="auto">${i18n.t('positioning-automatic')}</option>
+                                    <option value="new-page">
+                                        ${i18n.t('positioning-new-page')}
+                                    </option>
                                     <option value="manual">${i18n.t('positioning-manual')}</option>
                                 </select>
                             </label>
@@ -1483,7 +1479,13 @@ export class PdfPreview extends AuthMixin(
                                 class="signature-description ${classMap({
                                     hidden: !this.showSignaturePlacementDescription,
                                 })}">
-                                <p>${i18n.t('pdf-preview.signature-description')}</p>
+                                <p>
+                                    ${
+                                        this.signaturePlacementMode === 'new-page'
+                                            ? i18n.t('pdf-preview.signature-description-new-page')
+                                            : i18n.t('pdf-preview.signature-description')
+                                    }
+                                </p>
                             </div>
                             <div class="footer-btn">
                                 <button

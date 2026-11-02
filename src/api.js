@@ -80,7 +80,7 @@ export class ApiError extends Error {
  * @property {number} [y]
  * @property {number} [rotation]
  * @property {number} [width]
- * @property {number} [page]
+ * @property {number|'new'} [page]
  */
 
 /**

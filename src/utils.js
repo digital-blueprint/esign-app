@@ -71,6 +71,24 @@ export const fabricjs2pdfasPosition = (data) => {
 };
 
 /**
+ * Returns the PDF-AS position parameters for a queued signature entry.
+ * "auto" returns no parameters, so the PDF-AS profile default is used.
+ *
+ * @param {string} placementMode - 'auto', 'manual' or 'new-page'
+ * @param {object} [signaturePlacement] - the placement data from the PDF preview (manual mode only)
+ * @returns {object}
+ */
+export const getSignaturePositionParams = (placementMode, signaturePlacement) => {
+    if (placementMode === 'manual' && signaturePlacement !== undefined) {
+        return fabricjs2pdfasPosition(signaturePlacement);
+    }
+    if (placementMode === 'new-page') {
+        return {page: 'new'};
+    }
+    return {};
+};
+
+/**
  * The inverse of fabricjs2pdfasPosition(): converts a PDF-AS position (as passed to the
  * signing API) into the placement data used by the PDF preview (PDF units, origin top-left).
  *

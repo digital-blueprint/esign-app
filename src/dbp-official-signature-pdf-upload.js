@@ -156,10 +156,9 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
         for (const key of this.queuedFiles.keys()) {
             if (errorInPositioning === true) continue;
             const entry = this.getQueuedFile(key);
-            const isManual = entry.placementMode === 'manual';
             if (
                 entry.needsPlacement &&
-                !isManual &&
+                entry.placementMode === 'auto' &&
                 (this.selectedQueuedFiles.length === 0 || this.fileIsSelectedFile(key))
             ) {
                 // Some have a signature but are not "manual", stop everything
@@ -212,10 +211,10 @@ class OfficialSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitElem
             this.activeSigningEntry = entry;
             this.uploadInProgress = true;
             // prepare parameters to tell PDF-AS where and how the signature should be placed
-            const position =
-                entry.placementMode === 'manual' && entry.signaturePlacement !== undefined
-                    ? utils.fabricjs2pdfasPosition(entry.signaturePlacement)
-                    : {};
+            const position = utils.getSignaturePositionParams(
+                entry.placementMode,
+                entry.signaturePlacement,
+            );
             const params = {...position, profile: this.selectedProfile};
             this.uploadStatusFileName = file.name;
             this.uploadStatusText = i18n.t('official-pdf-upload.upload-status-file-text', {

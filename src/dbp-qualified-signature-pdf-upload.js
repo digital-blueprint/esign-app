@@ -221,7 +221,7 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
         // Validate placement before touching the queue
         for (const key of candidateKeys) {
             const entry = this.getQueuedFile(key);
-            if (entry.needsPlacement && entry.placementMode !== 'manual') {
+            if (entry.needsPlacement && entry.placementMode === 'auto') {
                 notify({
                     summary: i18n.t('error-manual-positioning-missing-title'),
                     body: i18n.t('error-manual-positioning-missing'),
@@ -261,10 +261,10 @@ class QualifiedSignaturePdfUpload extends ScopedElementsMixin(DBPSignatureLitEle
                 userText = this.getUserTextForAnnotations(annotations);
             }
 
-            const position =
-                entry.placementMode === 'manual' && entry.signaturePlacement !== undefined
-                    ? utils.fabricjs2pdfasPosition(entry.signaturePlacement)
-                    : {};
+            const position = utils.getSignaturePositionParams(
+                entry.placementMode,
+                entry.signaturePlacement,
+            );
             const params = {...position, profile: this.selectedProfile};
 
             inputs.push(new EsignQualifiedBatchSigningRequestInput(file, params, userText));

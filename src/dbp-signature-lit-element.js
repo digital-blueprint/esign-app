@@ -11,7 +11,7 @@ export class SignatureEntry {
     /**
      * @param {string} key
      * @param {File} file
-     * @param {string} placementMode
+     * @param {string} placementMode - 'auto', 'manual' or 'new-page'
      * @param {boolean} needsPlacement
      * @param {Array} annotations
      * @param {object} [signaturePlacement]
@@ -637,7 +637,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
             if (entry.placementMode === 'manual') {
                 entry.signaturePlacement = undefined;
                 entry.placementMode = 'auto';
-            } else {
+            } else if (entry.placementMode === 'auto') {
                 // If canceled when try to set automatic set back to manual
                 entry.placementMode = 'manual';
             }
@@ -1076,7 +1076,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
             'dbp-esign-positioning-switch',
         );
         positioningSwitch.setAttribute('subscribe', 'lang');
-        positioningSwitch.checked = placement === 'manual';
+        positioningSwitch.checked = placement !== 'auto';
         positioningSwitch.needPositioning = needPositioning;
         positioningSwitch.addEventListener('toggle-change', (event) => {
             setTimeout(() => {
@@ -1258,8 +1258,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
             ids.forEach((id) => {
                 const entry = this.getQueuedFile(id);
                 const file = entry.file;
-                const isManual = entry.placementMode === 'manual';
-                const placementMissing = entry.needsPlacement && !isManual;
+                const placementMissing = entry.needsPlacement && entry.placementMode === 'auto';
                 if (placementMissing) {
                     this.anyPlacementMissing = true;
                 }

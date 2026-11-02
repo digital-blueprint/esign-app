@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- New "New page" positioning type, which places the signature at the top of a
+  newly appended page at the end of the document. This also works for documents
+  which already contain a signature. Requires an esign bundle version which
+  supports `page: "new"`.
+
 ## 2.6.2
 
 - Show text annotations in the signature placement preview to help with.

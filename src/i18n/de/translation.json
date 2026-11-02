@@ -75,10 +75,12 @@
         "rotate": "Signatur rotieren",
         "rotate-signature": "Signatur im Uhrzeigersinn rotieren",
         "save": "Speichern",
-        "signature-description": "Die Signatur wird automatisch auf der letzten Seite am Ende des Dokumentinhalts positioniert. Falls der Platz beschränkt ist, wird eine neue Seite speziell für die Signatur erstellt. Um die Signatur anders zu positionieren, wählen Sie bitte die manuelle Positionierung der Signatur aus dem Dropdown."
+        "signature-description": "Die Signatur wird automatisch auf der letzten Seite am Ende des Dokumentinhalts positioniert. Falls der Platz beschränkt ist, wird eine neue Seite speziell für die Signatur erstellt. Um die Signatur anders zu positionieren, wählen Sie bitte einen anderen Typ der Positionierung aus dem Dropdown.",
+        "signature-description-new-page": "Am Ende des Dokuments wird eine neue Seite hinzugefügt und die Signatur automatisch oben auf dieser Seite positioniert."
     },
     "positioning-automatic": "Automatisch",
     "positioning-manual": "Manuell",
+    "positioning-new-page": "Neue Seite",
     "positioning-type-label": "Typ der Positionierung",
     "predefined-signature": {
         "cancel-button": "Abbrechen",

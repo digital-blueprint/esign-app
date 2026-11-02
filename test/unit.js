@@ -7,6 +7,7 @@ import {
     generateSignedFileName,
     fabricjs2pdfasPosition,
     pdfasPosition2fabricjs,
+    getSignaturePositionParams,
 } from '../src/utils.js';
 
 suite('signature position conversion', () => {
@@ -29,6 +30,17 @@ suite('signature position conversion', () => {
         assert.equal(placement.angle, 0);
         assert.equal(placement.left, 10);
         assert.equal(placement.top, 822);
+    });
+
+    test('getSignaturePositionParams', () => {
+        assert.deepEqual(getSignaturePositionParams('auto', undefined), {});
+        assert.deepEqual(getSignaturePositionParams('manual', undefined), {});
+        assert.deepEqual(getSignaturePositionParams('new-page', undefined), {page: 'new'});
+        const placement = pdfasPosition2fabricjs({x: 10, y: 20, page: 3}, 842, 150, 0.5);
+        assert.deepEqual(
+            getSignaturePositionParams('manual', placement),
+            fabricjs2pdfasPosition(placement),
+        );
     });
 });
 
