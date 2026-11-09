@@ -1245,7 +1245,7 @@ export class PdfPreview extends AuthMixin(
                 display: flex;
                 flex-direction: column;
                 flex-wrap: wrap;
-                gap: 10px;
+                gap: 2rem;
                 container-type: inline-size;
                 container-name: action-container;
                 height: 100%;
@@ -1278,6 +1278,7 @@ export class PdfPreview extends AuthMixin(
             }
 
             #rotate-signature-button {
+                margin-top: calc(10px - 2rem);
                 margin-left: 0.75rem;
             }
 
@@ -1301,9 +1302,10 @@ export class PdfPreview extends AuthMixin(
                 flex-wrap: nowrap;
             }
 
-            .signature-description {
-                padding: 1em 0;
-                margin-top: 0.5em;
+            .signature-description,
+            .signature-description p {
+                margin: 0;
+                padding: 0;
             }
 
             .footer-btn {
@@ -1519,13 +1521,18 @@ export class PdfPreview extends AuthMixin(
                             </div>
                             <div
                                 class="signature-description ${classMap({
-                                    hidden: !this.showSignaturePlacementDescription,
+                                    hidden:
+                                        !this.showSignaturePlacementDescription &&
+                                        (this.signaturePlacementMode !== 'manual' ||
+                                            this.signatureInvisible),
                                 })}">
                                 <p>
                                     ${
-                                        this.signaturePlacementMode === 'new-page'
-                                            ? i18n.t('pdf-preview.signature-description-new-page')
-                                            : i18n.t('pdf-preview.signature-description')
+                                        this.signaturePlacementMode === 'manual'
+                                            ? i18n.t('pdf-preview.manual-positioning-hint')
+                                            : this.signaturePlacementMode === 'new-page'
+                                              ? i18n.t('pdf-preview.signature-description-new-page')
+                                              : i18n.t('pdf-preview.signature-description')
                                     }
                                 </p>
                             </div>
