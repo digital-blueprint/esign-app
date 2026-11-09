@@ -466,7 +466,7 @@ export class PdfPreview extends AuthMixin(
             this.viewOnlyPlacementPage = entry.signaturePlacement.currentPage ?? null;
         }
 
-        this.setPositionTypeSelect(placementMode);
+        this.setPositionType(placementMode);
 
         // In view-only mode, set fabric canvas interactivity based on whether overlay is shown
         if (this.fabricCanvas) {
@@ -1090,10 +1090,7 @@ export class PdfPreview extends AuthMixin(
         await this.showPage(this.currentPage);
     }
 
-    setPositionTypeSelect(value) {
-        const selectElement = /** @type {HTMLSelectElement} */ (this._('#positioning-type'));
-        selectElement.value = value;
-
+    setPositionType(value) {
         if (value === 'auto' || value === 'new-page') {
             this.isShowPlacement = false;
             this.signaturePlacementMode = value;
@@ -1241,23 +1238,35 @@ export class PdfPreview extends AuthMixin(
                 margin-top: auto;
             }
 
-            .buttons .profile-type-select,
-            .buttons .positioning-type-select {
-                padding-right: 2em;
-                padding-left: 0.75em;
-                background-size: 18px;
-                background-position: calc(100% - 0.4rem) center;
+            .positioning-type {
+                min-width: 0;
+                margin: 0;
+                padding: 0;
+                border: 0;
             }
 
-            .buttons label[for='profile-type'],
-            .buttons label[for='positioning-type'] {
+            .positioning-type legend {
+                padding: 0;
+                margin-bottom: 0.5em;
+            }
+
+            .positioning-type-options {
                 display: flex;
                 flex-direction: column;
-                width: 100%;
+                gap: 0.5em;
             }
 
-            .positioning-type-select {
-                height: 35px;
+            .positioning-type-options label {
+                display: flex;
+                align-items: center;
+                gap: 0.5em;
+                cursor: pointer;
+            }
+
+            .positioning-type-options input {
+                margin: 0;
+                flex-shrink: 0;
+                accent-color: var(--dbp-primary);
             }
 
             .nav-buttons {
@@ -1382,15 +1391,8 @@ export class PdfPreview extends AuthMixin(
                     align-items: end;
                     justify-content: space-between;
                 }
-                .buttons label[for='positioning-type'] {
-                    width: initial;
+                .positioning-type {
                     flex: 1;
-                }
-
-                select:not(.select),
-                .positioning-type-select {
-                    padding: calc(0.385em - 1px) 0.75em;
-                    height: max-content;
                 }
 
                 .footer-btn {
@@ -1446,21 +1448,32 @@ export class PdfPreview extends AuthMixin(
                             class="action-container buttons ${classMap({
                                 hidden: !this.isPageLoaded,
                             })}">
-                            <label for="positioning-type">
-                                ${i18n.t('positioning-type-label')}
-                                <select
-                                    id="positioning-type"
-                                    class="positioning-type-select"
-                                    @change="${(event) => {
-                                        this.setPositionTypeSelect(event.target.value);
-                                    }}">
-                                    <option value="auto">${i18n.t('positioning-automatic')}</option>
-                                    <option value="new-page">
-                                        ${i18n.t('positioning-new-page')}
-                                    </option>
-                                    <option value="manual">${i18n.t('positioning-manual')}</option>
-                                </select>
-                            </label>
+                            <fieldset class="positioning-type">
+                                <legend>${i18n.t('positioning-type-label')}</legend>
+                                <div class="positioning-type-options">
+                                    ${[
+                                        ['auto', i18n.t('positioning-automatic')],
+                                        ['new-page', i18n.t('positioning-new-page')],
+                                        ['manual', i18n.t('positioning-manual')],
+                                    ].map(
+                                        ([value, label]) => html`
+                                            <label>
+                                                <input
+                                                    type="radio"
+                                                    name="positioning-type"
+                                                    value="${value}"
+                                                    .checked="${live(
+                                                        this.signaturePlacementMode === value,
+                                                    )}"
+                                                    @change="${() => {
+                                                        this.setPositionType(value);
+                                                    }}" />
+                                                ${label}
+                                            </label>
+                                        `,
+                                    )}
+                                </div>
+                            </fieldset>
                             <button
                                 class="button"
                                 id="rotate-signature-button"

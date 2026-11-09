@@ -75,7 +75,7 @@
         "rotate": "Rotate signature",
         "rotate-signature": "Rotate signature clockwise",
         "save": "Save",
-        "signature-description": "The signature will be automatically positioned on the last page at the end of the document's content. In the case of limited space, a new page will be created specifically for the signature. To position the signature differently, please select another positioning type from the dropdown.",
+        "signature-description": "The signature will be automatically positioned on the last page at the end of the document's content. In the case of limited space, a new page will be created specifically for the signature. To position the signature differently, please select another positioning type.",
         "signature-description-new-page": "A new page will be added at the end of the document and the signature will be automatically positioned at the top of this page."
     },
     "positioning-automatic": "Auto",

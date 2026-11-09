@@ -2,6 +2,7 @@ import {assert} from 'chai';
 
 import '../src/dbp-official-signature-pdf-upload';
 import '../src/dbp-signature.js';
+import {PdfPreview} from '../src/dbp-pdf-preview.js';
 import {
     getPDFSignatureCount,
     generateSignedFileName,
@@ -9,6 +10,62 @@ import {
     pdfasPosition2fabricjs,
     getSignaturePositionParams,
 } from '../src/utils.js';
+
+suite('pdf preview positioning options', () => {
+    let node;
+
+    suiteSetup(() => {
+        customElements.define('test-pdf-preview', PdfPreview);
+    });
+
+    setup(async () => {
+        node = document.createElement('test-pdf-preview');
+        document.body.appendChild(node);
+        await node.updateComplete;
+    });
+
+    teardown(() => {
+        node.remove();
+    });
+
+    test('renders all positioning modes as a labelled radio group', () => {
+        const group = node.shadowRoot.querySelector('fieldset.positioning-type');
+        assert.isNotEmpty(group.querySelector('legend').textContent.trim());
+        const radios = [...group.querySelectorAll('input[type="radio"]')];
+        assert.deepEqual(
+            radios.map((radio) => radio.value),
+            ['auto', 'new-page', 'manual'],
+        );
+        assert.isTrue(radios[0].checked);
+        assert.isNull(node.shadowRoot.querySelector('select#positioning-type'));
+    });
+
+    test('radio selection updates placement and description visibility', async () => {
+        for (const mode of ['manual', 'new-page', 'auto']) {
+            node.shadowRoot.querySelector(`input[value="${mode}"]`).click();
+            await node.updateComplete;
+            assert.equal(node.signaturePlacementMode, mode);
+            assert.equal(node.isShowPlacement, mode === 'manual');
+            assert.equal(node.showSignaturePlacementDescription, mode !== 'manual');
+            assert.equal(
+                node.shadowRoot.querySelector('input[name="positioning-type"]:checked').value,
+                mode,
+            );
+        }
+    });
+
+    test('programmatic positioning changes keep the selected radio in sync', async () => {
+        for (const mode of ['new-page', 'manual', 'auto']) {
+            node.setPositionType(mode);
+            await node.updateComplete;
+            const checked = node.shadowRoot.querySelectorAll(
+                'input[name="positioning-type"]:checked',
+            );
+            assert.lengthOf(checked, 1);
+            assert.equal(checked[0].value, mode);
+        }
+    });
+});
 
 suite('signature position conversion', () => {
     test('pdfasPosition2fabricjs is the inverse of fabricjs2pdfasPosition', () => {
