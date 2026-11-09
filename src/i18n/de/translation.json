@@ -79,7 +79,6 @@
         "signature-description": "Die Signatur wird automatisch auf der letzten Seite am Ende des Dokumentinhalts positioniert. Falls der Platz beschränkt ist, wird eine neue Seite speziell für die Signatur erstellt. Um die Signatur anders zu positionieren, wählen Sie bitte einen anderen Typ der Positionierung.",
         "signature-description-new-page": "Am Ende des Dokuments wird eine neue Seite hinzugefügt und die Signatur automatisch oben auf dieser Seite positioniert."
     },
-    "positioning-automatic": "Automatisch",
     "positioning-manual": "Manuell",
     "positioning-new-page": "Neue Seite",
     "positioning-type-label": "Positionierung",

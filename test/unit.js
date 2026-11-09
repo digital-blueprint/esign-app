@@ -34,14 +34,14 @@ suite('pdf preview positioning options', () => {
         const radios = [...group.querySelectorAll('input[type="radio"]')];
         assert.deepEqual(
             radios.map((radio) => radio.value),
-            ['auto', 'new-page', 'manual'],
+            ['new-page', 'manual'],
         );
-        assert.isTrue(radios[0].checked);
+        assert.isTrue(radios[1].checked);
         assert.isNull(node.shadowRoot.querySelector('select#positioning-type'));
     });
 
     test('radio selection updates placement and description visibility', async () => {
-        for (const mode of ['manual', 'new-page', 'auto']) {
+        for (const mode of ['new-page', 'manual']) {
             node.shadowRoot.querySelector(`input[value="${mode}"]`).click();
             await node.updateComplete;
             assert.equal(node.signaturePlacementMode, mode);
@@ -55,7 +55,7 @@ suite('pdf preview positioning options', () => {
     });
 
     test('programmatic positioning changes keep the selected radio in sync', async () => {
-        for (const mode of ['new-page', 'manual', 'auto']) {
+        for (const mode of ['new-page', 'manual']) {
             node.setPositionType(mode);
             await node.updateComplete;
             const checked = node.shadowRoot.querySelectorAll(

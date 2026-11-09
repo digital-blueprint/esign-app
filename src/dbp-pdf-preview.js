@@ -54,7 +54,7 @@ export class PdfPreview extends AuthMixin(
         this.profileId = '';
         this.border_width = 2;
         this.allowSignatureRotation = false;
-        this.signaturePlacementMode = 'auto';
+        this.signaturePlacementMode = 'manual';
         this.showSignaturePlacementDescription = false;
         this.annotations = [];
         this.viewOnly = false;
@@ -390,7 +390,8 @@ export class PdfPreview extends AuthMixin(
         this.annotations = entry.annotations || [];
         this.viewOnly = viewOnly;
         this.viewOnlyPlacementPage = null;
-        const placementMode = entry.placementMode;
+        const placementMode =
+            !viewOnly && entry.placementMode === 'auto' ? 'manual' : entry.placementMode;
         let placementData = {};
 
         if (!this.signatureInvisible) {
@@ -1476,7 +1477,6 @@ export class PdfPreview extends AuthMixin(
                                 <legend>${i18n.t('positioning-type-label')}</legend>
                                 <div class="positioning-type-options">
                                     ${[
-                                        ['auto', i18n.t('positioning-automatic')],
                                         ['new-page', i18n.t('positioning-new-page')],
                                         ['manual', i18n.t('positioning-manual')],
                                     ].map(
