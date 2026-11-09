@@ -1079,24 +1079,22 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         positioningSwitch.checked = placement !== 'auto';
         positioningSwitch.needPositioning = needPositioning;
         positioningSwitch.addEventListener('toggle-change', (event) => {
-            setTimeout(() => {
-                let placement = positioningSwitch.checked ? 'manual' : 'auto';
-                const entry = this.getQueuedFile(id);
-                if (entry) {
-                    entry.placementMode = placement;
-                    if (placement === 'auto') {
-                        entry.signaturePlacement = undefined;
-                    }
+            const placement = event.detail.checked ? 'manual' : 'auto';
+            const entry = this.getQueuedFile(id);
+            if (entry) {
+                entry.placementMode = placement;
+                if (placement === 'auto') {
+                    entry.signaturePlacement = undefined;
                 }
+            }
 
-                if (placement === 'manual' && !this.getInvisibilityOfSelectedProfile()) {
-                    void this.queuePlacement(id, placement).then((res) => {
-                        this._('#pdf-preview').open();
-                    });
-                } else {
-                    void this.queuePlacement(id, placement, false);
-                }
-            }, 400);
+            if (placement === 'manual' && !this.getInvisibilityOfSelectedProfile()) {
+                void this.queuePlacement(id, placement).then(() => {
+                    this._('#pdf-preview').open();
+                });
+            } else {
+                void this.queuePlacement(id, placement, false);
+            }
         });
 
         return positioningSwitch;
