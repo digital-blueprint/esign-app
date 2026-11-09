@@ -1256,6 +1256,15 @@ export class PdfPreview extends AuthMixin(
                 gap: 0.5em;
             }
 
+            .positioning-type-options,
+            .nav-buttons {
+                padding-left: 0.75rem;
+            }
+
+            #rotate-signature-button {
+                margin-left: 0.75rem;
+            }
+
             .positioning-type-options label {
                 display: flex;
                 align-items: center;
@@ -1271,7 +1280,7 @@ export class PdfPreview extends AuthMixin(
 
             .nav-buttons {
                 display: flex;
-                justify-content: center;
+                justify-content: flex-start;
                 flex-grow: 1;
                 flex-wrap: nowrap;
             }
