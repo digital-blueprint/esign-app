@@ -1222,6 +1222,21 @@ export class PdfPreview extends AuthMixin(
                 border: var(--dbp-border);
             }
 
+            .preview-unavailable {
+                position: absolute;
+                top: 0;
+                left: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border: var(--dbp-border);
+                text-align: center;
+            }
+
+            #canvas-wrapper.no-preview canvas {
+                visibility: hidden;
+            }
+
             .button {
                 width: max-content;
             }
@@ -1542,14 +1557,21 @@ export class PdfPreview extends AuthMixin(
                         <div
                             id="canvas-wrapper"
                             class="${classMap({
-                                hidden:
-                                    this.isPageRenderingInProgress ||
-                                    this.showSignaturePlacementDescription,
+                                hidden: this.isPageRenderingInProgress,
+                                'no-preview': this.showSignaturePlacementDescription,
                             })}">
                             <canvas id="pdf-canvas"></canvas>
                             <canvas
                                 id="fabric-canvas"
                                 class="${classMap({hidden: !this.isShowPlacement})}"></canvas>
+                            <div
+                                class="preview-unavailable ${classMap({
+                                    hidden: !this.showSignaturePlacementDescription,
+                                })}"
+                                style="width: ${this.canvas?.style.width || '100%'};
+                                    height: ${this.canvas?.style.height || '300px'};">
+                                ${i18n.t('pdf-preview.no-preview-available')}
+                            </div>
                         </div>
                     </div>
                     <div class="${classMap({hidden: !this.isPageRenderingInProgress})}">

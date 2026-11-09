@@ -69,6 +69,7 @@
         "first-page": "First page",
         "last-page": "Last page",
         "next-page": "Next page",
+        "no-preview-available": "No preview available",
         "page-count": "of {{totalPages}}",
         "pages": "Pages",
         "previous-page": "Previous page",
