@@ -1496,7 +1496,12 @@ export class PdfPreview extends AuthMixin(
                                 <dbp-icon name="spinner-arrow" aria-hidden="true"></dbp-icon>
                                 ${i18n.t('pdf-preview.rotate')}
                             </button>
-                            <div class="pagination-desktop">${this.renderPagination()}</div>
+                            <div
+                                class="pagination-desktop ${classMap({
+                                    hidden: this.showSignaturePlacementDescription,
+                                })}">
+                                ${this.renderPagination()}
+                            </div>
                             <div
                                 class="signature-description ${classMap({
                                     hidden: !this.showSignaturePlacementDescription,
