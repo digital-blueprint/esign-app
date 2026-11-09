@@ -1,0 +1,18 @@
+{
+    "element": "dbp-esign-playground",
+    "module_src": "dbp-esign-playground.js",
+    "routing_name": "esign-playground",
+    "name": {
+        "de": "Esign Playground",
+        "en": "Esign Playground"
+    },
+    "short_name": {
+        "de": "Esign Playground",
+        "en": "Esign Playground"
+    },
+    "description": {
+        "de": "Entwicklungsumgebung für Komponenten",
+        "en": "Development playground for components"
+    },
+    "subscribe": "lang,entry-point-url,auth,html-overrides"
+}
