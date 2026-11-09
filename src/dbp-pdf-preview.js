@@ -1477,8 +1477,8 @@ export class PdfPreview extends AuthMixin(
                                 <legend>${i18n.t('positioning-type-label')}</legend>
                                 <div class="positioning-type-options">
                                     ${[
-                                        ['new-page', i18n.t('positioning-new-page')],
                                         ['manual', i18n.t('positioning-manual')],
+                                        ['new-page', i18n.t('positioning-new-page')],
                                     ].map(
                                         ([value, label]) => html`
                                             <label>

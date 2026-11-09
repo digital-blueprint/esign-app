@@ -34,9 +34,9 @@ suite('pdf preview positioning options', () => {
         const radios = [...group.querySelectorAll('input[type="radio"]')];
         assert.deepEqual(
             radios.map((radio) => radio.value),
-            ['new-page', 'manual'],
+            ['manual', 'new-page'],
         );
-        assert.isTrue(radios[1].checked);
+        assert.isTrue(radios[0].checked);
         assert.isNull(node.shadowRoot.querySelector('select#positioning-type'));
     });
 
