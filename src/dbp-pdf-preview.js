@@ -1501,7 +1501,9 @@ export class PdfPreview extends AuthMixin(
                                 </div>
                             </fieldset>
                             <button
-                                class="button"
+                                class="button ${classMap({
+                                    hidden: this.signaturePlacementMode === 'new-page',
+                                })}"
                                 id="rotate-signature-button"
                                 title="${i18n.t('pdf-preview.rotate-signature')}"
                                 @click="${() => {
