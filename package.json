@@ -61,7 +61,8 @@
         "@webcomponents/scoped-custom-element-registry": "^0.0.10",
         "fabric": "^7.0.0",
         "i18next": "^26.0.0",
-        "lit": "^3.0.0"
+        "lit": "^3.0.0",
+        "signature_pad": "^5.1.4"
     },
     "scripts": {
         "fix": "run-s oxlint:fix prettier:fix i18next:fix",

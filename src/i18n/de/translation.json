@@ -31,6 +31,14 @@
     "error-permission-message-qualified": "Sie haben keine Berechtigung, Dokumente als Privatperson zu unterschreiben.",
     "error-rights-message": "Abbruch auf Grund mangelnder Rechte Ihres Accounts.",
     "error-unknown-message": "Unbekannter Fehler.",
+    "esign-playground": {
+        "output-height": "Höhe (px)",
+        "output-padding": "Randabstand (px)",
+        "output-stroke-scale": "Strichstärke (Faktor)",
+        "output-width": "Breite (px)",
+        "sign": "Unterschreiben",
+        "signature-image-alt": "Erfasste handschriftliche Unterschrift"
+    },
     "ext-sign": {
         "current-title": "{{fileName}} ({{fileSize}})",
         "load-error": "Fehler beim Laden der externen Signaturseite"
@@ -141,6 +149,16 @@
     "remove-failed-file-button-title": "Fehlgeschlagenes Dokument entfernen",
     "remove-queued-file-button-title": "Dokument aus der Warteschlange entfernen",
     "report-message-title": "Bericht!",
+    "signature-dialog": {
+        "clear": "Zurücksetzen",
+        "confirm": "Unterschrift übernehmen",
+        "instructions": "Zeichnen Sie Ihre Unterschrift in das Feld.",
+        "title": "Unterschreiben"
+    },
+    "signature-pad": {
+        "canvas-label": "Unterschriftsfeld: Zeichnen Sie hier Ihre Unterschrift.",
+        "hint": "Hier unterschreiben"
+    },
     "signature-verification-extern": {
         "adobe-reader-text": "Des Weiteren besteht auch die Möglichkeit, das Dokument lokal mit dem Adobe Reader zu überprüfen.",
         "description-text": "Um eine PDF-Signatur auf ihre Gültigkeit zu überprüfen, benutzen Sie bitte das Verifikationsservice der Rundfunk und Telekom Regulierungs-GmbH. Mit diesem Verifikationsservice können Sie überprüfen, ob das Dokument eine valide Signatur enthält.",

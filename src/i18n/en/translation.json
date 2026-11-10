@@ -31,6 +31,14 @@
     "error-permission-message-qualified": "You are not authorized to sign documents as a private individual.",
     "error-rights-message": "Abort due to insufficient rights of your account.",
     "error-unknown-message": "Unknown error.",
+    "esign-playground": {
+        "output-height": "Height (px)",
+        "output-padding": "Padding (px)",
+        "output-stroke-scale": "Stroke width (scale)",
+        "output-width": "Width (px)",
+        "sign": "Sign",
+        "signature-image-alt": "Captured handwritten signature"
+    },
     "ext-sign": {
         "current-title": "{{fileName}} ({{fileSize}})",
         "load-error": "Error loading external signature page"
@@ -141,6 +149,16 @@
     "remove-failed-file-button-title": "Remove failed document",
     "remove-queued-file-button-title": "Remove document from queue",
     "report-message-title": "Report!",
+    "signature-dialog": {
+        "clear": "Reset",
+        "confirm": "Use signature",
+        "instructions": "Draw your signature in the field.",
+        "title": "Sign"
+    },
+    "signature-pad": {
+        "canvas-label": "Signature canvas: draw your signature here.",
+        "hint": "Sign here"
+    },
     "signature-verification-extern": {
         "adobe-reader-text": "Furthermore, it is also possible to verify the signature locally with the Adobe Reader.",
         "description-text": "To check a PDF signature for validity, please use the verification service of the Rundfunk und Telekom Regulierungs-GmbH. This verification service allows you to check whether the document contains a valid signature.",
