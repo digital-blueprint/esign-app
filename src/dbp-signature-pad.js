@@ -103,7 +103,7 @@ export class SignaturePadElement extends LangMixin(DBPLitElement, createInstance
         );
     }
 
-    /** Resize for high-DPI screens, scaling stored strokes instead of losing them. */
+    /** Resize the drawing canvas, scaling stored strokes instead of losing them. */
     resizeCanvas() {
         const canvas = this.canvas;
         const pad = this._signaturePad;
@@ -111,8 +111,9 @@ export class SignaturePadElement extends LangMixin(DBPLitElement, createInstance
         const {width, height} = canvas.getBoundingClientRect();
         // A canvas inside a closed modal has no size. Wait until it becomes visible.
         if (width <= 0 || height <= 0) return;
-        // Keep live drawing resolution independent of the requested export size.
-        const ratio = Math.max(window.devicePixelRatio || 1, 1);
+        // Draw at CSS resolution to reduce rendering work on high-DPI screens.
+        // Export replays stored strokes at its requested resolution independently.
+        const ratio = 1;
         const pixelWidth = Math.ceil(width * ratio);
         const pixelHeight = Math.ceil(height * ratio);
         if (
