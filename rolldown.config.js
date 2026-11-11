@@ -19,6 +19,9 @@ const pkg = require('./package.json');
 const appEnv = typeof process.env.APP_ENV !== 'undefined' ? process.env.APP_ENV : 'local';
 const watch = process.env.ROLLUP_WATCH === 'true';
 const buildFull = (!watch && appEnv !== 'test') || process.env.FORCE_FULL !== undefined;
+const watchEnv = appEnv === 'local' ? '' : appEnv === 'localCustom' ? '-custom' : `-${appEnv}`;
+const watchDir = `watch${watchEnv}`;
+const distDir = appEnv === 'test' ? 'build/test' : watch ? `build/${watchDir}` : 'dist';
 let doMinify = buildFull;
 let transform = buildFull;
 let checkLicenses = buildFull;
@@ -109,7 +112,7 @@ if (config.nextcloudBaseURL) {
 }
 
 if (watch) {
-    config.basePath = '/dist/';
+    config.basePath = `/${watchDir}/`;
 }
 
 function getOrigin(url) {
@@ -138,7 +141,7 @@ let testCopyTargets =
         ? [
               {
                   src: 'test/data/*',
-                  dest: 'dist/test',
+                  dest: `${distDir}/test`,
               },
           ]
         : [];
@@ -171,7 +174,7 @@ export default (async () => {
                       ]
                 : globSync('test/**/*.js'),
         output: {
-            dir: 'dist',
+            dir: distDir,
             entryFileNames: '[name].js',
             chunkFileNames: 'shared/[name].[hash].js',
             format: 'esm',
@@ -297,103 +300,107 @@ Dependencies:
                     },
                 }),
             whitelabel &&
-                (await assetPlugin(pkg.name, 'dist', {
+                (await assetPlugin(pkg.name, distDir, {
                     copyTargets: [
-                        {src: 'assets/*.css', dest: 'dist/' + (await getDistPath(pkg.name))},
-                        {src: 'src/*.metadata.json', dest: 'dist'},
-                        {src: 'assets/*.svg', dest: 'dist/' + (await getDistPath(pkg.name))},
-                        {src: 'assets/htaccess-shared', dest: 'dist/shared/', rename: '.htaccess'},
+                        {src: 'assets/*.css', dest: distDir + '/' + (await getDistPath(pkg.name))},
+                        {src: 'src/*.metadata.json', dest: distDir},
+                        {src: 'assets/*.svg', dest: distDir + '/' + (await getDistPath(pkg.name))},
+                        {
+                            src: 'assets/htaccess-shared',
+                            dest: distDir + '/shared/',
+                            rename: '.htaccess',
+                        },
                         {
                             src: 'assets/images/*',
-                            dest: 'dist/' + (await getDistPath(pkg.name, 'images')),
+                            dest: distDir + '/' + (await getDistPath(pkg.name, 'images')),
                         },
                         {
                             src: 'assets/icon/*',
-                            dest: 'dist/' + (await getDistPath(pkg.name, 'icon')),
+                            dest: distDir + '/' + (await getDistPath(pkg.name, 'icon')),
                         },
                         {
                             src: 'assets/site.webmanifest',
-                            dest: 'dist',
+                            dest: distDir,
                             rename: pkg.internalName + '.webmanifest',
                         },
-                        {src: 'assets/silent-check-sso.html', dest: 'dist'},
-                        {src: 'assets/dbp-signature-maintenance.html', dest: 'dist'},
+                        {src: 'assets/silent-check-sso.html', dest: distDir},
+                        {src: 'assets/dbp-signature-maintenance.html', dest: distDir},
                         {
                             src: await getPackagePath('@fontsource/nunito-sans', '.'),
-                            dest: 'dist/' + (await getDistPath(pkg.name, 'fonts')),
+                            dest: distDir + '/' + (await getDistPath(pkg.name, 'fonts')),
                             rename: 'nunito-sans',
                         },
                         {
                             src: await getPackagePath('@dbp-toolkit/common', 'src/spinner.js'),
-                            dest: 'dist/' + (await getDistPath(pkg.name)),
+                            dest: distDir + '/' + (await getDistPath(pkg.name)),
                             rename: 'org_spinner.js',
                         },
                         {
                             src: await getPackagePath('@dbp-toolkit/common', 'src/spinner.js'),
-                            dest: 'dist/' + (await getDistPath(pkg.name)),
+                            dest: distDir + '/' + (await getDistPath(pkg.name)),
                         },
                         {
                             src: await getPackagePath(
                                 '@dbp-toolkit/common',
                                 'misc/browser-check.js',
                             ),
-                            dest: 'dist/' + (await getDistPath(pkg.name)),
+                            dest: distDir + '/' + (await getDistPath(pkg.name)),
                         },
                         ...testCopyTargets,
                     ],
                 })),
             !whitelabel &&
-                (await assetPlugin(pkg.name, 'dist', {
+                (await assetPlugin(pkg.name, distDir, {
                     copyTargets: [
                         {
                             src: customAssetsPath + '*.css',
-                            dest: 'dist/' + (await getDistPath(pkg.name)),
+                            dest: distDir + '/' + (await getDistPath(pkg.name)),
                         },
-                        {src: customAssetsPath + '*.metadata.json', dest: 'dist'},
+                        {src: customAssetsPath + '*.metadata.json', dest: distDir},
                         {
                             src: customAssetsPath + '*.svg',
-                            dest: 'dist/' + (await getDistPath(pkg.name)),
+                            dest: distDir + '/' + (await getDistPath(pkg.name)),
                         },
                         {
                             src: customAssetsPath + 'htaccess-shared',
-                            dest: 'dist/shared/',
+                            dest: distDir + '/shared/',
                             rename: '.htaccess',
                         },
                         {
                             src: customAssetsPath + 'images/*',
-                            dest: 'dist/' + (await getDistPath(pkg.name, 'images')),
+                            dest: distDir + '/' + (await getDistPath(pkg.name, 'images')),
                         },
                         {
                             src: customAssetsPath + 'icon/*',
-                            dest: 'dist/' + (await getDistPath(pkg.name, 'icon')),
+                            dest: distDir + '/' + (await getDistPath(pkg.name, 'icon')),
                         },
                         {
                             src: customAssetsPath + 'site.webmanifest',
-                            dest: 'dist',
+                            dest: distDir,
                             rename: pkg.internalName + '.webmanifest',
                         },
-                        {src: customAssetsPath + 'silent-check-sso.html', dest: 'dist'},
-                        {src: customAssetsPath + 'dbp-signature-maintenance.html', dest: 'dist'},
+                        {src: customAssetsPath + 'silent-check-sso.html', dest: distDir},
+                        {src: customAssetsPath + 'dbp-signature-maintenance.html', dest: distDir},
                         {
                             src: await getPackagePath('@tugraz/font-source-sans-pro', 'files'),
-                            dest: 'dist/' + (await getDistPath(pkg.name, 'fonts')),
+                            dest: distDir + '/' + (await getDistPath(pkg.name, 'fonts')),
                             rename: 'source-sans-pro',
                         },
                         {
                             src: await getPackagePath('@tugraz/web-components', 'src/spinner.js'),
-                            dest: 'dist/' + (await getDistPath(pkg.name)),
+                            dest: distDir + '/' + (await getDistPath(pkg.name)),
                             rename: 'tug_spinner.js',
                         },
                         {
                             src: await getPackagePath('@dbp-toolkit/common', 'src/spinner.js'),
-                            dest: 'dist/' + (await getDistPath(pkg.name)),
+                            dest: distDir + '/' + (await getDistPath(pkg.name)),
                         },
                         {
                             src: await getPackagePath(
                                 '@dbp-toolkit/common',
                                 'misc/browser-check.js',
                             ),
-                            dest: 'dist/' + (await getDistPath(pkg.name)),
+                            dest: distDir + '/' + (await getDistPath(pkg.name)),
                         },
                         ...testCopyTargets,
                     ],
@@ -408,7 +415,7 @@ Dependencies:
             ),
             watch
                 ? serve({
-                      contentBase: '.',
+                      contentBase: 'build',
                       host: '127.0.0.1',
                       port: await getPort('127.0.0.1', [8001, 8004]),
                       historyApiFallback: config.basePath + pkg.internalName + '.html',
@@ -420,7 +427,7 @@ Dependencies:
             watch && {
                 name: 'log-rebuild',
                 writeBundle() {
-                    console.log(`\n[${new Date().toLocaleString()}] dist rebuilt\n`);
+                    console.log(`\n[${new Date().toLocaleString()}] ${distDir} rebuilt\n`);
                 },
             },
         ],
