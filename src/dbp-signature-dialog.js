@@ -120,7 +120,6 @@ export class SignatureDialog extends LangMixin(ScopedElementsMixin(DBPLitElement
                 --dbp-modal-min-width: min(calc(100vw - 64px), 650px);
                 --dbp-modal-min-height: 0;
                 --dbp-modal-max-height: max(1px, calc(100dvh - 48px));
-                --dbp-modal-full-height-line-display: none;
                 --dbp-modal-content-min-height: 0;
                 --dbp-modal-content-slot-min-height: 0;
                 --dbp-modal-slotted-content-min-height: 0;
@@ -180,7 +179,6 @@ export class SignatureDialog extends LangMixin(ScopedElementsMixin(DBPLitElement
             <dbp-modal
                 modal-id="signature-capture-modal"
                 sticky-footer
-                full-height-line
                 lang="${this.lang}"
                 title="${i18n.t('signature-dialog.title')}"
                 @dbp-modal-closed="${this._handleModalClosed}">
