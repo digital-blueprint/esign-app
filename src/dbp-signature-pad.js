@@ -55,7 +55,12 @@ export class SignaturePadElement extends LangMixin(DBPLitElement, createInstance
             const canvas = this.canvas;
             if (!canvas) return;
             if (!this._signaturePad) {
-                this._signaturePad = new SignaturePad(canvas, {minWidth: 1.875, maxWidth: 3.125});
+                this._signaturePad = new SignaturePad(canvas, {
+                    minWidth: 1.875,
+                    maxWidth: 3.125,
+                    minDistance: 3,
+                    throttle: 8,
+                });
                 this._signaturePad.addEventListener('beginStroke', this._handleStrokeBegin);
                 this._signaturePad.addEventListener('endStroke', this._handleStrokeEnd);
             } else {
