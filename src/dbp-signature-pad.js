@@ -125,14 +125,19 @@ export class SignaturePadElement extends LangMixin(DBPLitElement, createInstance
             return;
         }
 
-        const scaleX = this._canvasWidth ? width / this._canvasWidth : 1;
-        const scaleY = this._canvasHeight ? height / this._canvasHeight : 1;
+        // Fit existing ink uniformly when the drawing area's proportions change.
+        const scale =
+            this._canvasWidth && this._canvasHeight
+                ? Math.min(width / this._canvasWidth, height / this._canvasHeight)
+                : 1;
+        const offsetX = this._canvasWidth ? (width - this._canvasWidth * scale) / 2 : 0;
+        const offsetY = this._canvasHeight ? (height - this._canvasHeight * scale) / 2 : 0;
         const data = pad.toData().map((group) => ({
             ...group,
             points: group.points.map((point) => ({
                 ...point,
-                x: point.x * scaleX,
-                y: point.y * scaleY,
+                x: offsetX + point.x * scale,
+                y: offsetY + point.y * scale,
             })),
         }));
         canvas.width = pixelWidth;
@@ -335,6 +340,9 @@ export class SignaturePadElement extends LangMixin(DBPLitElement, createInstance
                 position: relative;
                 display: grid;
                 place-items: center;
+                height: var(--dbp-signature-pad-height, auto);
+                min-height: 0;
+                container-type: var(--dbp-signature-pad-container-type, normal);
             }
 
             .hint {
@@ -353,14 +361,19 @@ export class SignaturePadElement extends LangMixin(DBPLitElement, createInstance
             canvas {
                 display: block;
                 box-sizing: border-box;
-                width: min(
-                    100%,
-                    calc(
-                        var(--dbp-signature-pad-max-height, 100000px) *
-                            var(--dbp-signature-pad-aspect-ratio)
+                min-width: 0;
+                min-height: 0;
+                width: var(
+                    --dbp-signature-pad-canvas-width,
+                    min(
+                        100%,
+                        calc(
+                            var(--dbp-signature-pad-max-height, 100000px) *
+                                var(--dbp-signature-pad-aspect-ratio)
+                        )
                     )
                 );
-                height: auto;
+                height: var(--dbp-signature-pad-canvas-height, auto);
                 box-shadow: inset 0 0 0 1px var(--dbp-content, #333);
                 background: white;
                 touch-action: none;
@@ -376,7 +389,7 @@ export class SignaturePadElement extends LangMixin(DBPLitElement, createInstance
         return html`
             <div class="canvas-wrapper">
                 <canvas
-                    style="aspect-ratio: ${output.width} / ${output.height}; --dbp-signature-pad-aspect-ratio: ${output.width / output.height}"
+                    style="aspect-ratio: var(--dbp-signature-pad-canvas-aspect-ratio, ${output.width} / ${output.height}); --dbp-signature-pad-aspect-ratio: ${output.width / output.height}"
                     role="img"
                     aria-label="${label}">
                     ${label}

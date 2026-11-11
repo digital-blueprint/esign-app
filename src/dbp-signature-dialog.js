@@ -120,6 +120,36 @@ export class SignatureDialog extends LangMixin(ScopedElementsMixin(DBPLitElement
                 --dbp-modal-min-width: min(calc(100vw - 64px), 650px);
                 --dbp-modal-min-height: 0;
                 --dbp-modal-max-height: max(1px, calc(100dvh - 48px));
+                --dbp-modal-full-height-line-display: none;
+                --dbp-modal-content-min-height: 0;
+                --dbp-modal-content-slot-min-height: 0;
+                --dbp-modal-slotted-content-min-height: 0;
+            }
+
+            @media (max-height: 400px) {
+                dbp-modal {
+                    /* Fill the viewport, accounting for the modal's vertical padding. */
+                    --dbp-modal-min-height: max(1px, calc(100dvh - 35px));
+                    --dbp-modal-max-height: max(1px, calc(100dvh - 35px));
+                    --dbp-modal-container-height: calc(100dvh - 35px);
+                    --dbp-modal-content-slot-height: 100%;
+                    --dbp-modal-slotted-content-height: 100%;
+                    --dbp-modal-content-overflow-y: auto;
+                }
+
+                .content {
+                    display: flex;
+                    flex-direction: column;
+                }
+
+                .content dbp-signature-pad {
+                    flex: 1;
+                    min-height: 0;
+                    --dbp-signature-pad-height: 100%;
+                    --dbp-signature-pad-container-type: size;
+                    /* Fit the output proportions into the actual remaining height. */
+                    --dbp-signature-pad-max-height: 100cqh;
+                }
             }
 
             .instructions {
@@ -150,10 +180,11 @@ export class SignatureDialog extends LangMixin(ScopedElementsMixin(DBPLitElement
             <dbp-modal
                 modal-id="signature-capture-modal"
                 sticky-footer
+                full-height-line
                 lang="${this.lang}"
                 title="${i18n.t('signature-dialog.title')}"
                 @dbp-modal-closed="${this._handleModalClosed}">
-                <div slot="content">
+                <div slot="content" class="content">
                     <p class="instructions">${i18n.t('signature-dialog.instructions')}</p>
                     <dbp-signature-pad
                         lang="${this.lang}"
