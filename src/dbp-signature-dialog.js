@@ -118,10 +118,17 @@ export class SignatureDialog extends LangMixin(ScopedElementsMixin(DBPLitElement
                 /* Leave room for the modal's horizontal padding and viewport margins. */
                 --dbp-modal-max-width: min(calc(100vw - 64px), 650px);
                 --dbp-modal-min-width: min(calc(100vw - 64px), 650px);
+                --dbp-modal-min-height: 0;
+                --dbp-modal-max-height: max(1px, calc(100dvh - 48px));
             }
 
             .instructions {
                 margin: 0 0 0.75rem;
+            }
+
+            dbp-signature-pad {
+                /* Reserve approximate space for the title, instructions, buttons and padding. */
+                --dbp-signature-pad-max-height: max(1px, calc(100dvh - 260px));
             }
 
             .actions {
@@ -142,6 +149,7 @@ export class SignatureDialog extends LangMixin(ScopedElementsMixin(DBPLitElement
         return html`
             <dbp-modal
                 modal-id="signature-capture-modal"
+                sticky-footer
                 lang="${this.lang}"
                 title="${i18n.t('signature-dialog.title')}"
                 @dbp-modal-closed="${this._handleModalClosed}">

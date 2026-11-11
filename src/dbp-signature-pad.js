@@ -327,11 +327,14 @@ export class SignaturePadElement extends LangMixin(DBPLitElement, createInstance
 
             .canvas-wrapper {
                 position: relative;
+                display: grid;
+                place-items: center;
             }
 
             .hint {
                 position: absolute;
                 inset: 0;
+                overflow: hidden;
                 display: flex;
                 align-items: center;
                 justify-content: center;
@@ -344,7 +347,13 @@ export class SignaturePadElement extends LangMixin(DBPLitElement, createInstance
             canvas {
                 display: block;
                 box-sizing: border-box;
-                width: 100%;
+                width: min(
+                    100%,
+                    calc(
+                        var(--dbp-signature-pad-max-height, 100000px) *
+                            var(--dbp-signature-pad-aspect-ratio)
+                    )
+                );
                 height: auto;
                 box-shadow: inset 0 0 0 1px var(--dbp-content, #333);
                 background: white;
@@ -361,7 +370,7 @@ export class SignaturePadElement extends LangMixin(DBPLitElement, createInstance
         return html`
             <div class="canvas-wrapper">
                 <canvas
-                    style="aspect-ratio: ${output.width} / ${output.height}"
+                    style="aspect-ratio: ${output.width} / ${output.height}; --dbp-signature-pad-aspect-ratio: ${output.width / output.height}"
                     role="img"
                     aria-label="${label}">
                     ${label}
