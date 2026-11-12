@@ -244,25 +244,31 @@ export class EsignApi {
      * @returns {Promise<EsignProfile[]>}
      */
     async getProfiles(type) {
-        const apiUrl =
+        let apiUrl =
             combineURLs(this._element.entryPointUrl, '/esign/profiles') +
             '?type=' +
             encodeURIComponent(type);
 
-        const result = await fetch(apiUrl, {
-            headers: {
-                Accept: 'application/ld+json',
-                Authorization: 'Bearer ' + this._element.auth.token,
-                'Accept-Language': this._element.lang,
-            },
-        });
+        const profiles = [];
+        do {
+            const result = await fetch(apiUrl, {
+                headers: {
+                    Accept: 'application/ld+json',
+                    Authorization: 'Bearer ' + this._element.auth.token,
+                    'Accept-Language': this._element.lang,
+                },
+            });
 
-        if (!result.ok) {
-            throw await ApiError.fromResponse(result);
-        }
+            if (!result.ok) {
+                throw await ApiError.fromResponse(result);
+            }
 
-        const data = await result.json();
-        return data['hydra:member'] ?? [];
+            const data = await result.json();
+            profiles.push(...(data['hydra:member'] ?? []));
+            const next = data['hydra:view']?.['hydra:next'];
+            apiUrl = next ? new URL(next, apiUrl).href : '';
+        } while (apiUrl);
+        return profiles;
     }
 
     /**
