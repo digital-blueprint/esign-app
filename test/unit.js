@@ -10,7 +10,28 @@ import {
     fabricjs2pdfasPosition,
     pdfasPosition2fabricjs,
     getSignaturePositionParams,
+    ANNOTATION_TYPE_IDS,
+    getAnnotationType,
+    getAnnotationTypes,
 } from '../src/utils.js';
+
+suite('annotation types', () => {
+    test('named IDs identify the existing annotation definitions', () => {
+        assert.sameMembers(Object.keys(getAnnotationTypes()), Object.values(ANNOTATION_TYPE_IDS));
+        assert.equal(
+            getAnnotationType(ANNOTATION_TYPE_IDS.REFERENCE_NUMBER).placeholderTextId,
+            'annotation-view.reference-number-placeholder',
+        );
+        assert.equal(
+            getAnnotationType(ANNOTATION_TYPE_IDS.INTENDED_USE).placeholderTextId,
+            'annotation-view.intended-use-placeholder',
+        );
+        assert.equal(
+            getAnnotationType(ANNOTATION_TYPE_IDS.INVOICE_NUMBER).placeholderTextId,
+            'annotation-view.invoice-number-placeholder',
+        );
+    });
+});
 
 suite('signature position conversion', () => {
     test('pdfasPosition2fabricjs is the inverse of fabricjs2pdfasPosition', () => {

@@ -302,6 +302,12 @@ export const addPdfAnnotationToAnnotationFactory = (annotationFactory, author, c
  * @property {string} placeholderTextId
  */
 
+export const ANNOTATION_TYPE_IDS = Object.freeze({
+    REFERENCE_NUMBER: 'bbe3a371',
+    INTENDED_USE: '85a4eb4c',
+    INVOICE_NUMBER: '3c8da7b4',
+});
+
 /**
  * Returns all annotation types.
  *
@@ -315,21 +321,21 @@ export const getAnnotationTypes = () => {
     i18n.t('annotation-view.invoice-number-placeholder');
 
     const types = {
-        bbe3a371: {
+        [ANNOTATION_TYPE_IDS.REFERENCE_NUMBER]: {
             name: {
                 de: 'Geschäftszahl',
                 en: 'Reference number',
             },
             placeholderTextId: 'annotation-view.reference-number-placeholder',
         },
-        '85a4eb4c': {
+        [ANNOTATION_TYPE_IDS.INTENDED_USE]: {
             name: {
                 de: 'Verwendungszweck',
                 en: 'Intended use',
             },
             placeholderTextId: 'annotation-view.intended-use-placeholder',
         },
-        '3c8da7b4': {
+        [ANNOTATION_TYPE_IDS.INVOICE_NUMBER]: {
             name: {
                 de: 'Innenauftragsnummer',
                 en: 'Invoice number',
