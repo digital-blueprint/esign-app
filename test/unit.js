@@ -1,5 +1,7 @@
 import {assert} from 'chai';
 
+// Like in the app, the polyfill has to be loaded before any custom element gets defined
+import '@webcomponents/scoped-custom-element-registry';
 import '../src/dbp-official-signature-pdf-upload';
 import '../src/dbp-signature.js';
 import {
@@ -58,7 +60,126 @@ suite('dbp-official-signature-pdf-upload basics', () => {
     });
 
     test('should render', () => {
-        assert(node.shadowRoot !== undefined);
+        assert.isNotNull(node.shadowRoot);
+    });
+});
+
+suite('signed files table', () => {
+    let node;
+    let downloadedFiles;
+
+    // Tabulator reacts to size changes with a ResizeObserver, so give it some frames
+    const waitForLayout = async () => {
+        for (let i = 0; i < 5; i++) {
+            await new Promise((resolve) => requestAnimationFrame(resolve));
+        }
+    };
+
+    const getTable = () => node.tableSignedFilesTable.tabulatorTable;
+
+    const getCellElement = (key, field) => getTable().getRow(key).getCell(field).getElement();
+
+    const getDownloadButton = (key) =>
+        getCellElement(key, 'downloadButton').querySelector('dbp-esign-download-button');
+
+    const getFilenameLabel = (key) =>
+        getCellElement(key, 'fileName').querySelector('dbp-esign-filename-label');
+
+    const addSignedFile = async (key, name) => {
+        node.addSignedFile(key, new File(['%PDF-1.4'], name, {type: 'application/pdf'}));
+        await node.updateComplete;
+        await waitForLayout();
+    };
+
+    setup(async () => {
+        downloadedFiles = [];
+        node = document.createElement('dbp-official-signature-pdf-upload');
+        // Show the signing UI without a login
+        node.isLoggedIn = () => true;
+        node.hasSignaturePermissions = () => true;
+        node.isLoading = () => false;
+        // Don't open the file sink dialog
+        node.downloadFileClickHandler = (file) => downloadedFiles.push(file.name);
+        node.style.display = 'block';
+        node.style.width = '1200px';
+        document.body.appendChild(node);
+        await node.updateComplete;
+    });
+
+    teardown(() => {
+        node.remove();
+    });
+
+    test('shows the download button after the table was shown for the first file', async () => {
+        await addSignedFile('1', 'first-sig.pdf');
+
+        assert.isTrue(getTable().getColumn('downloadButton').isVisible());
+        assert.isNotNull(getDownloadButton('1'));
+        assert.equal(getFilenameLabel('1').file.name, 'first-sig.pdf');
+    });
+
+    test('keeps the download button after the column was collapsed and shown again', async () => {
+        await addSignedFile('1', 'first-sig.pdf');
+
+        node.style.width = '350px';
+        await waitForLayout();
+        assert.isFalse(getTable().getColumn('downloadButton').isVisible());
+
+        node.style.width = '1200px';
+        await waitForLayout();
+        assert.isTrue(getTable().getColumn('downloadButton').isVisible());
+        assert.isNotNull(getDownloadButton('1'));
+    });
+
+    test('marks a file as downloaded and keeps the mark when more files are signed', async () => {
+        await addSignedFile('1', 'first-sig.pdf');
+
+        getDownloadButton('1').click();
+        await waitForLayout();
+        assert.deepEqual(downloadedFiles, ['first-sig.pdf']);
+        assert.isTrue(getFilenameLabel('1').isDownloaded);
+
+        await addSignedFile('2', 'second-sig.pdf');
+        assert.isTrue(getFilenameLabel('1').isDownloaded);
+        assert.isFalse(getFilenameLabel('2').isDownloaded);
+    });
+
+    test('marks all files as downloaded with the zip download', async () => {
+        await addSignedFile('1', 'first-sig.pdf');
+        await addSignedFile('2', 'second-sig.pdf');
+
+        node.zipDownloadClickHandler();
+        await waitForLayout();
+
+        assert.isTrue(getFilenameLabel('1').isDownloaded);
+        assert.isTrue(getFilenameLabel('2').isDownloaded);
+    });
+
+    test('does not select the row when clicking the download button', async () => {
+        await addSignedFile('1', 'first-sig.pdf');
+
+        getDownloadButton('1').click();
+        await waitForLayout();
+
+        assert.lengthOf(getTable().getSelectedRows(), 0);
+    });
+
+    test('uses the file name for selecting and sorting', async () => {
+        await addSignedFile('1', 'b-sig.pdf');
+        await addSignedFile('2', 'a-sig.pdf');
+
+        getTable().selectRow('1');
+        await waitForLayout();
+        assert.deepEqual(node.selectedSignedFiles, [{key: '1', filename: 'b-sig.pdf'}]);
+
+        getTable().setSort('fileName', 'asc');
+        await waitForLayout();
+        assert.deepEqual(
+            getTable()
+                .getRows('active')
+                .map((row) => row.getData().fileName),
+            ['a-sig.pdf', 'b-sig.pdf'],
+        );
     });
 });
 

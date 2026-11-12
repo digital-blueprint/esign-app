@@ -38,6 +38,7 @@ export class SignedEntry {
     constructor(key, signedFile) {
         this.key = key;
         this.file = signedFile;
+        this.isDownloaded = false;
     }
 }
 
@@ -577,14 +578,43 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         this._('#file-sink').files = files.map((entry) => entry.file);
         this.signedFilesToDownload = files.length;
 
-        // Mark all downloaded files in the table as downloaded
-        for (let row of this.tableSignedFilesTable.getData()) {
-            if (row['index'] && files.some((file) => file.key === row['index'])) {
-                row['fileName'].isDownloaded = true;
+        this.markSignedFilesAsDownloaded(files.map((entry) => entry.key));
+
+        this._('#zip-download-button').stop();
+    }
+
+    /**
+     * Remember that signed files were downloaded and show it in the table
+     *
+     * @param {string[]} keys
+     */
+    markSignedFilesAsDownloaded(keys) {
+        for (const key of keys) {
+            const entry = this.signedFiles.get(key);
+            if (entry) {
+                entry.isDownloaded = true;
             }
         }
 
-        this._('#zip-download-button').stop();
+        const table = this.tableSignedFilesTable?.tabulatorTable;
+        if (!table) {
+            return;
+        }
+
+        // Update the rendered labels directly, the formatter uses the stored state on the next render
+        for (const row of table.getRows()) {
+            if (!keys.includes(row.getData().index)) {
+                continue;
+            }
+            const label = row
+                .getCell('fileName')
+                ?.getElement()
+                .querySelector('dbp-esign-filename-label');
+            if (label) {
+                /** @type {import('./table-components.js').FilenameLabel} */ (label).isDownloaded =
+                    true;
+            }
+        }
     }
 
     /**
@@ -977,7 +1007,11 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
                 const rowData = selectedRow.getData();
                 const fileKey = String(rowData.index);
                 const fileNameCell = rowData.fileName;
-                const fileName = fileNameCell?.file?.name ?? '';
+                // The signed files table stores the plain file name, the other tables a label element
+                const fileName =
+                    typeof fileNameCell === 'string'
+                        ? fileNameCell
+                        : (fileNameCell?.file?.name ?? '');
                 const existingIndex = currentSelection.findIndex((row) => row.key === fileKey);
                 if (existingIndex === -1) {
                     currentSelection = [
@@ -1372,7 +1406,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
                     minWidth: 200,
                     widthGrow: 3,
                     hozAlign: 'left',
-                    formatter: 'html',
+                    formatter: (cell) => this.createSignedFileNameLabel(cell.getData().index),
                     responsive: 0,
                 },
                 {
@@ -1393,7 +1427,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
                     width: 140,
                     hozAlign: 'center',
                     headerHozAlign: 'center',
-                    formatter: 'html',
+                    formatter: (cell) => this.createSignedFileDownloadButton(cell.getData().index),
                     responsive: 1,
                 },
             ],
@@ -1406,43 +1440,16 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         let tableFiles = [];
 
         if (this.tableSignedFilesTable) {
+            // The cell elements are created by the column formatters on every render, so the
+            // table can show them in the cells as well as in the collapsed details rows
             this.signedFiles.forEach((signedEntry, id) => {
                 const file = signedEntry.file;
-
-                let filenameLabel = this.tableSignedFilesTable.createScopedElement(
-                    'dbp-esign-filename-label',
-                );
-                filenameLabel.setAttribute('subscribe', 'lang');
-                filenameLabel.file = file;
-
-                let idx = parseInt(id);
-                if (
-                    !isNaN(idx) &&
-                    this.tableSignedFilesTable.getData() &&
-                    this.tableSignedFilesTable.getData().length > idx - 1
-                ) {
-                    filenameLabel.isDownloaded =
-                        this.tableSignedFilesTable.getData()[idx - 1].fileName.isDownloaded;
-                }
-
-                let downloadButton = this.tableSignedFilesTable.createScopedElement(
-                    'dbp-esign-download-button',
-                );
-                downloadButton.setAttribute('subscribe', 'lang');
-                downloadButton.file = file;
-
-                downloadButton.addEventListener('click', (event) => {
-                    event.stopPropagation();
-                    this.downloadFileClickHandler(file);
-                    filenameLabel.isDownloaded = true;
-                });
 
                 let fileData = {
                     index: id,
                     number: tableFiles.length + 1,
-                    fileName: filenameLabel,
+                    fileName: file.name,
                     fileSize: humanFileSize(file.size),
-                    downloadButton: downloadButton,
                 };
                 tableFiles.push(fileData);
             });
@@ -1451,6 +1458,52 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
             this.tableSignedFilesTable.options = signedFilesOptions;
             this.tableSignedFilesTable.setData(tableFiles);
         }
+    }
+
+    /**
+     * @param {string} key
+     * @returns {HTMLElement|string}
+     */
+    createSignedFileNameLabel(key) {
+        const signedEntry = this.signedFiles.get(key);
+        if (!signedEntry || !this.tableSignedFilesTable) {
+            return '';
+        }
+
+        const filenameLabel = /** @type {import('./table-components.js').FilenameLabel} */ (
+            this.tableSignedFilesTable.createScopedElement('dbp-esign-filename-label')
+        );
+        filenameLabel.setAttribute('subscribe', 'lang');
+        filenameLabel.file = signedEntry.file;
+        filenameLabel.isDownloaded = signedEntry.isDownloaded;
+
+        return filenameLabel;
+    }
+
+    /**
+     * @param {string} key
+     * @returns {HTMLElement|string}
+     */
+    createSignedFileDownloadButton(key) {
+        const signedEntry = this.signedFiles.get(key);
+        if (!signedEntry || !this.tableSignedFilesTable) {
+            return '';
+        }
+
+        const downloadButton = this.tableSignedFilesTable.createScopedElement(
+            'dbp-esign-download-button',
+        );
+        downloadButton.setAttribute('subscribe', 'lang');
+        downloadButton.file = signedEntry.file;
+
+        downloadButton.addEventListener('click', (event) => {
+            // Don't select the row when clicking the button
+            event.stopPropagation();
+            this.downloadFileClickHandler(signedEntry.file);
+            this.markSignedFilesAsDownloaded([key]);
+        });
+
+        return downloadButton;
     }
 
     /**

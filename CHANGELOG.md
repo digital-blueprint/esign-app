@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Fix download buttons disappearing when signed-file table columns are collapsed
+  and shown again (task #76620).
+- Preserve downloaded-file checkmarks when additional documents are signed and
+  fix sorting signed files by filename (task #76620).
 - New "New page" positioning type, which places the signature at the top of a
   newly appended page at the end of the document. This also works for documents
   which already contain a signature. Requires an esign bundle version which
