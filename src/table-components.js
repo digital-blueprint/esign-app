@@ -6,12 +6,6 @@ import DBPLitElement from '@dbp-toolkit/common/dbp-lit-element';
 import {TooltipElement} from '@dbp-toolkit/tooltip';
 
 export class CustomTabulatorTable extends TabulatorTable {
-    constructor() {
-        super();
-        /** @type {ResizeObserver|null} */
-        this._resizeObserver = null;
-    }
-
     static get scopedElements() {
         return {
             ...super.scopedElements,
@@ -30,36 +24,10 @@ export class CustomTabulatorTable extends TabulatorTable {
         return css`
             ${TabulatorTable.styles}
 
-            /* Block layout is needed for ResizeObserver. */
             :host {
                 display: block;
             }
         `;
-    }
-
-    _handleResize() {
-        // XXX: Work around tabulator table losing elements when un-collapsing
-        if (this.tabulatorTable && this.tabulatorTable.initialized) {
-            this.tabulatorTable.redraw(true);
-        }
-    }
-
-    connectedCallback() {
-        super.connectedCallback();
-
-        this._resizeObserver = new ResizeObserver(this._handleResize.bind(this));
-        this._resizeObserver.observe(this);
-    }
-
-    disconnectedCallback() {
-        if (this._resizeObserver === null) {
-            throw new Error('Resize observer is not initialized');
-        }
-        this._resizeObserver.unobserve(this);
-        this._resizeObserver.disconnect();
-        this._resizeObserver = null;
-
-        super.disconnectedCallback();
     }
 }
 

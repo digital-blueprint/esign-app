@@ -864,9 +864,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
             if (!this.queuedFilesTableCollapsible) {
                 this.queuedFilesTableExpanded = false;
             }
-
-            // Update table data when collapsing or expanding rows otherwise action buttons will not be shown
-            this.setQueuedFilesTabulatorTable();
         }
 
         if (event.detail.tableId === 'table-signed-files') {
@@ -875,8 +872,6 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
 
         if (event.detail.tableId === 'table-failed-files') {
             this.failedFilesTableCollapsible = event.detail.isCollapsible;
-            // Update table data when collapsing or expanding rows
-            this.setFailedFilesTabulatorTable();
         }
     }
 
@@ -1006,12 +1001,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
             selectedRows.forEach((selectedRow) => {
                 const rowData = selectedRow.getData();
                 const fileKey = String(rowData.index);
-                const fileNameCell = rowData.fileName;
-                // The signed files table stores the plain file name, the other tables a label element
-                const fileName =
-                    typeof fileNameCell === 'string'
-                        ? fileNameCell
-                        : (fileNameCell?.file?.name ?? '');
+                const fileName = rowData.fileName;
                 const existingIndex = currentSelection.findIndex((row) => row.key === fileKey);
                 if (existingIndex === -1) {
                     currentSelection = [
@@ -1058,6 +1048,9 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
     getActionButtonsHtml(id, allowAnnotating = true) {
         const i18n = this._i18n;
         const entry = this.getQueuedFile(id);
+        if (!entry) {
+            return '';
+        }
         const fileName = entry.file.name;
         const annotations = entry.annotations ?? [];
 
@@ -1115,11 +1108,12 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
         positioningSwitch.addEventListener('toggle-change', (event) => {
             const placement = event.detail.checked ? 'manual' : 'auto';
             const entry = this.getQueuedFile(id);
-            if (entry) {
-                entry.placementMode = placement;
-                if (placement === 'auto') {
-                    entry.signaturePlacement = undefined;
-                }
+            if (!entry) {
+                return;
+            }
+            entry.placementMode = placement;
+            if (placement === 'auto') {
+                entry.signaturePlacement = undefined;
             }
 
             if (placement === 'manual' && !this.getInvisibilityOfSelectedProfile()) {
@@ -1129,12 +1123,33 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
             } else {
                 void this.queuePlacement(id, placement, false);
             }
+
+            // The visible cell and collapsed details have separate controls for the same entry.
+            for (const element of this.tableQueuedFilesTable.shadowRoot.querySelectorAll(
+                '[data-file-key]',
+            )) {
+                if (element.getAttribute('data-file-key') === id) {
+                    if (element.localName === 'dbp-esign-positioning-switch') {
+                        element.checked = placement !== 'auto';
+                        element.needPositioning =
+                            entry.needsPlacement && entry.placementMode === 'auto';
+                    } else {
+                        element.isPlacementMissing =
+                            entry.needsPlacement && entry.placementMode === 'auto';
+                    }
+                }
+            }
         });
+
+        positioningSwitch.setAttribute('data-file-key', id);
 
         return positioningSwitch;
     }
 
     getFailedButtonsHtml(id) {
+        if (!this.errorFiles.has(id)) {
+            return '';
+        }
         let controlDiv = document.createElement('div');
         controlDiv.classList.add('tabulator-failed-buttons');
 
@@ -1226,7 +1241,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
                     minWidth: 250,
                     widthGrow: 3,
                     hozAlign: 'left',
-                    formatter: 'html',
+                    formatter: (cell) => this.createQueuedFileNameLabel(cell.getData().index),
                     responsive: 0,
                 },
                 {
@@ -1259,7 +1274,18 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
                               hozAlign: 'center',
                               headerHozAlign: 'center',
                               headerSort: false,
-                              formatter: 'html',
+                              formatter: (cell) => {
+                                  const id = cell.getData().index;
+                                  const entry = this.getQueuedFile(id);
+                                  if (!entry) {
+                                      return '';
+                                  }
+                                  return this.getPositioningSwitch(
+                                      id,
+                                      entry.placementMode,
+                                      entry.needsPlacement && entry.placementMode === 'auto',
+                                  );
+                              },
                               responsive: 2,
                           },
                       ]
@@ -1272,7 +1298,8 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
                     width: 160,
                     hozAlign: 'right',
                     headerHozAlign: 'center',
-                    formatter: 'html',
+                    formatter: (cell) =>
+                        this.getActionButtonsHtml(cell.getData().index, this.allowAnnotating),
                     responsive: 1,
                 },
             ],
@@ -1295,31 +1322,10 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
                     this.anyPlacementMissing = true;
                 }
 
-                const actionButtons = this.getActionButtonsHtml(id, this.allowAnnotating);
-
-                let positioningSwitch = undefined;
-                if (this.allowManualPositioning) {
-                    positioningSwitch = this.getPositioningSwitch(
-                        id,
-                        entry.placementMode,
-                        placementMissing,
-                    );
-                }
-
-                let filenameLabel = this.tableQueuedFilesTable.createScopedElement(
-                    'dbp-esign-filename-label',
-                );
-                filenameLabel.setAttribute('subscribe', 'lang');
-                filenameLabel.file = file;
-                filenameLabel.isPlacementMissing = placementMissing;
-
                 let fileData = {
                     index: id,
-                    fileName: filenameLabel,
+                    fileName: file.name,
                     fileSize: humanFileSize(file.size),
-                    // profile: 'Personal',
-                    positioning: positioningSwitch,
-                    buttons: actionButtons,
                 };
 
                 tableFiles.push(fileData);
@@ -1484,6 +1490,38 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
      * @param {string} key
      * @returns {HTMLElement|string}
      */
+    createQueuedFileNameLabel(key) {
+        const entry = this.getQueuedFile(key);
+        if (!entry || !this.tableQueuedFilesTable) {
+            return '';
+        }
+        const label = this.tableQueuedFilesTable.createScopedElement('dbp-esign-filename-label');
+        label.setAttribute('subscribe', 'lang');
+        label.setAttribute('data-file-key', key);
+        label.file = entry.file;
+        label.isPlacementMissing = entry.needsPlacement && entry.placementMode === 'auto';
+        return label;
+    }
+
+    /**
+     * @param {string} key
+     * @returns {HTMLElement|string}
+     */
+    createFailedFileNameLabel(key) {
+        const entry = this.errorFiles.get(key);
+        if (!entry || !this.tableFailedFilesTable) {
+            return '';
+        }
+        const label = this.tableFailedFilesTable.createScopedElement('dbp-esign-filename-label');
+        label.setAttribute('subscribe', 'lang');
+        label.file = entry.sigEntry.file;
+        return label;
+    }
+
+    /**
+     * @param {string} key
+     * @returns {HTMLElement|string}
+     */
     createSignedFileDownloadButton(key) {
         const signedEntry = this.signedFiles.get(key);
         if (!signedEntry || !this.tableSignedFilesTable) {
@@ -1574,7 +1612,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
                     minWidth: 200,
                     widthGrow: 3,
                     hozAlign: 'left',
-                    formatter: 'html',
+                    formatter: (cell) => this.createFailedFileNameLabel(cell.getData().index),
                     responsive: 0,
                 },
                 {
@@ -1606,7 +1644,7 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
                     width: 115,
                     hozAlign: 'center',
                     headerHozAlign: 'center',
-                    formatter: 'html',
+                    formatter: (cell) => this.getFailedButtonsHtml(cell.getData().index),
                     responsive: 1,
                 },
             ],
@@ -1622,19 +1660,12 @@ export default class DBPSignatureLitElement extends LangMixin(BaseLitElement, cr
             this.errorFiles.forEach((errorEntry, id) => {
                 const file = errorEntry.sigEntry.file;
 
-                let filenameLabel = this.tableFailedFilesTable.createScopedElement(
-                    'dbp-esign-filename-label',
-                );
-                filenameLabel.setAttribute('subscribe', 'lang');
-                filenameLabel.file = file;
-
                 let fileData = {
                     index: id,
                     number: tableFiles.length + 1,
-                    fileName: filenameLabel,
+                    fileName: file.name,
                     fileSize: humanFileSize(file.size),
                     errorMessage: errorEntry.errorMessage,
-                    buttons: this.getFailedButtonsHtml(id),
                 };
                 tableFiles.push(fileData);
             });

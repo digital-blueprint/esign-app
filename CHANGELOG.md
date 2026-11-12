@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Create queued and failed file controls in column formatters so they survive
+  responsive collapse without resize or Toolkit restoration workarounds (task #76620).
 - Fix download buttons disappearing when signed-file table columns are collapsed
   and shown again (task #76620).
 - Preserve downloaded-file checkmarks when additional documents are signed and

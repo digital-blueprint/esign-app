@@ -3,7 +3,9 @@ import {assert} from 'chai';
 // Like in the app, the polyfill has to be loaded before any custom element gets defined
 import '@webcomponents/scoped-custom-element-registry';
 import '../src/dbp-official-signature-pdf-upload';
+import '../src/dbp-qualified-signature-pdf-upload';
 import '../src/dbp-signature.js';
+import {SignatureEntry, ErrorEntry} from '../src/dbp-signature-lit-element.js';
 import {
     getPDFSignatureCount,
     generateSignedFileName,
@@ -203,6 +205,210 @@ suite('signed files table', () => {
         );
     });
 });
+
+for (const tag of ['dbp-official-signature-pdf-upload', 'dbp-qualified-signature-pdf-upload']) {
+    suite(`${tag} queued and failed file tables`, () => {
+        let node;
+        let entry;
+        let originalConfirm;
+        let previews;
+        let annotations;
+        let retried;
+
+        const waitForLayout = async () => {
+            await node.updateComplete;
+            for (let i = 0; i < 5; i++) {
+                await new Promise((resolve) => requestAnimationFrame(resolve));
+            }
+        };
+        const queued = () => node.tableQueuedFilesTable.tabulatorTable;
+        const failed = () => node.tableFailedFilesTable.tabulatorTable;
+        const cell = (table, field) => table.getRow('1').getCell(field).getElement();
+        const details = (table) =>
+            table.getRow('1').getElement().querySelector('.tabulator-responsive-collapse');
+
+        setup(async () => {
+            node = document.createElement(tag);
+            node.isLoggedIn = () => true;
+            node.hasSignaturePermissions = () => true;
+            node.isLoading = () => false;
+            node.getInvisibilityOfSelectedProfile = () => false;
+            node.allowManualPositioning = true;
+            node.allowAnnotating = true;
+            node.style.display = 'block';
+            node.style.width = '1200px';
+            previews = [];
+            annotations = [];
+            retried = [];
+            node.showPreview = async (...args) => previews.push(args);
+            node.showAnnotationView = (key) => annotations.push(key);
+            node.queuePlacement = async () => {};
+            node.reQueueFile = async (value) => retried.push(value);
+            document.body.appendChild(node);
+            await waitForLayout();
+            node._('#pdf-preview').open = () => {};
+            node._('#annotation-view').open = () => {};
+            originalConfirm = window.confirm;
+            window.confirm = () => true;
+            entry = new SignatureEntry('1', new File(['pdf'], 'b.pdf'), 'auto', true, [
+                {text: 'note'},
+            ]);
+            node.queuedFiles = new Map([['1', entry]]);
+            node.errorFiles = new Map([['1', new ErrorEntry(entry, 'Signing failed')]]);
+            await waitForLayout();
+        });
+
+        teardown(() => {
+            window.confirm = originalConfirm;
+            node.remove();
+        });
+
+        test('stores plain row values and renders placement warnings and annotations', () => {
+            assert.equal(queued().getRow('1').getData().fileName, 'b.pdf');
+            assert.equal(failed().getRow('1').getData().fileName, 'b.pdf');
+            for (const table of [queued(), failed()]) {
+                assert.isFalse(
+                    Object.values(table.getRow('1').getData()).some(
+                        (value) => value instanceof Node,
+                    ),
+                );
+            }
+            assert.isTrue(
+                cell(queued(), 'fileName').querySelector('dbp-esign-filename-label')
+                    .isPlacementMissing,
+            );
+            assert.deepEqual(
+                cell(queued(), 'buttons').querySelector('dbp-esign-annotations-button').annotations,
+                entry.annotations,
+            );
+        });
+
+        test('keeps selection, positioning state and controls through repeated collapse and expansion', async () => {
+            queued().selectRow('1');
+            failed().selectRow('1');
+            await waitForLayout();
+            assert.deepEqual(node.selectedQueuedFiles, [{key: '1', filename: 'b.pdf'}]);
+            assert.deepEqual(node.selectedFailedFiles, [{key: '1', filename: 'b.pdf'}]);
+            for (let i = 0; i < 2; i++) {
+                node.style.width = '350px';
+                await waitForLayout();
+                assert.isFalse(queued().getColumn('buttons').isVisible());
+                assert.isFalse(failed().getColumn('buttons').isVisible());
+                const toggle = details(queued()).querySelector('dbp-esign-positioning-switch');
+                assert.isNotNull(toggle);
+                toggle.dispatchEvent(new CustomEvent('toggle-change', {detail: {checked: true}}));
+                assert.equal(entry.placementMode, 'manual');
+                assert.isTrue(
+                    cell(queued(), 'positioning').querySelector('dbp-esign-positioning-switch')
+                        .checked,
+                );
+                assert.isFalse(
+                    cell(queued(), 'fileName').querySelector('dbp-esign-filename-label')
+                        .isPlacementMissing,
+                );
+                node.style.width = '1200px';
+                await waitForLayout();
+                assert.isNotNull(
+                    cell(queued(), 'buttons').querySelector('dbp-esign-preview-button'),
+                );
+                assert.isNotNull(
+                    cell(queued(), 'buttons').querySelector('dbp-esign-delete-button'),
+                );
+                assert.isNotNull(
+                    cell(failed(), 'buttons').querySelector('dbp-esign-reupload-button'),
+                );
+                assert.isNotNull(
+                    cell(failed(), 'buttons').querySelector('dbp-esign-remove-failed-file-button'),
+                );
+                assert.lengthOf(queued().getSelectedRows(), 1);
+                assert.lengthOf(failed().getSelectedRows(), 1);
+            }
+            node.setQueuedFilesTabulatorTable();
+            await waitForLayout();
+            assert.isTrue(
+                cell(queued(), 'positioning').querySelector('dbp-esign-positioning-switch').checked,
+            );
+        });
+
+        test('preview and annotation buttons work in collapsed details without selecting rows', async () => {
+            node.style.width = '350px';
+            await waitForLayout();
+            node.tableQueuedFilesTable.expandAll();
+            await waitForLayout();
+            details(queued()).querySelector('dbp-esign-preview-button').click();
+            details(queued()).querySelector('dbp-esign-annotations-button').click();
+            assert.deepEqual(previews, [['1', false, true]]);
+            assert.deepEqual(annotations, ['1']);
+            assert.lengthOf(queued().getSelectedRows(), 0);
+            node.tableQueuedFilesTable.collapseAll();
+            await waitForLayout();
+            assert.equal(details(queued()).style.display, 'none');
+        });
+
+        test('automatic positioning clears placement and synchronizes both copies of the switch', async () => {
+            entry.placementMode = 'manual';
+            entry.signaturePlacement = {page: 1};
+            node.setQueuedFilesTabulatorTable();
+            await waitForLayout();
+            node.style.width = '350px';
+            await waitForLayout();
+            const toggle = details(queued()).querySelector('dbp-esign-positioning-switch');
+            toggle.dispatchEvent(new CustomEvent('toggle-change', {detail: {checked: false}}));
+            assert.equal(entry.placementMode, 'auto');
+            assert.isUndefined(entry.signaturePlacement);
+            assert.isFalse(toggle.checked);
+            assert.isFalse(
+                cell(queued(), 'positioning').querySelector('dbp-esign-positioning-switch').checked,
+            );
+            assert.isTrue(
+                cell(queued(), 'fileName').querySelector('dbp-esign-filename-label')
+                    .isPlacementMissing,
+            );
+        });
+
+        test('does not show annotation controls when annotations are disabled', async () => {
+            node.allowAnnotating = false;
+            node.setQueuedFilesTabulatorTable();
+            await waitForLayout();
+            assert.isNull(cell(queued(), 'buttons').querySelector('dbp-esign-annotations-button'));
+            node.style.width = '350px';
+            await waitForLayout();
+            assert.isNull(details(queued()).querySelector('dbp-esign-annotations-button'));
+            assert.isNotNull(details(queued()).querySelector('dbp-esign-preview-button'));
+        });
+
+        test('deletes queued files after the action column was collapsed and shown', async () => {
+            node.style.width = '350px';
+            await waitForLayout();
+            node.style.width = '1200px';
+            await waitForLayout();
+            cell(queued(), 'buttons').querySelector('dbp-esign-delete-button').click();
+            await waitForLayout();
+            assert.isFalse(node.queuedFiles.has('1'));
+        });
+
+        test('retries failed files from collapsed details with the original entry', async () => {
+            node.style.width = '350px';
+            await waitForLayout();
+            node.tableFailedFilesTable.expandAll();
+            await waitForLayout();
+            details(failed()).querySelector('dbp-esign-reupload-button').click();
+            await waitForLayout();
+            assert.strictEqual(retried[0], entry);
+            assert.isFalse(node.errorFiles.has('1'));
+        });
+
+        test('deletes failed files after the action column was collapsed and shown', async () => {
+            node.style.width = '350px';
+            await waitForLayout();
+            node.style.width = '1200px';
+            await waitForLayout();
+            cell(failed(), 'buttons').querySelector('dbp-esign-remove-failed-file-button').click();
+            await waitForLayout();
+            assert.isFalse(node.errorFiles.has('1'));
+        });
+    });
+}
 
 suite('dbp-signature-app basics', () => {
     let node;
