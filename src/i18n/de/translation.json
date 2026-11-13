@@ -102,7 +102,7 @@
         "upload-area-text": "Sie können in diesem Bereich PDF-Dokumente mit einer Maximalgröße von bis zu 32MB pro Dokument per Drag & Drop oder per Direktauswahl hochladen. Die PDF-Dokumente dürfen sich auch in ZIP-Dateien befinden.",
         "upload-button-label": "PDF-Dokumente auswählen",
         "upload-status-file-text": "({{fileSize}}) wird hochgeladen und verarbeitet...",
-        "upload-text": "Mit dieser Anwendung können Sie PDF-Dokumente mit einer amtlichen elektronischen Signatur (Amtssignatur) oder einer Signatur mit dem Siegel der TU Graz versehen. Um den Signaturvorgang zu starten, wählen Sie bitte die gewünschte Option aus und laden Sie anschließend eine oder mehrere PDF-Dateien hoch."
+        "upload-text": "Mit dieser Anwendung können Sie PDF-Dokumente mit einer amtlichen elektronischen Signatur (Amtssignatur) oder einer Signatur mit dem Siegel der TU Graz versehen. Um den Signaturvorgang zu starten, wählen Sie bitte die gewünschte Option aus und laden Sie anschließend eine oder mehrere PDF-Dateien hoch. Es können nur PDF-Dateien von maximal 32 MB pro Datei hochgeladen werden. Der Platzbedarf der sichtbaren Signatur hängt vom gewählten Signaturprofil ab. Wir empfehlen A4 im Hochformat. Bei kleineren Seitenformaten prüfen Sie bitte die Platzierung der Signatur in der Vorschau."
     },
     "pdf-preview": {
         "error-message": "Fehler: Dieses Dokument ist beschädigt.",
@@ -175,7 +175,7 @@
         "upload-button-label": "PDF-Dokumente auswählen",
         "upload-status-file-text_one": "{{fileName}} ({{fileSize}}) wird hochgeladen und verarbeitet...",
         "upload-status-file-text_other": "{{count}} Dateien werden hochgeladen und verarbeitet...",
-        "upload-text": " Hier können Sie PDF-Dateien mit einer persönlichen elektronischen (qualifizierten) Signatur versehen. Eine qualifizierte persönliche Signatur ist Ihre persönliche Unterschrift, die Ihre Identität sowie die Integrität des Dokuments nachweist und der eigenhändigen Unterschrift rechtlich gleichgestellt ist. Um den Signaturprozess zu starten, laden Sie bitte eine oder mehrere PDF-Dateien hoch."
+        "upload-text": "Hier können Sie PDF-Dateien mit einer persönlichen elektronischen (qualifizierten) Signatur versehen. Eine qualifizierte persönliche Signatur ist Ihre persönliche Unterschrift, die Ihre Identität sowie die Integrität des Dokuments nachweist und der eigenhändigen Unterschrift rechtlich gleichgestellt ist. Um den Signaturprozess zu starten, laden Sie bitte eine oder mehrere PDF-Dateien hoch. Es können nur PDF-Dateien von maximal 32 MB pro Datei hochgeladen werden. Der Platzbedarf der sichtbaren Signatur hängt vom gewählten Signaturprofil ab. Wir empfehlen A4 im Hochformat. Bei kleineren Seitenformaten prüfen Sie bitte die Platzierung der Signatur in der Vorschau."
     },
     "re-upload-file-button-title": "Erneut in die Warteschlange stellen",
     "remove-failed-file-button-title": "Fehlgeschlagenes Dokument entfernen",

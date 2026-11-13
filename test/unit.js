@@ -87,6 +87,35 @@ suite('dbp-official-signature-pdf-upload basics', () => {
     });
 });
 
+suite('upload activity restrictions', () => {
+    for (const activity of ['official', 'qualified']) {
+        for (const lang of ['de', 'en']) {
+            test(`${activity} description shows the upload restrictions in ${lang}`, async () => {
+                const node = document.createElement(`dbp-${activity}-signature-pdf-upload`);
+                node.isLoggedIn = () => true;
+                node.hasSignaturePermissions = () => true;
+                node.isLoading = () => false;
+                node.lang = lang;
+                document.body.appendChild(node);
+                try {
+                    await node._i18n.changeLanguage(lang);
+                    await node.updateComplete;
+
+                    const description = node.shadowRoot.querySelector('.description').textContent;
+                    const restrictions =
+                        lang === 'de'
+                            ? 'Es können nur PDF-Dateien von maximal 32 MB pro Datei hochgeladen werden. Der Platzbedarf der sichtbaren Signatur hängt vom gewählten Signaturprofil ab. Wir empfehlen A4 im Hochformat. Bei kleineren Seitenformaten prüfen Sie bitte die Platzierung der Signatur in der Vorschau.'
+                            : 'Only PDF files up to 32 MB per file can be uploaded. The space required for the visible signature depends on the selected signature profile. We recommend A4 portrait. For smaller page sizes, please check the signature placement in the preview.';
+                    assert.include(description, restrictions);
+                    assert.notMatch(description, /\bA[56]\b/);
+                } finally {
+                    node.remove();
+                }
+            });
+        }
+    }
+});
+
 suite('signed files table', () => {
     let node;
     let downloadedFiles;
