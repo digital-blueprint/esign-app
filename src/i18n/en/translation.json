@@ -102,7 +102,7 @@
         "upload-area-text": "In this area you can upload PDF-documents up to a size of 32MB via Drag & Drop or by selecting them directly. The PDF-documents can also be located in a ZIP-file.",
         "upload-button-label": "Select PDF-documents",
         "upload-status-file-text": "({{fileSize}}) is currently uploading and being processed...",
-        "upload-text": "You can use this application to add a official electronic signature (Amtssignatur/authority signature) to PDF documents. To start the signature process, please upload one or more PDF files."
+        "upload-text": "You can use this application to add an official electronic signature (Amtssignatur/authority signature) or a signature with a TU Graz seal to PDF documents. To start the signature process, please select your desired option and then upload one or more PDF files."
     },
     "pdf-preview": {
         "error-message": "Error: This document is incorrect.",

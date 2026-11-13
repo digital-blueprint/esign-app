@@ -11,8 +11,8 @@
         "en": "Sign as an employee"
     },
     "description": {
-        "de": "Ermöglicht das Hochladen von PDF-Dokumenten, um sie mit einer Amtssignatur zu versehen",
-        "en": "Enables you to upload PDF documents and to sign them officially"
+        "de": "Ermöglicht es Ihnen, PDF-Dokumente mit der Amts- oder Unternehmenssignatur der TU Graz zu signieren",
+        "en": "Enables you to sign PDF documents with the authority or the company signature of TU Graz"
     },
     "subscribe": "lang,entry-point-url,nextcloud-web-app-password-url,nextcloud-webdav-url,nextcloud-name,nextcloud-auth-info,nextcloud-file-url,auth,allow-annotating,file-handling-enabled-targets"
 }

@@ -102,7 +102,7 @@
         "upload-area-text": "Sie können in diesem Bereich PDF-Dokumente mit einer Maximalgröße von bis zu 32MB pro Dokument per Drag & Drop oder per Direktauswahl hochladen. Die PDF-Dokumente dürfen sich auch in ZIP-Dateien befinden.",
         "upload-button-label": "PDF-Dokumente auswählen",
         "upload-status-file-text": "({{fileSize}}) wird hochgeladen und verarbeitet...",
-        "upload-text": "Hier können Sie PDF-Dateien mit einer elektronischen Amtssignatur versehen. Die elektronische Amtssignatur bestätigt das signierte Dokument als eine öffentliche Urkunde. Um den Signaturprozess zu starten, laden Sie bitte eine oder mehrere PDF-Dateien hoch."
+        "upload-text": "Mit dieser Anwendung können Sie PDF-Dokumente mit einer amtlichen elektronischen Signatur (Amtssignatur) oder einer Signatur mit dem Siegel der TU Graz versehen. Um den Signaturvorgang zu starten, wählen Sie bitte die gewünschte Option aus und laden Sie anschließend eine oder mehrere PDF-Dateien hoch."
     },
     "pdf-preview": {
         "error-message": "Fehler: Dieses Dokument ist beschädigt.",
