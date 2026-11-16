@@ -104,10 +104,14 @@ suite('upload activity restrictions', () => {
                     const description = node.shadowRoot.querySelector('.description').textContent;
                     const restrictions =
                         lang === 'de'
-                            ? 'Es können nur PDF-Dateien von maximal 32 MB pro Datei hochgeladen werden. Der Platzbedarf der sichtbaren Signatur hängt vom gewählten Signaturprofil ab. Wir empfehlen A4 im Hochformat. Bei kleineren Seitenformaten prüfen Sie bitte die Platzierung der Signatur in der Vorschau.'
-                            : 'Only PDF files up to 32 MB per file can be uploaded. The space required for the visible signature depends on the selected signature profile. We recommend A4 portrait. For smaller page sizes, please check the signature placement in the preview.';
+                            ? 'Es können nur PDF-Dateien von maximal 32 MB pro Datei hochgeladen werden.'
+                            : 'Only PDF files up to 32 MB per file can be uploaded.';
                     assert.include(description, restrictions);
-                    assert.notMatch(description, /\bA[56]\b/);
+                    assert.isTrue(description.trim().endsWith(restrictions));
+                    assert.notMatch(
+                        description,
+                        /\bA[456]\b|Platzbedarf|Seitenformat|space required|page sizes/,
+                    );
                 } finally {
                     node.remove();
                 }
