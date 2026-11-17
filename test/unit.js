@@ -87,10 +87,10 @@ suite('dbp-official-signature-pdf-upload basics', () => {
     });
 });
 
-suite('upload activity restrictions', () => {
+suite('upload activity descriptions', () => {
     for (const activity of ['official', 'qualified']) {
         for (const lang of ['de', 'en']) {
-            test(`${activity} description shows the upload restrictions in ${lang}`, async () => {
+            test(`${activity} description omits upload limits and page guidance in ${lang}`, async () => {
                 const node = document.createElement(`dbp-${activity}-signature-pdf-upload`);
                 node.isLoggedIn = () => true;
                 node.hasSignaturePermissions = () => true;
@@ -102,12 +102,9 @@ suite('upload activity restrictions', () => {
                     await node.updateComplete;
 
                     const description = node.shadowRoot.querySelector('.description').textContent;
-                    const restrictions =
-                        lang === 'de'
-                            ? 'Es können nur PDF-Dateien von maximal 32 MB pro Datei hochgeladen werden.'
-                            : 'Only PDF files up to 32 MB per file can be uploaded.';
-                    assert.include(description, restrictions);
-                    assert.isTrue(description.trim().endsWith(restrictions));
+                    assert.isNotEmpty(description.trim());
+                    assert.include(description, 'PDF');
+                    assert.notMatch(description, /32\s*MB/);
                     assert.notMatch(
                         description,
                         /\bA[456]\b|Platzbedarf|Seitenformat|space required|page sizes/,
