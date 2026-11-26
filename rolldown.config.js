@@ -120,18 +120,14 @@ function getOrigin(url) {
     return '';
 }
 
-// these are the hosts that are allowed to be embedded in an iframe
-const atrustHosts = [
-    'https://www.handy-signatur.at', // old one
-    'https://service.a-trust.at',
-];
+const securityLayerOrigin = getOrigin(config.securityLayerURL || 'https://service.a-trust.at');
 
 config.CSP = `default-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' \
 ${getOrigin(config.matomoUrl)} ${getOrigin(config.keyCloakBaseURL)} ${getOrigin(
     config.entryPointURL,
 )} \
 ${getOrigin(config.nextcloudBaseURL)} ${getOrigin(config.nextcloudBaseURL)} \
-${atrustHosts.map((h) => getOrigin(h)).join(' ')} \
+${securityLayerOrigin} \
 dbp-demo.tugraz.at \
 ${getOrigin(config.pdfAsQualifiedlySigningServer)}; \
 img-src * blob: data:; font-src 'self' data:`;

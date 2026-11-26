@@ -12,6 +12,8 @@
   newly appended page at the end of the document. This also works for documents
   which already contain a signature. Requires an esign bundle version which
   supports `page: "new"`.
+- Make the qualified signing security layer origin configurable via `securityLayerURL`.
+  Profiles without an override default to `https://service.a-trust.at`.
 
 ## 2.6.2
 
